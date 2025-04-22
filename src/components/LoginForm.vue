@@ -18,7 +18,10 @@
               </v-col>
 
               <v-col cols="12">
-                <v-btn class="mt-2" type="submit" block>Submit</v-btn>
+                <RouterLink to="/dashboard" custom v-slot="{ navigate }">
+                  <v-btn class="mt-2" type="submit" block @click="navigate">Submit</v-btn>
+                </RouterLink>
+
               </v-col>
             </v-row>
           </v-col>

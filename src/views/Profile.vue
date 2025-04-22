@@ -31,7 +31,8 @@
           <v-col cols="12" sm="6">
             <v-autocomplete
               :items="['Skiing', 'Ice hockey', 'Soccer', 'Basketball', 'Hockey', 'Reading', 'Writing', 'Coding', 'Basejump']"
-              label="Interests" auto-select-first multiple></v-autocomplete>
+              label="Interests" auto-select-first multiple>
+            </v-autocomplete>
           </v-col>
         </v-row>
 
