@@ -1,26 +1,46 @@
 <template>
-  <v-app-bar app flat :collapse="collapseAppBar" color="black">
+  <v-app-bar app flat color="black">
     <template v-slot:prepend>
-      <v-app-bar-nav-icon @click="alterToggle()">
+      <v-app-bar-nav-icon @click="$emit('toggle')">
         <v-icon color="white">mdi-menu</v-icon>
       </v-app-bar-nav-icon>
     </template>
 
-    <v-app-bar-title>Application Bar</v-app-bar-title>
+    <v-app-bar-title>Tasks control</v-app-bar-title>
 
     <div class="d-flex justify-space-around">
       <v-menu transition="slide-x-transition">
         <template v-slot:activator="{ props }">
-          <v-btn color="primary" v-bind="props">
+          <v-btn icon color="primary" v-bind="props">
             <v-icon color="white">mdi-book-open-page-variant-outline</v-icon>
           </v-btn>
         </template>
         <v-list>
-          <v-list-item v-for="item in items" :key="item.title">
-            <RouterLink :to="item.path" custom v-slot="{ navigate }">
+          <v-list-item v-for="page in pages" :key="page.title">
+            <RouterLink :to="page.path" custom v-slot="{ navigate }">
               <v-btn class="menu-btn" color="black" block @click="navigate">
-                <v-icon class="mr-2" color="white">{{ item.icon }}</v-icon>
-                <span class="text-white">{{ item.title }}</span>
+                <v-icon class="mr-2" color="white">{{ page.icon }}</v-icon>
+                <span class="text-white">{{ page.title }}</span>
+              </v-btn>
+            </RouterLink>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </div>
+
+    <div class="d-flex justify-space-around">
+      <v-menu transition="slide-x-transition">
+        <template v-slot:activator="{ props }">
+          <v-btn icon color="primary" v-bind="props">
+            <v-icon color="white">mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item v-for="page in optionConfig" :key="page.title">
+            <RouterLink :to="page.path" custom v-slot="{ navigate }">
+              <v-btn class="menu-btn" color="black" block @click="navigate">
+                <v-icon class="mr-2" color="white">{{ page.icon }}</v-icon>
+                <span class="text-white">{{ page.title }}</span>
               </v-btn>
             </RouterLink>
           </v-list-item>
@@ -29,47 +49,39 @@
     </div>
 
     <template v-slot:append>
-      <RouterLink to="/" custom v-slot="{ navigate }">
-        <v-btn icon @click="navigate">
-          <v-icon color="white">mdi-heart</v-icon>
-        </v-btn>
-      </RouterLink>
-
-      <RouterLink to="/about" custom v-slot="{ navigate }">
-        <v-btn icon @click="navigate">
-          <v-icon color="white">mdi-magnify</v-icon>
-        </v-btn>
-      </RouterLink>
-
-      <RouterLink to="/login/register" custom v-slot="{ navigate }">
-        <v-btn icon @click="navigate">
-          <v-icon color="white">mdi-dots-vertical</v-icon>
-        </v-btn>
-      </RouterLink>
+      <v-btn icon @click="openSearch">
+        <v-icon color="white">mdi-magnify</v-icon>
+      </v-btn>
     </template>
   </v-app-bar>
 </template>
 
 <script setup lang=ts>
 import { ref } from 'vue';
+import { useDialogStore } from './dialogSearch/dialogStore'
+const dialogStore = useDialogStore()
 
-const items = ref([
+function openSearch() {
+  dialogStore.openSearchDialog()
+}
+
+const pages = ref([
   { title: 'Home', path: '/dashboard', icon: 'mdi-home-outline' },
   { title: 'About', path: '/about', icon: 'mdi-information-outline' },
   { title: 'Regiter', path: '/register', icon: 'mdi-account-plus-outline' }
 ])
 
-var collapseAppBar = ref(false);
+const optionConfig = ref([
+  { title: 'Profile', path: '/profile', icon: 'mdi-account-cog' },
+  { title: 'Config', path: '/config', icon: 'mdi-cog-outline' },
+  { title: 'Report', path: '/report', icon: 'mdi-chart-bar' },
+])
 
-function alterToggle() {
-  collapseAppBar.value = !collapseAppBar.value;
-}
+const props = defineProps<{
+  collapse: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'toggle'): void
+}>()
 </script>
-
-<style scoped>
-.menu-btn {
-  width: 200px;
-  justify-content: start;
-  text-transform: none;
-}
-</style>
