@@ -13,7 +13,7 @@
               <v-col cols="12">
                 <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                   :rules="[rulesPassword.required, rulesPassword.min]" :type="show1 ? 'text' : 'password'"
-                  hint="At least 8 characters" label="Normal with hint text" name="input-10-1" counter
+                  hint="At least 8 characters" label="Password" name="input-10-1" counter
                   @click:append="show1 = !show1"></v-text-field>
               </v-col>
 
@@ -33,6 +33,8 @@ import { ref } from 'vue'
 
 const valid = ref(false)
 const email = ref('')
+const show1 = ref(false)
+const password = ref('')
 
 // Regras de validação para e-mail
 const emailRules = [
@@ -52,9 +54,4 @@ const rulesPassword = {
   min: (v: string | any[]) => v.length >= 8 || 'Min 8 characters',
   emailMatch: () => (`The email and password you entered don't match`),
 }
-
-const show1 = ref(false)
-const password = ref('Password')
-
-
 </script>

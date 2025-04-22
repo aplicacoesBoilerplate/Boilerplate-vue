@@ -1,5 +1,3 @@
-import LoginForm from '@/components/RegisterForm.vue'
-import NavBar from '@/components/NavBar.vue'
 import AboutCard from '@/views/AboutCard.vue'
 import DashboardHomepage from '@/views/DashboardHomepage.vue'
 import LoginPage from '@/views/LoginPage.vue'
@@ -7,6 +5,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import RegisterForm from '@/components/RegisterForm.vue'
 import Profile from '@/views/Profile.vue'
 import Configurations from '@/views/configurations.vue'
+import Report from '@/views/Report.vue'
+import TasksView from '@/views/TasksView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +40,16 @@ const router = createRouter({
       path: '/config',
       name: 'configurations',
       component: Configurations,
+    },
+    {
+      path: '/report',
+      name: 'report',
+      component: Report,
+    },
+    {
+      path: '/tasks',
+      name: 'tasks',
+      component: TasksView,
     },
   ],
 })
