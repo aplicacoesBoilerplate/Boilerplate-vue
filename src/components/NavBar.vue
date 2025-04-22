@@ -35,11 +35,9 @@
         </v-btn>
       </RouterLink>
 
-      <RouterLink to="/about" custom v-slot="{ navigate }">
-        <v-btn icon @click="navigate">
-          <v-icon color="white">mdi-magnify</v-icon>
-        </v-btn>
-      </RouterLink>
+      <v-btn icon @click="openSearch">
+        <v-icon color="white">mdi-magnify</v-icon>
+      </v-btn>
 
       <RouterLink to="/login/register" custom v-slot="{ navigate }">
         <v-btn icon @click="navigate">
@@ -52,6 +50,12 @@
 
 <script setup lang=ts>
 import { ref } from 'vue';
+import { useDialogStore } from './dialogSearch/dialogStore'
+const dialogStore = useDialogStore()
+
+function openSearch() {
+  dialogStore.openSearchDialog()
+}
 
 const items = ref([
   { title: 'Home', path: '/dashboard', icon: 'mdi-home-outline' },
