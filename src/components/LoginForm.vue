@@ -1,6 +1,8 @@
 <template>
+  <h1>
+    Login
+  </h1>
   <div>
-    <h1>LoginForm</h1>
     <v-form v-model="valid">
       <v-container>
         <v-row>

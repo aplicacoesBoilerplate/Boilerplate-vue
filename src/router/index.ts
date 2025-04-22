@@ -1,4 +1,5 @@
 import LoginForm from '@/components/LoginForm.vue'
+import NavBar from '@/components/NavBar.vue'
 import AboutCard from '@/views/AboutCard.vue'
 import DashboardHomepage from '@/views/DashboardHomepage.vue'
 import LoginPage from '@/views/LoginPage.vue'
@@ -13,8 +14,8 @@ const router = createRouter({
       component: LoginPage,
     },
     {
-      path: '/login/register',
-      name: 'login-register',
+      path: '/register',
+      name: 'register',
       component: LoginForm,
     },
     {
