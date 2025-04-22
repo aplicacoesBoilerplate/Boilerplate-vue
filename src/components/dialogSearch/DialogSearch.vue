@@ -1,15 +1,15 @@
 <template>
   <v-dialog v-model="dialog" max-width="500">
-    <v-card title="Search">
+    <v-card title="What are you looking for?">
       <v-card-text>
-        <v-text-field hint="Ex: status da tarefa, responsável" v-model="search" label="Buscar..."
+        <v-text-field hint="Ex: task status, accountable" v-model="search" label="Search..."
           prepend-inner-icon="mdi-magnify" clearable />
       </v-card-text>
 
       <v-card-actions>
         <v-spacer />
-        <v-btn text="Fechar" color="red" variant="outlined" @click="dialogStore.closeSearchDialog()" />
-        <v-btn text="Buscar" color="teal-darken-1" variant="outlined" @click="buscar()" />
+        <v-btn text="Close" color="red" variant="outlined" @click="dialogStore.closeSearchDialog()" />
+        <v-btn text="Confirm" color="teal-darken-1" variant="outlined" @click="buscar()" />
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -33,4 +33,5 @@ function buscar() {
   dialogStore.closeSearchDialog()
   search = ref('');
 }
+
 </script>
