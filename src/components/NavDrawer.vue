@@ -22,9 +22,11 @@
       </v-list>
     </v-card>
   </v-navigation-drawer>
+  <DialogNewTask />
 </template>
 
 <script setup lang="ts">
+//#region hidden
 import { computed, ref } from 'vue'
 import DialogNewTask from './dialog/dialogNewTask/DialogNewTask.vue'
 import { useDialogStoreNewTask } from './dialog/dialogNewTask/dialogStoreNewTask'
@@ -48,10 +50,12 @@ const modelValue = computed({
   set: value => emit('update:collapse', value)
 })
 
+//#endregion
+
 const routerOption = ref([
   // { id: '0', icon: 'mdi-', path: '/', title: '' },
   { id: '1', icon: 'mdi-file-tree', path: '/tasks', title: 'View all tasks' },
-  { id: '2', icon: 'mdi-file-tree', path: '/tasks', title: 'View all tasks' },
+  // { id: '2', icon: 'mdi-file-tree', path: '/tasks', title: 'View all tasks' },
 ])
 
 </script>

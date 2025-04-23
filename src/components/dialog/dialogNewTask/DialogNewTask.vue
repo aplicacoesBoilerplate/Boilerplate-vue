@@ -4,21 +4,21 @@
       <v-card-text>
         <v-row dense>
           <v-col cols="12" md="6">
-            <v-text-field v-model="task.title" label="Title task*" required></v-text-field>
+            <v-text-field clearable v-model="task.title" label="Title task*" required></v-text-field>
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-text-field v-model="task.description" hint="Explain what the task consists of" persistent-hint
+            <v-text-field clearable v-model="task.description" hint="Explain what the task consists of" persistent-hint
               label="Description*" required></v-text-field>
           </v-col>
 
           <v-col cols="12" sm="6">
-            <v-number-input controlVariant="stacked" v-model="task.idEmployee" label="Responsible employee*"
+            <v-number-input clearable controlVariant="stacked" v-model="task.idEmployee" label="Responsible employee*"
               required></v-number-input>
           </v-col>
 
           <v-col cols="12" sm="6">
-            <v-date-input v-model="task.estimatedDelivery" label="Select a date"></v-date-input>
+            <v-date-input clearable v-model="task.estimatedDelivery" label="Select a date"></v-date-input>
           </v-col>
         </v-row>
 
@@ -33,7 +33,7 @@
 
         <v-btn color="red" text="Close" variant="plain" @click="dialogStoreNewTask.closeNewTaskDialog()"></v-btn>
 
-        <v-btn color="teal-darken-1" text="Save" variant="tonal" @click="CreateNewTask()"></v-btn>
+        <v-btn color="success" text="Save" variant="tonal" @click="CreateNewTask()"></v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
