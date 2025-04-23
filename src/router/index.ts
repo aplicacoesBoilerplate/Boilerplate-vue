@@ -4,7 +4,7 @@ import LoginPage from '@/views/LoginPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import RegisterForm from '@/components/RegisterForm.vue'
 import Profile from '@/views/Profile.vue'
-import Configurations from '@/views/configurations.vue'
+import Configurations from '@/views/Configurations.vue'
 import Report from '@/views/Report.vue'
 import TasksView from '@/views/TasksView.vue'
 
@@ -50,6 +50,13 @@ const router = createRouter({
       path: '/tasks',
       name: 'tasks',
       component: TasksView,
+      children: [
+        {
+          path: '/new',
+          name: 'new task',
+          component: TasksView,
+        },
+      ],
     },
   ],
 })

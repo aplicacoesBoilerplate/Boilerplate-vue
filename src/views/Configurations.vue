@@ -4,7 +4,7 @@
       <v-card-text>
         <v-row dense>
           <v-col cols="12" md="6">
-            <v-text-field label="connection database*" required></v-text-field>
+            <v-text-field label="connection database*" required variant="outlined"></v-text-field>
           </v-col>
 
           <v-col cols="12" md="6">

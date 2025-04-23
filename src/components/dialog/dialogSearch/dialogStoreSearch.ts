@@ -10,7 +10,7 @@ function closeSearchDialog() {
   showDialogSearch.value = false
 }
 
-export function useDialogStore() {
+export function useDialogStoreSearch() {
   return {
     showDialogSearch,
     openSearchDialog,
