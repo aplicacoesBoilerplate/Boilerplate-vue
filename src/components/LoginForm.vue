@@ -19,7 +19,7 @@
 
               <v-col cols="12">
                 <RouterLink to="/dashboard" custom v-slot="{ navigate }">
-                  <v-btn class="mt-2" type="submit" block @click="navigate">Submit
+                  <v-btn class="mt-2" type="submit" block @click="navigate">Login
                     <v-icon color="success">mdi-check-circle-outline</v-icon>
                   </v-btn>
                 </RouterLink>
