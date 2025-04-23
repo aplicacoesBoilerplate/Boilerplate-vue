@@ -6,7 +6,11 @@
       </v-app-bar-nav-icon>
     </template>
 
-    <v-app-bar-title>Tasks control</v-app-bar-title>
+    <RouterLink to="/dashboard" custom v-slot="{ navigate }">
+      <v-app-bar-title @click="navigate" class="cursor-pointer d-flex justify-center">
+        Tasks control
+      </v-app-bar-title>
+    </RouterLink>
 
     <div class="d-flex justify-space-around">
       <v-menu transition="slide-x-transition">
@@ -69,19 +73,21 @@ function openSearch() {
 const pages = ref([
   { title: 'Home', path: '/dashboard', icon: 'mdi-home-outline' },
   { title: 'About', path: '/about', icon: 'mdi-information-outline' },
-  { title: 'Regiter', path: '/register', icon: 'mdi-account-plus-outline' }
+  { title: 'Regiter', path: '/register', icon: 'mdi-account-plus-outline' },
 ])
 
 const optionConfig = ref([
-  { title: 'Profile', path: '/profile', icon: 'mdi-account-cog' },
-  { title: 'Config', path: '/config', icon: 'mdi-cog-outline' },
   { title: 'Report', path: '/report', icon: 'mdi-chart-bar' },
+  { title: 'Config', path: '/config', icon: 'mdi-cog-outline' },
+  { title: 'Profile', path: '/profile', icon: 'mdi-account-cog' },
 ])
 
+// Não remover
 const props = defineProps<{
   collapse: boolean
 }>()
 
+// Não remover
 const emit = defineEmits<{
   (e: 'toggle'): void
 }>()

@@ -15,7 +15,7 @@ import { ref } from 'vue'
 import NavBar from '@/components/NavBar.vue'
 import NavDrawer from '@/components/NavDrawer.vue'
 
-const collapseDrawer = ref(true)
+const collapseDrawer = ref(false)
 
 function toggleDrawer() {
   collapseDrawer.value = !collapseDrawer.value

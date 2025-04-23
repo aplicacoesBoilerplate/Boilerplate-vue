@@ -4,18 +4,18 @@
       <v-card-text>
         <v-row dense>
           <v-col cols="12" md="6">
-            <v-text-field label="connection database*" required variant="outlined"></v-text-field>
+            <v-text-field clearable label="connection database*" required variant="outlined"></v-text-field>
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-number-input :reverse="false" controlVariant="stacked" label="port*" :hideInput="false" inset
+            <v-number-input clearable :reverse="false" controlVariant="stacked" label="port*" :hideInput="false" inset
               variant="outlined">
             </v-number-input>
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-number-input :reverse="false" controlVariant="stacked" label="paginator limit" :hideInput="false" inset
-              variant="outlined" :min="1" :max="100" hint="Min: 1 / Max: 100">
+            <v-number-input clearable :reverse="false" controlVariant="stacked" label="paginator limit"
+              :hideInput="false" inset variant="outlined" :min="1" :max="100" hint="Min: 1 / Max: 100">
             </v-number-input>
           </v-col>
 
@@ -51,4 +51,5 @@
 import { shallowRef } from 'vue'
 
 const sound = shallowRef(true)
+
 </script>

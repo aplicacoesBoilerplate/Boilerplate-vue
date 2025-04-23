@@ -7,11 +7,11 @@
           <v-col cols="6">
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="email" :rules="emailRules" label="E-mail" required></v-text-field>
+                <v-text-field clearable v-model="email" :rules="emailRules" label="E-mail" required></v-text-field>
               </v-col>
 
               <v-col cols="12">
-                <v-text-field v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                <v-text-field clearable v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                   :rules="[rulesPassword.required, rulesPassword.min]" :type="show1 ? 'text' : 'password'"
                   hint="At least 8 characters" label="Password" name="input-10-1" counter
                   @click:append="show1 = !show1"></v-text-field>
@@ -19,7 +19,9 @@
 
               <v-col cols="12">
                 <RouterLink to="/dashboard" custom v-slot="{ navigate }">
-                  <v-btn class="mt-2" type="submit" block @click="navigate">Submit</v-btn>
+                  <v-btn class="mt-2" type="submit" block @click="navigate">Submit
+                    <v-icon color="success">mdi-check-circle-outline</v-icon>
+                  </v-btn>
                 </RouterLink>
 
               </v-col>
@@ -57,4 +59,5 @@ const rulesPassword = {
   min: (v: string | any[]) => v.length >= 8 || 'Min 8 characters',
   emailMatch: () => (`The email and password you entered don't match`),
 }
+
 </script>
