@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" max-width="500">
+  <v-dialog v-model="dialogSearch" max-width="500">
     <v-card title="What are you looking for?">
       <v-card-text>
         <v-text-field hint="Ex: task status, accountable" v-model="search" label="Search..."
@@ -8,7 +8,7 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn text="Close" color="red" variant="outlined" @click="dialogStore.closeSearchDialog()" />
+        <v-btn text="Close" color="red" variant="outlined" @click="dialogStoreSearch.closeSearchDialog()" />
         <v-btn text="Confirm" color="teal-darken-1" variant="outlined" @click="buscar()" />
       </v-card-actions>
     </v-card>
@@ -17,20 +17,20 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useDialogStore } from './dialogStore'
+import { useDialogStoreSearch } from './dialogStoreSearch'
 
-const dialogStore = useDialogStore()
+const dialogStoreSearch = useDialogStoreSearch()
 
-const dialog = computed({
-  get: () => dialogStore.showDialogSearch.value,
-  set: (val: boolean) => dialogStore.showDialogSearch.value = val
+const dialogSearch = computed({
+  get: () => dialogStoreSearch.showDialogSearch.value,
+  set: (val: boolean) => dialogStoreSearch.showDialogSearch.value = val
 })
 
 let search = ref('')
 
 function buscar() {
-  console.log('Valor buscado:', search.value)
-  dialogStore.closeSearchDialog()
+  const valorBuscado = search.value
+  dialogStoreSearch.closeSearchDialog()
   search = ref('');
 }
 

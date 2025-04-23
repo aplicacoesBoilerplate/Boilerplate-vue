@@ -49,7 +49,7 @@
     </div>
 
     <template v-slot:append>
-      <v-btn icon @click="openSearch">
+      <v-btn icon @click="openSearch()">
         <v-icon color="white">mdi-magnify</v-icon>
       </v-btn>
     </template>
@@ -58,11 +58,12 @@
 
 <script setup lang=ts>
 import { ref } from 'vue';
-import { useDialogStore } from './dialogSearch/dialogStore'
-const dialogStore = useDialogStore()
+import { useDialogStoreSearch } from './dialog/dialogSearch/dialogStoreSearch'
+
+const dialogStoreSearch = useDialogStoreSearch()
 
 function openSearch() {
-  dialogStore.openSearchDialog()
+  dialogStoreSearch.openSearchDialog()
 }
 
 const pages = ref([
@@ -84,4 +85,5 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'toggle'): void
 }>()
+
 </script>

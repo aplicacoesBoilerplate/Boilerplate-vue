@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router'
 import Navigation from './components/Navigation.vue';
-import DialogSearch from './components/dialogSearch/DialogSearch.vue'
+import DialogSearch from './components/dialog/dialogSearch/DialogSearch.vue'
 
 const route = useRoute();
+
 </script>
 
 <template>
