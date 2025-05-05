@@ -1,6 +1,8 @@
 <template>
   <v-dialog v-model="dialogNewTask" max-width="650">
-    <v-card prepend-icon="mdi-plus-circle-outline" title="Create a new task">
+
+    <v-card :prepend-icon="isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
+      :title="isEditing ? 'Edit task' : 'Create a new task'">
       <v-card-text>
         <v-row dense>
           <v-col cols="12" md="6">
@@ -40,8 +42,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useDialogStoreNewTask } from './dialogStoreNewTask'
+import type { TaskDialog } from '@/models/TaskModel'
 
 const dialogStoreNewTask = useDialogStoreNewTask()
 
@@ -50,20 +53,38 @@ const dialogNewTask = computed({
   set: (val: boolean) => dialogStoreNewTask.showDialogNewTask.value = val
 })
 
-function createEmptyTask() {
-  return {
-    title: '',
-    description: '',
-    idEmployee: 0,
-    estimatedDelivery: null
-  }
-}
+// Objeto local para edição
+const task = ref<TaskDialog>({
+  id: 0,
+  title: '',
+  description: '',
+  idEmployee: 0,
+  estimatedDelivery: '',
+  dateDelivery: '',
+  status: ''
+})
 
-let task = ref(createEmptyTask())
+watch(() => dialogStoreNewTask.taskToEdit.value, (newTask) => {
+  if (newTask) {
+    task.value = { ...newTask }
+  } else {
+    task.value = {
+      id: 0,
+      title: '',
+      description: '',
+      idEmployee: 0,
+      estimatedDelivery: '',
+      dateDelivery: '',
+      status: ''
+    }
+  }
+}, { immediate: true })
+
+const isEditing = computed(() => dialogStoreNewTask.taskToEdit.value !== null)
 
 function CreateNewTask() {
   const bodyNewTask = task.value
-  task.value = createEmptyTask()
   dialogStoreNewTask.closeNewTaskDialog()
 }
+
 </script>

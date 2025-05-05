@@ -66,7 +66,7 @@
               </v-col>
 
               <v-col cols="2" style="padding-top: 0.5rem">
-                <v-btn color="primary" block @click="openNewTask()">
+                <v-btn color="primary" block @click="editTaskDialog(task)">
                   <v-icon>
                     mdi-pencil-outline
                   </v-icon>
@@ -92,11 +92,12 @@
 //#region hidden
 import DialogNewTask from '@/components/dialog/dialogNewTask/DialogNewTask.vue'
 import { useDialogStoreNewTask } from '@/components/dialog/dialogNewTask/dialogStoreNewTask'
+import type { TaskDialog } from '@/models/TaskModel'
 
 const dialogStoreNewTask = useDialogStoreNewTask()
 
 function openNewTask() {
-  dialogStoreNewTask.openNewTaskDialog()
+  dialogStoreNewTask.startCreatingNewTask()
 }
 
 function getStatusColor(status: string): string {
@@ -118,15 +119,18 @@ function getStatusColor(status: string): string {
   }
 }
 
+function editTaskDialog(task: TaskDialog) {
+  dialogStoreNewTask.editTaskDialog(task)
+}
 //#endregion
 
 const cardsTasks = [
   // { id: 0, title: '', description: '', idEmployee: 0, estimatedDelivery: null, dateDelivery: null, status: '' },
-  { id: 1, title: 'First', description: 'Teste', idEmployee: 1, estimatedDelivery: '2025-04-25', dateDelivery: null, status: 'Pending' },
-  { id: 2, title: 'Secound', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: null, status: 'Rejected' },
-  { id: 3, title: 'Third', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: null, status: 'In progress' },
-  { id: 4, title: 'Fourth', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: null, status: 'Test' },
-  { id: 5, title: 'Fifth', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: null, status: 'Review' },
+  { id: 1, title: 'First', description: 'Teste', idEmployee: 1, estimatedDelivery: '2025-04-25', dateDelivery: '', status: 'Pending' },
+  { id: 2, title: 'Secound', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: '', status: 'Rejected' },
+  { id: 3, title: 'Third', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: '', status: 'In progress' },
+  { id: 4, title: 'Fourth', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: '', status: 'Test' },
+  { id: 5, title: 'Fifth', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: '', status: 'Review' },
 ]
 
 </script>
