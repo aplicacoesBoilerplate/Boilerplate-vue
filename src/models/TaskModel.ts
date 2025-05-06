@@ -15,8 +15,9 @@ export interface TaskModel {
   termino: Date
 }
 
-export interface TaskDialog {
-  id: number
+// MOdelo padrão
+export interface Task {
+  id?: number
   title: string
   description: string
   idEmployee: number

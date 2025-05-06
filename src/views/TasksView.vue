@@ -7,12 +7,12 @@
   <div style="padding-top: 1.5rem;">
     <v-row dense>
       <v-expansion-panels>
-        <v-expansion-panel v-for="task in cardsTasks" :key="task.id">
+        <v-expansion-panel v-for="task in apiTasks" :key="task.id">
           <v-expansion-panel-title v-slot="{ expanded }">
             <v-row no-gutters>
               <v-col class="d-flex justify-start" cols="4">
                 <v-chip>
-                  {{ task.title }}
+                  {{ task.id }} - {{ task.title }}
                 </v-chip>
               </v-col>
               <v-col class="text--secondary" cols="8">
@@ -69,7 +69,7 @@
 
             <v-row no-gutters>
               <v-col sm="12" md="6" style="padding-top: 0.5rem">
-                <v-btn color="primary" block @click="editTaskDialog(task)">
+                <v-btn color="primary" block @click="completeFormEditTaskDialog(task)">
                   <v-icon>
                     mdi-pencil-outline
                   </v-icon>
@@ -77,13 +77,14 @@
               </v-col>
 
               <v-col sm="12" md="6" style="padding-top: 0.5rem">
-                <v-btn color="red" block>
+                <v-btn color="red" block @click="deleteTask(task.id!)">
                   <v-icon>
                     mdi-delete-outline
                   </v-icon>
                 </v-btn>
               </v-col>
             </v-row>
+
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -92,21 +93,24 @@
 </template>
 
 <script setup lang=ts>
-//#region hidden
-import DialogNewTask from '@/components/dialog/dialogNewTask/DialogNewTask.vue'
-import { useDialogStoreNewTask } from '@/components/dialog/dialogNewTask/dialogStoreNewTask'
-import type { TaskDialog } from '@/models/TaskModel'
+import DialogNewTask from '@/components/dialog/dialogTask/DialogTask.vue'
+import { useDialogStoreTask } from '@/components/dialog/dialogTask/dialogStoreTask'
+import type { Task } from '@/models/TaskModel'
+import { onMounted, ref } from 'vue';
+import { todoServices } from '@/services/todoService';
 
-const dialogStoreNewTask = useDialogStoreNewTask()
+const dialogStoreTask = useDialogStoreTask()
+const todoService = todoServices()
+var apiTasks = dialogStoreTask.apiTasks;
 
 function openNewTask() {
-  dialogStoreNewTask.startCreatingNewTask()
+  dialogStoreTask.startCreatingNewTask()
 }
 
 function getStatusColor(status: string): string {
   switch (status) {
     case 'Pending':
-      return 'red'
+      return 'grey'
     case 'In progress':
       return 'blue'
     case 'Test':
@@ -116,25 +120,28 @@ function getStatusColor(status: string): string {
     case 'Completed':
       return 'green'
     case 'Rejected':
-      return 'grey'
+      return 'red'
     default:
       return 'default'
   }
 }
 
-function editTaskDialog(task: TaskDialog) {
-  dialogStoreNewTask.editTaskDialog(task)
+function completeFormEditTaskDialog(task: Task) {
+  dialogStoreTask.completeFormEditTaskDialog(task)
 }
-//#endregion
 
-const cardsTasks = [
-  // { id: 0, title: '', description: '', idEmployee: 0, estimatedDelivery: null, dateDelivery: null, status: '' },
-  { id: 1, title: 'First', description: 'Teste', idEmployee: 1, estimatedDelivery: '2025-04-25', dateDelivery: '', status: 'Pending' },
-  { id: 2, title: 'Secound', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: '', status: 'Rejected' },
-  { id: 3, title: 'Third', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: '', status: 'In progress' },
-  { id: 4, title: 'Fourth', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: '', status: 'Test' },
-  { id: 5, title: 'Fifth', description: 'Teste', idEmployee: 2, estimatedDelivery: '2025-04-25', dateDelivery: '', status: 'Review' },
-]
+async function deleteTask(id: number) {
+  await dialogStoreTask.deleteTask(id);
+  apiTasks.value = await todoService.getAllTasks();
+}
+
+onMounted(async () => {
+  try {
+    apiTasks.value = await todoService.getAllTasks();
+  } catch (error) {
+    throw error
+  }
+});
 
 </script>
 

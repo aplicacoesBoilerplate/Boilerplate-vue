@@ -40,10 +40,10 @@
 <script setup lang="ts">
 //#region hidden
 import { computed, ref } from 'vue'
-import DialogNewTask from './dialog/dialogNewTask/DialogNewTask.vue'
-import { useDialogStoreNewTask } from './dialog/dialogNewTask/dialogStoreNewTask'
+import DialogNewTask from './dialog/dialogTask/DialogTask.vue'
+import { useDialogStoreTask } from './dialog/dialogTask/dialogStoreTask'
 
-const dialogStoreNewTask = useDialogStoreNewTask()
+const dialogStoreNewTask = useDialogStoreTask()
 
 function openNewTask() {
   dialogStoreNewTask.startCreatingNewTask()
