@@ -47,6 +47,7 @@
               </v-col>
             </v-row>
           </v-expansion-panel-title>
+
           <v-expansion-panel-text>
             <v-row style="padding-bottom: 1rem;">
               <v-col cols="12" class="wrap-text">
@@ -54,18 +55,20 @@
               </v-col>
             </v-row>
 
-            <v-row justify="space-around" no-gutters>
-              <v-col cols="3">
+            <v-row no-gutters>
+              <v-col xs="12" sm="12" md="6" class="d-flex justify-center">
                 <v-date-input clearable v-model="task.estimatedDelivery" label="Date estimated delivery" max-width="368"
                   hint="format: MM/DD/YYYY" persistent-hint />
               </v-col>
 
-              <v-col cols="3">
+              <v-col sm="12" md="6" class="d-flex justify-center">
                 <v-date-input clearable v-model="task.dateDelivery" label="Date delivery" max-width="368"
                   hint="format: MM/DD/YYYY" persistent-hint />
               </v-col>
+            </v-row>
 
-              <v-col cols="2" style="padding-top: 0.5rem">
+            <v-row no-gutters>
+              <v-col sm="12" md="6" style="padding-top: 0.5rem">
                 <v-btn color="primary" block @click="editTaskDialog(task)">
                   <v-icon>
                     mdi-pencil-outline
@@ -73,7 +76,7 @@
                 </v-btn>
               </v-col>
 
-              <v-col cols="2" style="padding-top: 0.5rem">
+              <v-col sm="12" md="6" style="padding-top: 0.5rem">
                 <v-btn color="red" block>
                   <v-icon>
                     mdi-delete-outline
