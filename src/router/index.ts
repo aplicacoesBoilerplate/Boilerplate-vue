@@ -7,6 +7,7 @@ import Profile from '@/views/Profile.vue'
 import Configurations from '@/views/Configurations.vue'
 import Report from '@/views/Report.vue'
 import TasksView from '@/views/TasksView.vue'
+import UsersView from '@/views/UsersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,6 +58,11 @@ const router = createRouter({
           component: TasksView,
         },
       ],
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: UsersView,
     },
   ],
 })

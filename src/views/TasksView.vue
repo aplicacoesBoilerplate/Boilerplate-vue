@@ -42,7 +42,7 @@
                   <v-row v-else style="width: 100%" no-gutters>
                     <v-col class="d-flex justify-start" cols="6">
                       <v-chip>
-                        Estimated delivery: {{ task.estimatedDelivery }}
+                        Estimated delivery: {{ new Date(task.estimatedDelivery).toLocaleString() }}
                       </v-chip>
                     </v-col>
                     <v-col class="d-flex justify-start" cols="6">
@@ -62,10 +62,10 @@
                 Description: {{ task.description || 'Not set' }}
               </v-col>
               <v-col cols="12" class="wrap-text">
-                Estimated delivery: {{ task.estimatedDelivery || 'Not set' }}
+                Estimated delivery: {{ new Date(task.estimatedDelivery).toLocaleString() || 'Not set' }}
               </v-col>
               <v-col cols="12" class="wrap-text">
-                Date delivery: {{ task.dateDelivery || 'Not set' }}
+                Date delivery: {{ new Date(task.dateDelivery).toLocaleString() || 'Not set' }}
               </v-col>
               <v-col cols="12" class="wrap-text">
                 Employee name: {{ task.employeeName || 'Not set' }}
@@ -147,7 +147,6 @@ onMounted(async () => {
     throw error
   }
 });
-
 </script>
 
 <style scoped>

@@ -67,7 +67,7 @@ const modelValue = computed({
 const routerOption = ref([
   // { id: '0', icon: 'mdi-', path: '/', title: '' },
   { id: '1', icon: 'mdi-file-tree', path: '/tasks', title: 'View all tasks' },
-  { id: '2', icon: 'mdi-account-group', path: '/tasks', title: 'View all users' },
+  { id: '2', icon: 'mdi-account-group', path: '/users', title: 'View all users' },
 ])
 
 </script>
