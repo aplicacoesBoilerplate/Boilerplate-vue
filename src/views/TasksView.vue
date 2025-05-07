@@ -53,17 +53,14 @@
               <v-col cols="12" class="wrap-text">
                 Description: {{ task.description || 'Not set' }}
               </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col xs="12" sm="12" md="6" class="d-flex justify-center">
-                <v-date-input clearable v-model="task.estimatedDelivery" label="Date estimated delivery" max-width="368"
-                  hint="format: MM/DD/YYYY" persistent-hint />
+              <v-col cols="12" class="wrap-text">
+                Estimated delivery: {{ task.estimatedDelivery || 'Not set' }}
               </v-col>
-
-              <v-col sm="12" md="6" class="d-flex justify-center">
-                <v-date-input clearable v-model="task.dateDelivery" label="Date delivery" max-width="368"
-                  hint="format: MM/DD/YYYY" persistent-hint />
+              <v-col cols="12" class="wrap-text">
+                Date delivery: {{ task.dateDelivery || 'Not set' }}
+              </v-col>
+              <v-col cols="12" class="wrap-text">
+                Employee name: {{ task.employeeName || 'Not set' }}
               </v-col>
             </v-row>
 
@@ -96,7 +93,7 @@
 import DialogNewTask from '@/components/dialog/dialogTask/DialogTask.vue'
 import { useDialogStoreTask } from '@/components/dialog/dialogTask/dialogStoreTask'
 import type { Task } from '@/models/TaskModel'
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import { todoServices } from '@/services/todoService';
 
 const dialogStoreTask = useDialogStoreTask()

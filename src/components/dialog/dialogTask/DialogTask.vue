@@ -16,11 +16,25 @@
 
           <v-col cols="12" sm="6">
             <v-number-input clearable controlVariant="stacked" v-model="task.idEmployee" label="Responsible employee*"
-              required></v-number-input>
+              required @change="dialogStoreTask.getEmployeeName(task)"></v-number-input>
           </v-col>
 
           <v-col cols="12" sm="6">
-            <v-date-input clearable v-model="task.estimatedDelivery" label="Select a date"></v-date-input>
+            <v-text-field clearable controlVariant="stacked" v-model="dialogStoreTask.employeeName.value" disabled
+              label="Employee name" required></v-text-field>
+          </v-col>
+
+        </v-row>
+
+        <v-row no-gutters>
+          <v-col sm="12" md="6" class="d-flex justify-center pa-1">
+            <v-date-input clearable v-model="task.estimatedDelivery" label="Date estimated delivery*" max-width="368"
+              required prepend-icon="" prepend-inner-icon="$calendar" hint="format: MM/DD/YYYY" persistent-hint />
+          </v-col>
+
+          <v-col sm="12" md="6" class="d-flex justify-center pa-1">
+            <v-date-input clearable v-model="task.dateDelivery" label="Date delivery" max-width="368" prepend-icon=""
+              :disabled="!isEditing" prepend-inner-icon="$calendar" hint="format: MM/DD/YYYY" persistent-hint />
           </v-col>
         </v-row>
 
@@ -32,7 +46,7 @@
           </v-col>
         </v-row>
 
-        <small class="d-flex justify-center text-caption text-medium-emphasis">*indicates required
+        <small class="d-flex justify-center text-caption text-medium-emphasis pt-5">*indicates required
           field
         </small>
       </v-card-text>
@@ -56,6 +70,7 @@
 import { ref, computed, watch } from 'vue'
 import { useDialogStoreTask } from './dialogStoreTask'
 import type { Task } from '@/models/TaskModel'
+import { usersServices } from '@/services/usersService'
 
 const dialogStoreTask = useDialogStoreTask()
 

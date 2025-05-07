@@ -15,12 +15,12 @@ export interface TaskModel {
   termino: Date
 }
 
-// MOdelo padrão
 export interface Task {
   id?: number
   title: string
   description: string
   idEmployee: number
+  employeeName: string
   estimatedDelivery: string
   dateDelivery: string
   status: string

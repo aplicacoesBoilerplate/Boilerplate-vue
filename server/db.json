@@ -4,7 +4,8 @@
       "id": "1",
       "title": "First",
       "description": "Teste",
-      "idEmployee": 1,
+      "idEmployee": 8,
+      "employeeName": "admin",
       "estimatedDelivery": "2025-04-25",
       "dateDelivery": "",
       "status": "Pending"
@@ -13,7 +14,8 @@
       "id": "2",
       "title": "Secound",
       "description": "Teste",
-      "idEmployee": 2,
+      "idEmployee": 8,
+      "employeeName": "admin",
       "estimatedDelivery": "2025-04-25",
       "dateDelivery": "",
       "status": "Rejected"
@@ -22,7 +24,8 @@
       "id": "3",
       "title": "Third",
       "description": "Teste",
-      "idEmployee": 2,
+      "idEmployee": 8,
+      "employeeName": "admin",
       "estimatedDelivery": "2025-04-25",
       "dateDelivery": "",
       "status": "In progress"
@@ -31,7 +34,8 @@
       "id": "4",
       "title": "Fourth",
       "description": "Teste",
-      "idEmployee": 2,
+      "idEmployee": 8,
+      "employeeName": "admin",
       "estimatedDelivery": "2025-04-25",
       "dateDelivery": "",
       "status": "Test"
@@ -40,7 +44,8 @@
       "id": "5",
       "title": "Fifth",
       "description": "Teste",
-      "idEmployee": 2,
+      "idEmployee": 8,
+      "employeeName": "admin",
       "estimatedDelivery": "2025-04-25",
       "dateDelivery": "",
       "status": "Review"
@@ -49,10 +54,47 @@
       "id": "6",
       "title": "Task 6",
       "description": "Test Edit",
-      "idEmployee": 1,
+      "idEmployee": 8,
+      "employeeName": "admin",
       "estimatedDelivery": "2025-05-06T03:00:00.000Z",
       "dateDelivery": "",
       "status": "Completed"
+    },
+    {
+      "id": "6c13",
+      "title": "Validar Form",
+      "description": "Os campos com required devem bloquear o envio do form, além disso se o usuário com o id informado não for encontrado a task não pode ser criada",
+      "idEmployee": 8,
+      "employeeName": "admin",
+      "estimatedDelivery": "2025-05-08T03:00:00.000Z",
+      "dateDelivery": "",
+      "status": "Pending"
+    },
+    {
+      "id": "29da",
+      "title": "Testando o complete de employee name",
+      "description": "Ao editar uma task, o complete deve trazer também o nome do funcionário",
+      "idEmployee": 9,
+      "employeeName": "usuario",
+      "estimatedDelivery": "2025-05-08T03:00:00.000Z",
+      "dateDelivery": "",
+      "status": "Pending"
+    }
+  ],
+  "users": [
+    {
+      "id": "8",
+      "username": "admin",
+      "email": "admin@gmail.com",
+      "senha": "a",
+      "permissao": "admin"
+    },
+    {
+      "id": "9",
+      "username": "usuario",
+      "email": "usuario@gmail.com",
+      "senha": "a",
+      "permissao": "usuario"
     }
   ]
 }
