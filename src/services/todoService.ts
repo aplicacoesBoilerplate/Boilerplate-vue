@@ -1,7 +1,7 @@
 import http from '../plugins/axios'
-// Modelo padrão
 import type { Task } from '@/models/TaskModel'
 import { usersServices } from './usersService'
+import { useSnackbarStore } from '@/components/notifications/notificationsStore'
 
 export async function getAllTasks(): Promise<Task[]> {
   try {
@@ -40,19 +40,21 @@ export async function getTaskById(id: number): Promise<Task> {
   }
 }
 
-export async function getLastId(): Promise<number> {
-  const response = await http.get('/todos?_sort=id&_order=desc&_limit=1')
-  const lastTask = response.data[0]
-  const lastId = lastTask.id
-  return lastId + 1
-}
-
 export async function createTask(task: Omit<Task, 'id'>): Promise<Task> {
   try {
-    const response = await http.post('/todos', task)
-    await getAllTasks()
-    return response.data
+    const user = await usersServices().getUserById(task.idEmployee)
+    task.employeeName = user.username
+    try {
+      const response = await http.post('/todos', task)
+      await getAllTasks()
+      useSnackbarStore().showSnackbar('Record created successfully!', 'success')
+      return response.data
+    } catch (error) {
+      useSnackbarStore().showSnackbar('An error occurred while registering!', 'red')
+      throw error
+    }
   } catch (error) {
+    useSnackbarStore().showSnackbar('Responsible employee not found!', 'red')
     throw error
   }
 }
@@ -60,10 +62,19 @@ export async function createTask(task: Omit<Task, 'id'>): Promise<Task> {
 export async function updateTask(task: Task): Promise<Task> {
   if (task.dateDelivery != null && task.dateDelivery != '') task.status = 'Completed'
   try {
-    const response = await http.patch(`/todos/${task.id}`, task)
-    await getAllTasks()
-    return response.data
+    const user = await usersServices().getUserById(task.idEmployee)
+    task.employeeName = user.username
+    try {
+      const response = await http.patch(`/todos/${task.id}`, task)
+      await getAllTasks()
+      useSnackbarStore().showSnackbar('Record updated successfully!', 'success')
+      return response.data
+    } catch (error) {
+      useSnackbarStore().showSnackbar('An error occurred while updating the record!', 'red')
+      throw error
+    }
   } catch (error) {
+    useSnackbarStore().showSnackbar('Responsible employee not found!', 'red')
     throw error
   }
 }
@@ -77,7 +88,6 @@ export function todoServices() {
   return {
     getAllTasks,
     getTaskById,
-    getLastId,
     createTask,
     updateTask,
     deleteTask,

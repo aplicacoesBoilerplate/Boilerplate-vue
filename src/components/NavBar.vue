@@ -58,11 +58,13 @@
       </v-btn>
     </template>
   </v-app-bar>
+  <SnackbarNotifications />
 </template>
 
 <script setup lang=ts>
 import { ref } from 'vue';
 import { useDialogStoreSearch } from './dialog/dialogSearch/dialogStoreSearch'
+import SnackbarNotifications from './notifications/SnackbarNotifications.vue';
 
 const dialogStoreSearch = useDialogStoreSearch()
 

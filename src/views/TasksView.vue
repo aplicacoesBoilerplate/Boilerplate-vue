@@ -4,7 +4,15 @@
   </v-btn>
   <DialogNewTask />
 
-  <div style="padding-top: 1.5rem;">
+  <div v-if="apiTasks.length == 0" class="pt-4">
+
+    <v-alert text="Before viewing the tasks, you must register them and they will then be available below."
+      title="No tasks registered!" type="info" variant="tonal">
+    </v-alert>
+
+  </div>
+
+  <div v-else class="pt-4">
     <v-row dense>
       <v-expansion-panels>
         <v-expansion-panel v-for="task in apiTasks" :key="task.id">
