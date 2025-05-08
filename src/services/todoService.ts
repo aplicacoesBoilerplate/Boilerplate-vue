@@ -19,7 +19,7 @@ export async function getAllTasks(): Promise<Task[]> {
         } catch (error) {
           return {
             ...task,
-            employeeName: 'Usuário não encontrado',
+            employeeName: 'User not found',
           }
         }
       }),
@@ -80,8 +80,14 @@ export async function updateTask(task: Task): Promise<Task> {
 }
 
 export async function deleteTask(id: number): Promise<void> {
-  await http.delete(`/todos/${id}`)
-  await getAllTasks()
+  try {
+    await http.delete(`/todos/${id}`)
+    await getAllTasks()
+    useSnackbarStore().showSnackbar('Record deleted successfully!', 'success')
+  } catch (error) {
+    useSnackbarStore().showSnackbar('An error occurred while deleting the record!', 'red')
+    throw error
+  }
 }
 
 export function todoServices() {

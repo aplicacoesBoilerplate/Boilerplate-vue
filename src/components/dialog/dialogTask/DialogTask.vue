@@ -74,9 +74,6 @@
 import { ref, computed, watch } from 'vue'
 import { useDialogStoreTask } from './dialogStoreTask'
 import type { Task } from '@/models/TaskModel'
-import { useSnackbarStore } from '@/components/notifications/notificationsStore'
-
-const snackbar = useSnackbarStore()
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -104,6 +101,12 @@ watch(() => dialogStoreTask.taskToEdit.value, (taskToEdit) => {
     }
   }
 }, { immediate: true })
+
+watch(dialogTask, (val) => {
+  if (!val) {
+    resetForm()
+  }
+});
 
 async function createNewTask() {
   const valid = await formRef.value.validate()
@@ -133,9 +136,6 @@ function resetForm() {
 async function submitForm() {
   const { valid } = await formRef.value.validate()
   if (!valid) return
-
-  // if (dialogStoreTask.employeeName.value == null || dialogStoreTask.employeeName.value == '' || dialogStoreTask.employeeName.value == 'Usuário não encontrado')
-  //   snackbar.showSnackbar('Funcionário responsável não foi encontrado!', 'red')
 
   dialogStoreTask.isEditing.value ? updateTask() : createNewTask()
 }

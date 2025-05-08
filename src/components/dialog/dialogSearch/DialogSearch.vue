@@ -8,7 +8,7 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn text="Close" color="red" variant="outlined" @click="dialogStoreSearch.closeSearchDialog()" />
+        <v-btn text="Close" color="red" variant="outlined" @click="resetForm()" />
         <v-btn text="Confirm" color="teal-darken-1" variant="outlined" @click="buscar()" />
       </v-card-actions>
     </v-card>
@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useDialogStoreSearch } from './dialogStoreSearch'
 
 const dialogStoreSearch = useDialogStoreSearch()
@@ -26,12 +26,22 @@ const dialogSearch = computed({
   set: (val: boolean) => dialogStoreSearch.showDialogSearch.value = val
 })
 
+watch(dialogSearch, (val) => {
+  if (!val) {
+    resetForm()
+  }
+});
+
+function resetForm() {
+  dialogStoreSearch.closeSearchDialog()
+  search = ref('');
+}
+
 let search = ref('')
 
 function buscar() {
-  const valorBuscado = search.value
-  dialogStoreSearch.closeSearchDialog()
-  search = ref('');
+  dialogStoreSearch.search(search.value)
+  resetForm()
 }
 
 </script>
