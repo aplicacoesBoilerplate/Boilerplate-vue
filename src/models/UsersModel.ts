@@ -4,4 +4,6 @@ export interface Users {
   email: string
   senha: string
   permissao: string
+  bloqueado: boolean
+  ativo: boolean
 }
