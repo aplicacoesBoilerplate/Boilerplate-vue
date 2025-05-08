@@ -43,20 +43,20 @@
   ],
   "users": [
     {
-      "id": "8",
-      "username": "admin",
-      "email": "admin@gmail.com",
-      "senha": "a",
-      "permissao": "admin",
-      "bloqueado": true,
-      "ativo": true
-    },
-    {
       "id": "9",
       "username": "usuario",
       "email": "usuario@gmail.com",
-      "senha": "a",
+      "senha": "123456",
       "permissao": "usuario",
+      "bloqueado": false,
+      "ativo": true
+    },
+    {
+      "id": "cb9d",
+      "username": "ADMINISTRADOR",
+      "email": "admin@gmail.com",
+      "senha": "12345678",
+      "permissao": "ADMIN",
       "bloqueado": false,
       "ativo": true
     }

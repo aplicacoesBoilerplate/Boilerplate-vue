@@ -16,9 +16,16 @@
             </v-col>
 
             <v-col cols="6">
-              <v-text-field clearable v-model="newUser.senha" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                :rules="[rules.required, rules.min]" :type="show1 ? 'text' : 'password'" hint="At least 8 characters"
-                label="Password" name="input-10-1" counter @click:append="show1 = !show1"></v-text-field>
+              <v-text-field clearable v-model="newUser.senha" :rules="[rules.required, rules.min, rules.max]"
+                :type="showPassword ? 'text' : 'password'" hint="At least 8 characters" label="Password"
+                name="input-10-1" counter>
+
+                <template v-slot:append-inner>
+                  <v-btn :icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword = !showPassword"
+                    variant="text" />
+                </template>
+
+              </v-text-field>
             </v-col>
 
             <v-col cols="6" class="d-flex justify-center">
@@ -44,7 +51,7 @@ import { ref } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
-const show1 = ref(false)
+const showPassword = ref(false)
 const newUser = ref<Users>(
   {
     username: '',
@@ -66,6 +73,7 @@ const rules = {
     return 'E-mail must be valid.'
   },
   min: (v: string | any[]) => v.length >= 8 || 'Min 8 characters',
+  max: (v: string | any[]) => v.length <= 100 || 'Max 100 characters',
 }
 
 </script>

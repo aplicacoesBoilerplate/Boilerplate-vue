@@ -1,7 +1,9 @@
 <template>
-  <v-btn icon @click="openNewTask()">
-    <v-icon color="white">mdi-plus-circle-outline</v-icon>
-  </v-btn>
+  <div class="pb-2">
+    <v-btn icon @click="openNewTask()">
+      <v-icon color="white">mdi-plus-circle-outline</v-icon>
+    </v-btn>
+  </div>
   <DialogNewTask />
 
   <div v-if="apiTasks.length == 0" class="pt-4">

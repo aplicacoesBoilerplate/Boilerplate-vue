@@ -102,6 +102,12 @@ watch(() => dialogStoreTask.taskToEdit.value, (taskToEdit) => {
   }
 }, { immediate: true })
 
+watch(dialogTask, (val) => {
+  if (!val) {
+    resetForm()
+  }
+});
+
 async function createNewTask() {
   const valid = await formRef.value.validate()
   if (!valid) return

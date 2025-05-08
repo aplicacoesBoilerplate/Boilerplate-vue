@@ -10,10 +10,15 @@ function closeSearchDialog() {
   showDialogSearch.value = false
 }
 
+function search(search: string) {
+  console.log('search: ', search)
+}
+
 export function useDialogStoreSearch() {
   return {
     showDialogSearch,
     openSearchDialog,
     closeSearchDialog,
+    search,
   }
 }
