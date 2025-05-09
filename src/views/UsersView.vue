@@ -42,7 +42,11 @@
                       @click="completeFormEditUserDialog(user)" />
                     <span class="pr-2" />
 
-                    <v-btn icon="mdi-format-list-bulleted" size="x-small" variant="tonal" color="primary" />
+                    <RouterLink to="/tasks" custom v-slot="{ navigate }">
+                      <v-btn icon="mdi-format-list-bulleted" size="x-small" variant="tonal" color="primary"
+                        @click="navigate" />
+                    </RouterLink>
+
                     <span class="pr-2" />
 
                     <v-btn :icon="user.bloqueado ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline'" size="x-small"
@@ -101,7 +105,7 @@ async function toggleUsuarioAtivo(user: Users) {
   await usersDialog.toggleUsuarioAtivo(user)
 }
 
-async function deleteUser(idUser: number) {
+function deleteUser(idUser: number) {
   useDialogStoreConfirmarSenha().openDialogConfirmarSenha()
   useDialogStoreConfirmarSenha().setarIdentificacaoOperacaoDelete('user', idUser)
 }

@@ -2,7 +2,7 @@ import http from '../plugins/axios'
 import type { Users } from '@/models/UsersModel'
 import { useSnackbarStore } from '@/components/notifications/notificationsStore'
 
-export async function getAllUsers(): Promise<Users[]> {
+async function getAllUsers(): Promise<Users[]> {
   try {
     const response = await http.get('/users')
     return response.data
@@ -11,7 +11,7 @@ export async function getAllUsers(): Promise<Users[]> {
   }
 }
 
-export async function getUserById(id: number): Promise<Users> {
+async function getUserById(id: number): Promise<Users> {
   try {
     const response = await http.get(`/users/${id}`)
     return response.data
@@ -20,7 +20,7 @@ export async function getUserById(id: number): Promise<Users> {
   }
 }
 
-export async function createUser(newUser: Users): Promise<Users> {
+async function createUser(newUser: Users): Promise<Users> {
   try {
     const response = await http.post('/users', newUser)
     await getAllUsers()
@@ -32,7 +32,7 @@ export async function createUser(newUser: Users): Promise<Users> {
   }
 }
 
-export async function updateUser(user: Users): Promise<Users> {
+async function updateUser(user: Users): Promise<Users> {
   try {
     const response = await http.patch(`/users/${user.id}`, user)
     await getAllUsers()
@@ -44,7 +44,7 @@ export async function updateUser(user: Users): Promise<Users> {
   }
 }
 
-export async function deleteUser(id: number): Promise<void> {
+async function deleteUser(id: number): Promise<void> {
   try {
     await http.delete(`/users/${id}`)
     await getAllUsers()

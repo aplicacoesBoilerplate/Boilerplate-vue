@@ -3,7 +3,7 @@ import type { Task } from '@/models/TaskModel'
 import { usersServices } from './usersService'
 import { useSnackbarStore } from '@/components/notifications/notificationsStore'
 
-export async function getAllTasks(): Promise<Task[]> {
+async function getAllTasks(): Promise<Task[]> {
   try {
     const response = await http.get('/todos')
     const tasks = response.data
@@ -31,7 +31,7 @@ export async function getAllTasks(): Promise<Task[]> {
   }
 }
 
-export async function getTaskById(id: number): Promise<Task> {
+async function getTaskById(id: number): Promise<Task> {
   try {
     const response = await http.get(`/todos/${id}`)
     return response.data
@@ -40,7 +40,7 @@ export async function getTaskById(id: number): Promise<Task> {
   }
 }
 
-export async function createTask(task: Omit<Task, 'id'>): Promise<Task> {
+async function createTask(task: Omit<Task, 'id'>): Promise<Task> {
   try {
     const user = await usersServices().getUserById(task.idEmployee)
     task.employeeName = user.username
@@ -59,7 +59,7 @@ export async function createTask(task: Omit<Task, 'id'>): Promise<Task> {
   }
 }
 
-export async function updateTask(task: Task): Promise<Task> {
+async function updateTask(task: Task): Promise<Task> {
   if (task.dateDelivery != null && task.dateDelivery != '') task.status = 'Completed'
   try {
     const user = await usersServices().getUserById(task.idEmployee)
@@ -79,7 +79,7 @@ export async function updateTask(task: Task): Promise<Task> {
   }
 }
 
-export async function deleteTask(id: number): Promise<void> {
+async function deleteTask(id: number): Promise<void> {
   try {
     await http.delete(`/todos/${id}`)
     await getAllTasks()

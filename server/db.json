@@ -52,11 +52,20 @@
       "ativo": true
     },
     {
-      "id": "cb9d",
+      "id": "8",
       "username": "ADMINISTRADOR",
       "email": "admin@gmail.com",
       "senha": "12345678",
       "permissao": "ADMIN",
+      "bloqueado": false,
+      "ativo": true
+    },
+    {
+      "id": "2008",
+      "username": "await todoServices().getAllTasks()",
+      "email": "a@a.com",
+      "senha": "await todoServices().getAllTasks()",
+      "permissao": "USER",
       "bloqueado": false,
       "ativo": true
     }

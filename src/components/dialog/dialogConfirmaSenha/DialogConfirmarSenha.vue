@@ -44,6 +44,7 @@
 
           <v-btn color="red" variant="plain"
             @click="dialogStoreConfirmarSenha.closeDialogConfirmarSenha()"><v-icon>mdi-close</v-icon>Close</v-btn>
+
           <v-btn color="success" variant="tonal" :disabled="!formIsValid"
             @click="submitForm()"><v-icon>mdi-content-save-check</v-icon>Save</v-btn>
         </v-card-actions>
@@ -53,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useDialogStoreConfirmarSenha } from '../dialogConfirmaSenha/dialogStoreConfirmaSenha'
 
 const formRef = ref()
@@ -79,11 +80,26 @@ const dialogConfirmarSenha = computed({
   set: (val: boolean) => dialogStoreConfirmarSenha.showDialogDialogConfirmarSenha.value = val
 })
 
-async function submitForm() {
-  dialogStoreConfirmarSenha.identificarDelete()
-}
+watch(dialogConfirmarSenha, (val) => {
+  if (!val) {
+    resetForm()
+  }
+});
 
 function clearFields() {
+  confirmOperation.value.insertPassword = ''
+  confirmOperation.value.confirmPassword = ''
+  showPassword1.value = false
+  showPassword2.value = false
+}
+
+function resetForm() {
+  clearFields()
+  dialogStoreConfirmarSenha.closeDialogConfirmarSenha()
+}
+
+async function submitForm() {
+  await dialogStoreConfirmarSenha.identificarDelete()
 }
 
 </script>

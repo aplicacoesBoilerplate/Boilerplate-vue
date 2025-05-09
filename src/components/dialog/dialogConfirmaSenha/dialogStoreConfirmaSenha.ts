@@ -1,6 +1,8 @@
 import { todoServices } from '@/services/todoService'
 import { usersServices } from '@/services/usersService'
 import { useSnackbarStore } from '@/components/notifications/notificationsStore'
+import { useDialogStoreTask } from '../dialogTask/dialogStoreTask'
+import { useDialogStoreUsers } from '../dialogUser/dialogStoreUsers'
 import { ref } from 'vue'
 
 const showDialogDialogConfirmarSenha = ref(false)
@@ -27,26 +29,28 @@ async function deleteUser(idUser: number) {
   closeDialogConfirmarSenha()
 }
 
-async function setarIdentificacaoOperacaoDelete(type: string, idRegister: number) {
+function setarIdentificacaoOperacaoDelete(type: string, idRegister: number) {
   identificarOperacaoDelete.value.escopoCrud = type
   identificarOperacaoDelete.value.idRegistro = idRegister
 }
 
 async function identificarDelete() {
   console.log('Escopo: ', identificarOperacaoDelete.value.escopoCrud)
-  console.log('idRegistro: ', identificarOperacaoDelete.value.idRegistro)
   switch (identificarOperacaoDelete.value.escopoCrud) {
     case 'user':
       await deleteUser(identificarOperacaoDelete.value.idRegistro)
-      await usersServices().getAllUsers()
+      useDialogStoreUsers().apiUsers.value = await usersServices().getAllUsers()
+      break
     case 'task':
       await deleteTask(identificarOperacaoDelete.value.idRegistro)
-      await todoServices().getAllTasks()
+      useDialogStoreTask().apiTasks.value = await todoServices().getAllTasks()
+      break
     default:
       useSnackbarStore().showSnackbar(
         'Unidentified resource! Unable to recognize object for removal',
         'red',
       )
+      break
   }
 }
 
