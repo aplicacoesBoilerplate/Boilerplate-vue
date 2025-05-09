@@ -11,7 +11,18 @@ async function getAllUsers(): Promise<Users[]> {
   }
 }
 
-async function getUserById(id: number): Promise<Users> {
+async function getUserById(id: number | string): Promise<Users> {
+  try {
+    const response = await http.get(`/users/${id}`)
+    useSnackbarStore().showSnackbar(`User ${id} found successfully!`, 'success')
+    return response.data
+  } catch (error) {
+    useSnackbarStore().showSnackbar('User not found!', 'red')
+    throw error
+  }
+}
+
+async function getUserByIdSemSnackBarSuccess(id: number | string): Promise<Users> {
   try {
     const response = await http.get(`/users/${id}`)
     return response.data
@@ -62,6 +73,7 @@ export function usersServices() {
   return {
     getAllUsers,
     getUserById,
+    getUserByIdSemSnackBarSuccess,
     createUser,
     updateUser,
     deleteUser,

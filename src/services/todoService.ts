@@ -10,7 +10,7 @@ async function getAllTasks(): Promise<Task[]> {
     const enriquecimentoComResponsavel = await Promise.all(
       tasks.map(async (task: Task) => {
         try {
-          const user = await usersServices().getUserById(task.idEmployee)
+          const user = await usersServices().getUserByIdSemSnackBarSuccess(task.idEmployee)
           return {
             ...task,
             employeeName: user.username,
@@ -23,16 +23,16 @@ async function getAllTasks(): Promise<Task[]> {
         }
       }),
     )
-
     return enriquecimentoComResponsavel
   } catch (error) {
     throw error
   }
 }
 
-async function getTaskById(id: number): Promise<Task> {
+async function getTaskById(id: number | string): Promise<Task> {
   try {
     const response = await http.get(`/todos/${id}`)
+    useSnackbarStore().showSnackbar(`Task ${id} found successfully!`, 'success')
     return response.data
   } catch (error) {
     useSnackbarStore().showSnackbar('Task not found!', 'red')

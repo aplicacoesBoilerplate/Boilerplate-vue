@@ -16,15 +16,18 @@
   </div>
 
   <v-card v-else class="mx-auto" max-width="700">
-    <v-card-title>
-      List Tasks
+
+    <v-card-title class="d-flex justify-space-between align-center">
+      <span class="text-h6">Task List</span>
+      <v-text-field clearable v-model="idSearch" density="compact" variant="outlined"
+        placeholder="Search task by register" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
     </v-card-title>
     <v-divider />
 
     <v-virtual-scroll :items="apiTasks" height="500" item-height="50">
       <template v-slot:default="{ item: task }">
-        <v-list-item :subtitle="`#${task.id} title: ${task.title}`"
-          :title="`Employee - ${task.employeeName.toUpperCase()}`">
+        <v-list-item :title="`Employee - ${task.employeeName.toUpperCase()}`"
+          :subtitle="`#${task.id} title: ${task.title}`">
 
           <template v-slot:prepend>
             <v-icon>mdi-list-box-outline</v-icon>
@@ -98,11 +101,12 @@ import DialogNewTask from '@/components/dialog/dialogTask/DialogTask.vue'
 import { useDialogStoreTask } from '@/components/dialog/dialogTask/dialogStoreTask'
 import { useDialogStoreConfirmarSenha } from '@/components/dialog/dialogConfirmaSenha/dialogStoreConfirmaSenha';
 import type { Task } from '@/models/TaskModel'
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { todoServices } from '@/services/todoService';
 
+const idSearch = ref<number | string>()
+const expandedTaskId = ref<number | null>(null)
 const hover = ref(false)
-const showInfo = ref(false)
 const dialogStoreTask = useDialogStoreTask()
 const todoService = todoServices()
 var apiTasks = dialogStoreTask.apiTasks;
@@ -139,19 +143,29 @@ async function deleteTask(idTask: number) {
   useDialogStoreConfirmarSenha().setarIdentificacaoOperacaoDelete('task', idTask)
 }
 
-const expandedTaskId = ref<number | null>(null)
-
 function toggleTask(id: number) {
   expandedTaskId.value = expandedTaskId.value === id ? null : id
 }
 
+async function getAllTasks() {
+  apiTasks.value = await todoService.getAllTasks();
+}
+
+async function getTaskById(idTask: number | string) {
+  const task = await todoService.getTaskById(idTask)
+  apiTasks.value = [task]
+}
+
 onMounted(async () => {
-  try {
-    apiTasks.value = await todoService.getAllTasks();
-  } catch (error) {
-    throw error
-  }
+  await getAllTasks()
 });
+
+watch(() => idSearch.value, (newValue) => {
+  if (newValue !== null && newValue !== '')
+    getTaskById(newValue!)
+  else
+    getAllTasks();
+})
 
 </script>
 

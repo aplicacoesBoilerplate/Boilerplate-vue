@@ -37,8 +37,8 @@
       "idEmployee": 8,
       "employeeName": "ADMINISTRADOR",
       "estimatedDelivery": "2025-05-14T03:00:00.000Z",
-      "dateDelivery": "",
-      "status": "Pending"
+      "dateDelivery": null,
+      "status": "Review"
     },
     {
       "id": "8393",
@@ -47,6 +47,36 @@
       "idEmployee": 8,
       "employeeName": "ADMINISTRADOR",
       "estimatedDelivery": "2025-05-15T03:00:00.000Z",
+      "dateDelivery": "",
+      "status": "Pending"
+    },
+    {
+      "id": "cc24",
+      "title": "Teste qualidade",
+      "description": "Verificando os componentes de task e user",
+      "idEmployee": 8,
+      "employeeName": "ADMINISTRADOR",
+      "estimatedDelivery": "2025-05-08T03:00:00.000Z",
+      "dateDelivery": "",
+      "status": "Pending"
+    },
+    {
+      "id": "f5f0",
+      "title": "Verificando progress bar",
+      "description": "Validação da barra de progresso da snackbar",
+      "idEmployee": 9,
+      "employeeName": "usuario",
+      "estimatedDelivery": "2025-05-16T03:00:00.000Z",
+      "dateDelivery": "",
+      "status": "Pending"
+    },
+    {
+      "id": "2ab5",
+      "title": "a",
+      "description": "a",
+      "idEmployee": 8,
+      "employeeName": "ADMINISTRADOR",
+      "estimatedDelivery": "2025-05-16T03:00:00.000Z",
       "dateDelivery": "",
       "status": "Pending"
     }

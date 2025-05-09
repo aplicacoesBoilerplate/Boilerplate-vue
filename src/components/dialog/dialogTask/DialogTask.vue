@@ -7,22 +7,22 @@
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="task.title" label="Title task*" :rules="[rules.required]"></v-text-field>
+              <v-text-field clearable v-model="task.title" label="Title task*" :rules="[rules.required]" />
             </v-col>
 
             <v-col cols="12" md="6">
               <v-text-field clearable v-model="task.description" hint="Explain what the task consists of"
-                persistent-hint label="Description*" :rules="[rules.required]"></v-text-field>
+                persistent-hint label="Description*" :rules="[rules.required]" />
             </v-col>
 
             <v-col cols="12" sm="6">
               <v-number-input clearable controlVariant="stacked" v-model="task.idEmployee" label="Responsible employee*"
-                :rules="[rules.required]" @change="dialogStoreTask.getEmployeeName(task)"></v-number-input>
+                :rules="[rules.required]" />
             </v-col>
 
             <v-col cols="12" sm="6">
               <v-text-field clearable controlVariant="stacked" v-model="dialogStoreTask.employeeName.value" disabled
-                label="Employee name" :rules="[rules.required]"></v-text-field>
+                label="Employee name" :rules="[rules.required]" />
             </v-col>
 
           </v-row>
@@ -44,8 +44,7 @@
           <v-row v-if="dialogStoreTask.isEditing.value">
             <v-col cols="12" class="d-flex justify-center">
               <v-autocomplete clearable v-model="task.status" label="Status task"
-                :items="['Pending', 'In progress', 'Test', 'Review', 'Rejected']">
-              </v-autocomplete>
+                :items="['Pending', 'In progress', 'Test', 'Review', 'Rejected']" />
             </v-col>
           </v-row>
 
@@ -57,7 +56,7 @@
         <v-divider></v-divider>
 
         <v-card-actions>
-          <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon>mdi-refresh</v-icon> Refresh</v-btn>
+          <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon>mdi-refresh</v-icon>Refresh</v-btn>
           <v-spacer></v-spacer>
 
           <v-btn color="red" variant="plain"
@@ -108,6 +107,12 @@ watch(dialogTask, (val) => {
   }
 });
 
+watch(() => task.value.idEmployee, (newValue) => {
+  if (newValue !== null) {
+    dialogStoreTask.getEmployeeName(task.value)
+  }
+})
+
 async function createNewTask() {
   const valid = await formRef.value.validate()
   if (!valid) return
@@ -119,7 +124,6 @@ async function createNewTask() {
 async function updateTask() {
   const valid = await formRef.value.validate()
   if (!valid) return
-
   await dialogStoreTask.updateTask(task.value);
   resetForm();
 }

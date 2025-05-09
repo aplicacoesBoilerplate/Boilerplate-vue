@@ -1,11 +1,9 @@
 <template>
   <div class="pb-2 custom-button-wrapper" @mouseenter="hover = true" @mouseleave="hover = false">
-
     <v-btn icon @click="openNewUser()" class="animated-btn">
       <v-icon :class="{ rotate: hover }" color="white">mdi-plus-circle-outline</v-icon>
     </v-btn>
     <span class="button-label" :class="{ visible: hover }">Create a new user</span>
-
   </div>
   <DialogUsers />
 
@@ -16,21 +14,29 @@
   </div>
 
   <v-card v-else class="mx-auto" max-width="700">
-    <v-card-title>
-      Company Employee List
+    <v-card-title class="d-flex justify-space-between align-center">
+      <span class="text-h6">Company Employees List</span>
+      <v-text-field clearable v-model="idSearch" density="compact" variant="outlined"
+        placeholder="Search employee by register" hide-details prepend-inner-icon="mdi-magnify"
+        style="max-width: 300px" />
     </v-card-title>
-
-    <v-divider></v-divider>
+    <v-divider />
 
     <v-virtual-scroll :items="apiUsers" height="500" item-height="50">
       <template v-slot:default="{ item: user }">
-        <v-list-item :subtitle="`#${user.permissao} email: ${user.email}`"
-          :title="`${user.id} - ${user.username.toUpperCase()}`">
+        <v-list-item :title="`${user.id} - ${user.username.toUpperCase()}`"
+          :subtitle="`#${user.permissao} email: ${user.email}`">
           <template v-slot:prepend>
             <v-icon>mdi-card-account-details-outline</v-icon>
           </template>
 
           <template v-slot:append>
+            <div class="pe-2">
+              <v-btn size="small" variant="elevated" color="dark" icon="mdi-information-outline"
+                @click="toggleUser(user.id!)">
+              </v-btn>
+            </div>
+
             <v-menu transition="scale-transition">
               <template v-slot:activator="{ props }">
                 <v-btn size="small" color="primary" v-bind="props" icon="mdi-dots-vertical" />
@@ -68,7 +74,31 @@
             </v-menu>
           </template>
         </v-list-item>
-        <v-divider></v-divider>
+        <v-expand-transition>
+          <div v-if="expandedUserId === user.id" class="custom-expansion-panel">
+            <v-row>
+              <v-col sm="3" md="2" class="d-flex justify-center">
+                <v-chip :color="user.ativo ? 'success' : 'red'">
+                  Active
+                </v-chip>
+              </v-col>
+
+              <v-col sm="3" md="2" class="d-flex justify-center">
+                <v-chip :color="!user.bloqueado ? 'success' : 'red'">
+                  Blocked
+                </v-chip>
+              </v-col>
+
+              <v-col sm="6" md="8" class="d-flex justify-center">
+                <strong>Permision:</strong>
+                <v-chip color="info">
+                  {{ user.permissao }}<br>
+                </v-chip>
+              </v-col>
+            </v-row>
+          </div>
+        </v-expand-transition>
+        <v-divider />
       </template>
     </v-virtual-scroll>
   </v-card>
@@ -79,13 +109,15 @@ import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue';
 import { useDialogStoreUsers } from '../components/dialog/dialogUser/dialogStoreUsers'
 import { useDialogStoreConfirmarSenha } from '@/components/dialog/dialogConfirmaSenha/dialogStoreConfirmaSenha';
 import type { Users } from '@/models/UsersModel';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { usersServices } from '@/services/usersService';
 
+const expandedUserId = ref<number | null>(null)
 const hover = ref(false)
 const usersDialog = useDialogStoreUsers()
 const userService = usersServices()
 const apiUsers = usersDialog.apiUsers
+const idSearch = ref<number | string>()
 
 async function getAllUsers() {
   apiUsers.value = await userService.getAllUsers()
@@ -112,12 +144,36 @@ function deleteUser(idUser: number) {
   useDialogStoreConfirmarSenha().setarIdentificacaoOperacaoDelete('user', idUser)
 }
 
+function toggleUser(id: number) {
+  expandedUserId.value = expandedUserId.value === id ? null : id
+}
+
+async function getUserById(idUser: number | string) {
+  const user = await userService.getUserById(idUser)
+  apiUsers.value = [user]
+}
+
 onMounted(async () => {
-  try {
-    await getAllUsers()
-  } catch (error) {
-    throw error
-  }
+  await getAllUsers()
+})
+
+watch(() => idSearch.value, (newValue) => {
+  if (newValue !== null && newValue !== '')
+    getUserById(newValue!)
+  else
+    getAllUsers()
 })
 
 </script>
+
+<style scoped>
+.custom-expansion-panel {
+  margin: 0.8rem;
+}
+
+.custom-expansion-panel,
+strong {
+  padding-right: 0.5rem;
+  text-decoration: none;
+}
+</style>
