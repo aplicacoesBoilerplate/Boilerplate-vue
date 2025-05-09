@@ -1,63 +1,57 @@
 <template>
-  <v-app>
-    <h1 class="d-flex justify-center mb-6">Login</h1>
-    <div>
-      <v-form v-model="valid">
+  <div>
+    <v-card class="mx-auto" width="400">
+      <v-card-title class="d-flex justify-center pt-5">
+        Login
+      </v-card-title>
+      <v-form ref="formRef" v-model="formIsValid">
         <v-container class="d-flex justify-center mb-6">
-          <v-col cols="6">
-            <v-row>
+          <v-col cols="12">
+            <v-row dense>
               <v-col cols="12">
-                <v-text-field clearable v-model="email" :rules="emailRules" label="E-mail" required></v-text-field>
+                <v-text-field clearable v-model="email" :rules="[rules.required, rules.emailFormat]" label="E-mail"
+                  required />
               </v-col>
 
               <v-col cols="12">
-                <v-text-field clearable v-model="password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                  :rules="[rulesPassword.required, rulesPassword.min]" :type="show1 ? 'text' : 'password'"
-                  hint="At least 8 characters" label="Password" name="input-10-1" counter
-                  @click:append="show1 = !show1"></v-text-field>
+                <v-text-field clearable v-model="password" :rules="[rules.required]"
+                  :type="showPassword ? 'text' : 'password'" label="Password">
+                  <template v-slot:append-inner>
+                    <v-btn :icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword = !showPassword"
+                      variant="text" />
+                  </template>
+                </v-text-field>
               </v-col>
 
               <v-col cols="12">
                 <RouterLink to="/dashboard" custom v-slot="{ navigate }">
-                  <v-btn class="mt-2" type="submit" block @click="navigate">Login
-                    <v-icon color="success">mdi-check-circle-outline</v-icon>
+                  <v-btn class="mt-2" type="submit" block @click="navigate" :disabled="!formIsValid"
+                    color="success">Login
                   </v-btn>
                 </RouterLink>
-
               </v-col>
             </v-row>
           </v-col>
         </v-container>
       </v-form>
-    </div>
-  </v-app>
+    </v-card>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const valid = ref(false)
+const formRef = ref()
+const formIsValid = ref(false)
+const showPassword = ref(false)
 const email = ref('')
-const show1 = ref(false)
 const password = ref('')
 
-// Regras de validação para e-mail
-const emailRules = [
-  (value: any) => {
-    if (value) return true
-    return 'E-mail is required.'
-  },
-  (value: string) => {
+const rules = {
+  required: (v: string | number) => !!v || 'Required field',
+  emailFormat: (value: string) => {
     if (/.+@.+\..+/.test(value)) return true
     return 'E-mail must be valid.'
-  },
-]
-
-// Regras de validação para senha
-const rulesPassword = {
-  required: (value: any) => !!value || 'Required.',
-  min: (v: string | any[]) => v.length >= 8 || 'Min 8 characters',
-  emailMatch: () => (`The email and password you entered don't match`),
+  }
 }
-
 </script>

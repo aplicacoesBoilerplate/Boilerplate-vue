@@ -18,8 +18,7 @@
               </v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="confirmOperation.confirmPassword"
-                :rules="[rules.required, rules.equals, rules.min, rules.max]"
+              <v-text-field clearable v-model="confirmOperation.confirmPassword" :rules="[rules.required, rules.equals]"
                 :type="showPassword2 ? 'text' : 'password'" hint="At least 8 characters" label="Confirm your password*"
                 name="input-confirmPassword" counter>
 

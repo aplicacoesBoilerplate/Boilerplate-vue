@@ -16,6 +16,7 @@ async function getUserById(id: number): Promise<Users> {
     const response = await http.get(`/users/${id}`)
     return response.data
   } catch (error) {
+    useSnackbarStore().showSnackbar('User not found!', 'red')
     throw error
   }
 }
@@ -33,6 +34,7 @@ async function createUser(newUser: Users): Promise<Users> {
 }
 
 async function updateUser(user: Users): Promise<Users> {
+  await getUserById(user.id!)
   try {
     const response = await http.patch(`/users/${user.id}`, user)
     await getAllUsers()
@@ -45,6 +47,7 @@ async function updateUser(user: Users): Promise<Users> {
 }
 
 async function deleteUser(id: number): Promise<void> {
+  await getUserById(id)
   try {
     await http.delete(`/users/${id}`)
     await getAllUsers()

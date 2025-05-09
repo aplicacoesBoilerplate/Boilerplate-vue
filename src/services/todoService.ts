@@ -7,7 +7,6 @@ async function getAllTasks(): Promise<Task[]> {
   try {
     const response = await http.get('/todos')
     const tasks = response.data
-
     const enriquecimentoComResponsavel = await Promise.all(
       tasks.map(async (task: Task) => {
         try {
@@ -36,6 +35,7 @@ async function getTaskById(id: number): Promise<Task> {
     const response = await http.get(`/todos/${id}`)
     return response.data
   } catch (error) {
+    useSnackbarStore().showSnackbar('Task not found!', 'red')
     throw error
   }
 }
@@ -60,6 +60,7 @@ async function createTask(task: Omit<Task, 'id'>): Promise<Task> {
 }
 
 async function updateTask(task: Task): Promise<Task> {
+  await getTaskById(task.id!)
   if (task.dateDelivery != null && task.dateDelivery != '') task.status = 'Completed'
   try {
     const user = await usersServices().getUserById(task.idEmployee)
@@ -80,6 +81,7 @@ async function updateTask(task: Task): Promise<Task> {
 }
 
 async function deleteTask(id: number): Promise<void> {
+  await getTaskById(id)
   try {
     await http.delete(`/todos/${id}`)
     await getAllTasks()
