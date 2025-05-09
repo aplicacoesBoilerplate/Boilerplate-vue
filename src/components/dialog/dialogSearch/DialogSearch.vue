@@ -1,17 +1,19 @@
 <template>
   <v-dialog v-model="dialogSearch" max-width="500">
-    <v-card title="What are you looking for?">
-      <v-card-text>
-        <v-text-field hint="Ex: task status, accountable" v-model="search" label="Search..."
-          prepend-inner-icon="mdi-magnify" clearable />
-      </v-card-text>
+    <v-form ref="formRef" @submit.prevent="submitForm()">
+      <v-card title="What are you looking for?">
+        <v-card-text>
+          <v-text-field hint="Ex: task status, accountable" v-model="search" label="Search..."
+            prepend-inner-icon="mdi-magnify" clearable />
+        </v-card-text>
 
-      <v-card-actions>
-        <v-spacer />
-        <v-btn text="Close" color="red" variant="outlined" @click="resetForm()" />
-        <v-btn text="Confirm" color="teal-darken-1" variant="outlined" @click="buscar()" />
-      </v-card-actions>
-    </v-card>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text="Close" color="red" variant="outlined" @click="resetForm()" />
+          <v-btn text="Confirm" color="teal-darken-1" variant="outlined" type="submit" />
+        </v-card-actions>
+      </v-card>
+    </v-form>
   </v-dialog>
 </template>
 
@@ -39,7 +41,7 @@ function resetForm() {
 
 let search = ref('')
 
-function buscar() {
+function submitForm() {
   dialogStoreSearch.search(search.value)
   resetForm()
 }

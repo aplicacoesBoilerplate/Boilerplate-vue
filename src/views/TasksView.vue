@@ -1,8 +1,11 @@
 <template>
-  <div class="pb-2">
-    <v-btn icon @click="openNewTask()">
-      <v-icon color="white">mdi-plus-circle-outline</v-icon>
+  <div class="pb-2 custom-button-wrapper" @mouseenter="hover = true" @mouseleave="hover = false">
+
+    <v-btn icon @click="openNewTask()" class="animated-btn">
+      <v-icon :class="{ rotate: hover }" color="white">mdi-plus-circle-outline</v-icon>
     </v-btn>
+    <span class="button-label" :class="{ visible: hover }">Create a new task</span>
+
   </div>
   <DialogNewTask />
 
@@ -102,10 +105,12 @@
 <script setup lang=ts>
 import DialogNewTask from '@/components/dialog/dialogTask/DialogTask.vue'
 import { useDialogStoreTask } from '@/components/dialog/dialogTask/dialogStoreTask'
+import { useDialogStoreConfirmarSenha } from '@/components/dialog/dialogConfirmaSenha/dialogStoreConfirmaSenha';
 import type { Task } from '@/models/TaskModel'
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { todoServices } from '@/services/todoService';
 
+const hover = ref(false)
 const dialogStoreTask = useDialogStoreTask()
 const todoService = todoServices()
 var apiTasks = dialogStoreTask.apiTasks;
@@ -137,9 +142,9 @@ function completeFormEditTaskDialog(task: Task) {
   dialogStoreTask.completeFormEditTaskDialog(task)
 }
 
-async function deleteTask(id: number) {
-  await dialogStoreTask.deleteTask(id);
-  apiTasks.value = await todoService.getAllTasks();
+async function deleteTask(idTask: number) {
+  useDialogStoreConfirmarSenha().openDialogConfirmarSenha()
+  useDialogStoreConfirmarSenha().setarIdentificacaoOperacaoDelete('task', idTask)
 }
 
 onMounted(async () => {
@@ -149,6 +154,7 @@ onMounted(async () => {
     throw error
   }
 });
+
 </script>
 
 <style scoped>
