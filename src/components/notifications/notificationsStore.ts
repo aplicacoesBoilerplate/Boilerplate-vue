@@ -7,9 +7,13 @@ export const useSnackbarStore = defineStore('snackbar', () => {
   const color = ref('success')
 
   function showSnackbar(msg: string, colorType: string = 'success') {
-    message.value = msg
-    color.value = colorType
-    visible.value = true
+    visible.value = false
+
+    setTimeout(() => {
+      message.value = msg
+      color.value = colorType
+      visible.value = true
+    }, 50)
   }
 
   function hideSnackbar() {

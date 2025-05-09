@@ -75,7 +75,7 @@ function openSearch() {
 const pages = ref([
   { title: 'Home', path: '/dashboard', icon: 'mdi-home-outline' },
   { title: 'About', path: '/about', icon: 'mdi-information-outline' },
-  { title: 'Regiter', path: '/register', icon: 'mdi-account-plus-outline' },
+
 ])
 
 const optionConfig = ref([

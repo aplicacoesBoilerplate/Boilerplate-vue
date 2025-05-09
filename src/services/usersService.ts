@@ -11,11 +11,23 @@ async function getAllUsers(): Promise<Users[]> {
   }
 }
 
-async function getUserById(id: number): Promise<Users> {
+async function getUserById(id: number | string): Promise<Users> {
+  try {
+    const response = await http.get(`/users/${id}`)
+    useSnackbarStore().showSnackbar(`User ${id} found successfully!`, 'success')
+    return response.data
+  } catch (error) {
+    useSnackbarStore().showSnackbar('User not found!', 'red')
+    throw error
+  }
+}
+
+async function getUserByIdSemSnackBarSuccess(id: number | string): Promise<Users> {
   try {
     const response = await http.get(`/users/${id}`)
     return response.data
   } catch (error) {
+    useSnackbarStore().showSnackbar('User not found!', 'red')
     throw error
   }
 }
@@ -33,6 +45,7 @@ async function createUser(newUser: Users): Promise<Users> {
 }
 
 async function updateUser(user: Users): Promise<Users> {
+  await getUserById(user.id!)
   try {
     const response = await http.patch(`/users/${user.id}`, user)
     await getAllUsers()
@@ -45,6 +58,7 @@ async function updateUser(user: Users): Promise<Users> {
 }
 
 async function deleteUser(id: number): Promise<void> {
+  await getUserById(id)
   try {
     await http.delete(`/users/${id}`)
     await getAllUsers()
@@ -59,6 +73,7 @@ export function usersServices() {
   return {
     getAllUsers,
     getUserById,
+    getUserByIdSemSnackBarSuccess,
     createUser,
     updateUser,
     deleteUser,
