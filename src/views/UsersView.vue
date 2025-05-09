@@ -10,11 +10,9 @@
   <DialogUsers />
 
   <div v-if="apiUsers.length == 0" class="pt-4">
-
     <v-alert text="Before viewing the tasks, you must register them and they will then be available below."
       title="No tasks registered!" type="info" variant="tonal">
     </v-alert>
-
   </div>
 
   <v-card v-else class="mx-auto" max-width="700">
@@ -24,7 +22,7 @@
 
     <v-divider></v-divider>
 
-    <v-virtual-scroll :items="apiUsers" height="320" item-height="48">
+    <v-virtual-scroll :items="apiUsers" height="500" item-height="50">
       <template v-slot:default="{ item: user }">
         <v-list-item :subtitle="`#${user.permissao} email: ${user.email}`"
           :title="`${user.id} - ${user.username.toUpperCase()}`">
