@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="showDialogUser" max-width="650">
 
-    <v-form ref="formRef" v-model="formIsValid">
+    <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
       <v-card :prepend-icon="dialogStoreUsers.isEditing.value ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
         :title="dialogStoreUsers.isEditing.value ? `Edit user: ${user.id}` : 'Create a new user'">
         <v-card-text>
@@ -57,7 +57,7 @@
 
           <v-btn color="red" variant="plain" @click="resetForm()"><v-icon>mdi-close</v-icon>Close</v-btn>
           <v-btn color="success" variant="tonal" :disabled="!formIsValid"
-            @click="submitForm()"><v-icon>mdi-content-save-check</v-icon>Save</v-btn>
+            type="submit"><v-icon>mdi-content-save-check</v-icon>Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-form>

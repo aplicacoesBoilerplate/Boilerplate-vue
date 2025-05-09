@@ -5,7 +5,7 @@
       "title": "First",
       "description": "Teste",
       "idEmployee": 8,
-      "employeeName": "admin",
+      "employeeName": "ADMINISTRADOR",
       "estimatedDelivery": "2025-04-25",
       "dateDelivery": "",
       "status": "Pending"
@@ -26,16 +26,6 @@
       "description": "8",
       "idEmployee": 8,
       "employeeName": "Usuário não encontrado",
-      "estimatedDelivery": "2025-05-08T03:00:00.000Z",
-      "dateDelivery": "",
-      "status": "Pending"
-    },
-    {
-      "id": "7c40",
-      "title": "8",
-      "description": "8",
-      "idEmployee": 8,
-      "employeeName": "admin",
       "estimatedDelivery": "2025-05-08T03:00:00.000Z",
       "dateDelivery": "",
       "status": "Pending"

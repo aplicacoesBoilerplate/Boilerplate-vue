@@ -84,3 +84,44 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/*
+  Todo o código abaixo é referente
+  a animação do botão de create
+*/
+.custom-button-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.animated-btn {
+  transition: transform 0.3s ease;
+  z-index: 1;
+}
+
+.rotate {
+  transform: rotate(180deg);
+  transition: transform 0.4s ease;
+}
+
+.button-label {
+  margin-left: 10px;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  background-color: #1976d2;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.button-label.visible {
+  opacity: 1;
+  transform: translateX(0);
+}

@@ -1,8 +1,11 @@
 <template>
-  <div class="pb-2">
-    <v-btn icon @click="openNewUser()">
-      <v-icon color="white">mdi-plus-circle-outline</v-icon>
+  <div class="pb-2 custom-button-wrapper" @mouseenter="hover = true" @mouseleave="hover = false">
+
+    <v-btn icon @click="openNewUser()" class="animated-btn">
+      <v-icon :class="{ rotate: hover }" color="white">mdi-plus-circle-outline</v-icon>
     </v-btn>
+    <span class="button-label" :class="{ visible: hover }">Create a new user</span>
+
   </div>
   <DialogUsers />
 
@@ -74,13 +77,14 @@
 </template>
 
 <script setup lang="ts">
-import { usersServices } from '@/services/usersService';
-import { onMounted } from 'vue';
-import { useDialogStoreUsers } from '../components/dialog/dialogUser/dialogStoreUsers'
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue';
+import { useDialogStoreUsers } from '../components/dialog/dialogUser/dialogStoreUsers'
 import { useDialogStoreConfirmarSenha } from '@/components/dialog/dialogConfirmaSenha/dialogStoreConfirmaSenha';
 import type { Users } from '@/models/UsersModel';
+import { onMounted, ref } from 'vue';
+import { usersServices } from '@/services/usersService';
 
+const hover = ref(false)
 const usersDialog = useDialogStoreUsers()
 const userService = usersServices()
 const apiUsers = usersDialog.apiUsers

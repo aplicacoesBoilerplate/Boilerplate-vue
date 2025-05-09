@@ -7,10 +7,12 @@
             <v-list-subheader>ROUTERS</v-list-subheader>
 
             <v-list-item color="primary">
-              <v-btn class="menu-btn" color="black" block @click="openNewTask()">
-                <v-icon class="mr-2" color="white">mdi-plus-circle-outline</v-icon>
-                <span class="text-white">Create a new task</span>
-              </v-btn>
+              <div class="pb-2 custom-button-wrapper" @mouseenter="hover = true" @mouseleave="hover = false">
+                <v-btn class="menu-btn" color="black" block @click="openNewTask()">
+                  <v-icon :class="{ rotate: hover }" class="mr-2" color="white">mdi-plus-circle-outline</v-icon>
+                  <span class="text-white">Create a new task</span>
+                </v-btn>
+              </div>
             </v-list-item>
 
             <v-list-item v-for="router in routerOption" :key="router.id" color="primary">
@@ -43,6 +45,7 @@ import { computed, ref } from 'vue'
 import DialogNewTask from './dialog/dialogTask/DialogTask.vue'
 import { useDialogStoreTask } from './dialog/dialogTask/dialogStoreTask'
 
+const hover = ref(false)
 const dialogStoreNewTask = useDialogStoreTask()
 
 function openNewTask() {
