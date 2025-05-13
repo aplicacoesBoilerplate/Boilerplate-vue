@@ -7,7 +7,7 @@
   </div>
   <DialogUsers />
 
-  <div v-if="apiUsers.length == 0" class="pt-4">
+  <div v-if="apiUsers?.totalRegistros == 0" class="pt-4">
     <v-alert text="Before viewing the tasks, you must register them and they will then be available below."
       title="No tasks registered!" type="info" variant="tonal">
     </v-alert>
@@ -22,9 +22,9 @@
     </v-card-title>
     <v-divider />
 
-    <v-virtual-scroll :items="apiUsers" height="500" item-height="50">
+    <v-virtual-scroll :items="apiUsers?.registros" height="500" item-height="50">
       <template v-slot:default="{ item: user }">
-        <v-list-item :title="`${user.id} - ${user.username.toUpperCase()}`"
+        <v-list-item :title="`${user.idUsuario} - ${user.nome.toUpperCase()}`"
           :subtitle="`#${user.permissao} email: ${user.email}`">
           <template v-slot:prepend>
             <v-icon>mdi-card-account-details-outline</v-icon>
@@ -33,7 +33,7 @@
           <template v-slot:append>
             <div class="pe-2">
               <v-btn size="small" variant="elevated" color="dark" icon="mdi-information-outline"
-                @click="toggleUser(user.id!)">
+                @click="toggleUser(user.idUsuario!)">
               </v-btn>
             </div>
 
@@ -56,8 +56,8 @@
 
                     <span class="pr-2" />
 
-                    <v-btn :icon="user.bloqueado ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline'" size="x-small"
-                      variant="tonal" :color="user.bloqueado ? 'red' : 'success'"
+                    <v-btn :icon="user.contaBloqueada ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline'"
+                      size="x-small" variant="tonal" :color="user.contaBloqueada ? 'red' : 'success'"
                       @click="toggleBloqueioUsuario(user)" />
                     <span class="pr-2" />
 
@@ -67,7 +67,7 @@
                     <span class="pr-2" />
 
                     <v-btn icon="mdi-delete-outline" size="x-small" variant="tonal" color="red"
-                      @click="deleteUser(user.id!)" />
+                      @click="deleteUser(user.idUsuario!)" />
                   </v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -75,7 +75,7 @@
           </template>
         </v-list-item>
         <v-expand-transition>
-          <div v-if="expandedUserId === user.id" class="custom-expansion-panel">
+          <div v-if="expandedUserId === user.idUsuario" class="custom-expansion-panel">
             <v-row>
               <v-col sm="3" md="2" class="d-flex justify-center">
                 <v-chip :color="user.ativo ? 'success' : 'red'">
@@ -84,7 +84,7 @@
               </v-col>
 
               <v-col sm="3" md="2" class="d-flex justify-center">
-                <v-chip :color="!user.bloqueado ? 'success' : 'red'">
+                <v-chip :color="!user.contaBloqueada ? 'success' : 'red'">
                   Blocked
                 </v-chip>
               </v-col>
@@ -102,15 +102,18 @@
       </template>
     </v-virtual-scroll>
   </v-card>
+  <Paginator />
 </template>
 
 <script setup lang="ts">
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue';
 import { useDialogStoreUsers } from '../components/dialog/dialogUser/dialogStoreUsers'
 import { useDialogStoreConfirmarSenha } from '@/components/dialog/dialogConfirmaSenha/dialogStoreConfirmaSenha';
-import type { Users } from '@/models/UsersModel';
 import { onMounted, ref, watch } from 'vue';
 import { usersServices } from '@/services/usersService';
+import Paginator from '@/components/paginator/Paginator.vue'
+import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
+import { usePaginator } from '@/components/paginator/paginatorStore';
 
 const expandedUserId = ref<number | null>(null)
 const hover = ref(false)
@@ -118,6 +121,7 @@ const usersDialog = useDialogStoreUsers()
 const userService = usersServices()
 const apiUsers = usersDialog.apiUsers
 const idSearch = ref<number | string>()
+const paginator = usePaginator()
 
 async function getAllUsers() {
   apiUsers.value = await userService.getAllUsers()
@@ -127,15 +131,15 @@ function openNewUser() {
   usersDialog.startCreatingNewUser()
 }
 
-function completeFormEditUserDialog(user: Users) {
+function completeFormEditUserDialog(user: UsuarioConsulta) {
   usersDialog.completeFormEditUserDialog(user)
 }
 
-async function toggleBloqueioUsuario(user: Users) {
+async function toggleBloqueioUsuario(user: UsuarioConsulta) {
   await usersDialog.toggleBloqueioUsuario(user)
 }
 
-async function toggleUsuarioAtivo(user: Users) {
+async function toggleUsuarioAtivo(user: UsuarioConsulta) {
   await usersDialog.toggleUsuarioAtivo(user)
 }
 
@@ -150,11 +154,18 @@ function toggleUser(id: number) {
 
 async function getUserById(idUser: number | string) {
   const user = await userService.getUserById(idUser)
-  apiUsers.value = [user]
+  apiUsers.value = {
+    limite: 1,
+    paginaAtual: 1,
+    totalPaginas: 1,
+    totalRegistros: 1,
+    registros: [user]
+  }
 }
 
 onMounted(async () => {
   await getAllUsers()
+  paginator.carregarFiltrosDaAPI(apiUsers.value!)
 })
 
 watch(() => idSearch.value, (newValue) => {
@@ -162,6 +173,10 @@ watch(() => idSearch.value, (newValue) => {
     getUserById(newValue!)
   else
     getAllUsers()
+})
+
+watch(() => paginator.filtrosPaginator.value.limite, (newValue) => {
+  getAllUsers()
 })
 
 </script>

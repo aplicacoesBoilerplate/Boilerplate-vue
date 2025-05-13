@@ -27,12 +27,10 @@
         </v-card>
       </div>
       <div class="mt-auto pa-4">
-        <RouterLink to="/" custom v-slot="{ navigate }">
-          <v-btn class="menu-btn" color="black" block @click="navigate">
-            <v-icon class="mr-2" color="white">mdi-logout</v-icon>
-            <span class="text-white">Logout</span>
-          </v-btn>
-        </RouterLink>
+        <v-btn class="menu-btn" color="black" block @click="logout()">
+          <v-icon class="mr-2" color="white">mdi-logout</v-icon>
+          <span class="text-white">Logout</span>
+        </v-btn>
       </div>
     </div>
   </v-navigation-drawer>
@@ -44,9 +42,13 @@
 import { computed, ref } from 'vue'
 import DialogNewTask from './dialog/dialogTask/DialogTask.vue'
 import { useDialogStoreTask } from './dialog/dialogTask/dialogStoreTask'
+import { authServices } from '@/services/authService'
+import router from '@/router'
+import { useRouter } from 'vue-router'
 
 const hover = ref(false)
 const dialogStoreNewTask = useDialogStoreTask()
+const redirectRouter = useRouter()
 
 function openNewTask() {
   dialogStoreNewTask.startCreatingNewTask()
@@ -73,4 +75,11 @@ const routerOption = ref([
   { id: '2', icon: 'mdi-account-group', path: '/users', title: 'View all users' },
 ])
 
+// Service do auth para logout
+const authService = authServices()
+
+function logout() {
+  authService.logout()
+  redirectRouter.push('/');
+}
 </script>

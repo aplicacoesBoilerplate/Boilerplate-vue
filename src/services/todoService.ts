@@ -25,6 +25,7 @@ async function getAllTasks(): Promise<Task[]> {
     )
     return enriquecimentoComResponsavel
   } catch (error) {
+    useSnackbarStore().showSnackbar(`Error querying data! ${error}`, 'red')
     throw error
   }
 }

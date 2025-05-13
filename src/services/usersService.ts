@@ -1,19 +1,29 @@
 import http from '../plugins/axios'
-import type { Users } from '@/models/UsersModel'
 import { useSnackbarStore } from '@/components/notifications/notificationsStore'
+import { useUtils } from './utilsServices'
+import type { FiltroPaginacao } from '@/models/FiltersModels'
+import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
+import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
+import { usePaginator } from '@/components/paginator/paginatorStore'
 
-async function getAllUsers(): Promise<Users[]> {
+const filtrosPaginator = usePaginator().filtrosPaginator
+
+async function getAllUsers(): Promise<HeaderPaginatorModel<UsuarioConsulta>> {
   try {
-    const response = await http.get('/users')
+    const cleanedFilters = useUtils().removeUndefined(filtrosPaginator.value)
+    const response = await http.get('/usuarios/consulta', {
+      params: cleanedFilters,
+    })
+
     return response.data
   } catch (error) {
     throw error
   }
 }
 
-async function getUserById(id: number | string): Promise<Users> {
+async function getUserById(id: number | string): Promise<UsuarioConsulta> {
   try {
-    const response = await http.get(`/users/${id}`)
+    const response = await http.get(`/usuarios/${id}`)
     useSnackbarStore().showSnackbar(`User ${id} found successfully!`, 'success')
     return response.data
   } catch (error) {
@@ -22,7 +32,7 @@ async function getUserById(id: number | string): Promise<Users> {
   }
 }
 
-async function getUserByIdSemSnackBarSuccess(id: number | string): Promise<Users> {
+async function getUserByIdSemSnackBarSuccess(id: number | string): Promise<UsuarioConsulta> {
   try {
     const response = await http.get(`/users/${id}`)
     return response.data
@@ -32,9 +42,9 @@ async function getUserByIdSemSnackBarSuccess(id: number | string): Promise<Users
   }
 }
 
-async function createUser(newUser: Users): Promise<Users> {
+async function createUser(newUser: UsuarioConsulta): Promise<UsuarioConsulta> {
   try {
-    const response = await http.post('/users', newUser)
+    const response = await http.post('/usuarios', newUser)
     await getAllUsers()
     useSnackbarStore().showSnackbar('User created successfully!', 'success')
     return response.data
@@ -44,10 +54,10 @@ async function createUser(newUser: Users): Promise<Users> {
   }
 }
 
-async function updateUser(user: Users): Promise<Users> {
-  await getUserById(user.id!)
+async function updateUser(user: UsuarioConsulta): Promise<UsuarioConsulta> {
+  await getUserById(user.idUsuario!)
   try {
-    const response = await http.patch(`/users/${user.id}`, user)
+    const response = await http.patch(`/usuarios/${user.idUsuario}`, user)
     await getAllUsers()
     useSnackbarStore().showSnackbar('Record updated successfully!', 'success')
     return response.data
@@ -60,7 +70,7 @@ async function updateUser(user: Users): Promise<Users> {
 async function deleteUser(id: number): Promise<void> {
   await getUserById(id)
   try {
-    await http.delete(`/users/${id}`)
+    await http.delete(`/usuarios/${id}`)
     await getAllUsers()
     useSnackbarStore().showSnackbar('Record deleted successfully!', 'success')
   } catch (error) {

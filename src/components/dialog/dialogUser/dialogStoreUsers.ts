@@ -1,12 +1,14 @@
+import { type HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 import type { Users } from '@/models/UsersModel'
+import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
 import { usersServices } from '@/services/usersService'
 import { ref } from 'vue'
 
 const showDialogUsers = ref(false)
-const userToEdit = ref<Users | null>(null)
+const userToEdit = ref<UsuarioConsulta | null>(null)
 const userService = usersServices()
 const emptyUser: Users = {
-  username: '',
+  nome: '',
   email: '',
   senha: '',
   permissao: 'USER',
@@ -14,7 +16,7 @@ const emptyUser: Users = {
   ativo: false,
 }
 
-var apiUsers = ref<Users[]>([])
+var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>()
 var isEditing = ref<Boolean>()
 
 function openUserDialog() {
@@ -34,28 +36,28 @@ function closeUserDialog() {
   isEditing.value = false
 }
 
-async function createNewUser(newUser: Users) {
+async function createNewUser(newUser: UsuarioConsulta) {
   isEditing.value = false
   await userService.createUser(newUser)
   apiUsers.value = await userService.getAllUsers()
   closeUserDialog()
 }
 
-async function updateUser(user: Users) {
+async function updateUser(user: UsuarioConsulta) {
   isEditing.value = true
   await userService.updateUser(user)
   apiUsers.value = await userService.getAllUsers()
   closeUserDialog()
 }
 
-async function toggleBloqueioUsuario(user: Users) {
+async function toggleBloqueioUsuario(user: UsuarioConsulta) {
   userToEdit.value = { ...user }
-  userToEdit.value.bloqueado = !userToEdit.value.bloqueado
+  userToEdit.value.contaBloqueada = !userToEdit.value.contaBloqueada
   await userService.updateUser(userToEdit.value)
   apiUsers.value = await userService.getAllUsers()
 }
 
-async function toggleUsuarioAtivo(user: Users) {
+async function toggleUsuarioAtivo(user: UsuarioConsulta) {
   userToEdit.value = { ...user }
   userToEdit.value.ativo = !userToEdit.value.ativo
   await userService.updateUser(userToEdit.value)
@@ -67,7 +69,7 @@ async function deleteUser(id: number) {
   closeUserDialog()
 }
 
-function completeFormEditUserDialog(user: Users) {
+function completeFormEditUserDialog(user: UsuarioConsulta) {
   isEditing.value = true
   userToEdit.value = { ...user }
   showDialogUsers.value = true
