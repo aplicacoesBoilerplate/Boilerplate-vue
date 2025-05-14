@@ -1,7 +1,7 @@
 export interface HeaderPaginatorModel<T> {
   limite: number
-  paginaAtual: number
+  offset: number
   totalPaginas: number
   totalRegistros: number
-  registros: Array<T>
+  registros?: Array<T>
 }

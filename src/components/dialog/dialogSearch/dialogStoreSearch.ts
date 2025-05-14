@@ -11,7 +11,7 @@ function closeSearchDialog() {
 }
 
 function search(search: string) {
-  console.log('search: ', search)
+  
 }
 
 export function useDialogStoreSearch() {

@@ -1,3 +1,5 @@
+import { useSnackbarStore } from '@/components/notifications/notificationsStore'
+import router from '@/router'
 import axios from 'axios'
 
 const http = axios.create({
@@ -15,5 +17,21 @@ http.interceptors.request.use((config) => {
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
+
+http.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const snackbar = useSnackbarStore()
+
+    if (error.response && error.response.status === 401) {
+      snackbar.showSnackbar('Session expired. Please log in again.', 'red')
+
+      sessionStorage.removeItem('token')
+      router.push('/')
+    }
+
+    return Promise.reject(error)
+  },
+)
 
 export default http

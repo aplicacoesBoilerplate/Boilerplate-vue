@@ -34,3 +34,18 @@ export interface UsuarioConsulta {
   senhaExpirada: boolean
   tentativasFalhas: number
 }
+
+// Informações confidenciais do usuário
+export interface UsuarioDetais {
+  usuario: UsuarioConsulta // Dados padrão do usuário
+  enabled: boolean // Ativo com o valor invertido
+  accountNonLocked: boolean // Bloqueado com o valor invertido
+  username: string // E-mail
+  authorities: [ // Lista de roles com base na permissão
+    {
+      authority: string
+    },
+  ]
+  accountNonExpired: boolean // Conta expirada
+  credentialsNonExpired: boolean // Credenciais expiradas
+}

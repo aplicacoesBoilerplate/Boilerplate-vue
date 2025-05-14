@@ -16,6 +16,9 @@
   <v-card v-else class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Company Employees List</span>
+      <v-btn title="Order" variant="outlined" color="primary" density="compact" @click="toggleOrderBy()">
+        <v-icon>{{ paginator.filtrosPaginator.value.orderBy! == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up"
+        }}</v-icon></v-btn>
       <v-text-field clearable v-model="idSearch" density="compact" variant="outlined"
         placeholder="Search employee by register" hide-details prepend-inner-icon="mdi-magnify"
         style="max-width: 300px" />
@@ -41,7 +44,6 @@
               <template v-slot:activator="{ props }">
                 <v-btn size="small" color="primary" v-bind="props" icon="mdi-dots-vertical" />
               </template>
-
               <v-list>
                 <v-list-item>
                   <v-list-item-title>
@@ -53,7 +55,6 @@
                       <v-btn icon="mdi-format-list-bulleted" size="x-small" variant="tonal" color="primary"
                         @click="navigate" />
                     </RouterLink>
-
                     <span class="pr-2" />
 
                     <v-btn :icon="user.contaBloqueada ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline'"
@@ -67,7 +68,7 @@
                     <span class="pr-2" />
 
                     <v-btn icon="mdi-delete-outline" size="x-small" variant="tonal" color="red"
-                      @click="deleteUser(user.idUsuario!)" />
+                      @click="deleteUser(user.idUsuario!)" :disabled="user.idUsuario == 1" />
                   </v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -156,7 +157,7 @@ async function getUserById(idUser: number | string) {
   const user = await userService.getUserById(idUser)
   apiUsers.value = {
     limite: 1,
-    paginaAtual: 1,
+    offset: 1,
     totalPaginas: 1,
     totalRegistros: 1,
     registros: [user]
@@ -175,9 +176,13 @@ watch(() => idSearch.value, (newValue) => {
     getAllUsers()
 })
 
-watch(() => paginator.filtrosPaginator.value.limite, (newValue) => {
+watch(() => paginator.filtrosPaginator.value, () => {
   getAllUsers()
-})
+}, { deep: true })
+
+function toggleOrderBy() {
+  paginator.toggleOrderBy()
+}
 
 </script>
 

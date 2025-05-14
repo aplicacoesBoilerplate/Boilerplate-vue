@@ -42,7 +42,6 @@ import { type LoginModel } from '@/models/authModels/LoginModel'
 import { authServices } from '@/services/authService'
 import type { VForm } from 'vuetify/components'
 import { useRouter } from 'vue-router'
-import { useSnackbarStore } from '@/components/notifications/notificationsStore'
 import SnackbarNotifications from './notifications/SnackbarNotifications.vue'
 
 const formRef: Ref<VForm | null> = ref(null)

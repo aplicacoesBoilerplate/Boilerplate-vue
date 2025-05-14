@@ -1,7 +1,6 @@
 import http from '../plugins/axios'
 import { useSnackbarStore } from '@/components/notifications/notificationsStore'
 import { useUtils } from './utilsServices'
-import type { FiltroPaginacao } from '@/models/FiltersModels'
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
 import { usePaginator } from '@/components/paginator/paginatorStore'
@@ -15,6 +14,13 @@ async function getAllUsers(): Promise<HeaderPaginatorModel<UsuarioConsulta>> {
       params: cleanedFilters,
     })
 
+    usePaginator().carregarFiltrosDaAPI({
+      limite: filtrosPaginator.value.limite,
+      offset: filtrosPaginator.value.offset,
+      totalPaginas: response.data.totalPaginas,
+      totalRegistros: response.data.totalRegistros,
+    })
+
     return response.data
   } catch (error) {
     throw error
@@ -25,6 +31,14 @@ async function getUserById(id: number | string): Promise<UsuarioConsulta> {
   try {
     const response = await http.get(`/usuarios/${id}`)
     useSnackbarStore().showSnackbar(`User ${id} found successfully!`, 'success')
+
+    usePaginator().carregarFiltrosDaAPI({
+      limite: filtrosPaginator.value.limite,
+      offset: filtrosPaginator.value.offset,
+      totalPaginas: response.data.totalPaginas,
+      totalRegistros: response.data.totalRegistros,
+    })
+
     return response.data
   } catch (error) {
     useSnackbarStore().showSnackbar('User not found!', 'red')
