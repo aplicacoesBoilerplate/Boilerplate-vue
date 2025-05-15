@@ -38,7 +38,6 @@ export const useDialogStoreConfirmarSenha = defineStore('confirmar', () => {
   }
 
   async function identificarDelete() {
-    console.log('Escopo: ', identificarOperacaoDelete.value.escopoCrud)
     switch (identificarOperacaoDelete.value.escopoCrud) {
       case 'user':
         await deleteUser(identificarOperacaoDelete.value.idRegistro)

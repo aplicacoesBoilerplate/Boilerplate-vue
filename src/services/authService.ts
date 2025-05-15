@@ -1,4 +1,4 @@
-import type { LoginModel } from '@/models/authModels/LoginModel'
+import type { ConfirmarSenha, LoginModel } from '@/models/authModels/LoginModel'
 import http from './axios'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 import axios from 'axios'
@@ -29,11 +29,19 @@ function logout() {
   sessionStorage.removeItem('token')
 }
 
-
+async function confirmarSenha(confirmar: ConfirmarSenha) {
+  try {
+    const response = await http.post('/auth/confirmar', confirmar)
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
 
 export function authServices() {
   return {
     login,
     logout,
+    confirmarSenha,
   }
 }
