@@ -8,7 +8,7 @@
 
     <RouterLink to="/dashboard" custom v-slot="{ navigate }">
       <v-app-bar-title @click="navigate" class="cursor-pointer d-flex justify-center">
-        Tasks control
+        {{ usuarioLogado != `${usuarioLogado}` ? '' : 'Tasks control' }}
       </v-app-bar-title>
     </RouterLink>
 
@@ -65,8 +65,10 @@
 import { ref } from 'vue';
 import { useDialogStoreSearch } from '../stores/dialogStoreSearch'
 import SnackbarNotifications from './Snackbar.vue';
+import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 
 const dialogStoreSearch = useDialogStoreSearch()
+const usuarioLogado = usuarioAutenticado().usuario.nome
 
 function openSearch() {
   dialogStoreSearch.openSearchDialog()

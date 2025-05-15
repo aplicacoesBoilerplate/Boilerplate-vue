@@ -32,7 +32,7 @@ export interface UsuarioConsulta {
   contaBloqueada: boolean
   contaExpiraEm?: Date
   senhaExpirada: boolean
-  tentativasFalhas: number
+  tentativasFalhas?: number
 }
 
 // Informações confidenciais do usuário
