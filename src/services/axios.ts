@@ -1,4 +1,4 @@
-import { useSnackbarStore } from '@/components/notifications/notificationsStore'
+import { useSnackbarStore } from '@/components/snackbar/SnackbarStore'
 import router from '@/router'
 import axios from 'axios'
 

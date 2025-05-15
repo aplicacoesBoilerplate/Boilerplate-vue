@@ -75,8 +75,8 @@ const showPassword2 = ref(false)
 const dialogStoreConfirmarSenha = useDialogStoreConfirmarSenha()
 
 const dialogConfirmarSenha = computed({
-  get: () => dialogStoreConfirmarSenha.showDialogDialogConfirmarSenha.value,
-  set: (val: boolean) => dialogStoreConfirmarSenha.showDialogDialogConfirmarSenha.value = val
+  get: () => dialogStoreConfirmarSenha.showDialogDialogConfirmarSenha,
+  set: (val: boolean) => dialogStoreConfirmarSenha.showDialogDialogConfirmarSenha = val
 })
 
 watch(dialogConfirmarSenha, (val) => {

@@ -1,5 +1,5 @@
 import http from './axios'
-import { useSnackbarStore } from '@/components/notifications/notificationsStore'
+import { useSnackbarStore } from '@/components/snackbar/SnackbarStore'
 import { useUtils } from './utilsServices'
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'

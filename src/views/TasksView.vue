@@ -99,7 +99,7 @@
 <script setup lang=ts>
 import DialogNewTask from '@/components/dialog/dialogTask/DialogTask.vue'
 import { useDialogStoreTask } from '@/components/dialog/dialogTask/dialogStoreTask'
-import { useDialogStoreConfirmarSenha } from '@/components/dialog/dialogConfirmaSenha/dialogStoreConfirmaSenha';
+
 import type { Task } from '@/models/TaskModel'
 import { onMounted, ref, watch } from 'vue';
 import { todoServices } from '@/services/todoService';
@@ -139,8 +139,7 @@ function completeFormEditTaskDialog(task: Task) {
 }
 
 async function deleteTask(idTask: number) {
-  useDialogStoreConfirmarSenha().openDialogConfirmarSenha()
-  useDialogStoreConfirmarSenha().setarIdentificacaoOperacaoDelete('task', idTask)
+
 }
 
 function toggleTask(id: number) {
@@ -167,6 +166,10 @@ watch(() => idSearch.value, (newValue) => {
     getAllTasks();
 })
 
+
+function useDialogStoreConfirmarSenha() {
+  throw new Error('Function not implemented.');
+}
 </script>
 
 <style scoped>

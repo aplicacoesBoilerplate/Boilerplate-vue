@@ -1,7 +1,7 @@
 import http from './axios'
 import type { Task } from '@/models/TaskModel'
 import { usersServices } from './usersService'
-import { useSnackbarStore } from '@/components/notifications/notificationsStore'
+import { useSnackbarStore } from '@/components/snackbar/SnackbarStore'
 
 async function getAllTasks(): Promise<Task[]> {
   try {
