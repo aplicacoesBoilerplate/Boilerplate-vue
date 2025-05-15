@@ -1,9 +1,8 @@
-import DashboardHomepage from '@/views/DashboardHomepage.vue'
-import LoginPage from '@/views/LoginPage.vue'
-import RegisterPage from '@/views/RegisterPage.vue'
+import DashboardHomepage from '@/views/DashboardView.vue'
+import LoginPage from '@/views/LoginView.vue'
+import RegisterPage from '@/views/RegisterView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import Profile from '@/views/Profile.vue'
-import Report from '@/views/Report.vue'
+import Profile from '@/views/ProfileView.vue'
 import TasksView from '@/views/TasksView.vue'
 import UsersView from '@/views/UsersView.vue'
 
@@ -31,21 +30,9 @@ const router = createRouter({
       component: Profile,
     },
     {
-      path: '/report',
-      name: 'report',
-      component: Report,
-    },
-    {
       path: '/tasks',
       name: 'tasks',
       component: TasksView,
-      children: [
-        {
-          path: '/new',
-          name: 'new task',
-          component: TasksView,
-        },
-      ],
     },
     {
       path: '/users',

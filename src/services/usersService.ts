@@ -1,4 +1,4 @@
-import http from '../plugins/axios'
+import http from './axios'
 import { useSnackbarStore } from '@/components/notifications/notificationsStore'
 import { useUtils } from './utilsServices'
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'

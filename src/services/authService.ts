@@ -1,5 +1,5 @@
 import type { LoginModel } from '@/models/authModels/LoginModel'
-import http from '../plugins/axios'
+import http from './axios'
 import { useSnackbarStore } from '@/components/notifications/notificationsStore'
 import axios from 'axios'
 
