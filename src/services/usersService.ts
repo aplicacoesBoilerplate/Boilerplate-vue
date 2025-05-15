@@ -1,14 +1,13 @@
-import http from '../plugins/axios'
-import { useSnackbarStore } from '@/components/notifications/notificationsStore'
+import http from './axios'
+import { useSnackbarStore } from '@/stores/SnackbarStore'
 import { useUtils } from './utilsServices'
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
 import { usePaginator } from '@/components/paginator/paginatorStore'
 
-const filtrosPaginator = usePaginator().filtrosPaginator
-
 async function getAllUsers(): Promise<HeaderPaginatorModel<UsuarioConsulta>> {
   try {
+    const filtrosPaginator = usePaginator().filtrosPaginator
     const cleanedFilters = useUtils().removeUndefined(filtrosPaginator.value)
     const response = await http.get('/usuarios/consulta', {
       params: cleanedFilters,
@@ -29,6 +28,7 @@ async function getAllUsers(): Promise<HeaderPaginatorModel<UsuarioConsulta>> {
 
 async function getUserById(id: number | string): Promise<UsuarioConsulta> {
   try {
+    const filtrosPaginator = usePaginator().filtrosPaginator
     const response = await http.get(`/usuarios/${id}`)
     useSnackbarStore().showSnackbar(`User ${id} found successfully!`, 'success')
 
@@ -71,7 +71,7 @@ async function createUser(newUser: UsuarioConsulta): Promise<UsuarioConsulta> {
 async function updateUser(user: UsuarioConsulta): Promise<UsuarioConsulta> {
   await getUserById(user.idUsuario!)
   try {
-    const response = await http.patch(`/usuarios/${user.idUsuario}`, user)
+    const response = await http.put(`/usuarios/${user.idUsuario}`, user)
     await getAllUsers()
     useSnackbarStore().showSnackbar('Record updated successfully!', 'success')
     return response.data

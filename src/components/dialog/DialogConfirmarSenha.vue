@@ -6,7 +6,7 @@
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="confirmOperation.insertPassword"
+              <v-text-field clearable v-model="confirmarSenha.senha_usuario"
                 :rules="[rules.required, rules.min, rules.max]" :type="showPassword1 ? 'text' : 'password'"
                 hint="At least 8 characters" label="Password*" name="input-InsertPassword" counter>
 
@@ -18,7 +18,7 @@
               </v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="confirmOperation.confirmPassword" :rules="[rules.required, rules.equals]"
+              <v-text-field clearable v-model="confirmarSenha.confirmar_senha" :rules="[rules.required, rules.equals]"
                 :type="showPassword2 ? 'text' : 'password'" hint="At least 8 characters" label="Confirm your password*"
                 name="input-confirmPassword" counter>
 
@@ -54,7 +54,9 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useDialogStoreConfirmarSenha } from '../dialogConfirmaSenha/dialogStoreConfirmaSenha'
+import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha'
+import { authServices } from '@/services/authService'
+import type { ConfirmarSenha } from '@/models/authModels/LoginModel'
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -62,12 +64,13 @@ const rules = {
   required: (v: string | number) => !!v || 'Required field',
   min: (v: string | any[]) => v.length >= 8 || 'Min 8 characters',
   max: (v: string | any[]) => v.length <= 100 || 'Max 100 characters',
-  equals: (v: string | number) => v == confirmOperation.value.insertPassword || 'Passwords do not match',
+  equals: (v: string | number) => v == confirmarSenha.value.senha_usuario || 'Passwords do not match',
 }
 
-const confirmOperation = ref({
-  insertPassword: '',
-  confirmPassword: ''
+const confirmarSenha = ref<ConfirmarSenha>({
+  email_usuario: '',
+  senha_usuario: '',
+  confirmar_senha: ''
 })
 
 const showPassword1 = ref(false)
@@ -75,8 +78,8 @@ const showPassword2 = ref(false)
 const dialogStoreConfirmarSenha = useDialogStoreConfirmarSenha()
 
 const dialogConfirmarSenha = computed({
-  get: () => dialogStoreConfirmarSenha.showDialogDialogConfirmarSenha.value,
-  set: (val: boolean) => dialogStoreConfirmarSenha.showDialogDialogConfirmarSenha.value = val
+  get: () => dialogStoreConfirmarSenha.showDialogDialogConfirmarSenha,
+  set: (val: boolean) => dialogStoreConfirmarSenha.showDialogDialogConfirmarSenha = val
 })
 
 watch(dialogConfirmarSenha, (val) => {
@@ -86,8 +89,8 @@ watch(dialogConfirmarSenha, (val) => {
 });
 
 function clearFields() {
-  confirmOperation.value.insertPassword = ''
-  confirmOperation.value.confirmPassword = ''
+  confirmarSenha.value.senha_usuario = ''
+  confirmarSenha.value.confirmar_senha = ''
   showPassword1.value = false
   showPassword2.value = false
 }
@@ -98,6 +101,7 @@ function resetForm() {
 }
 
 async function submitForm() {
+  await authServices().confirmarSenha(confirmarSenha.value)
   await dialogStoreConfirmarSenha.identificarDelete()
 }
 

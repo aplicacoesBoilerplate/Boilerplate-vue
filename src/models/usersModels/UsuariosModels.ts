@@ -30,7 +30,7 @@ export interface UsuarioConsulta {
   autorizaSaida: boolean
   ativo: boolean
   contaBloqueada: boolean
-  contaExpiraEm: Date
+  contaExpiraEm?: Date
   senhaExpirada: boolean
   tentativasFalhas: number
 }
@@ -49,3 +49,11 @@ export interface UsuarioDetais {
   accountNonExpired: boolean // Conta expirada
   credentialsNonExpired: boolean // Credenciais expiradas
 }
+
+export const PermissoesUsuarios = [
+  'ADMINISTRADOR_AUTORIZADO',
+  'ADMINISTRADOR',
+  'EMITE_AUTORIZACAO',
+  'EMITE_SAIDA',
+  'PORTARIA',
+]
