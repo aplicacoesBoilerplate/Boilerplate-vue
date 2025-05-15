@@ -71,7 +71,7 @@ async function getEmployeeName(task: Task) {
   }
   try {
     const user = await usersServices().getUserById(task.idEmployee)
-    employeeName.value = user.username
+    employeeName.value = user.nome
   } catch (error) {
     employeeName.value = 'User not found'
   }

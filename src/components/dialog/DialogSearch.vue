@@ -19,13 +19,13 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useDialogStoreSearch } from './dialogStoreSearch'
+import { useDialogStoreSearch } from '../../stores/dialogStoreSearch'
 
 const dialogStoreSearch = useDialogStoreSearch()
 
 const dialogSearch = computed({
-  get: () => dialogStoreSearch.showDialogSearch.value,
-  set: (val: boolean) => dialogStoreSearch.showDialogSearch.value = val
+  get: () => dialogStoreSearch.showDialogSearch,
+  set: (val: boolean) => dialogStoreSearch.showDialogSearch = val
 })
 
 watch(dialogSearch, (val) => {
