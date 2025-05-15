@@ -1,24 +1,23 @@
+import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-const showDialogSearch = ref(false)
+export const useDialogStoreSearch = defineStore('buscar', () => {
+  const showDialogSearch = ref(false)
 
-function openSearchDialog() {
-  showDialogSearch.value = true
-}
+  function openSearchDialog() {
+    showDialogSearch.value = true
+  }
 
-function closeSearchDialog() {
-  showDialogSearch.value = false
-}
+  function closeSearchDialog() {
+    showDialogSearch.value = false
+  }
 
-function search(search: string) {
-  
-}
+  function search(search: string) {}
 
-export function useDialogStoreSearch() {
   return {
     showDialogSearch,
     openSearchDialog,
     closeSearchDialog,
     search,
   }
-}
+})

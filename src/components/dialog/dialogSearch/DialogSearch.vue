@@ -24,8 +24,8 @@ import { useDialogStoreSearch } from './dialogStoreSearch'
 const dialogStoreSearch = useDialogStoreSearch()
 
 const dialogSearch = computed({
-  get: () => dialogStoreSearch.showDialogSearch.value,
-  set: (val: boolean) => dialogStoreSearch.showDialogSearch.value = val
+  get: () => dialogStoreSearch.showDialogSearch,
+  set: (val: boolean) => dialogStoreSearch.showDialogSearch = val
 })
 
 watch(dialogSearch, (val) => {
