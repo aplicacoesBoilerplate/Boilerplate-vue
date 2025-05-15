@@ -116,6 +116,7 @@ import Paginator from '@/components/paginator/Paginator.vue'
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
 import { usePaginator } from '@/components/paginator/paginatorStore';
 import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha';
+import { useSnackbarStore } from '@/stores/SnackbarStore';
 
 const expandedUserId = ref<number | null>(null)
 const hover = ref(false)
@@ -145,9 +146,25 @@ async function toggleUsuarioAtivo(user: UsuarioConsulta) {
   await usersDialog.toggleUsuarioAtivo(user)
 }
 
+// function deleteUser(idUser: number) {
+//   useDialogStoreConfirmarSenha().openDialogConfirmarSenha()
+//   useDialogStoreConfirmarSenha().setarIdentificacaoOperacaoDelete('user', idUser)
+// }
+
 function deleteUser(idUser: number) {
-  useDialogStoreConfirmarSenha().openDialogConfirmarSenha()
-  useDialogStoreConfirmarSenha().setarIdentificacaoOperacaoDelete('user', idUser)
+  const store = useDialogStoreConfirmarSenha()
+  store.setCallbackPosSenha(async () => {
+    try {
+      await usersServices().deleteUser(idUser)
+      useSnackbarStore().showSnackbar('Usuário removido!', 'success')
+    } catch (error) {
+      useSnackbarStore().showSnackbar(error, 'red')
+    } finally {
+      useDialogStoreUsers().apiUsers.value = await usersServices().getAllUsers()
+    }
+  })
+
+  store.openDialogConfirmarSenha()
 }
 
 function toggleUser(id: number) {

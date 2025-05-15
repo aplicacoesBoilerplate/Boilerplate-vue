@@ -43,6 +43,7 @@ import { authServices } from '@/services/authService'
 import type { VForm } from 'vuetify/components'
 import { useRouter } from 'vue-router'
 import SnackbarNotifications from './Snackbar.vue'
+import { useSnackbarStore } from '@/stores/SnackbarStore'
 
 const formRef: Ref<VForm | null> = ref(null)
 
@@ -69,6 +70,7 @@ async function authLogin() {
     const token = await authService.login(loginForm.value!)
     redirectRouter.push('/dashboard');
   } catch (err) {
+    useSnackbarStore().showSnackbar(err, 'red')
     throw err
   }
 }

@@ -1,6 +1,6 @@
-import { useSnackbarStore } from '@/stores/SnackbarStore'
 import router from '@/router'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
+import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -20,18 +20,38 @@ http.interceptors.request.use((config) => {
 
 http.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const snackbar = useSnackbarStore()
+  (error: AxiosError) => {
+    if (!error) Promise.reject('Erro inesperado!')
 
     if (error.response && error.response.status === 401) {
-      snackbar.showSnackbar('Session expired. Please log in again.', 'red')
-
       sessionStorage.removeItem('token')
       router.push('/')
     }
 
-    return Promise.reject(error)
+    const objetoError = new ErrorAPI(error.response?.data)
+
+    return Promise.reject(objetoError.erro)
   },
 )
+
+class ErrorAPI {
+  erro: string = ''
+  usuario: UsuarioConsulta | null = null
+  saida: number = 0
+  trace:
+    | {
+        lineNumber: number
+        fileName: string
+        className: string
+        methodName: string
+      }
+    | undefined
+  horaErro: Date | undefined
+  statusCode: number = 500
+
+  constructor(pObj: any) {
+    this.erro = pObj.erro ?? this.erro
+  }
+}
 
 export default http
