@@ -50,7 +50,12 @@ class ErrorAPI {
   statusCode: number = 500
 
   constructor(pObj: any) {
-    this.erro = pObj.erro ?? this.erro
+    // this.erro = pObj.erro ?? this.erro
+    if (pObj) {
+      this.erro = pObj.erro ?? this.erro
+    } else {
+      this.erro = 'Erro inesperado ao processar a requisição.'
+    }
   }
 }
 

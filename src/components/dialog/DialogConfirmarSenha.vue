@@ -5,6 +5,13 @@
       <v-card prepend-icon="mdi-delete-outline" title="Confirm your password befor completed this operation">
         <v-card-text>
           <v-row dense>
+
+            <v-col cols="12">
+              <v-text-field clearable v-model="confirmarSenha.email_usuario" :rules="[rules.required, rules.min]"
+                type="text" label="Your email">
+              </v-text-field>
+            </v-col>
+
             <v-col cols="12" md="6">
               <v-text-field clearable v-model="confirmarSenha.senha_usuario"
                 :rules="[rules.required, rules.min, rules.max]" :type="showPassword1 ? 'text' : 'password'"
@@ -18,7 +25,8 @@
               </v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="confirmarSenha.confirmar_senha" :rules="[rules.required, rules.equals]"
+              <v-text-field clearable v-model="confirmarSenha.confirmar_senha"
+                :rules="[rules.required, rules.equals(confirmarSenha.senha_usuario, confirmarSenha.confirmar_senha)]"
                 :type="showPassword2 ? 'text' : 'password'" hint="At least 8 characters" label="Confirm your password*"
                 name="input-confirmPassword" counter>
 
@@ -57,6 +65,8 @@ import { ref, computed, watch } from 'vue'
 import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha'
 import { authServices } from '@/services/authService'
 import type { ConfirmarSenha } from '@/models/authModels/LoginModel'
+import { useSnackbarStore } from '@/stores/SnackbarStore'
+import { usuarioAutenticado } from '@/stores/usuarioAutenticado'
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -64,7 +74,7 @@ const rules = {
   required: (v: string | number) => !!v || 'Required field',
   min: (v: string | any[]) => v.length >= 8 || 'Min 8 characters',
   max: (v: string | any[]) => v.length <= 100 || 'Max 100 characters',
-  equals: (v: string | number) => v == confirmarSenha.value.senha_usuario || 'Passwords do not match',
+  equals: (equal: string | number, v: string | number) => v == equal || 'Passwords do not match',
 }
 
 const confirmarSenha = ref<ConfirmarSenha>({
@@ -101,7 +111,12 @@ function resetForm() {
 }
 
 async function submitForm() {
-  await authServices().confirmarSenha(confirmarSenha.value)
+  try {
+    await authServices().confirmarSenha(confirmarSenha.value)
+    useSnackbarStore().showSnackbar('Success!', 'success')
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+  }
   await dialogStoreConfirmarSenha.identificarDelete()
 }
 
