@@ -63,8 +63,8 @@
 
 <script setup lang=ts>
 import { ref } from 'vue';
-import { useDialogStoreSearch } from './dialog/dialogSearch/dialogStoreSearch'
-import SnackbarNotifications from './snackbar/Snackbar.vue';
+import { useDialogStoreSearch } from '../stores/dialogStoreSearch'
+import SnackbarNotifications from './Snackbar.vue';
 
 const dialogStoreSearch = useDialogStoreSearch()
 

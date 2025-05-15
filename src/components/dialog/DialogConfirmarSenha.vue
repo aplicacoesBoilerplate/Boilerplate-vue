@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useDialogStoreConfirmarSenha } from '../dialogConfirmaSenha/dialogStoreConfirmaSenha'
+import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha'
 
 const formRef = ref()
 const formIsValid = ref(false)

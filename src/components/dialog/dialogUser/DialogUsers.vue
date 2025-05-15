@@ -3,12 +3,12 @@
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
       <v-card :prepend-icon="dialogStoreUsers.isEditing.value ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
-        :title="dialogStoreUsers.isEditing.value ? `Edit user: ${user.id}` : 'Create a new user'">
+        :title="dialogStoreUsers.isEditing.value ? `Edit user: ${user.idUsuario}` : 'Create a new user'">
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="user.username" :counter="100"
-                :rules="[rules.required, rules.min, rules.max]" label="Username*" required></v-text-field>
+              <v-text-field clearable v-model="user.nome" :counter="100" :rules="[rules.required, rules.min, rules.max]"
+                label="Username*" required></v-text-field>
             </v-col>
 
             <v-col cols="12" md="6">
@@ -16,7 +16,7 @@
                 label="e-mail*" :rules="[rules.required, rules.min, rules.max, rules.emailFormat]"></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <!-- <v-col cols="12" md="6">
               <v-text-field clearable v-model="user.senha" :rules="[rules.required, rules.min, rules.max]"
                 :type="showPassword ? 'text' : 'password'" hint="At least 8 characters" label="Password*"
                 name="input-10-1" counter>
@@ -26,8 +26,8 @@
                     variant="text" />
                 </template>
 
-              </v-text-field>
-            </v-col>
+</v-text-field>
+</v-col> -->
 
             <v-col cols="12" md="6" class="d-flex justify-center">
               <v-autocomplete clearable v-model="user.permissao" label="Permission*" :items="['USER', 'ADMIN']"
@@ -37,7 +37,7 @@
 
           <v-row dense v-if="isEditing">
             <v-col cols="6" class="d-flex justify-center">
-              <v-switch v-model="user.bloqueado" color="red" label="Account blocked"></v-switch>
+              <v-switch v-model="user.contaBloqueada" color="red" label="Account blocked"></v-switch>
             </v-col>
             <v-col cols="6" class="d-flex justify-center">
               <v-switch v-model="user.ativo" color="success" label="Active account"></v-switch>
@@ -68,6 +68,7 @@
 import { ref, computed, watch } from 'vue'
 import { useDialogStoreUsers } from '../dialogUser/dialogStoreUsers'
 import type { Users } from '@/models/UsersModel'
+import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -89,7 +90,7 @@ const showDialogUser = computed({
   set: (val: boolean) => dialogStoreUsers.showDialogUsers.value = val
 })
 
-const user = ref<Users>({
+const user = ref<UsuarioConsulta>({
   ...dialogStoreUsers.emptyUser
 })
 

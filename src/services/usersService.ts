@@ -1,14 +1,13 @@
 import http from './axios'
-import { useSnackbarStore } from '@/components/snackbar/SnackbarStore'
+import { useSnackbarStore } from '@/stores/SnackbarStore'
 import { useUtils } from './utilsServices'
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
 import { usePaginator } from '@/components/paginator/paginatorStore'
 
-const filtrosPaginator = usePaginator().filtrosPaginator
-
 async function getAllUsers(): Promise<HeaderPaginatorModel<UsuarioConsulta>> {
   try {
+    const filtrosPaginator = usePaginator().filtrosPaginator
     const cleanedFilters = useUtils().removeUndefined(filtrosPaginator.value)
     const response = await http.get('/usuarios/consulta', {
       params: cleanedFilters,
@@ -29,6 +28,7 @@ async function getAllUsers(): Promise<HeaderPaginatorModel<UsuarioConsulta>> {
 
 async function getUserById(id: number | string): Promise<UsuarioConsulta> {
   try {
+    const filtrosPaginator = usePaginator().filtrosPaginator
     const response = await http.get(`/usuarios/${id}`)
     useSnackbarStore().showSnackbar(`User ${id} found successfully!`, 'success')
 

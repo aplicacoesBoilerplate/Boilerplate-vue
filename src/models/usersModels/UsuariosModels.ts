@@ -30,7 +30,7 @@ export interface UsuarioConsulta {
   autorizaSaida: boolean
   ativo: boolean
   contaBloqueada: boolean
-  contaExpiraEm: Date
+  contaExpiraEm?: Date
   senhaExpirada: boolean
   tentativasFalhas: number
 }

@@ -1,6 +1,6 @@
 import type { LoginModel } from '@/models/authModels/LoginModel'
 import http from './axios'
-import { useSnackbarStore } from '@/components/snackbar/SnackbarStore'
+import { useSnackbarStore } from '@/stores/SnackbarStore'
 import axios from 'axios'
 
 async function login(loginData: LoginModel): Promise<string> {

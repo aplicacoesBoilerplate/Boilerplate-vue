@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useDialogStoreSearch } from './dialogStoreSearch'
+import { useDialogStoreSearch } from '@/stores/dialogStoreSearch'
 
 const dialogStoreSearch = useDialogStoreSearch()
 

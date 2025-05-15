@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSnackbarStore } from '@/components/snackbar/SnackbarStore'
+import { useSnackbarStore } from '@/stores/SnackbarStore'
 import { ref, watch, onBeforeUnmount } from 'vue'
 
 const snackbar = useSnackbarStore()

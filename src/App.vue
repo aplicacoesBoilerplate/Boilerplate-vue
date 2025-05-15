@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router'
 import Navigation from './components/Navigation.vue';
-import DialogSearch from './components/dialog/dialogSearch/DialogSearch.vue'
-import DialogConfirmarSenha from './components/dialog/dialogConfirmaSenha/DialogConfirmarSenha.vue';
+import DialogSearch from '@/components/dialog/DialogSearch.vue'
+import DialogConfirmarSenha from './components/dialog/DialogConfirmarSenha.vue';
 const route = useRoute();
-
 </script>
 
 <template>

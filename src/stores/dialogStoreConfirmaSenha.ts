@@ -1,10 +1,11 @@
 import { todoServices } from '@/services/todoService'
 import { usersServices } from '@/services/usersService'
-import { useSnackbarStore } from '@/components/snackbar/SnackbarStore'
-import { useDialogStoreTask } from '../dialogTask/dialogStoreTask'
-import { useDialogStoreUsers } from '../dialogUser/dialogStoreUsers'
+import { useSnackbarStore } from '@/stores/SnackbarStore'
+
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers'
+import { useDialogStoreTask } from '@/components/dialog/dialogTask/dialogStoreTask'
 
 export const useDialogStoreConfirmarSenha = defineStore('confirmar', () => {
   const showDialogDialogConfirmarSenha = ref(false)

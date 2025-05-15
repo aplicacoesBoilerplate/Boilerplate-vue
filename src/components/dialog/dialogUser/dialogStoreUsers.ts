@@ -7,13 +7,16 @@ import { ref } from 'vue'
 const showDialogUsers = ref(false)
 const userToEdit = ref<UsuarioConsulta | null>(null)
 const userService = usersServices()
-const emptyUser: Users = {
+const emptyUser: UsuarioConsulta = {
   nome: '',
   email: '',
-  senha: '',
   permissao: 'USER',
-  bloqueado: true,
+  contaBloqueada: true,
   ativo: false,
+  idUsuario: 0,
+  autorizaSaida: false,
+  senhaExpirada: false,
+  tentativasFalhas: 0
 }
 
 var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>()
