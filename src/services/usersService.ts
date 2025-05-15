@@ -71,7 +71,7 @@ async function createUser(newUser: UsuarioConsulta): Promise<UsuarioConsulta> {
 async function updateUser(user: UsuarioConsulta): Promise<UsuarioConsulta> {
   await getUserById(user.idUsuario!)
   try {
-    const response = await http.patch(`/usuarios/${user.idUsuario}`, user)
+    const response = await http.put(`/usuarios/${user.idUsuario}`, user)
     await getAllUsers()
     useSnackbarStore().showSnackbar('Record updated successfully!', 'success')
     return response.data
