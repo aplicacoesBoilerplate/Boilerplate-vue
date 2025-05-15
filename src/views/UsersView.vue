@@ -18,7 +18,7 @@
       <span class="text-h6">Company Employees List</span>
       <v-btn title="Order" variant="outlined" color="primary" density="compact" @click="toggleOrderBy()">
         <v-icon>{{ paginator.filtrosPaginator.value.orderBy! == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up"
-          }}</v-icon></v-btn>
+        }}</v-icon></v-btn>
       <v-text-field clearable v-model="idSearch" density="compact" variant="outlined"
         placeholder="Search employee by register" hide-details prepend-inner-icon="mdi-magnify"
         style="max-width: 300px" />
@@ -109,12 +109,13 @@
 <script setup lang="ts">
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue';
 import { useDialogStoreUsers } from '../components/dialog/dialogUser/dialogStoreUsers'
-import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha';
+
 import { onMounted, ref, watch } from 'vue';
 import { usersServices } from '@/services/usersService';
 import Paginator from '@/components/paginator/Paginator.vue'
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
 import { usePaginator } from '@/components/paginator/paginatorStore';
+import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha';
 
 const expandedUserId = ref<number | null>(null)
 const hover = ref(false)

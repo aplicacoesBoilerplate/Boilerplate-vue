@@ -10,7 +10,7 @@ const userService = usersServices()
 const emptyUser: UsuarioConsulta = {
   nome: '',
   email: '',
-  permissao: 'USER',
+  permissao: 'EMITE_SAIDA',
   contaBloqueada: true,
   ativo: false,
   idUsuario: 0,

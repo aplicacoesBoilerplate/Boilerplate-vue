@@ -16,21 +16,8 @@
                 label="e-mail*" :rules="[rules.required, rules.min, rules.max, rules.emailFormat]"></v-text-field>
             </v-col>
 
-            <!-- <v-col cols="12" md="6">
-              <v-text-field clearable v-model="user.senha" :rules="[rules.required, rules.min, rules.max]"
-                :type="showPassword ? 'text' : 'password'" hint="At least 8 characters" label="Password*"
-                name="input-10-1" counter>
-
-                <template v-slot:append-inner>
-                  <v-btn :icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword = !showPassword"
-                    variant="text" />
-                </template>
-
-</v-text-field>
-</v-col> -->
-
-            <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-autocomplete clearable v-model="user.permissao" label="Permission*" :items="['USER', 'ADMIN']"
+            <v-col cols="12" class="d-flex justify-center">
+              <v-autocomplete clearable v-model="user.permissao" label="Permission*" :items="permissoes"
                 :rules="[rules.required]" />
             </v-col>
           </v-row>
@@ -44,9 +31,18 @@
             </v-col>
           </v-row>
 
-          <small class="d-flex justify-center text-caption text-medium-emphasis pt-5">*indicates required
-            field
-          </small>
+          <v-row dense class="p-0 m-0">
+            <v-col cols="12">
+              <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">*indicates required
+                field
+              </small>
+            </v-col>
+            <v-col cols="12">
+              <small class="d-flex justify-center text-caption text-medium-emphasis">Default password will be set
+                for this user
+              </small>
+            </v-col>
+          </v-row>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -67,8 +63,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useDialogStoreUsers } from '../dialogUser/dialogStoreUsers'
-import type { Users } from '@/models/UsersModel'
-import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
+import { PermissoesUsuarios, type UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
+
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -84,7 +80,7 @@ const rules = {
 const showPassword = ref(false)
 const dialogStoreUsers = useDialogStoreUsers()
 const isEditing = dialogStoreUsers.isEditing
-
+const permissoes = PermissoesUsuarios
 const showDialogUser = computed({
   get: () => dialogStoreUsers.showDialogUsers.value,
   set: (val: boolean) => dialogStoreUsers.showDialogUsers.value = val
