@@ -1,6 +1,7 @@
 import router from '@/router'
 import axios, { AxiosError } from 'axios'
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
+import { useSnackbarStore } from '@/stores/SnackbarStore'
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -24,6 +25,7 @@ http.interceptors.response.use(
     if (!error) Promise.reject('Erro inesperado!')
 
     if (error.response && error.response.status === 401) {
+      useSnackbarStore().showSnackbar('Login expirado!', 'red')
       sessionStorage.removeItem('token')
       router.push('/')
     }

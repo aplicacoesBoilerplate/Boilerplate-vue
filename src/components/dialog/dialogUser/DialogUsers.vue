@@ -8,38 +8,37 @@
           <v-row dense>
             <v-col cols="12" md="6">
               <v-text-field clearable v-model="user.nome" :counter="100" :rules="[rules.required, rules.min, rules.max]"
-                label="Username*" required></v-text-field>
+                label="Nome de usuário*" required></v-text-field>
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="user.email" :counter="100" hint="Insert your e-mail" persistent-hint
+              <v-text-field clearable v-model="user.email" :counter="100" hint="E-mail de acesso*" persistent-hint
                 label="e-mail*" :rules="[rules.required, rules.min, rules.max, rules.emailFormat]"></v-text-field>
             </v-col>
 
             <v-col cols="12" class="d-flex justify-center">
-              <v-autocomplete clearable v-model="user.permissao" label="Permission*" :items="permissoes"
+              <v-autocomplete clearable v-model="user.permissao" label="Permissão*" :items="permissoes"
                 :rules="[rules.required]" />
             </v-col>
           </v-row>
 
           <v-row dense v-if="isEditing">
             <v-col cols="6" class="d-flex justify-center">
-              <v-switch v-model="user.contaBloqueada" color="red" label="Account blocked"></v-switch>
+              <v-switch v-model="user.contaBloqueada" color="red" label="Status bloqueio"></v-switch>
             </v-col>
             <v-col cols="6" class="d-flex justify-center">
-              <v-switch v-model="user.ativo" color="success" label="Active account"></v-switch>
+              <v-switch v-model="user.ativo" color="success" label="Status conta ativa"></v-switch>
             </v-col>
           </v-row>
 
           <v-row dense class="p-0 m-0">
             <v-col cols="12">
-              <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">*indicates required
-                field
+              <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">* indica campos obrigatórios
               </small>
             </v-col>
             <v-col cols="12">
-              <small class="d-flex justify-center text-caption text-medium-emphasis">Default password will be set
-                for this user
+              <small class="d-flex justify-center text-caption text-medium-emphasis">O usuário será criado com a senha
+                padrão
               </small>
             </v-col>
           </v-row>
@@ -48,12 +47,12 @@
         <v-divider></v-divider>
 
         <v-card-actions>
-          <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon>mdi-refresh</v-icon> Refresh</v-btn>
-          <v-spacer></v-spacer>
+          <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon>mdi-refresh</v-icon> Limpar</v-btn>
+          <v-spacer />
 
-          <v-btn color="red" variant="plain" @click="resetForm()"><v-icon>mdi-close</v-icon>Close</v-btn>
+          <v-btn color="red" variant="plain" @click="resetForm()"><v-icon>mdi-close</v-icon>Fechar</v-btn>
           <v-btn color="success" variant="tonal" :disabled="!formIsValid"
-            type="submit"><v-icon>mdi-content-save-check</v-icon>Save</v-btn>
+            type="submit"><v-icon>mdi-content-save-check</v-icon>Salvar</v-btn>
         </v-card-actions>
       </v-card>
     </v-form>
@@ -69,13 +68,13 @@ import { PermissoesUsuarios, type UsuarioConsulta } from '@/models/usersModels/U
 const formRef = ref()
 const formIsValid = ref(false)
 const rules = {
-  required: (v: string | number) => !!v || 'Required field',
+  required: (v: string | number) => !!v || 'Campo obrigatório',
   emailFormat: (value: string) => {
     if (/.+@.+\..+/.test(value)) return true
-    return 'E-mail must be valid.'
+    return 'Formato de e-mail inválido.'
   },
-  min: (v: string | any[]) => v.length >= 6 || 'Min 6 characters',
-  max: (v: string | any[]) => v.length <= 100 || 'Max 100 characters',
+  min: (v: string | any[]) => v.length >= 6 || 'Mínimo 6 caracteres',
+  max: (v: string | any[]) => v.length <= 100 || 'Máximo 100 caracteres',
 }
 const showPassword = ref(false)
 const dialogStoreUsers = useDialogStoreUsers()

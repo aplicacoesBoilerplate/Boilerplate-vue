@@ -4,7 +4,7 @@
       <v-btn icon @click="navigate" class="animated-btn">
         <v-icon color="white">mdi-account-plus-outline</v-icon>
       </v-btn>
-      <span class="button-label" :class="{ visible: hover }">Register</span>
+      <span class="button-label" :class="{ visible: hover }">Solicitar acesso</span>
     </RouterLink>
   </div>
   <v-container class="d-flex justify-center align-center"

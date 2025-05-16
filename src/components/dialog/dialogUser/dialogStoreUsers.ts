@@ -1,12 +1,12 @@
 import { type HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 import type { Users } from '@/models/UsersModel'
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
-import { usersServices } from '@/services/usersService'
+import { usuariosServices } from '@/services/usuariosService'
 import { ref } from 'vue'
 
 const showDialogUsers = ref(false)
 const userToEdit = ref<UsuarioConsulta | null>(null)
-const userService = usersServices()
+const userService = usuariosServices()
 const emptyUser: UsuarioConsulta = {
   nome: '',
   email: '',
@@ -16,7 +16,7 @@ const emptyUser: UsuarioConsulta = {
   idUsuario: 0,
   autorizaSaida: false,
   senhaExpirada: false,
-  tentativasFalhas: 0
+  tentativasFalhas: 0,
 }
 
 var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>()

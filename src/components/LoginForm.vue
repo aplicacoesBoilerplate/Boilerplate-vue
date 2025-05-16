@@ -16,7 +16,7 @@
 
               <v-col cols="12">
                 <v-text-field clearable v-model="loginForm.senha_usuario" :rules="[rules.required]"
-                  :type="showPassword ? 'text' : 'password'" label="Password">
+                  :type="showPassword ? 'text' : 'password'" label="Senha">
                   <template v-slot:append-inner>
                     <v-btn :icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword = !showPassword"
                       variant="text" />
@@ -53,10 +53,10 @@ const loginForm = ref<LoginModel>({ email_usuario: '', senha_usuario: '' })
 const redirectRouter = useRouter()
 
 const rules = {
-  required: (v: string | number) => !!v || 'Required field',
+  required: (v: string | number) => !!v || 'Campo obrigatório',
   emailFormat: (value: string) => {
     if (/.+@.+\..+/.test(value)) return true
-    return 'E-mail must be valid.'
+    return 'Formato de e-mail inválido.'
   }
 }
 
@@ -67,7 +67,7 @@ async function authLogin() {
   if (!isValid) console.log("inválido: ", (await formRef.value?.validate()!).valid)
 
   try {
-    const token = await authService.login(loginForm.value!)
+    await authService.login(loginForm.value!)
     redirectRouter.push('/dashboard');
   } catch (err) {
     useSnackbarStore().showSnackbar(err, 'red')
