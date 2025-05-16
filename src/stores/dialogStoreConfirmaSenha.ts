@@ -18,19 +18,11 @@ export const useDialogStoreConfirmarSenha = defineStore('confirmar', () => {
     callbackPosSenha.value = callback
   }
 
-  async function identificarDelete() {
-    try {
-      
-    } catch (error) {
-      throw error
-    }
-  }
-
   return {
     showDialogDialogConfirmarSenha,
     openDialogConfirmarSenha,
     closeDialogConfirmarSenha,
-    identificarDelete,
+    callbackPosSenha,
     setCallbackPosSenha,
   }
 })

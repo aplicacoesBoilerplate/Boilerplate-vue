@@ -30,7 +30,8 @@
               </v-col>
 
               <v-col cols="6">
-                <v-text-field clearable v-model="newUser.confirmarSenha" :rules="[rules.required, rules.equals]"
+                <v-text-field clearable v-model="newUser.confirmarSenha"
+                  :rules="[rules.required, rules.equals(() => newUser.senha)]"
                   :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*" counter>
                   <template v-slot:append-inner>
                     <v-btn :icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword2 = !showPassword2"
@@ -56,6 +57,7 @@
 import { usuariosServices } from '@/services/usuariosService'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 import SnackbarNotifications from './Snackbar.vue'
+import { rules } from '@/services/utilsServices'
 import { ref } from 'vue'
 
 const formRef = ref()
@@ -71,17 +73,7 @@ const newUser = ref(
   }
 )
 
-const rules = {
-  required: (v: string | number) => !!v || 'Campo obrigatório',
-  emailFormat: (value: string) => {
-    if (/.+@.+\..+/.test(value)) return true
-    return 'Formato de e-mail inválido.'
-  },
-  min: (v: string | any[]) => v.length >= 8 || 'Mínimo de 8 caracteres',
-  max: (v: string | any[]) => v.length <= 100 || 'Máximo 100 caracteres',
-  equals: (v: string | number) => v == newUser.value.senha || 'As senhas não coincidem',
-}
-
+// Mesmo método de criar usuário porém sem autenticação e com um body menor
 async function solicitarAcesso() {
   try {
     await usuariosServices().solicitarAcesso(newUser.value)

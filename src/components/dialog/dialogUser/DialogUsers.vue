@@ -3,7 +3,7 @@
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
       <v-card :prepend-icon="dialogStoreUsers.isEditing.value ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
-        :title="dialogStoreUsers.isEditing.value ? `Edit user: ${user.idUsuario}` : 'Create a new user'">
+        :title="dialogStoreUsers.isEditing.value ? `Editar usuário: ${user.idUsuario}` : 'Criar novo usuário'">
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
@@ -43,8 +43,7 @@
             </v-col>
           </v-row>
         </v-card-text>
-
-        <v-divider></v-divider>
+        <v-divider />
 
         <v-card-actions>
           <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon>mdi-refresh</v-icon> Limpar</v-btn>
@@ -63,19 +62,11 @@
 import { ref, computed, watch } from 'vue'
 import { useDialogStoreUsers } from '../dialogUser/dialogStoreUsers'
 import { PermissoesUsuarios, type UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
-
+import { useSnackbarStore } from '@/stores/SnackbarStore'
+import { rules } from '@/services/utilsServices'
 
 const formRef = ref()
 const formIsValid = ref(false)
-const rules = {
-  required: (v: string | number) => !!v || 'Campo obrigatório',
-  emailFormat: (value: string) => {
-    if (/.+@.+\..+/.test(value)) return true
-    return 'Formato de e-mail inválido.'
-  },
-  min: (v: string | any[]) => v.length >= 6 || 'Mínimo 6 caracteres',
-  max: (v: string | any[]) => v.length <= 100 || 'Máximo 100 caracteres',
-}
 const showPassword = ref(false)
 const dialogStoreUsers = useDialogStoreUsers()
 const isEditing = dialogStoreUsers.isEditing
@@ -109,7 +100,13 @@ async function createNewUser() {
   const valid = await formRef.value.validate()
   if (!valid) return
 
-  await dialogStoreUsers.createNewUser(user.value);
+  try {
+    await dialogStoreUsers.createNewUser(user.value);
+    useSnackbarStore().showSnackbar('Usuário criado com sucesso!', 'success')
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  }
   resetForm();
 }
 
@@ -117,7 +114,13 @@ async function updateUser() {
   const valid = await formRef.value.validate()
   if (!valid) return
 
-  await dialogStoreUsers.updateUser(user.value);
+  try {
+    await dialogStoreUsers.updateUser(user.value);
+    useSnackbarStore().showSnackbar('Usuário modificado com sucesso!', 'success')
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  }
   resetForm();
 }
 
@@ -134,7 +137,6 @@ function resetForm() {
 async function submitForm() {
   const { valid } = await formRef.value.validate()
   if (!valid) return
-
   dialogStoreUsers.isEditing.value ? await updateUser() : await createNewUser()
 }
 

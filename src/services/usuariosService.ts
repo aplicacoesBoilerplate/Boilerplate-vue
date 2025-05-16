@@ -30,7 +30,6 @@ async function getUserById(id: number | string): Promise<UsuarioConsulta> {
   try {
     const filtrosPaginator = usePaginator().filtrosPaginator
     const response = await http.get(`/usuarios/${id}`)
-    useSnackbarStore().showSnackbar(`User ${id} found successfully!`, 'success')
 
     usePaginator().carregarFiltrosDaAPI({
       limite: filtrosPaginator.value.limite,
@@ -39,19 +38,8 @@ async function getUserById(id: number | string): Promise<UsuarioConsulta> {
       totalRegistros: response.data.totalRegistros,
     })
 
-    return response.data
+    return response.data.usuario
   } catch (error) {
-    useSnackbarStore().showSnackbar('User not found!', 'red')
-    throw error
-  }
-}
-
-async function getUserByIdSemSnackBarSuccess(id: number | string): Promise<UsuarioConsulta> {
-  try {
-    const response = await http.get(`/users/${id}`)
-    return response.data
-  } catch (error) {
-    useSnackbarStore().showSnackbar('User not found!', 'red')
     throw error
   }
 }
@@ -106,7 +94,6 @@ export function usuariosServices() {
   return {
     getAllUsers,
     getUserById,
-    getUserByIdSemSnackBarSuccess,
     createUser,
     solicitarAcesso,
     updateUser,

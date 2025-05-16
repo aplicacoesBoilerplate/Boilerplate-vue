@@ -2,20 +2,13 @@
   <v-dialog v-model="dialogConfirmarSenha" max-width="650">
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
-      <v-card prepend-icon="mdi-delete-outline" title="Confirm your password befor completed this operation">
+      <v-card prepend-icon="mdi-delete-outline" title="Confirme a sua senha antes de completar essa operação">
         <v-card-text>
           <v-row dense>
-
-            <v-col cols="12">
-              <v-text-field clearable v-model="confirmarSenha.email_usuario" :rules="[rules.required, rules.min]"
-                type="text" label="Your email">
-              </v-text-field>
-            </v-col>
-
             <v-col cols="12" md="6">
               <v-text-field clearable v-model="confirmarSenha.senha_usuario"
                 :rules="[rules.required, rules.min, rules.max]" :type="showPassword1 ? 'text' : 'password'"
-                hint="At least 8 characters" label="Password*" name="input-InsertPassword" counter>
+                hint="Mínimo de 8 caracteres" label="Senha*" name="input-InsertPassword" counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword1 = !showPassword1"
@@ -27,8 +20,8 @@
             <v-col cols="12" md="6">
               <v-text-field clearable v-model="confirmarSenha.confirmar_senha"
                 :rules="[rules.required, rules.equals(confirmarSenha.senha_usuario, confirmarSenha.confirmar_senha)]"
-                :type="showPassword2 ? 'text' : 'password'" hint="At least 8 characters" label="Confirm your password*"
-                name="input-confirmPassword" counter>
+                :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*" name="input-confirmPassword"
+                counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword2 = !showPassword2"
@@ -38,8 +31,7 @@
               </v-text-field>
             </v-col>
           </v-row>
-          <small class="d-flex justify-center text-caption text-medium-emphasis pt-5">*indicates required
-            field
+          <small class="d-flex justify-center text-caption text-medium-emphasis pt-5">* indica campos obrigatórios
           </small>
         </v-card-text>
 
@@ -66,15 +58,14 @@ import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha'
 import { authServices } from '@/services/authService'
 import type { ConfirmarSenha } from '@/models/authModels/LoginModel'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
-import { usuarioAutenticado } from '@/stores/usuarioAutenticado'
 
 const formRef = ref()
 const formIsValid = ref(false)
 const rules = {
-  required: (v: string | number) => !!v || 'Required field',
-  min: (v: string | any[]) => v.length >= 8 || 'Min 8 characters',
-  max: (v: string | any[]) => v.length <= 100 || 'Max 100 characters',
-  equals: (equal: string | number, v: string | number) => v == equal || 'Passwords do not match',
+  required: (v: string | number) => !!v || 'Campo obrigatório',
+  min: (v: string | any[]) => v.length >= 8 || 'Mínimo 8 caracteres',
+  max: (v: string | any[]) => v.length <= 100 || 'Máximo 100 caracteres',
+  equals: (equal: string | number, v: string | number) => v == equal || 'As senhas não coincidem',
 }
 
 const confirmarSenha = ref<ConfirmarSenha>({
@@ -113,11 +104,16 @@ function resetForm() {
 async function submitForm() {
   try {
     await authServices().confirmarSenha(confirmarSenha.value)
-    useSnackbarStore().showSnackbar('Success!', 'success')
+
+    if (dialogStoreConfirmarSenha.callbackPosSenha)
+      await dialogStoreConfirmarSenha.callbackPosSenha()
+
+    dialogStoreConfirmarSenha.closeDialogConfirmarSenha()
+
+    useSnackbarStore().showSnackbar('Operação realizada com sucesso!', 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
   }
-  await dialogStoreConfirmarSenha.identificarDelete()
 }
 
 </script>

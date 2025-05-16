@@ -142,8 +142,8 @@ import { useSnackbarStore } from '@/stores/SnackbarStore';
 
 const expandedUserId = ref<number | null>(null)
 const hover = ref(false)
-const usersDialog = useDialogStoreUsers()
 const userService = usuariosServices()
+const usersDialog = useDialogStoreUsers()
 const apiUsers = usersDialog.apiUsers
 const idSearch = ref<number | string>()
 const paginator = usePaginator()
@@ -161,17 +161,24 @@ function completeFormEditUserDialog(user: UsuarioConsulta) {
 }
 
 async function toggleBloqueioUsuario(user: UsuarioConsulta) {
-  await usersDialog.toggleBloqueioUsuario(user)
+  try {
+    await usersDialog.toggleBloqueioUsuario(user)
+    useSnackbarStore().showSnackbar(`Usuário ${user.contaBloqueada ? 'desbloqueado' : 'bloqueado'} com sucesso!`, 'success')
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  }
 }
 
 async function toggleUsuarioAtivo(user: UsuarioConsulta) {
-  await usersDialog.toggleUsuarioAtivo(user)
+  try {
+    await usersDialog.toggleUsuarioAtivo(user)
+    useSnackbarStore().showSnackbar(`Usuário ${user.ativo ? 'inativado' : 'ativado'} com sucesso!`, 'success')
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  }
 }
-
-// function deleteUser(idUser: number) {
-//   useDialogStoreConfirmarSenha().openDialogConfirmarSenha()
-//   useDialogStoreConfirmarSenha().setarIdentificacaoOperacaoDelete('user', idUser)
-// }
 
 function deleteUser(idUser: number) {
   const store = useDialogStoreConfirmarSenha()
@@ -194,13 +201,18 @@ function toggleUser(id: number) {
 }
 
 async function getUserById(idUser: number | string) {
-  const user = await userService.getUserById(idUser)
-  apiUsers.value = {
-    limite: 1,
-    offset: 1,
-    totalPaginas: 1,
-    totalRegistros: 1,
-    registros: [user]
+  try {
+    const user = await userService.getUserById(idUser)
+    apiUsers.value = {
+      limite: 1,
+      offset: 1,
+      totalPaginas: 1,
+      totalRegistros: 1,
+      registros: [user]
+    }
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
   }
 }
 
@@ -209,9 +221,9 @@ onMounted(async () => {
   paginator.carregarFiltrosDaAPI(apiUsers.value!)
 })
 
-watch(() => idSearch.value, (newValue) => {
+watch(() => idSearch.value, async (newValue) => {
   if (newValue !== null && newValue !== '')
-    getUserById(newValue!)
+    await getUserById(newValue!)
   else
     getAllUsers()
 })
