@@ -1,6 +1,6 @@
 import type { Task } from '@/models/TaskModel'
 import { todoServices } from '@/services/todoService'
-import { usersServices } from '@/services/usersService'
+import { usuariosServices } from '@/services/usuariosService'
 import { ref } from 'vue'
 
 const showDialogTask = ref(false)
@@ -70,7 +70,7 @@ async function getEmployeeName(task: Task) {
     return
   }
   try {
-    const user = await usersServices().getUserById(task.idEmployee)
+    const user = await usuariosServices().getUserById(task.idEmployee)
     employeeName.value = user.nome
   } catch (error) {
     employeeName.value = 'User not found'

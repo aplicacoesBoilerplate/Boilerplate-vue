@@ -68,6 +68,15 @@ async function createUser(newUser: UsuarioConsulta): Promise<UsuarioConsulta> {
   }
 }
 
+async function solicitarAcesso(newUser: UsuarioConsulta): Promise<UsuarioConsulta> {
+  try {
+    const response = await http.post('/usuarios/registrar', newUser)
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
 async function updateUser(user: UsuarioConsulta): Promise<UsuarioConsulta> {
   await getUserById(user.idUsuario!)
   try {
@@ -93,12 +102,13 @@ async function deleteUser(id: number): Promise<void> {
   }
 }
 
-export function usersServices() {
+export function usuariosServices() {
   return {
     getAllUsers,
     getUserById,
     getUserByIdSemSnackBarSuccess,
     createUser,
+    solicitarAcesso,
     updateUser,
     deleteUser,
   }

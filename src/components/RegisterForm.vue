@@ -1,16 +1,17 @@
 <template>
+  <SnackbarNotifications />
   <div>
     <v-card class="mx-auto" width="650">
       <v-card-title class="d-flex justify-center pt-5">
-        Register your account
+        Dados de acesso
       </v-card-title>
-      <v-form ref="formRef" v-model="formIsValid">
+      <v-form ref="formRef" v-model="formIsValid" @submit.prevent="solicitarAcesso()">
         <v-container class="d-flex justify-center mb-6">
           <v-col cols="12">
             <v-row dense>
               <v-col cols="6">
-                <v-text-field clearable v-model="newUser.username" :counter="100" :rules="[rules.required, rules.max]"
-                  label="Username*" required />
+                <v-text-field clearable v-model="newUser.nome" :counter="100" :rules="[rules.required, rules.max]"
+                  label="Nome de usuário*" required />
               </v-col>
 
               <v-col cols="6">
@@ -20,7 +21,7 @@
 
               <v-col cols="6">
                 <v-text-field clearable v-model="newUser.senha" :rules="[rules.required, rules.min, rules.max]"
-                  :type="showPassword1 ? 'text' : 'password'" hint="At least 8 characters" label="Password*" counter>
+                  :type="showPassword1 ? 'text' : 'password'" hint="Mínimo de 8 caracteres" label="Senha*" counter>
                   <template v-slot:append-inner>
                     <v-btn :icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword1 = !showPassword1"
                       variant="text" />
@@ -30,7 +31,7 @@
 
               <v-col cols="6">
                 <v-text-field clearable v-model="newUser.confirmarSenha" :rules="[rules.required, rules.equals]"
-                  :type="showPassword2 ? 'text' : 'password'" label="Confirm your password*" counter>
+                  :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*" counter>
                   <template v-slot:append-inner>
                     <v-btn :icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword2 = !showPassword2"
                       variant="text" />
@@ -39,7 +40,8 @@
               </v-col>
 
               <v-col cols="12">
-                <v-btn class="mt-2" type="submit" :disabled="!formIsValid" block color="success">Create your account
+                <v-btn class="mt-2" type="submit" :disabled="!formIsValid" block color="success">Realizar solicitação de
+                  acesso
                 </v-btn>
               </v-col>
             </v-row>
@@ -51,6 +53,9 @@
 </template>
 
 <script setup lang="ts">
+import { usuariosServices } from '@/services/usuariosService'
+import { useSnackbarStore } from '@/stores/SnackbarStore'
+import SnackbarNotifications from './Snackbar.vue'
 import { ref } from 'vue'
 
 const formRef = ref()
@@ -59,25 +64,32 @@ const showPassword1 = ref(false)
 const showPassword2 = ref(false)
 const newUser = ref(
   {
-    username: '',
+    nome: '',
     email: '',
     senha: '',
-    permissao: 'USER',
-    bloqueado: true,
-    ativo: false,
     confirmarSenha: ''
   }
 )
 
 const rules = {
-  required: (v: string | number) => !!v || 'Required field',
+  required: (v: string | number) => !!v || 'Campo obrigatório',
   emailFormat: (value: string) => {
     if (/.+@.+\..+/.test(value)) return true
-    return 'E-mail must be valid.'
+    return 'Formato de e-mail inválido.'
   },
-  min: (v: string | any[]) => v.length >= 8 || 'Min 8 characters',
-  max: (v: string | any[]) => v.length <= 100 || 'Max 100 characters',
-  equals: (v: string | number) => v == newUser.value.senha || 'Passwords do not match',
+  min: (v: string | any[]) => v.length >= 8 || 'Mínimo de 8 caracteres',
+  max: (v: string | any[]) => v.length <= 100 || 'Máximo 100 caracteres',
+  equals: (v: string | number) => v == newUser.value.senha || 'As senhas não coincidem',
+}
+
+async function solicitarAcesso() {
+  try {
+    await usuariosServices().solicitarAcesso(newUser.value)
+    useSnackbarStore().showSnackbar('Conta registrada, aguarde a liberação de um administrador', 'success')
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  }
 }
 
 </script>
