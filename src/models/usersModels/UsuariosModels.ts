@@ -23,15 +23,15 @@ export interface AtualizarUsuario {
 
 // Consulta de usuário
 export interface UsuarioConsulta {
-  idUsuario: number
+  idUsuario?: number
   nome: string
   email: string
-  permissao: string
-  autorizaSaida: boolean
-  ativo: boolean
-  contaBloqueada: boolean
+  permissao?: string
+  autorizaSaida?: boolean
+  ativo?: boolean
+  contaBloqueada?: boolean
   contaExpiraEm?: Date
-  senhaExpirada: boolean
+  senhaExpirada?: boolean
   tentativasFalhas?: number
 }
 
@@ -41,7 +41,8 @@ export interface UsuarioDetais {
   enabled: boolean // Ativo com o valor invertido
   accountNonLocked: boolean // Bloqueado com o valor invertido
   username: string // E-mail
-  authorities: [ // Lista de roles com base na permissão
+  authorities: [
+    // Lista de roles com base na permissão
     {
       authority: string
     },

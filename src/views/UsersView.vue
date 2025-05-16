@@ -133,7 +133,7 @@
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue';
 import { useDialogStoreUsers } from '../components/dialog/dialogUser/dialogStoreUsers'
 import { onMounted, ref, watch } from 'vue';
-import { usersServices } from '@/services/usersService';
+import { usuariosServices } from '@/services/usuariosService';
 import Paginator from '@/components/paginator/Paginator.vue'
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
 import { usePaginator } from '@/components/paginator/paginatorStore';
@@ -143,7 +143,7 @@ import { useSnackbarStore } from '@/stores/SnackbarStore';
 const expandedUserId = ref<number | null>(null)
 const hover = ref(false)
 const usersDialog = useDialogStoreUsers()
-const userService = usersServices()
+const userService = usuariosServices()
 const apiUsers = usersDialog.apiUsers
 const idSearch = ref<number | string>()
 const paginator = usePaginator()
@@ -177,12 +177,12 @@ function deleteUser(idUser: number) {
   const store = useDialogStoreConfirmarSenha()
   store.setCallbackPosSenha(async () => {
     try {
-      await usersServices().deleteUser(idUser)
+      await usuariosServices().deleteUser(idUser)
       useSnackbarStore().showSnackbar('Usuário removido!', 'success')
     } catch (error) {
       useSnackbarStore().showSnackbar(error, 'red')
     } finally {
-      useDialogStoreUsers().apiUsers.value = await usersServices().getAllUsers()
+      useDialogStoreUsers().apiUsers.value = await usuariosServices().getAllUsers()
     }
   })
 
