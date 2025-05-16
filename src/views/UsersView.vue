@@ -92,29 +92,29 @@
 
               <v-col sm="6" md="8" class="d-flex justify-center">
                 <v-icon class="pt-3">mdi-badge-account-outline</v-icon>
-                <v-chip color="info">
-                  {{ user.permissao }}<br>
+                <v-chip :color="user.permissao != null ? 'info' : 'red'">
+                  {{ user.permissao != null ? user.permissao : 'Permissão pendente' }}<br>
                 </v-chip>
               </v-col>
             </v-row>
 
             <v-row dense>
               <v-col sm="3" md="2" class="d-flex justify-center">
+                <v-chip :color="!user.senhaExpirada ? 'success' : 'red'">
+                  senha {{ user.senhaExpirada ? 'expirada' : 'válida' }}
+                </v-chip>
+              </v-col>
+
+              <v-col sm="3" md="2" class="d-flex justify-center">
                 <v-chip :color="user.autorizaSaida ? 'success' : 'red'">
                   {{ user.autorizaSaida ? 'Autoriza' : 'Não autoriza' }}
                 </v-chip>
               </v-col>
 
-              <v-col sm="3" md="2" class="d-flex justify-center">
-                <v-chip :color="!user.senhaExpirada ? 'success' : 'red'">
-                  {{ user.senhaExpirada ? 'Expirada' : 'Válida' }}
-                </v-chip>
-              </v-col>
-
-              <v-col sm="6" md="8" class="d-flex justify-center">
+              <v-col sm="6" md="8" class="d-flex justify-center" v-if="user.contaExpiraEm">
                 <v-icon class="pt-3">mdi-account-clock-outline</v-icon>
                 <v-chip color="warning">
-                  <strong>Expiração:</strong>
+                  <strong>Data expiração:</strong>
                   {{ user.contaExpiraEm }}<br>
                 </v-chip>
               </v-col>

@@ -12,7 +12,7 @@
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="user.email" :counter="100" hint="E-mail de acesso*" persistent-hint
+              <v-text-field clearable v-model="user.email" :counter="100" hint="E-mail de acesso" persistent-hint
                 label="e-mail*" :rules="[rules.required, rules.min, rules.max, rules.emailFormat]"></v-text-field>
             </v-col>
 
