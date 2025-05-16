@@ -3,32 +3,30 @@
     <v-btn icon @click="openNewUser()" class="animated-btn">
       <v-icon :class="{ rotate: hover }" color="white">mdi-plus-circle-outline</v-icon>
     </v-btn>
-    <span class="button-label" :class="{ visible: hover }">Create a new user</span>
+    <span class="button-label" :class="{ visible: hover }">Criar novo usuário</span>
   </div>
   <DialogUsers />
 
   <div v-if="apiUsers?.totalRegistros == 0" class="pt-4">
-    <v-alert text="Before viewing the tasks, you must register them and they will then be available below."
-      title="No tasks registered!" type="info" variant="tonal">
+    <v-alert text="Nenhum usuário encontrado!" type="info" variant="tonal">
     </v-alert>
   </div>
 
   <v-card v-else class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
-      <span class="text-h6">Company Employees List</span>
-      <v-btn title="Order" variant="outlined" color="primary" density="compact" @click="toggleOrderBy()">
+      <span class="text-h6">Lista de usuários</span>
+      <v-btn title="Ordem" variant="outlined" color="primary" density="compact" @click="toggleOrderBy()">
         <v-icon>{{ paginator.filtrosPaginator.value.orderBy! == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up"
         }}</v-icon></v-btn>
-      <v-text-field clearable v-model="idSearch" density="compact" variant="outlined"
-        placeholder="Search employee by register" hide-details prepend-inner-icon="mdi-magnify"
-        style="max-width: 300px" />
+      <v-text-field clearable v-model="idSearch" density="compact" variant="outlined" placeholder="Buscar pelo registro"
+        hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
     </v-card-title>
     <v-divider />
 
     <v-virtual-scroll :items="apiUsers?.registros" height="500" item-height="50">
       <template v-slot:default="{ item: user }">
-        <v-list-item :title="`${user.idUsuario} - ${user.nome.toUpperCase()}`"
-          :subtitle="`#${user.permissao} email: ${user.email}`">
+        <v-list-item :title="`${user.idUsuario} - ${user.nome.toUpperCase()}`" :subtitle="`#email: ${user.email}`"
+          :hidden="user.idUsuario == 1">
           <template v-slot:prepend>
             <v-icon>mdi-card-account-details-outline</v-icon>
           </template>
@@ -36,39 +34,41 @@
           <template v-slot:append>
             <div class="pe-2">
               <v-btn size="small" variant="elevated" color="dark" icon="mdi-information-outline"
-                @click="toggleUser(user.idUsuario!)">
+                @click="toggleUser(user.idUsuario!)" title="Informações">
               </v-btn>
             </div>
 
             <v-menu transition="scale-transition">
               <template v-slot:activator="{ props }">
-                <v-btn size="small" color="primary" v-bind="props" icon="mdi-dots-vertical" />
+                <v-btn size="small" color="primary" v-bind="props" icon="mdi-dots-vertical" title="Opções" />
               </template>
               <v-list>
                 <v-list-item>
                   <v-list-item-title>
                     <v-btn icon="mdi-pencil" size="x-small" variant="tonal" color="primary"
-                      @click="completeFormEditUserDialog(user)" />
+                      @click="completeFormEditUserDialog(user)" :disabled="user.idUsuario == 1" title="Editar" />
                     <span class="pr-2" />
 
                     <RouterLink to="/tasks" custom v-slot="{ navigate }">
                       <v-btn icon="mdi-format-list-bulleted" size="x-small" variant="tonal" color="primary"
-                        @click="navigate" />
+                        @click="navigate" :disabled="user.idUsuario == 1" title="Vínculos" />
                     </RouterLink>
                     <span class="pr-2" />
 
                     <v-btn :icon="user.contaBloqueada ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline'"
                       size="x-small" variant="tonal" :color="user.contaBloqueada ? 'red' : 'success'"
-                      @click="toggleBloqueioUsuario(user)" />
+                      @click="toggleBloqueioUsuario(user)" :disabled="user.idUsuario == 1"
+                      :title="user.contaBloqueada ? 'Desbloquear' : 'Bloquear'" />
                     <span class="pr-2" />
 
                     <v-btn :icon="user.ativo ? 'mdi-account-check-outline' : 'mdi-account-cancel-outline'"
                       size="x-small" variant="tonal" :color="user.ativo ? 'success' : 'red'"
-                      @click="toggleUsuarioAtivo(user)" />
+                      @click="toggleUsuarioAtivo(user)" :disabled="user.idUsuario == 1"
+                      :title="user.ativo ? 'Inativar' : 'Ativar'" />
                     <span class="pr-2" />
 
                     <v-btn icon="mdi-delete-outline" size="x-small" variant="tonal" color="red"
-                      @click="deleteUser(user.idUsuario!)" :disabled="user.idUsuario == 1" />
+                      @click="deleteUser(user.idUsuario!)" :disabled="user.idUsuario == 1" title="Remover" />
                   </v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -77,26 +77,49 @@
         </v-list-item>
         <v-expand-transition>
           <div v-if="expandedUserId === user.idUsuario" class="custom-expansion-panel">
-            <v-row>
+            <v-row dense>
               <v-col sm="3" md="2" class="d-flex justify-center">
                 <v-chip :color="user.ativo ? 'success' : 'red'">
-                  Active
+                  {{ user.ativo ? 'Ativo' : 'Inativo' }}
                 </v-chip>
               </v-col>
 
               <v-col sm="3" md="2" class="d-flex justify-center">
                 <v-chip :color="!user.contaBloqueada ? 'success' : 'red'">
-                  Blocked
+                  {{ user.contaBloqueada ? 'Bloqueado' : 'Liberado' }}
                 </v-chip>
               </v-col>
 
               <v-col sm="6" md="8" class="d-flex justify-center">
-                <strong>Permision:</strong>
+                <v-icon class="pt-3">mdi-badge-account-outline</v-icon>
                 <v-chip color="info">
                   {{ user.permissao }}<br>
                 </v-chip>
               </v-col>
             </v-row>
+
+            <v-row dense>
+              <v-col sm="3" md="2" class="d-flex justify-center">
+                <v-chip :color="user.autorizaSaida ? 'success' : 'red'">
+                  {{ user.autorizaSaida ? 'Autoriza' : 'Não autoriza' }}
+                </v-chip>
+              </v-col>
+
+              <v-col sm="3" md="2" class="d-flex justify-center">
+                <v-chip :color="!user.senhaExpirada ? 'success' : 'red'">
+                  {{ user.senhaExpirada ? 'Expirada' : 'Válida' }}
+                </v-chip>
+              </v-col>
+
+              <v-col sm="6" md="8" class="d-flex justify-center">
+                <v-icon class="pt-3">mdi-account-clock-outline</v-icon>
+                <v-chip color="warning">
+                  <strong>Expiração:</strong>
+                  {{ user.contaExpiraEm }}<br>
+                </v-chip>
+              </v-col>
+            </v-row>
+
           </div>
         </v-expand-transition>
         <v-divider />
@@ -109,7 +132,6 @@
 <script setup lang="ts">
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue';
 import { useDialogStoreUsers } from '../components/dialog/dialogUser/dialogStoreUsers'
-
 import { onMounted, ref, watch } from 'vue';
 import { usersServices } from '@/services/usersService';
 import Paginator from '@/components/paginator/Paginator.vue'
