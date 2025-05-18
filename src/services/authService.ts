@@ -1,7 +1,6 @@
-import type { ConfirmarSenha, LoginModel } from '@/models/authModels/LoginModel'
+import type {ConfirmarSenha, LoginModel} from '@/models/authModels/LoginModel'
 import http from './axios'
-import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
-import { usuarioAutenticado } from '@/stores/usuarioAutenticado'
+import type {UsuarioConsulta} from '@/models/usersModels/UsuariosModels'
 
 async function login(loginData: LoginModel): Promise<string> {
   try {
@@ -39,11 +38,20 @@ async function getByToken(): Promise<UsuarioConsulta> {
   }
 }
 
+async function resetarSenhaAoPadrao(emailUsuario: string) {
+  try {
+    await http.put(`/auth/resetar-senha?emailUsuario=${emailUsuario}`)
+  } catch (error) {
+    throw error
+  }
+}
+
 export function authServices() {
   return {
     login,
     logout,
     confirmarSenha,
     getByToken,
+    resetarSenhaAoPadrao
   }
 }
