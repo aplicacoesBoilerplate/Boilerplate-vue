@@ -7,7 +7,7 @@
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="user.nome" :counter="100" :rules="[rules.required, rules.min, rules.max]"
+              <v-text-field clearable v-model="user.nome" :counter="100" :rules="[rules.required, rules.max]"
                 label="Nome de usuário*" required></v-text-field>
             </v-col>
 
