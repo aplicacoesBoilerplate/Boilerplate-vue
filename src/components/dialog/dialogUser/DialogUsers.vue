@@ -72,18 +72,18 @@
 
         <v-card-actions>
           <v-btn color="warning" variant="plain" @click="clearFields()">
-            <v-icon>mdi-refresh</v-icon>
+            <v-icon class="pt-1">mdi-refresh</v-icon>
             Limpar
           </v-btn>
           <v-spacer/>
 
           <v-btn color="red" variant="plain" @click="resetForm()">
-            <v-icon>mdi-close</v-icon>
+            <v-icon class="pt-1">mdi-close</v-icon>
             Fechar
           </v-btn>
           <v-btn color="success" variant="tonal" :disabled="!formIsValid"
                  type="submit">
-            <v-icon>mdi-content-save-check</v-icon>
+            <v-icon class="pt-1">mdi-content-save-check</v-icon>
             Salvar
           </v-btn>
         </v-card-actions>

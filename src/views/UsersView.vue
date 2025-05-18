@@ -9,6 +9,9 @@
 
   <div v-if="apiUsers?.totalRegistros == 0" class="pt-4">
     <v-alert text="Nenhum usuário encontrado!" type="info" variant="tonal">
+      <template v-slot:append>
+        <v-btn color="warning" variant="plain" @click="clearSearch()"><v-icon class="pt-1">mdi-refresh</v-icon> Refresh</v-btn>
+      </template>
     </v-alert>
   </div>
 
@@ -23,7 +26,7 @@
         </v-icon>
       </v-btn>
       <v-text-field clearable v-model="paginator.filtrosPaginator.value.search!" density="compact" variant="outlined"
-                    placeholder="Buscar pelo registro"
+                    placeholder="Consultar usuários"
                     hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px"/>
     </v-card-title>
     <v-divider/>
@@ -259,6 +262,10 @@ async function searchUsuarios(search: string) {
   }
 }
 
+function clearSearch() {
+  paginator.filtrosPaginator.value.search = ''
+}
+
 onMounted(async () => {
   await getAllUsers()
   paginator.carregarFiltrosDaAPI(apiUsers.value!)
@@ -272,7 +279,7 @@ watch(() => idSearch.value, async (newValue) => {
 })
 
 watch(() => paginator.filtrosPaginator.value, () => {
-  if (paginator.filtrosPaginator.value.search! != null || paginator.filtrosPaginator.value.search! != '')
+  if (paginator.filtrosPaginator.value.search! != null && paginator.filtrosPaginator.value.search! != '')
     searchUsuarios(paginator.filtrosPaginator.value.search!)
   else
     getAllUsers()

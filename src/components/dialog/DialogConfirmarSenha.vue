@@ -38,14 +38,14 @@
         <v-divider></v-divider>
 
         <v-card-actions>
-          <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon>mdi-refresh</v-icon> Refresh</v-btn>
+          <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon class="pt-1">mdi-refresh</v-icon> Refresh</v-btn>
           <v-spacer></v-spacer>
 
           <v-btn color="red" variant="plain"
-            @click="dialogStoreConfirmarSenha.closeDialogConfirmarSenha()"><v-icon>mdi-close</v-icon>Close</v-btn>
+            @click="dialogStoreConfirmarSenha.closeDialogConfirmarSenha()"><v-icon class="pt-1">mdi-close</v-icon>Close</v-btn>
 
           <v-btn color="success" variant="tonal" :disabled="!formIsValid"
-            type="submit"><v-icon>mdi-content-save-check</v-icon>Save</v-btn>
+            type="submit"><v-icon>mdi-content-save-check</v-icon class="pt-1">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-form>
