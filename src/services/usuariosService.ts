@@ -26,6 +26,19 @@ async function getAllUsers(): Promise<HeaderPaginatorModel<UsuarioConsulta>> {
   }
 }
 
+async function searchUsuarios(search: string) {
+  try {
+    const filtrosPaginator = usePaginator().filtrosPaginator
+    const cleanedFilters = useUtils().removeUndefined(filtrosPaginator.value)
+    const response = await http.get('/usuarios/search', {
+      params: cleanedFilters,
+    })
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
 async function getUserById(id: number | string): Promise<UsuarioConsulta> {
   try {
     const filtrosPaginator = usePaginator().filtrosPaginator
@@ -93,10 +106,12 @@ async function deleteUser(id: number): Promise<void> {
 export function usuariosServices() {
   return {
     getAllUsers,
+    searchUsuarios,
     getUserById,
     createUser,
     solicitarAcesso,
     updateUser,
-    deleteUser,
+    deleteUser
   }
+
 }

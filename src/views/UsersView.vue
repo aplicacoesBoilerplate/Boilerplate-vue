@@ -22,7 +22,7 @@
           }}
         </v-icon>
       </v-btn>
-      <v-text-field clearable v-model="idSearch" density="compact" variant="outlined"
+      <v-text-field clearable v-model="paginator.filtrosPaginator.value.search!" density="compact" variant="outlined"
                     placeholder="Buscar pelo registro"
                     hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px"/>
     </v-card-title>
@@ -165,7 +165,7 @@ const hover = ref(false)
 const userService = usuariosServices()
 const usersDialog = useDialogStoreUsers()
 const apiUsers = usersDialog.apiUsers
-const idSearch = ref<number | string>()
+const idSearch = ref<string>()
 const paginator = usePaginator()
 const confirmarSenha = useDialogStoreConfirmarSenha()
 
@@ -250,6 +250,15 @@ async function getUserById(idUser: number | string) {
   }
 }
 
+async function searchUsuarios(search: string) {
+  try {
+    apiUsers.value = await userService.searchUsuarios(search)
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  }
+}
+
 onMounted(async () => {
   await getAllUsers()
   paginator.carregarFiltrosDaAPI(apiUsers.value!)
@@ -257,13 +266,16 @@ onMounted(async () => {
 
 watch(() => idSearch.value, async (newValue) => {
   if (newValue !== null && newValue !== '')
-    await getUserById(newValue!)
+    await searchUsuarios(newValue!)
   else
     getAllUsers()
 })
 
 watch(() => paginator.filtrosPaginator.value, () => {
-  getAllUsers()
+  if (paginator.filtrosPaginator.value.search! != null || paginator.filtrosPaginator.value.search! != '')
+    searchUsuarios(paginator.filtrosPaginator.value.search!)
+  else
+    getAllUsers()
 }, {deep: true})
 
 function toggleOrderBy() {
