@@ -7,15 +7,7 @@
   </div>
   <DialogUsers/>
 
-  <div v-if="apiUsers?.totalRegistros == 0" class="pt-4">
-    <v-alert text="Nenhum usuário encontrado!" type="info" variant="tonal">
-      <template v-slot:append>
-        <v-btn color="warning" variant="plain" @click="clearSearch()"><v-icon class="pt-1">mdi-refresh</v-icon> Refresh</v-btn>
-      </template>
-    </v-alert>
-  </div>
-
-  <v-card v-else class="mx-auto" max-width="700">
+  <v-card class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de usuários</span>
       <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
@@ -31,7 +23,22 @@
     </v-card-title>
     <v-divider/>
 
-    <v-virtual-scroll :items="apiUsers?.registros" height="500" item-height="50">
+    <div class="d-flex justify-center" v-if="loading">
+      <v-progress-circular
+      color="primary"
+      indeterminate
+      ></v-progress-circular>
+    </div>
+
+    <div v-if="apiUsers?.totalRegistros == 0 && loading == false" class="pt-4">
+      <v-alert text="Nenhum usuário encontrado!" type="info" variant="tonal">
+        <template v-slot:append>
+          <v-btn color="warning" variant="plain" @click="clearSearch()"><v-icon class="pt-1">mdi-refresh</v-icon> Refresh</v-btn>
+        </template>
+      </v-alert>
+    </div>
+
+    <v-virtual-scroll :items="apiUsers?.registros" height="500" item-height="50" v-else>
       <template v-slot:default="{ item: user }">
         <v-list-item :title="`${user.idUsuario} - ${user.nome.toUpperCase()}`"
                      :subtitle="`#email: ${user.email}`">
@@ -100,44 +107,60 @@
         <v-expand-transition>
           <div v-if="expandedUserId === user.idUsuario" class="custom-expansion-panel">
             <v-row dense>
-              <v-col sm="3" md="2" class="d-flex justify-center">
+              <v-col cols="6" class="d-flex justify-center">
                 <v-chip :color="user.ativo ? 'success' : 'red'">
+                  Conta está ativa?
                   {{ user.ativo ? 'Ativo' : 'Inativo' }}
                 </v-chip>
               </v-col>
 
-              <v-col sm="3" md="2" class="d-flex justify-center">
+              <v-divider vertical />
+
+              <v-col cols="6" class="d-flex justify-center">
                 <v-chip :color="!user.contaBloqueada ? 'success' : 'red'">
+                  Login está liberado?
                   {{ user.contaBloqueada ? 'Bloqueado' : 'Liberado' }}
                 </v-chip>
               </v-col>
 
-              <v-col sm="6" md="8" class="d-flex justify-center">
+              <v-divider/>
+            </v-row>
+
+            <v-row dense>
+              <v-col cols="6" class="d-flex justify-center">
+                <v-chip :color="!user.senhaExpirada ? 'success' : 'red'">
+                  Estado da senha?
+                  {{ user.senhaExpirada ? 'Expirada' : 'Válida' }}
+                </v-chip>
+              </v-col>
+
+              <v-divider vertical/>
+
+              <v-col cols="6" class="d-flex justify-center">
+                <v-chip :color="user.autorizaSaida ? 'success' : 'red'">
+                  Autoriza saídas?
+                  {{ user.autorizaSaida ? 'Autoriza' : 'Não autoriza' }}
+                </v-chip>
+              </v-col>
+              <v-divider />
+            </v-row>
+
+
+            <v-row dense>
+              <v-col cols="6" class="d-flex justify-center">
                 <v-icon class="pt-3">mdi-badge-account-outline</v-icon>
                 <v-chip :color="user.permissao != null ? 'info' : 'red'">
                   {{ user.permissao != null ? user.permissao : 'Permissão pendente' }}<br>
                 </v-chip>
               </v-col>
-            </v-row>
 
-            <v-row dense>
-              <v-col sm="3" md="2" class="d-flex justify-center">
-                <v-chip :color="!user.senhaExpirada ? 'success' : 'red'">
-                  senha {{ user.senhaExpirada ? 'expirada' : 'válida' }}
-                </v-chip>
-              </v-col>
+              <v-divider vertical/>
 
-              <v-col sm="3" md="2" class="d-flex justify-center">
-                <v-chip :color="user.autorizaSaida ? 'success' : 'red'">
-                  {{ user.autorizaSaida ? 'Autoriza' : 'Não autoriza' }}
-                </v-chip>
-              </v-col>
-
-              <v-col sm="6" md="8" class="d-flex justify-center" v-if="user.contaExpiraEm">
-                <v-icon class="pt-3">mdi-account-clock-outline</v-icon>
+              <v-col cols="6" class="d-flex justify-center">
+                <v-icon class="pt-2 pr-2">mdi-account-clock-outline</v-icon>
                 <v-chip color="warning">
                   <strong>Data expiração:</strong>
-                  {{ user.contaExpiraEm }}<br>
+                  {{ user.contaExpiraEm || "Sem previsão" }}
                 </v-chip>
               </v-col>
             </v-row>
@@ -148,7 +171,11 @@
       </template>
     </v-virtual-scroll>
   </v-card>
-  <Paginator/>
+  <Paginator
+    :paginaAtual="apiUsers?.offset!"
+    :totalPaginas="apiUsers?.totalPaginas!"
+    v-if="apiUsers?.totalRegistros! > 0 && !loading"
+  />
 </template>
 
 <script setup lang="ts">
@@ -162,6 +189,7 @@ import {usePaginator} from '@/components/paginator/paginatorStore';
 import {useDialogStoreConfirmarSenha} from '@/stores/dialogStoreConfirmaSenha';
 import {useSnackbarStore} from '@/stores/SnackbarStore';
 import {authServices} from "@/services/authService.ts";
+import { loadingStore } from '@/stores/loadingStore';
 
 const expandedUserId = ref<number | null>(null)
 const hover = ref(false)
@@ -171,10 +199,7 @@ const apiUsers = usersDialog.apiUsers
 const idSearch = ref<string>()
 const paginator = usePaginator()
 const confirmarSenha = useDialogStoreConfirmarSenha()
-
-async function getAllUsers() {
-  apiUsers.value = await userService.getAllUsers()
-}
+const loading = loadingStore().inLoading
 
 function openNewUser() {
   usersDialog.startCreatingNewUser()
@@ -253,8 +278,20 @@ async function getUserById(idUser: number | string) {
   }
 }
 
+async function getAllUsers() {
+  try {
+    apiUsers.value = await userService.getAllUsers()
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  } finally {
+
+  }
+}
+
 async function searchUsuarios(search: string) {
   try {
+
     apiUsers.value = await userService.searchUsuarios(search)
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
@@ -301,4 +338,9 @@ strong {
   padding-right: 0.5rem;
   text-decoration: none;
 }
+
+.v-progress-circular {
+  margin: 1rem;
+}
+
 </style>

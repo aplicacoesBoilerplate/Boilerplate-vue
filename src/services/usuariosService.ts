@@ -33,6 +33,14 @@ async function searchUsuarios(search: string) {
     const response = await http.get('/usuarios/search', {
       params: cleanedFilters,
     })
+
+    usePaginator().carregarFiltrosDaAPI({
+      limite: filtrosPaginator.value.limite,
+      offset: filtrosPaginator.value.offset,
+      totalPaginas: response.data.totalPaginas,
+      totalRegistros: response.data.totalRegistros,
+    })
+
     return response.data
   } catch (error) {
     throw error

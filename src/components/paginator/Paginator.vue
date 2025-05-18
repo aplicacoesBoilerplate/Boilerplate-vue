@@ -14,6 +14,8 @@ import { ref, watch } from 'vue'
 import { usePaginator } from './paginatorStore'
 
 const props = defineProps<{
+  paginaAtual: number
+  totalPaginas: number
   visiveis?: number
   desabilitado?: boolean
 }>()

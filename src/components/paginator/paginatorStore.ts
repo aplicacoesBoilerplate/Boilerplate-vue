@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue'
+import { ref } from 'vue'
 import { type FiltroPaginacao } from '@/models/FiltersModels'
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 
