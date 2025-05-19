@@ -44,6 +44,7 @@ import type { VForm } from 'vuetify/components'
 import { useRouter } from 'vue-router'
 import SnackbarNotifications from './Snackbar.vue'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
+import { usuarioAutenticado } from '@/stores/usuarioAutenticado'
 
 const formRef: Ref<VForm | null> = ref(null)
 
@@ -64,14 +65,17 @@ const authService = authServices()
 
 async function authLogin() {
   const isValid = await formRef.value?.validate()
-  if (!isValid) console.log("inválido: ", (await formRef.value?.validate()!).valid)
-
-  try {
-    await authService.login(loginForm.value!)
-    redirectRouter.push('/dashboard');
-  } catch (err) {
-    useSnackbarStore().showSnackbar(err, 'red')
-    throw err
+  if (isValid) {
+    try {
+      await authService.login(loginForm.value!)
+      redirectRouter.push('/dashboard');
+      const usuarioLogado = await authServices().getByToken()
+      usuarioAutenticado().usuario = usuarioLogado
+      useSnackbarStore().showSnackbar(`Bem-vindo, ${usuarioLogado.nome}!`, 'success')
+    } catch (err) {
+      useSnackbarStore().showSnackbar(err, 'red')
+      throw err
+    }
   }
 }
 

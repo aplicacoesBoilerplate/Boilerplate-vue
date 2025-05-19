@@ -24,6 +24,8 @@ const paginator = usePaginator()
 const newLimite = ref(paginator.filtrosPaginator.value.limite)
 const paginaAtual = ref(paginator.filtrosPaginator.value.offset)
 
+
+
 function setNewLimite() {
   paginator.setNewLimite(newLimite.value)
 }

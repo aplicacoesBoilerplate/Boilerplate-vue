@@ -8,7 +8,7 @@
             <v-col cols="12" md="6">
               <v-text-field clearable v-model="confirmarSenha.senha_usuario"
                 :rules="[rules.required, rules.min, rules.max]" :type="showPassword1 ? 'text' : 'password'"
-                hint="Mínimo de 8 caracteres" label="Senha*" name="input-InsertPassword" counter>
+                hint="Mínimo de 8 caracteres" label="Senha*" counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword1 = !showPassword1"
@@ -19,9 +19,9 @@
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field clearable v-model="confirmarSenha.confirmar_senha"
-                :rules="[rules.required, rules.equals(confirmarSenha.senha_usuario, confirmarSenha.confirmar_senha)]"
-                :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*" name="input-confirmPassword"
-                counter>
+                :rules="[rules.required, rules.equals(() => confirmarSenha.senha_usuario)]"
+                :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*"
+                hint="As senhas devem coincidir" counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword2 = !showPassword2"
@@ -38,11 +38,12 @@
         <v-divider></v-divider>
 
         <v-card-actions>
-          <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon class="pt-1">mdi-refresh</v-icon> Refresh</v-btn>
+          <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon class="pt-1">mdi-refresh</v-icon>
+            Refresh</v-btn>
           <v-spacer></v-spacer>
 
-          <v-btn color="red" variant="plain"
-            @click="dialogStoreConfirmarSenha.closeDialogConfirmarSenha()"><v-icon class="pt-1">mdi-close</v-icon>Close</v-btn>
+          <v-btn color="red" variant="plain" @click="dialogStoreConfirmarSenha.closeDialogConfirmarSenha()"><v-icon
+              class="pt-1">mdi-close</v-icon>Close</v-btn>
 
           <v-btn color="success" variant="tonal" :disabled="!formIsValid"
             type="submit"><v-icon>mdi-content-save-check</v-icon class="pt-1">Save</v-btn>
@@ -54,6 +55,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { rules } from '@/services/utilsServices'
 import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha'
 import { authServices } from '@/services/authService'
 import type { ConfirmarSenha } from '@/models/authModels/LoginModel'
@@ -61,12 +63,6 @@ import { useSnackbarStore } from '@/stores/SnackbarStore'
 
 const formRef = ref()
 const formIsValid = ref(false)
-const rules = {
-  required: (v: string | number) => !!v || 'Campo obrigatório',
-  min: (v: string | any[]) => v.length >= 8 || 'Mínimo 8 caracteres',
-  max: (v: string | any[]) => v.length <= 100 || 'Máximo 100 caracteres',
-  equals: (equal: string | number, v: string | number) => v == equal || 'As senhas não coincidem',
-}
 
 const confirmarSenha = ref<ConfirmarSenha>({
   email_usuario: '',

@@ -16,13 +16,10 @@
       </v-col>
     </v-row>
   </v-container>
-
-  {{ usuarioToken }}
 </template>
 
 <script setup lang="ts">
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
-import { authServices } from '@/services/authService';
 import { onMounted, ref } from 'vue';
 
 const indicadores = ref([
@@ -32,13 +29,6 @@ const indicadores = ref([
   { id: 3, hint: 'good', title: 'Tasks completed', amount: '3', about: 'Total number of completed tasks', color: 'success', icon: 'mdi-checkbox-marked-circle-auto-outline' },
   { id: 4, hint: 'undefined', title: 'Total tasks', amount: '13', about: 'Total number of tasks registered in the system regardless of status', color: '', icon: 'mdi-calendar-check-outline' }
 ])
-
-const usuarioToken = ref<UsuarioConsulta | null>(null)
-
-onMounted(async () => {
-  usuarioToken.value = await authServices().getByToken()
-})
-
 
 </script>
 

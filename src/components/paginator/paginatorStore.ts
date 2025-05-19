@@ -3,7 +3,7 @@ import { type FiltroPaginacao } from '@/models/FiltersModels'
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 
 const filtrosPaginator = ref<FiltroPaginacao>({
-  limite: 25,
+  limite: 10,
   offset: 1,
   orderBy: 'ASC',
 })
