@@ -15,7 +15,7 @@
       <v-btn title="Ordem" variant="outlined" color="primary" density="compact" @click="toggleOrderBy()">
         <v-icon>{{
           paginator.filtrosPaginator.value.orderBy! == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up"
-        }}
+          }}
         </v-icon>
       </v-btn>
       <v-text-field clearable v-model="paginator.filtrosPaginator.value.search!" density="compact" variant="outlined"
@@ -158,22 +158,31 @@
       </template>
     </v-virtual-scroll>
   </v-card>
-  <Paginator :paginaAtual="apiUsers?.offset!" :totalPaginas="apiUsers?.totalPaginas!"
-    v-if="apiUsers?.totalRegistros! > 0 && !loading" />
+  <Paginator :valor-campos="propsPaginator" v-if="apiUsers?.totalRegistros! > 0 && !loading" />
 </template>
 
 <script setup lang="ts">
+// Componentes
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue';
-import { useDialogStoreUsers } from '../components/dialog/dialogUser/dialogStoreUsers'
-import { onMounted, ref, watch } from 'vue';
-import { usuariosServices } from '@/services/usuariosService';
+import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers'
 import Paginator from '@/components/paginator/Paginator.vue'
-import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
 import { usePaginator } from '@/components/paginator/paginatorStore';
+
+// Store
 import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha';
 import { useSnackbarStore } from '@/stores/SnackbarStore';
-import { authServices } from "@/services/authService.ts";
 import { loadingStore } from '@/stores/loadingStore';
+
+// Models
+import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
+import type { FiltroPaginacao } from '@/models/FiltersModels';
+
+// Services
+import { usuariosServices } from '@/services/usuariosService';
+import { authServices } from "@/services/authService.ts";
+
+// Vue
+import { onMounted, ref, watch } from 'vue';
 
 const expandedUserId = ref<number | null>(null)
 const hover = ref(false)
@@ -183,6 +192,10 @@ const apiUsers = usersDialog.apiUsers
 const idSearch = ref<string>()
 const paginator = usePaginator()
 const confirmarSenha = useDialogStoreConfirmarSenha()
+const propsPaginator = ref<FiltroPaginacao>({
+  limite: 10,
+  offset: 1
+})
 let loading = loadingStore().inLoading
 
 const show = ref(true)
@@ -278,7 +291,7 @@ function clearSearch() {
 
 onMounted(async () => {
   await getAllUsers()
-  paginator.carregarFiltrosDaAPI(apiUsers.value!)
+  propsPaginator.value = paginator.carregarFiltrosDaAPI(apiUsers.value!)
 })
 
 watch(() => idSearch.value, async (newValue) => {

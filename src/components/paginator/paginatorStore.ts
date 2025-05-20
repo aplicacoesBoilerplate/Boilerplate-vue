@@ -36,10 +36,14 @@ function toggleOrderBy() {
 
 // Utilidade para onMounted e o paginator atualizar os filtros
 function carregarFiltrosDaAPI(headerPaginator: HeaderPaginatorModel<any>) {
-  filtrosPaginator.value.limite = headerPaginator.limite
-  filtrosPaginator.value.offset = headerPaginator.offset
-  totalPaginas.value = headerPaginator.totalPaginas
-  totalRegistros.value = headerPaginator.totalRegistros
+  const valorCampos = ref<FiltroPaginacao>({
+    limite: headerPaginator.limite,
+    offset: headerPaginator.offset,
+    totalPaginas: headerPaginator.totalPaginas,
+    totalRegistros: headerPaginator.totalRegistros,
+  })
+
+  return valorCampos.value
 }
 
 export function usePaginator() {

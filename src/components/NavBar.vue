@@ -11,7 +11,7 @@
         {{
           usuarioLogado.usuario.nome != ''
             ? `Controle de saídas - ${usuarioLogado.usuario.nome}`
-            : 'Controle desaídas'
+            : 'Controle de saídas'
         }}
       </v-app-bar-title>
     </RouterLink>
@@ -85,8 +85,6 @@ const pages = ref([
 ])
 
 const optionConfig = ref([
-  { title: 'Report', path: '/report', icon: 'mdi-chart-bar' },
-  { title: 'Config', path: '/config', icon: 'mdi-cog-outline' },
   { title: 'Profile', path: '/profile', icon: 'mdi-account-cog' },
 ])
 

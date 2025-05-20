@@ -12,7 +12,8 @@
           </v-col>
 
           <v-col md="8" sm="6">
-            <v-text-field clearable label="Email" required v-model="model.email"></v-text-field>
+            <v-text-field clearable label="Email" required v-model="model.email"
+              hint="Atualizar seu e-mail altera seu login no sistema!"></v-text-field>
           </v-col>
 
           <v-col md="5" sm="4">
@@ -82,7 +83,7 @@
         </v-form>
       </v-card-text>
 
-      <v-divider></v-divider>
+      <v-divider />
 
       <v-card-actions>
         <v-spacer />
@@ -90,8 +91,8 @@
           <v-icon class="pt-1">mdi-close</v-icon> Cancelar
         </v-btn>
 
-        <v-btn color="success" variant="tonal" :disabled="!alteracao" @click="resetModel()">
-          <v-icon>mdi-content-save-check</v-icon> Salvar
+        <v-btn color="success" variant="tonal" :disabled="!alteracao" @click="modificarUsuario()">
+          <v-icon>mdi-content-save-check</v-icon> Atualizar
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -107,6 +108,7 @@ import { useSnackbarStore } from '@/stores/SnackbarStore';
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 import { ref, onMounted, computed } from 'vue';
 import { rules } from '@/services/utilsServices';
+import { usuariosServices } from '@/services/usuariosService';
 
 const confirmarSenha = useDialogStoreConfirmarSenha()
 const usuarioStore = usuarioAutenticado()
@@ -164,6 +166,17 @@ async function alterarSenha() {
 
     await authServices().alterarSenha(alterarSenhaUsuario.value)
     usuarioConfirmado.value = false
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  }
+}
+
+async function modificarUsuario() {
+  try {
+    await usuariosServices().updateUser(model.value)
+    usuarioStore.usuario = model.value
+    useSnackbarStore().showSnackbar('Perfil atualizado com sucesso!', 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
