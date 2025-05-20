@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { rules } from '@/services/utilsServices'
+import { rules } from '@/utils/rules'
 import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha'
 import { authServices } from '@/services/authService'
 import type { ConfirmarSenha } from '@/models/authModels/LoginModel'

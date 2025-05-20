@@ -37,30 +37,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref } from 'vue'
+import { rules } from '@/utils/rules'
 import { type LoginModel } from '@/models/authModels/LoginModel'
 import { authServices } from '@/services/authService'
-import type { VForm } from 'vuetify/components'
+import { ref, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
+import type { VForm } from 'vuetify/components'
 import SnackbarNotifications from './Snackbar.vue'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado'
 
 const formRef: Ref<VForm | null> = ref(null)
-
 const formIsValid = ref(false)
 const showPassword = ref(false)
 const loginForm = ref<LoginModel>({ email_usuario: '', senha_usuario: '' })
 const redirectRouter = useRouter()
-
-const rules = {
-  required: (v: string | number) => !!v || 'Campo obrigatório',
-  emailFormat: (value: string) => {
-    if (/.+@.+\..+/.test(value)) return true
-    return 'Formato de e-mail inválido.'
-  }
-}
-
 const authService = authServices()
 
 async function authLogin() {

@@ -1,48 +1,57 @@
 <template>
+  <!-- Botão que recebe o callback para abrir um dialog -->
+  <BtnOpenDialog :callback="openNewUser" :label="'Criar novo usuário'" />
 
+  <!-- Dialog aberto pelo botão acima -->
+  <DialogUsers v-model:exibir="showDialog" />
 
-  <div class="pb-2 custom-button-wrapper" @mouseenter="hover = true" @mouseleave="hover = false">
-    <v-btn icon @click="openNewUser()" class="animated-btn">
-      <v-icon :class="{ rotate: hover }" color="white">mdi-plus-circle-outline</v-icon>
-    </v-btn>
-    <span class="button-label" :class="{ visible: hover }">Criar novo usuário</span>
-  </div>
-  <DialogUsers v-model:exibir="show" />
-
+  <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de usuários</span>
-      <v-btn title="Ordem" variant="outlined" color="primary" density="compact" @click="toggleOrderBy()">
-        <v-icon>{{
-          paginator.filtrosPaginator.value.orderBy! == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up"
-          }}
+      <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
+        @click="aoMudarOrdem(paginadorClass.orderBy! || 'ASC')">
+        <v-icon>{{ paginadorClass.orderBy! == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
         </v-icon>
       </v-btn>
-      <v-text-field clearable v-model="paginator.filtrosPaginator.value.search!" density="compact" variant="outlined"
-        placeholder="Consultar usuários" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
+
+      <!-- Campo para consultar os usuários pelo search -->
+      <v-text-field clearable v-model="usePaginatorStore.filtrosPaginator.value.search!" density="compact"
+        variant="outlined" placeholder="Consultar usuários" hide-details prepend-inner-icon="mdi-magnify"
+        style="max-width: 300px" />
     </v-card-title>
     <v-divider />
 
+    <!-- Loading -->
     <div class="d-flex justify-center" v-if="loading">
-      <v-progress-circular color="primary" indeterminate></v-progress-circular>
+      <v-progress-circular color="primary" indeterminate />
     </div>
 
+    <!-- Alerta quando nenhum usuário consultado foi encontrado -->
     <div v-if="apiUsers?.totalRegistros == 0 && loading == false" class="pt-4">
       <v-alert text="Nenhum usuário encontrado!" type="info" variant="tonal">
         <template v-slot:append>
-          <v-btn color="warning" variant="plain" @click="clearSearch()"><v-icon class="pt-1">mdi-refresh</v-icon>
-            Refresh</v-btn>
+          <v-btn color="warning" variant="plain" @click="clearSearch()">
+            <v-icon class="pt-1">
+              mdi-refresh
+            </v-icon>
+            Refresh
+          </v-btn>
         </template>
       </v-alert>
     </div>
 
+    <!-- Exibição dos usuários -->
     <v-virtual-scroll :items="apiUsers?.registros" height="500" item-height="50" v-else>
       <template v-slot:default="{ item: user }">
         <v-list-item :title="`${user.idUsuario} - ${user.nome.toUpperCase()}`" :subtitle="`#email: ${user.email}`">
+
+          <!-- Ícone de cartão de usuário -->
           <template v-slot:prepend>
             <v-icon>mdi-card-account-details-outline</v-icon>
           </template>
 
+          <!-- Botões de funcionalidades de mais informações e menu -->
           <template v-slot:append>
             <div class="pe-2">
               <v-btn size="small" variant="elevated" color="dark" icon="mdi-information-outline"
@@ -50,6 +59,7 @@
               </v-btn>
             </div>
 
+            <!-- Menu de opções -->
             <v-menu transition="scale-transition">
               <template v-slot:activator="{ props }">
                 <v-btn size="small" color="primary" v-bind="props" icon="mdi-dots-vertical" title="Opções" />
@@ -57,32 +67,38 @@
               <v-list>
                 <v-list-item>
                   <v-list-item-title>
+                    <!-- Editar usuário -->
                     <v-btn icon="mdi-pencil" size="x-small" variant="tonal" color="primary"
                       @click="completeFormEditUserDialog(user)" :disabled="user.idUsuario == 1" title="Editar" />
                     <span class="pr-2" />
 
+                    <!-- Visualizar vínculos do usuário com saídas -->
                     <RouterLink to="/tasks" custom v-slot="{ navigate }">
                       <v-btn icon="mdi-format-list-bulleted" size="x-small" variant="tonal" color="primary"
                         @click="navigate" :disabled="user.idUsuario == 1" title="Vínculos" />
                     </RouterLink>
                     <span class="pr-2" />
 
+                    <!-- Facilitador para bloqueio e desbloqueio do usuário -->
                     <v-btn :icon="user.contaBloqueada ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline'"
                       size="x-small" variant="tonal" :color="user.contaBloqueada ? 'red' : 'success'"
                       @click="toggleBloqueioUsuario(user)" :disabled="user.idUsuario == 1"
                       :title="user.contaBloqueada ? 'Desbloquear' : 'Bloquear'" />
                     <span class="pr-2" />
 
+                    <!-- Facilitador para ativar ou desativar um usuário -->
                     <v-btn :icon="user.ativo ? 'mdi-account-check-outline' : 'mdi-account-cancel-outline'"
                       size="x-small" variant="tonal" :color="user.ativo ? 'success' : 'red'"
                       @click="toggleUsuarioAtivo(user)" :disabled="user.idUsuario == 1"
                       :title="user.ativo ? 'Inativar' : 'Ativar'" />
                     <span class="pr-2" />
 
+                    <!-- Funcionalidade sensível de resetar senha do usuário, precisa de confirmação de senha -->
                     <v-btn icon="mdi-lock-reset" size="x-small" variant="tonal" color="warning"
                       @click="resetarSenhaAoPadrao(user.email)" :disabled="user.idUsuario == 1" title="Resetar senha" />
                     <span class="pr-2" />
 
+                    <!-- Funcionalidade sensível de remoção de usuário, precisa de confirmação de senha -->
                     <v-btn icon="mdi-delete-outline" size="x-small" variant="tonal" color="red"
                       @click="deleteUser(user.idUsuario!)" :disabled="user.idUsuario == 1" title="Remover" />
                   </v-list-item-title>
@@ -91,9 +107,12 @@
             </v-menu>
           </template>
         </v-list-item>
+
+        <!-- Card de detalhes para cada usuário, expanção controlada por uma variável -->
         <v-expand-transition>
           <div v-if="expandedUserId === user.idUsuario" class="custom-expansion-panel">
             <v-row dense>
+              <!-- Conta ativa -->
               <v-col cols="6" class="d-flex justify-center">
                 <v-chip :color="user.ativo ? 'success' : 'red'">
                   Conta está ativa?
@@ -103,6 +122,7 @@
 
               <v-divider vertical />
 
+              <!-- Conta bloqueada -->
               <v-col cols="6" class="d-flex justify-center">
                 <v-chip :color="!user.contaBloqueada ? 'success' : 'red'">
                   Login está liberado?
@@ -114,6 +134,7 @@
             </v-row>
 
             <v-row dense>
+              <!-- Conta com a senha expirada, geralmente quando é a senha padrão -->
               <v-col cols="6" class="d-flex justify-center">
                 <v-chip :color="!user.senhaExpirada ? 'success' : 'red'">
                   Estado da senha?
@@ -123,6 +144,7 @@
 
               <v-divider vertical />
 
+              <!-- Mostra se o usuário tem permissão para autorizar saídas ou não -->
               <v-col cols="6" class="d-flex justify-center">
                 <v-chip :color="user.autorizaSaida ? 'success' : 'red'">
                   Autoriza saídas?
@@ -134,6 +156,7 @@
 
 
             <v-row dense>
+              <!-- Permissão do usuário -->
               <v-col cols="6" class="d-flex justify-center">
                 <v-icon class="pt-3">mdi-badge-account-outline</v-icon>
                 <v-chip :color="user.permissao != null ? 'info' : 'red'">
@@ -143,6 +166,7 @@
 
               <v-divider vertical />
 
+              <!-- Previsão de expiração da conta -->
               <v-col cols="6" class="d-flex justify-center">
                 <v-icon class="pt-2 pr-2">mdi-account-clock-outline</v-icon>
                 <v-chip color="warning">
@@ -158,56 +182,128 @@
       </template>
     </v-virtual-scroll>
   </v-card>
-  <Paginator :valor-campos="propsPaginator" v-if="apiUsers?.totalRegistros! > 0 && !loading" />
+  <!-- Componente de paginação -->
+  <Paginator :model-value="paginadorClass" @mudouLimite="aoMudarLimite" @mudouPagina="aoMudarPagina"
+    v-if="apiUsers?.totalRegistros! > 0 && !loading" />
 </template>
 
 <script setup lang="ts">
+//#region Imports
 // Componentes
-import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue';
-import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers'
-import Paginator from '@/components/paginator/Paginator.vue'
-import { usePaginator } from '@/components/paginator/paginatorStore';
+import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
+import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers' // Será removido
+import { usePaginator } from '@/components/paginator/paginatorStore'; // Será removido
+import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
+import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
+import { PaginatorClass } from '@/components/paginator/ClassPaginator'; // Classe
 
 // Store
 import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha';
 import { useSnackbarStore } from '@/stores/SnackbarStore';
-import { loadingStore } from '@/stores/loadingStore';
 
 // Models
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
-import type { FiltroPaginacao } from '@/models/FiltersModels';
 
 // Services
-import { usuariosServices } from '@/services/usuariosService';
+import { useServicesUsuario } from '@/services/usuariosService';
 import { authServices } from "@/services/authService.ts";
 
 // Vue
 import { onMounted, ref, watch } from 'vue';
+import type { FiltroPaginacao } from '@/models/FiltersModels';
+import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
+//#endregion
 
-const expandedUserId = ref<number | null>(null)
-const hover = ref(false)
-const userService = usuariosServices()
-const usersDialog = useDialogStoreUsers()
-const apiUsers = usersDialog.apiUsers
-const idSearch = ref<string>()
-const paginator = usePaginator()
-const confirmarSenha = useDialogStoreConfirmarSenha()
-const propsPaginator = ref<FiltroPaginacao>({
-  limite: 10,
-  offset: 1
+//#region Variáveis
+// Booleanos
+const loading = ref(false) // Carregamento
+const showDialog = ref(false) // Dialog de usuários
+
+// Stores
+const usersDialog = useDialogStoreUsers() // Será removido
+const confirmarSenha = useDialogStoreConfirmarSenha() // Para Métodos sensíveis
+const usePaginatorStore = usePaginator() // Será removido
+
+// Services
+
+// Outros
+const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
+// const apiUsers = usersDialog.apiUsers // Lista de usuários armazenados na Store // Será removido
+var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>()
+const searchUsuario = ref<string>() // Parâmetro para consultar usuários
+const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'ASC', search: '' })) // Classe para a paginação
+
+//#endregion
+
+//#region Funcionalidades do Vue
+
+onMounted(async () => {
+  getAllUsers()
 })
-let loading = loadingStore().inLoading
 
-const show = ref(true)
+watch(() => searchUsuario.value, async (newValue) => {
+  if (newValue !== null && newValue !== '')
+    await searchUsuarios(newValue!)
+  else
+    getAllUsers()
+})
 
+watch(() => usePaginatorStore.filtrosPaginator.value, () => {
+  if (usePaginatorStore.filtrosPaginator.value.search! != null && usePaginatorStore.filtrosPaginator.value.search! != '')
+    searchUsuarios(usePaginatorStore.filtrosPaginator.value.search!)
+  else
+    getAllUsers()
+}, { deep: true })
+
+//#endregion
+
+//#region Dialog
+// Métodos para manipular o dialog de usuário
 function openNewUser() {
   usersDialog.startCreatingNewUser()
+  showDialog.value = true
 }
 
 function completeFormEditUserDialog(user: UsuarioConsulta) {
   usersDialog.completeFormEditUserDialog(user)
+  showDialog.value = true
+}
+//#endregion
+
+//#region funções de consulta, controle e manipulação de usuários
+// Consulta paginada de todos os usuários
+async function getAllUsers() {
+  loading.value = true
+  try {
+    const response = await useServicesUsuario.getAllUsers(paginadorClass.value)
+
+    apiUsers.value = response
+
+    paginadorClass.value.atualizarDadosAPI({
+      totalPaginas: response.totalPaginas,
+      totalRegistros: response.totalRegistros,
+    })
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  } finally {
+    loading.value = false
+  }
+}
+// Consulta com parâmetro de usuários, também pagina os resultados
+async function searchUsuarios(search: string) {
+  loading.value = true
+  try {
+    apiUsers.value = await useServicesUsuario.searchUsuarios(search)
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  } finally {
+    loading.value = false
+  }
 }
 
+// Função para facilitar o bloqueio e desbloqueio da conta de um usuário
 async function toggleBloqueioUsuario(user: UsuarioConsulta) {
   try {
     await usersDialog.toggleBloqueioUsuario(user)
@@ -218,6 +314,7 @@ async function toggleBloqueioUsuario(user: UsuarioConsulta) {
   }
 }
 
+// Função para facilitar a ativação e inativação da conta de um usuário
 async function toggleUsuarioAtivo(user: UsuarioConsulta) {
   try {
     await usersDialog.toggleUsuarioAtivo(user)
@@ -228,6 +325,7 @@ async function toggleUsuarioAtivo(user: UsuarioConsulta) {
   }
 }
 
+// Função para facilitar o reset para senha padrão da conta de um usuário
 async function resetarSenhaAoPadrao(emailUsuario: string) {
   confirmarSenha.setCallbackPosSenha(async () => {
     try {
@@ -242,75 +340,51 @@ async function resetarSenhaAoPadrao(emailUsuario: string) {
   confirmarSenha.openDialogConfirmarSenha()
 }
 
+// Função para deletar a conta de um usuário
 function deleteUser(idUser: number) {
   confirmarSenha.setCallbackPosSenha(async () => {
     try {
-      await usuariosServices().deleteUser(idUser)
+      await useServicesUsuario.deleteUser(idUser)
       useSnackbarStore().showSnackbar('Usuário removido!', 'success')
     } catch (error) {
       useSnackbarStore().showSnackbar(error, 'red')
     } finally {
-      useDialogStoreUsers().apiUsers.value = await usuariosServices().getAllUsers()
+      useDialogStoreUsers().apiUsers.value = await useServicesUsuario.getAllUsers(paginadorClass.value)
     }
   })
 
   confirmarSenha.openDialogConfirmarSenha()
 }
+//#endregion
 
+//#region Paginação
+async function aoMudarLimite(novoLimite: number) {
+  paginadorClass.value.atualizarLimite(novoLimite)
+  await getAllUsers()
+}
+
+async function aoMudarPagina(novaPagina: number) {
+  paginadorClass.value.atualizarPagina(novaPagina)
+  await getAllUsers()
+}
+
+async function aoMudarOrdem(ordem: string) {
+  paginadorClass.value.alterarOrdenacao(ordem)
+  await getAllUsers()
+}
+//#endregion
+
+//#region Demais funções
+// Função para controlar o v-expand-transition dos detalhes de cada usuario
 function toggleUser(id: number) {
   expandedUserId.value = expandedUserId.value === id ? null : id
 }
 
-async function getAllUsers() {
-  loading = true
-  try {
-    apiUsers.value = await userService.getAllUsers()
-  } catch (error) {
-    useSnackbarStore().showSnackbar(error, 'red')
-    throw error
-  } finally {
-    loading = false
-  }
-}
-
-async function searchUsuarios(search: string) {
-  loading = true
-  try {
-    apiUsers.value = await userService.searchUsuarios(search)
-  } catch (error) {
-    useSnackbarStore().showSnackbar(error, 'red')
-    throw error
-  } finally {
-    loading = false
-  }
-}
-
+// Usuado no alert quando não o usuário não foi encontrado para exibir novamente a lista com o getAll
 function clearSearch() {
-  paginator.filtrosPaginator.value.search = ''
+  usePaginatorStore.filtrosPaginator.value.search = ''
 }
-
-onMounted(async () => {
-  await getAllUsers()
-  propsPaginator.value = paginator.carregarFiltrosDaAPI(apiUsers.value!)
-})
-
-watch(() => idSearch.value, async (newValue) => {
-  if (newValue !== null && newValue !== '')
-    await searchUsuarios(newValue!)
-  else
-    getAllUsers()
-})
-
-watch(() => paginator.filtrosPaginator.value, () => {
-  if (paginator.filtrosPaginator.value.search! != null && paginator.filtrosPaginator.value.search! != '')
-    searchUsuarios(paginator.filtrosPaginator.value.search!)
-  else
-    getAllUsers()
-}, { deep: true })
-
-function toggleOrderBy() {
-  paginator.toggleOrderBy()
-}
+//#endregion
 
 </script>
 
