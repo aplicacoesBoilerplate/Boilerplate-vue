@@ -33,14 +33,14 @@ function closeUserDialog() {
 async function createNewUser(newUser: UsuarioConsulta) {
   isEditing.value = false
   await useServicesUsuario.createUser(newUser)
-  apiUsers.value = await useServicesUsuario.getAllUsers()
+  // apiUsers.value = await useServicesUsuario.getAllUsers()
   closeUserDialog()
 }
 
 async function updateUser(user: UsuarioConsulta) {
   isEditing.value = true
   await useServicesUsuario.updateUser(user)
-  apiUsers.value = await useServicesUsuario.getAllUsers()
+  // apiUsers.value = await useServicesUsuario.getAllUsers()
   closeUserDialog()
 }
 
@@ -48,14 +48,14 @@ async function toggleBloqueioUsuario(user: UsuarioConsulta) {
   userToEdit.value = { ...user }
   userToEdit.value.contaBloqueada = !userToEdit.value.contaBloqueada
   await useServicesUsuario.updateUser(userToEdit.value)
-  apiUsers.value = await useServicesUsuario.getAllUsers()
+  // apiUsers.value = await useServicesUsuario.getAllUsers()
 }
 
 async function toggleUsuarioAtivo(user: UsuarioConsulta) {
   userToEdit.value = { ...user }
   userToEdit.value.ativo = !userToEdit.value.ativo
   await useServicesUsuario.updateUser(userToEdit.value)
-  apiUsers.value = await useServicesUsuario.getAllUsers()
+  // apiUsers.value = await useServicesUsuario.getAllUsers()
 }
 
 async function deleteUser(id: number) {

@@ -8,22 +8,14 @@ import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
 // Services
 import http from './axios'
 import { removerUndefineds } from '@/utils/removerUndefineds'
+import type { PaginatorClass } from '@/components/paginator/ClassPaginator'
 
 export const useServicesUsuario = {
   // Serviço para consumir o endpoint da API de consulta paginada dos usuários
-  async getAllUsers(): Promise<HeaderPaginatorModel<UsuarioConsulta>> {
+  async getAllUsers(paginador: PaginatorClass): Promise<HeaderPaginatorModel<UsuarioConsulta>> {
     try {
-      const filtrosPaginator = usePaginator().filtrosPaginator
-      const cleanedFilters = removerUndefineds.removeUndefined(filtrosPaginator.value)
       const { data } = await http.get('/usuarios/consulta', {
-        params: cleanedFilters,
-      })
-
-      usePaginator().carregarFiltrosDaAPI({
-        limite: filtrosPaginator.value.limite,
-        offset: filtrosPaginator.value.offset,
-        totalPaginas: data.totalPaginas,
-        totalRegistros: data.totalRegistros,
+        params: paginador,
       })
 
       return data
@@ -77,7 +69,7 @@ export const useServicesUsuario = {
   async createUser(newUser: UsuarioConsulta): Promise<UsuarioConsulta> {
     try {
       const response = await http.post('/usuarios', newUser)
-      await this.getAllUsers()
+      // await this.getAllUsers()
       useSnackbarStore().showSnackbar('User created successfully!', 'success')
       return response.data
     } catch (error) {
@@ -101,7 +93,7 @@ export const useServicesUsuario = {
     await this.getUserById(user.idUsuario!)
     try {
       const response = await http.put(`/usuarios/${user.idUsuario}`, user)
-      await this.getAllUsers()
+      // await this.getAllUsers()
       useSnackbarStore().showSnackbar('Record updated successfully!', 'success')
       return response.data
     } catch (error) {
@@ -115,7 +107,7 @@ export const useServicesUsuario = {
     await this.getUserById(id)
     try {
       await http.delete(`/usuarios/${id}`)
-      await this.getAllUsers()
+      // await this.getAllUsers()
       useSnackbarStore().showSnackbar('Record deleted successfully!', 'success')
     } catch (error) {
       useSnackbarStore().showSnackbar('An error occurred while deleting the record!', 'red')

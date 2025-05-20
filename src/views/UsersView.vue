@@ -9,16 +9,16 @@
   <v-card class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de usuários</span>
-      <v-btn title="Ordem" variant="outlined" color="primary" density="compact" @click="toggleOrderBy()">
-        <v-icon>{{
-          paginator.filtrosPaginator.value.orderBy! == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up"
-          }}
+      <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
+        @click="aoMudarOrdem(paginadorClass.orderBy! || 'ASC')">
+        <v-icon>{{ paginadorClass.orderBy! == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
         </v-icon>
       </v-btn>
 
       <!-- Campo para consultar os usuários pelo search -->
-      <v-text-field clearable v-model="paginator.filtrosPaginator.value.search!" density="compact" variant="outlined"
-        placeholder="Consultar usuários" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
+      <v-text-field clearable v-model="usePaginatorStore.filtrosPaginator.value.search!" density="compact"
+        variant="outlined" placeholder="Consultar usuários" hide-details prepend-inner-icon="mdi-magnify"
+        style="max-width: 300px" />
     </v-card-title>
     <v-divider />
 
@@ -183,16 +183,19 @@
     </v-virtual-scroll>
   </v-card>
   <!-- Componente de paginação -->
-  <Paginator :valor-campos="propsPaginator" v-if="apiUsers?.totalRegistros! > 0 && !loading" />
+  <Paginator :model-value="paginadorClass" @mudouLimite="aoMudarLimite" @mudouPagina="aoMudarPagina"
+    v-if="apiUsers?.totalRegistros! > 0 && !loading" />
 </template>
 
 <script setup lang="ts">
 //#region Imports
 // Componentes
-import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue';
-import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers'
-import Paginator from '@/components/paginator/Paginator.vue'
-import { usePaginator } from '@/components/paginator/paginatorStore';
+import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
+import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers' // Será removido
+import { usePaginator } from '@/components/paginator/paginatorStore'; // Será removido
+import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
+import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
+import { PaginatorClass } from '@/components/paginator/ClassPaginator'; // Classe
 
 // Store
 import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha';
@@ -200,7 +203,6 @@ import { useSnackbarStore } from '@/stores/SnackbarStore';
 
 // Models
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
-import type { FiltroPaginacao } from '@/models/FiltersModels';
 
 // Services
 import { useServicesUsuario } from '@/services/usuariosService';
@@ -208,41 +210,47 @@ import { authServices } from "@/services/authService.ts";
 
 // Vue
 import { onMounted, ref, watch } from 'vue';
-import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue';
+import type { FiltroPaginacao } from '@/models/FiltersModels';
+import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
 //#endregion
 
 //#region Variáveis
+// Booleanos
+const loading = ref(false) // Carregamento
+const showDialog = ref(false) // Dialog de usuários
+
+// Stores
+const usersDialog = useDialogStoreUsers() // Será removido
+const confirmarSenha = useDialogStoreConfirmarSenha() // Para Métodos sensíveis
+const usePaginatorStore = usePaginator() // Será removido
+
+// Services
+
+// Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
-const usersDialog = useDialogStoreUsers()
-const apiUsers = usersDialog.apiUsers
-const idSearch = ref<string>()
-const paginator = usePaginator()
-const confirmarSenha = useDialogStoreConfirmarSenha()
-const propsPaginator = ref<FiltroPaginacao>({
-  limite: 10,
-  offset: 1
-})
-const loading = ref(false)
-const showDialog = ref(false)
+// const apiUsers = usersDialog.apiUsers // Lista de usuários armazenados na Store // Será removido
+var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>()
+const searchUsuario = ref<string>() // Parâmetro para consultar usuários
+const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'ASC', search: '' })) // Classe para a paginação
+
 //#endregion
 
 //#region Funcionalidades do Vue
 
 onMounted(async () => {
-  await getAllUsers()
-  propsPaginator.value = paginator.carregarFiltrosDaAPI(apiUsers.value!)
+  getAllUsers()
 })
 
-watch(() => idSearch.value, async (newValue) => {
+watch(() => searchUsuario.value, async (newValue) => {
   if (newValue !== null && newValue !== '')
     await searchUsuarios(newValue!)
   else
     getAllUsers()
 })
 
-watch(() => paginator.filtrosPaginator.value, () => {
-  if (paginator.filtrosPaginator.value.search! != null && paginator.filtrosPaginator.value.search! != '')
-    searchUsuarios(paginator.filtrosPaginator.value.search!)
+watch(() => usePaginatorStore.filtrosPaginator.value, () => {
+  if (usePaginatorStore.filtrosPaginator.value.search! != null && usePaginatorStore.filtrosPaginator.value.search! != '')
+    searchUsuarios(usePaginatorStore.filtrosPaginator.value.search!)
   else
     getAllUsers()
 }, { deep: true })
@@ -267,7 +275,14 @@ function completeFormEditUserDialog(user: UsuarioConsulta) {
 async function getAllUsers() {
   loading.value = true
   try {
-    apiUsers.value = await useServicesUsuario.getAllUsers()
+    const response = await useServicesUsuario.getAllUsers(paginadorClass.value)
+
+    apiUsers.value = response
+
+    paginadorClass.value.atualizarDadosAPI({
+      totalPaginas: response.totalPaginas,
+      totalRegistros: response.totalRegistros,
+    })
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
@@ -334,11 +349,28 @@ function deleteUser(idUser: number) {
     } catch (error) {
       useSnackbarStore().showSnackbar(error, 'red')
     } finally {
-      useDialogStoreUsers().apiUsers.value = await useServicesUsuario.getAllUsers()
+      useDialogStoreUsers().apiUsers.value = await useServicesUsuario.getAllUsers(paginadorClass.value)
     }
   })
 
   confirmarSenha.openDialogConfirmarSenha()
+}
+//#endregion
+
+//#region Paginação
+async function aoMudarLimite(novoLimite: number) {
+  paginadorClass.value.atualizarLimite(novoLimite)
+  await getAllUsers()
+}
+
+async function aoMudarPagina(novaPagina: number) {
+  paginadorClass.value.atualizarPagina(novaPagina)
+  await getAllUsers()
+}
+
+async function aoMudarOrdem(ordem: string) {
+  paginadorClass.value.alterarOrdenacao(ordem)
+  await getAllUsers()
 }
 //#endregion
 
@@ -350,14 +382,10 @@ function toggleUser(id: number) {
 
 // Usuado no alert quando não o usuário não foi encontrado para exibir novamente a lista com o getAll
 function clearSearch() {
-  paginator.filtrosPaginator.value.search = ''
-}
-
-// Alterar a ordem da exibição da lista de usuários
-function toggleOrderBy() {
-  paginator.toggleOrderBy()
+  usePaginatorStore.filtrosPaginator.value.search = ''
 }
 //#endregion
+
 </script>
 
 <style scoped>
