@@ -1,9 +1,9 @@
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
-import { authServices } from '@/services/authService'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const usuarioAutenticado = defineStore('logado', () => {
+  // Modificar
   const usuario = ref<UsuarioConsulta>({
     idUsuario: 0,
     nome: '',

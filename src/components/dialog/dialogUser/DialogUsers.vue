@@ -79,11 +79,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+
 import { useDialogStoreUsers } from '../dialogUser/dialogStoreUsers'
 import { PermissoesUsuarios, type UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
-import { rules } from '@/services/utilsServices'
+import { rules } from '@/utils/rules'
+import { ref, watch } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -91,12 +92,6 @@ const showPassword = ref(false)
 const dialogStoreUsers = useDialogStoreUsers()
 const isEditing = dialogStoreUsers.isEditing
 const permissoes = PermissoesUsuarios
-const showDialogUser = computed({
-  get: () => dialogStoreUsers.showDialogUsers.value,
-  set: (val: boolean) => dialogStoreUsers.showDialogUsers.value = val
-})
-
-
 
 const exibir = defineModel<boolean>('exibir', { required: false, default: false })
 
@@ -114,7 +109,7 @@ watch(() => dialogStoreUsers.userToEdit.value, (userToEdit) => {
   }
 }, { immediate: true })
 
-watch(showDialogUser, (val) => {
+watch(exibir, (val) => {
   if (!val) {
     resetForm()
   }
@@ -156,6 +151,7 @@ function resetForm() {
   clearFields();
   dialogStoreUsers.closeUserDialog()
   showPassword.value = false
+  exibir.value = false
 }
 
 async function submitForm() {

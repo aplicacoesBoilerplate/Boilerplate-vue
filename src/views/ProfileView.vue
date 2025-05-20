@@ -107,8 +107,8 @@ import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha'
 import { useSnackbarStore } from '@/stores/SnackbarStore';
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 import { ref, onMounted, computed } from 'vue';
-import { rules } from '@/services/utilsServices';
-import { usuariosServices } from '@/services/usuariosService';
+import { rules } from '@/utils/rules'
+import { useServicesUsuario } from '@/services/usuariosService';
 
 const confirmarSenha = useDialogStoreConfirmarSenha()
 const usuarioStore = usuarioAutenticado()
@@ -174,7 +174,7 @@ async function alterarSenha() {
 
 async function modificarUsuario() {
   try {
-    await usuariosServices().updateUser(model.value)
+    await useServicesUsuario.updateUser(model.value)
     usuarioStore.usuario = model.value
     useSnackbarStore().showSnackbar('Perfil atualizado com sucesso!', 'success')
   } catch (error) {

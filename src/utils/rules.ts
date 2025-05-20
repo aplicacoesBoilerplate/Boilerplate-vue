@@ -1,13 +1,3 @@
-function removeUndefined(obj: Record<string, any>) {
-  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== undefined))
-}
-
-export function useUtils() {
-  return {
-    removeUndefined,
-  }
-}
-
 export const rules = {
   required: (v: string | number) => !!v || 'Campo obrigatório',
   emailFormat: (value: string) => /.+@.+\..+/.test(value) || 'Formato de e-mail inválido.',
@@ -19,8 +9,7 @@ export const rules = {
       'Os valores não coincidem'
   },
   includes: (validValues: string[]) => {
-    return (v: string) =>
-      validValues.includes(v) || 'Preencha uma opção válida'
+    return (v: string) => validValues.includes(v) || 'Preencha uma opção válida'
   },
   dateAfter: (compareTo: string | Date | (() => string | Date)) => {
     return (v: string | Date | null | undefined) => {
@@ -52,6 +41,5 @@ export const rules = {
 
       return inputDate > compareDate || 'Não permitido anterior a data atual'
     }
-  }
-
+  },
 }
