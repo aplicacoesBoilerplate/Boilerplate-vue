@@ -14,7 +14,6 @@ const route = useRoute();
   <v-app theme="dark">
     <template v-if="route.path !== '/' && route.path !== '/register'">
       <Navigation />
-      <DialogSearch />
       <DialogConfirmarSenha />
     </template>
     <v-main v-if="route.path == '/' || route.path == '/register'">

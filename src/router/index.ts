@@ -1,10 +1,10 @@
-import DashboardHomepage from '@/views/DashboardView.vue'
+import { createRouter, createWebHistory } from 'vue-router'
 import LoginPage from '@/views/LoginView.vue'
 import RegisterPage from '@/views/RegisterView.vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import DashboardHomepage from '@/views/DashboardView.vue'
+import UsersView from '@/views/UsersView.vue'
 import Profile from '@/views/ProfileView.vue'
 import TasksView from '@/views/TasksView.vue'
-import UsersView from '@/views/UsersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

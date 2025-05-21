@@ -62,38 +62,58 @@
       </v-btn>
     </template>
   </v-app-bar>
+  <DialogSearch :exibir="showDialogSearch" />
   <SnackbarNotifications />
+  <BtnsNavigation />
 </template>
 
 <script setup lang=ts>
-import { ref } from 'vue';
-import { useDialogStoreSearch } from '../stores/dialogStoreSearch'
+// Componentes
 import SnackbarNotifications from './Snackbar.vue';
+import DialogSearch from './dialog/DialogSearch.vue';
+// Store
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
+import { useSnackbarStore } from '@/stores/SnackbarStore';
+// Services
+import { authServices } from '@/services/authService';
+// Vue
+import { onMounted, ref } from 'vue';
+import BtnsNavigation from '@/components/BtnsNavigation.vue';
 
-const dialogStoreSearch = useDialogStoreSearch()
-const usuarioLogado = usuarioAutenticado()
+const usuarioLogado = usuarioAutenticado() // Armazenar o usuário autenticado
+const showDialogSearch = ref(false) // Exibir dialog de consulta
 
+// Se o usuário armazenado estiver vazio consultar o usuário da sessão ao montar o componente
+onMounted(async () => {
+  if (!!usuarioLogado.usuario && sessionStorage.getItem('token') !== '')
+    usuarioLogado.usuario = await authServices().getByToken()
+  else
+    useSnackbarStore().showSnackbar('Usuário não identificado!', 'red')
+})
+
+// Função para controlar a exibição do dialog de consulta geral
 function openSearch() {
-  dialogStoreSearch.openSearchDialog()
+  // useDialogStoreSearch().openSearchDialog()
+
+  showDialogSearch.value = true
 }
 
+// Páginas no bloco de utilidades
 const pages = ref([
   { title: 'Home', path: '/dashboard', icon: 'mdi-home-outline' },
-  { title: 'About', path: '/about', icon: 'mdi-information-outline' },
-
 ])
 
+// Paginas no bloco de configurações
 const optionConfig = ref([
   { title: 'Profile', path: '/profile', icon: 'mdi-account-cog' },
 ])
 
-// Não remover
+// Propriedade da barra de navegação que controla a exibição da side bar
 const props = defineProps<{
   collapse: boolean
 }>()
 
-// Não remover
+// Evento da barra de navegação que abre\fecha a side bar
 const emit = defineEmits<{
   (e: 'toggle'): void
 }>()

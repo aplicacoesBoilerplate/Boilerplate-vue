@@ -16,44 +16,9 @@
 
 </template>
 
-<!-- <script setup lang="ts">
-import type { FiltroPaginacao } from '@/models/FiltersModels';
-import { ref, watch } from 'vue'
-
-const props = defineProps<{
-  modelValue: FiltroPaginacao
-}>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: any): void
-  (e: 'mudouLimite', novoLimite: number): void
-  (e: 'mudouPagina', novaPagina: number): void
-}>()
-
-const limite = ref(props.modelValue.limite)
-const pagina = ref(props.modelValue.offset)
-const totalPaginas = ref(props.modelValue.totalPaginas)
-const totalRegistros = ref(props.modelValue.totalRegistros)
-
-watch(() => props.modelValue, (novoValor) => {
-  limite.value = novoValor.limite
-  pagina.value = novoValor.offset
-  totalPaginas.value = novoValor.totalPaginas
-})
-
-function mudarLimite() {
-  emit('mudouLimite', limite.value)
-}
-
-function mudarPagina(novaPagina: number) {
-  emit('mudouPagina', novaPagina)
-}
-</script> -->
-
-
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { PaginatorClass } from './ClassPaginator';
+import { computed } from 'vue'
 
 interface Props {
   modelValue: PaginatorClass

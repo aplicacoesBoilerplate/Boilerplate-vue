@@ -16,9 +16,8 @@
       </v-btn>
 
       <!-- Campo para consultar os usuários pelo search -->
-      <v-text-field clearable v-model="usePaginatorStore.filtrosPaginator.value.search!" density="compact"
-        variant="outlined" placeholder="Consultar usuários" hide-details prepend-inner-icon="mdi-magnify"
-        style="max-width: 300px" />
+      <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
+        placeholder="Consultar usuários" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
     </v-card-title>
     <v-divider />
 
@@ -190,16 +189,15 @@
 <script setup lang="ts">
 //#region Imports
 // Componentes
-import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
-import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers' // Será removido
-import { usePaginator } from '@/components/paginator/paginatorStore'; // Será removido
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
+import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
 import { PaginatorClass } from '@/components/paginator/ClassPaginator'; // Classe
 
 // Store
 import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha';
 import { useSnackbarStore } from '@/stores/SnackbarStore';
+import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers' // Store do dialog para os usuários
 
 // Models
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
@@ -220,15 +218,11 @@ const loading = ref(false) // Carregamento
 const showDialog = ref(false) // Dialog de usuários
 
 // Stores
-const usersDialog = useDialogStoreUsers() // Será removido
+const usersDialog = useDialogStoreUsers() // Dialog para os usuários
 const confirmarSenha = useDialogStoreConfirmarSenha() // Para Métodos sensíveis
-const usePaginatorStore = usePaginator() // Será removido
-
-// Services
 
 // Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
-// const apiUsers = usersDialog.apiUsers // Lista de usuários armazenados na Store // Será removido
 var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>()
 const searchUsuario = ref<string>() // Parâmetro para consultar usuários
 const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'ASC', search: '' })) // Classe para a paginação
@@ -243,14 +237,14 @@ onMounted(async () => {
 
 watch(() => searchUsuario.value, async (newValue) => {
   if (newValue !== null && newValue !== '')
-    await searchUsuarios(newValue!)
+    await searchUsuarios()
   else
     getAllUsers()
 })
 
-watch(() => usePaginatorStore.filtrosPaginator.value, () => {
-  if (usePaginatorStore.filtrosPaginator.value.search! != null && usePaginatorStore.filtrosPaginator.value.search! != '')
-    searchUsuarios(usePaginatorStore.filtrosPaginator.value.search!)
+watch(() => paginadorClass.value, () => {
+  if (paginadorClass.value.search != null && paginadorClass.value.search != '')
+    searchUsuarios()
   else
     getAllUsers()
 }, { deep: true })
@@ -291,10 +285,10 @@ async function getAllUsers() {
   }
 }
 // Consulta com parâmetro de usuários, também pagina os resultados
-async function searchUsuarios(search: string) {
+async function searchUsuarios() {
   loading.value = true
   try {
-    apiUsers.value = await useServicesUsuario.searchUsuarios(search)
+    apiUsers.value = await useServicesUsuario.searchUsuarios(paginadorClass.value)
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
@@ -382,7 +376,7 @@ function toggleUser(id: number) {
 
 // Usuado no alert quando não o usuário não foi encontrado para exibir novamente a lista com o getAll
 function clearSearch() {
-  usePaginatorStore.filtrosPaginator.value.search = ''
+  paginadorClass.value.search = ''
 }
 //#endregion
 
