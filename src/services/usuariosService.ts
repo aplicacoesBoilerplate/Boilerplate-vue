@@ -1,5 +1,4 @@
 // Componentes
-import { usePaginator } from '@/components/paginator/paginatorStore'
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Models
@@ -25,22 +24,13 @@ export const useServicesUsuario = {
   },
 
   // Serviço para consumir o endpoint da API de consulta paginada dos usuários de acordo com um campo de busca
-  async searchUsuarios(search: string) {
+  async searchUsuarios(paginador: PaginatorClass) {
     try {
-      const filtrosPaginator = usePaginator().filtrosPaginator
-      const cleanedFilters = removerUndefineds.removeUndefined(filtrosPaginator.value)
-      const response = await http.get('/usuarios/search', {
-        params: cleanedFilters,
+      const { data } = await http.get('/usuarios/search', {
+        params: paginador,
       })
 
-      usePaginator().carregarFiltrosDaAPI({
-        limite: filtrosPaginator.value.limite,
-        offset: filtrosPaginator.value.offset,
-        totalPaginas: response.data.totalPaginas,
-        totalRegistros: response.data.totalRegistros,
-      })
-
-      return response.data
+      return data
     } catch (error) {
       throw error
     }
@@ -49,15 +39,7 @@ export const useServicesUsuario = {
   // Serviço para consumir o endpoint da API de consulta de um usuário pelo Id
   async getUserById(id: number | string): Promise<UsuarioConsulta> {
     try {
-      const filtrosPaginator = usePaginator().filtrosPaginator
       const response = await http.get(`/usuarios/${id}`)
-
-      usePaginator().carregarFiltrosDaAPI({
-        limite: filtrosPaginator.value.limite,
-        offset: filtrosPaginator.value.offset,
-        totalPaginas: response.data.totalPaginas,
-        totalRegistros: response.data.totalRegistros,
-      })
 
       return response.data.usuario
     } catch (error) {

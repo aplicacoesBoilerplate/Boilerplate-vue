@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialogSearch" max-width="500">
+  <v-dialog v-model="exibir" max-width="500">
     <v-form ref="formRef" @submit.prevent="submitForm()">
       <v-card title="What are you looking for?">
         <v-card-text>
@@ -18,31 +18,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useDialogStoreSearch } from '../../stores/dialogStoreSearch'
+import { ref, watch } from 'vue'
 
-const dialogStoreSearch = useDialogStoreSearch()
+const exibir = defineModel<boolean>('exibir', { required: false, default: false })
 
-const dialogSearch = computed({
-  get: () => dialogStoreSearch.showDialogSearch,
-  set: (val: boolean) => dialogStoreSearch.showDialogSearch = val
-})
-
-watch(dialogSearch, (val) => {
+watch(exibir, (val) => {
   if (!val) {
     resetForm()
   }
 });
 
 function resetForm() {
-  dialogStoreSearch.closeSearchDialog()
+  exibir.value = false
   search = ref('');
 }
 
 let search = ref('')
 
 function submitForm() {
-  dialogStoreSearch.search(search.value)
   resetForm()
 }
 

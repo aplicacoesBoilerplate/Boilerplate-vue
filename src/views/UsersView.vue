@@ -16,9 +16,8 @@
       </v-btn>
 
       <!-- Campo para consultar os usuários pelo search -->
-      <v-text-field clearable v-model="usePaginatorStore.filtrosPaginator.value.search!" density="compact"
-        variant="outlined" placeholder="Consultar usuários" hide-details prepend-inner-icon="mdi-magnify"
-        style="max-width: 300px" />
+      <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
+        placeholder="Consultar usuários" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
     </v-card-title>
     <v-divider />
 
@@ -185,21 +184,25 @@
   <!-- Componente de paginação -->
   <Paginator :model-value="paginadorClass" @mudouLimite="aoMudarLimite" @mudouPagina="aoMudarPagina"
     v-if="apiUsers?.totalRegistros! > 0 && !loading" />
+  <DialogConfirmarSenha :model-value="confirmarSenha"
+    @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
+
 </template>
 
 <script setup lang="ts">
 //#region Imports
 // Componentes
-import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
-import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers' // Será removido
-import { usePaginator } from '@/components/paginator/paginatorStore'; // Será removido
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
+import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
+import DialogConfirmarSenha from '@/components/dialog/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
+
+// Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator'; // Classe
 
 // Store
-import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha';
 import { useSnackbarStore } from '@/stores/SnackbarStore';
+import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers' // Store do dialog para os usuários
 
 // Models
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
@@ -210,8 +213,8 @@ import { authServices } from "@/services/authService.ts";
 
 // Vue
 import { onMounted, ref, watch } from 'vue';
-import type { FiltroPaginacao } from '@/models/FiltersModels';
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
+import { ConfirmarSenhaClass } from '@/components/dialog/confirmarSenha/ClassConfirmarSenha';
 //#endregion
 
 //#region Variáveis
@@ -220,18 +223,16 @@ const loading = ref(false) // Carregamento
 const showDialog = ref(false) // Dialog de usuários
 
 // Stores
-const usersDialog = useDialogStoreUsers() // Será removido
-const confirmarSenha = useDialogStoreConfirmarSenha() // Para Métodos sensíveis
-const usePaginatorStore = usePaginator() // Será removido
+const usersDialog = useDialogStoreUsers() // Dialog para os usuários
 
-// Services
+// Classes
+const confirmarSenha = ref(new ConfirmarSenhaClass())
+const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'ASC', search: '' })) // Classe para a paginação
 
 // Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
-// const apiUsers = usersDialog.apiUsers // Lista de usuários armazenados na Store // Será removido
 var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>()
 const searchUsuario = ref<string>() // Parâmetro para consultar usuários
-const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'ASC', search: '' })) // Classe para a paginação
 
 //#endregion
 
@@ -243,21 +244,21 @@ onMounted(async () => {
 
 watch(() => searchUsuario.value, async (newValue) => {
   if (newValue !== null && newValue !== '')
-    await searchUsuarios(newValue!)
+    await searchUsuarios()
   else
     getAllUsers()
 })
 
-watch(() => usePaginatorStore.filtrosPaginator.value, () => {
-  if (usePaginatorStore.filtrosPaginator.value.search! != null && usePaginatorStore.filtrosPaginator.value.search! != '')
-    searchUsuarios(usePaginatorStore.filtrosPaginator.value.search!)
+watch(() => paginadorClass.value, () => {
+  if (paginadorClass.value.search != null && paginadorClass.value.search != '')
+    searchUsuarios()
   else
     getAllUsers()
 }, { deep: true })
 
 //#endregion
 
-//#region Dialog
+//#region Dialog de usuários
 // Métodos para manipular o dialog de usuário
 function openNewUser() {
   usersDialog.startCreatingNewUser()
@@ -268,6 +269,15 @@ function completeFormEditUserDialog(user: UsuarioConsulta) {
   usersDialog.completeFormEditUserDialog(user)
   showDialog.value = true
 }
+//#endregion
+
+//#region Dialog confirmar senha
+// Abrir o dialog já com o callback setado
+function abrirDialogConfirmacao(callback: () => Promise<void>) {
+  confirmarSenha.value.setCallback(callback)
+  confirmarSenha.value.openDialog()
+}
+
 //#endregion
 
 //#region funções de consulta, controle e manipulação de usuários
@@ -291,10 +301,10 @@ async function getAllUsers() {
   }
 }
 // Consulta com parâmetro de usuários, também pagina os resultados
-async function searchUsuarios(search: string) {
+async function searchUsuarios() {
   loading.value = true
   try {
-    apiUsers.value = await useServicesUsuario.searchUsuarios(search)
+    apiUsers.value = await useServicesUsuario.searchUsuarios(paginadorClass.value)
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
@@ -325,9 +335,10 @@ async function toggleUsuarioAtivo(user: UsuarioConsulta) {
   }
 }
 
+//#region Funções sensíveis
 // Função para facilitar o reset para senha padrão da conta de um usuário
 async function resetarSenhaAoPadrao(emailUsuario: string) {
-  confirmarSenha.setCallbackPosSenha(async () => {
+  abrirDialogConfirmacao(async () => {
     try {
       await authServices().resetarSenhaAoPadrao(emailUsuario)
       useSnackbarStore().showSnackbar(`Senha resetada com sucesso para o usuário: ${emailUsuario}`, 'success')
@@ -337,12 +348,11 @@ async function resetarSenhaAoPadrao(emailUsuario: string) {
     }
   })
 
-  confirmarSenha.openDialogConfirmarSenha()
 }
 
 // Função para deletar a conta de um usuário
 function deleteUser(idUser: number) {
-  confirmarSenha.setCallbackPosSenha(async () => {
+  abrirDialogConfirmacao(async () => {
     try {
       await useServicesUsuario.deleteUser(idUser)
       useSnackbarStore().showSnackbar('Usuário removido!', 'success')
@@ -352,9 +362,8 @@ function deleteUser(idUser: number) {
       useDialogStoreUsers().apiUsers.value = await useServicesUsuario.getAllUsers(paginadorClass.value)
     }
   })
-
-  confirmarSenha.openDialogConfirmarSenha()
 }
+//#endregion
 //#endregion
 
 //#region Paginação
@@ -382,7 +391,7 @@ function toggleUser(id: number) {
 
 // Usuado no alert quando não o usuário não foi encontrado para exibir novamente a lista com o getAll
 function clearSearch() {
-  usePaginatorStore.filtrosPaginator.value.search = ''
+  paginadorClass.value.search = ''
 }
 //#endregion
 

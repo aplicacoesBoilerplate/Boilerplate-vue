@@ -79,11 +79,15 @@
 </template>
 
 <script setup lang="ts">
-
-import { useDialogStoreUsers } from '../dialogUser/dialogStoreUsers'
-import { PermissoesUsuarios, type UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
+// Componentes
+// Store
+import { useDialogStoreUsers } from '../dialogUser/dialogStoreUsers' // Será removido
 import { useSnackbarStore } from '@/stores/SnackbarStore'
+// Models
+import { PermissoesUsuarios, type UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
+// Services
 import { rules } from '@/utils/rules'
+// Vue
 import { ref, watch } from 'vue'
 
 const formRef = ref()
@@ -115,6 +119,17 @@ watch(exibir, (val) => {
   }
 });
 
+function clearFields() {
+  user.value = { ...dialogStoreUsers.emptyUser };
+}
+
+function resetForm() {
+  clearFields();
+  // dialogStoreUsers.closeUserDialog()
+  showPassword.value = false
+  exibir.value = false
+}
+
 async function createNewUser() {
   const valid = await formRef.value.validate()
   if (!valid) return
@@ -141,17 +156,6 @@ async function updateUser() {
     throw error
   }
   resetForm();
-}
-
-function clearFields() {
-  user.value = { ...dialogStoreUsers.emptyUser };
-}
-
-function resetForm() {
-  clearFields();
-  dialogStoreUsers.closeUserDialog()
-  showPassword.value = false
-  exibir.value = false
 }
 
 async function submitForm() {
