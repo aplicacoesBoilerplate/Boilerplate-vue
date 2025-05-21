@@ -1,8 +1,6 @@
 <script setup lang="ts">
 // Componentes
 import Navigation from './components/Navigation.vue';
-import DialogSearch from '@/components/dialog/DialogSearch.vue'
-import DialogConfirmarSenha from '@/components/dialog/DialogConfirmarSenha.vue';
 
 // Vue
 import { RouterView, useRoute } from 'vue-router'
@@ -14,7 +12,6 @@ const route = useRoute();
   <v-app theme="dark">
     <template v-if="route.path !== '/' && route.path !== '/register'">
       <Navigation />
-      <DialogConfirmarSenha />
     </template>
     <v-main v-if="route.path == '/' || route.path == '/register'">
       <v-container>

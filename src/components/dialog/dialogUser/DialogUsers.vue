@@ -125,7 +125,7 @@ function clearFields() {
 
 function resetForm() {
   clearFields();
-  dialogStoreUsers.closeUserDialog()
+  // dialogStoreUsers.closeUserDialog()
   showPassword.value = false
   exibir.value = false
 }

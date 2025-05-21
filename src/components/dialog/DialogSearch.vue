@@ -18,17 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useDialogStoreSearch } from '../../stores/dialogStoreSearch'
+import { ref, watch } from 'vue'
 
 const exibir = defineModel<boolean>('exibir', { required: false, default: false })
-
-const dialogStoreSearch = useDialogStoreSearch()
-
-const dialogSearch = computed({
-  get: () => dialogStoreSearch.showDialogSearch,
-  set: (val: boolean) => dialogStoreSearch.showDialogSearch = val
-})
 
 watch(exibir, (val) => {
   if (!val) {
@@ -37,7 +29,6 @@ watch(exibir, (val) => {
 });
 
 function resetForm() {
-  // dialogStoreSearch.closeSearchDialog()
   exibir.value = false
   search = ref('');
 }
@@ -45,7 +36,6 @@ function resetForm() {
 let search = ref('')
 
 function submitForm() {
-  dialogStoreSearch.search(search.value)
   resetForm()
 }
 

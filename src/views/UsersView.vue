@@ -184,6 +184,9 @@
   <!-- Componente de paginação -->
   <Paginator :model-value="paginadorClass" @mudouLimite="aoMudarLimite" @mudouPagina="aoMudarPagina"
     v-if="apiUsers?.totalRegistros! > 0 && !loading" />
+  <DialogConfirmarSenha :model-value="confirmarSenha"
+    @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
+
 </template>
 
 <script setup lang="ts">
@@ -192,10 +195,12 @@
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
+import DialogConfirmarSenha from '@/components/dialog/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
+
+// Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator'; // Classe
 
 // Store
-import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha';
 import { useSnackbarStore } from '@/stores/SnackbarStore';
 import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers' // Store do dialog para os usuários
 
@@ -208,8 +213,8 @@ import { authServices } from "@/services/authService.ts";
 
 // Vue
 import { onMounted, ref, watch } from 'vue';
-import type { FiltroPaginacao } from '@/models/FiltersModels';
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
+import { ConfirmarSenhaClass } from '@/components/dialog/confirmarSenha/ClassConfirmarSenha';
 //#endregion
 
 //#region Variáveis
@@ -219,13 +224,15 @@ const showDialog = ref(false) // Dialog de usuários
 
 // Stores
 const usersDialog = useDialogStoreUsers() // Dialog para os usuários
-const confirmarSenha = useDialogStoreConfirmarSenha() // Para Métodos sensíveis
+
+// Classes
+const confirmarSenha = ref(new ConfirmarSenhaClass())
+const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'ASC', search: '' })) // Classe para a paginação
 
 // Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
 var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>()
 const searchUsuario = ref<string>() // Parâmetro para consultar usuários
-const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'ASC', search: '' })) // Classe para a paginação
 
 //#endregion
 
@@ -251,7 +258,7 @@ watch(() => paginadorClass.value, () => {
 
 //#endregion
 
-//#region Dialog
+//#region Dialog de usuários
 // Métodos para manipular o dialog de usuário
 function openNewUser() {
   usersDialog.startCreatingNewUser()
@@ -262,6 +269,15 @@ function completeFormEditUserDialog(user: UsuarioConsulta) {
   usersDialog.completeFormEditUserDialog(user)
   showDialog.value = true
 }
+//#endregion
+
+//#region Dialog confirmar senha
+// Abrir o dialog já com o callback setado
+function abrirDialogConfirmacao(callback: () => Promise<void>) {
+  confirmarSenha.value.setCallback(callback)
+  confirmarSenha.value.openDialog()
+}
+
 //#endregion
 
 //#region funções de consulta, controle e manipulação de usuários
@@ -319,9 +335,10 @@ async function toggleUsuarioAtivo(user: UsuarioConsulta) {
   }
 }
 
+//#region Funções sensíveis
 // Função para facilitar o reset para senha padrão da conta de um usuário
 async function resetarSenhaAoPadrao(emailUsuario: string) {
-  confirmarSenha.setCallbackPosSenha(async () => {
+  abrirDialogConfirmacao(async () => {
     try {
       await authServices().resetarSenhaAoPadrao(emailUsuario)
       useSnackbarStore().showSnackbar(`Senha resetada com sucesso para o usuário: ${emailUsuario}`, 'success')
@@ -331,12 +348,11 @@ async function resetarSenhaAoPadrao(emailUsuario: string) {
     }
   })
 
-  confirmarSenha.openDialogConfirmarSenha()
 }
 
 // Função para deletar a conta de um usuário
 function deleteUser(idUser: number) {
-  confirmarSenha.setCallbackPosSenha(async () => {
+  abrirDialogConfirmacao(async () => {
     try {
       await useServicesUsuario.deleteUser(idUser)
       useSnackbarStore().showSnackbar('Usuário removido!', 'success')
@@ -346,9 +362,8 @@ function deleteUser(idUser: number) {
       useDialogStoreUsers().apiUsers.value = await useServicesUsuario.getAllUsers(paginadorClass.value)
     }
   })
-
-  confirmarSenha.openDialogConfirmarSenha()
 }
+//#endregion
 //#endregion
 
 //#region Paginação

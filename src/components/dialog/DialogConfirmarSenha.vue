@@ -1,14 +1,13 @@
 <template>
-  <v-dialog v-model="dialogConfirmarSenha" max-width="650">
+  <v-dialog v-model="exibir" max-width="650">
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
       <v-card prepend-icon="mdi-delete-outline" title="Confirme a sua senha antes de completar essa operação">
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="confirmarSenha.senha_usuario"
-                :rules="[rules.required, rules.min, rules.max]" :type="showPassword1 ? 'text' : 'password'"
-                hint="Mínimo de 8 caracteres" label="Senha*" counter>
+              <v-text-field clearable v-model="confirmarSenha.senha" :rules="[rules.required, rules.min, rules.max]"
+                :type="showPassword1 ? 'text' : 'password'" hint="Mínimo de 8 caracteres" label="Senha*" counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword1 = !showPassword1"
@@ -18,8 +17,8 @@
               </v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="confirmarSenha.confirmar_senha"
-                :rules="[rules.required, rules.equals(() => confirmarSenha.senha_usuario)]"
+              <v-text-field clearable v-model="confirmarSenha.confirmarSenha"
+                :rules="[rules.required, rules.equals(() => confirmarSenha.senha)]"
                 :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*"
                 hint="As senhas devem coincidir" counter>
 
@@ -35,15 +34,14 @@
           </small>
         </v-card-text>
 
-        <v-divider></v-divider>
+        <v-divider />
 
         <v-card-actions>
           <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon class="pt-1">mdi-refresh</v-icon>
             Refresh</v-btn>
           <v-spacer></v-spacer>
 
-          <v-btn color="red" variant="plain" @click="dialogStoreConfirmarSenha.closeDialogConfirmarSenha()"><v-icon
-              class="pt-1">mdi-close</v-icon>Close</v-btn>
+          <v-btn color="red" variant="plain" @click="resetForm()"><v-icon class="pt-1">mdi-close</v-icon>Close</v-btn>
 
           <v-btn color="success" variant="tonal" :disabled="!formIsValid"
             type="submit"><v-icon>mdi-content-save-check</v-icon class="pt-1">Save</v-btn>
@@ -54,62 +52,85 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { rules } from '@/utils/rules'
-import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha'
-import { authServices } from '@/services/authService'
-import type { ConfirmarSenha } from '@/models/authModels/LoginModel'
+// Stores
 import { useSnackbarStore } from '@/stores/SnackbarStore'
+
+// Classes
+import { ConfirmarSenhaClass } from './confirmarSenha/ClassConfirmarSenha'
+
+// Models
+
+// Services
+import { rules } from '@/utils/rules'
+
+// Vue
+import { ref, computed, watch } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
 
-const confirmarSenha = ref<ConfirmarSenha>({
-  email_usuario: '',
-  senha_usuario: '',
-  confirmar_senha: ''
-})
-
+// Visualizar a senha inserida
 const showPassword1 = ref(false)
 const showPassword2 = ref(false)
-const dialogStoreConfirmarSenha = useDialogStoreConfirmarSenha()
 
-const dialogConfirmarSenha = computed({
-  get: () => dialogStoreConfirmarSenha.showDialogDialogConfirmarSenha,
-  set: (val: boolean) => dialogStoreConfirmarSenha.showDialogDialogConfirmarSenha = val
+interface Props {
+  modelValue: ConfirmarSenhaClass
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: ConfirmarSenhaClass): void
+}>()
+
+const confirmarSenha = computed(() => props.modelValue)
+const exibir = computed({
+  get: () => confirmarSenha.value.show,
+  set: (val) => confirmarSenha.value.show = val
 })
 
-watch(dialogConfirmarSenha, (val) => {
+watch(exibir, (val) => {
   if (!val) {
     resetForm()
   }
 });
 
 function clearFields() {
-  confirmarSenha.value.senha_usuario = ''
-  confirmarSenha.value.confirmar_senha = ''
+  confirmarSenha.value.clearFields()
   showPassword1.value = false
   showPassword2.value = false
+  emit('update:modelValue', confirmarSenha.value)
 }
 
 function resetForm() {
-  clearFields()
-  dialogStoreConfirmarSenha.closeDialogConfirmarSenha()
+  exibir.value = false
+  confirmarSenha.value.fecharDialogComReset()
 }
 
 async function submitForm() {
   try {
-    await authServices().confirmarSenha(confirmarSenha.value)
+    if (confirmarSenha.value.callback)
+      await confirmarSenha.value.executeCallback()
 
-    if (dialogStoreConfirmarSenha.callbackPosSenha)
-      await dialogStoreConfirmarSenha.callbackPosSenha()
-
-    dialogStoreConfirmarSenha.closeDialogConfirmarSenha()
-
+    resetForm()
     useSnackbarStore().showSnackbar('Operação realizada com sucesso!', 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
   }
 }
 
+
+// async function submitForm() {
+//   try {
+//     // await authServices().confirmarSenha(confirmarSenha.value)
+
+//     if (confirmarSenha.value.callback)
+//       await confirmarSenha.value.executeCallback()
+
+//     resetForm()
+
+//     useSnackbarStore().showSnackbar('Operação realizada com sucesso!', 'success')
+//   } catch (error) {
+//     useSnackbarStore().showSnackbar(error, 'red')
+//   }
+// }
 </script>

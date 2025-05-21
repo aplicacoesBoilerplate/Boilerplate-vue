@@ -62,7 +62,7 @@
       </v-btn>
     </template>
   </v-app-bar>
-  <DialogSearch :exibir="showDialogSearch" />
+  <DialogSearch v-model:exibir="showDialogSearch" />
   <SnackbarNotifications />
   <BtnsNavigation />
 </template>
