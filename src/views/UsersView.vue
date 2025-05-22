@@ -224,9 +224,6 @@ import { onMounted, ref, watch } from 'vue';
 const loading = ref(false) // Carregamento
 const showDialog = ref(false) // Dialog de usuários
 
-// Stores
-const usersDialog = useDialogStoreUsers() // Dialog para os usuários
-
 // Classes
 const confirmarSenha = ref(new ConfirmarSenhaClass())
 const dialogUsers = ref(new DialogUsersClass())
@@ -309,7 +306,14 @@ async function getAllUsers() {
 async function searchUsuarios() {
   loading.value = true
   try {
-    apiUsers.value = await usuariosServices.searchUsuarios(paginadorClass.value)
+    const response = await usuariosServices.searchUsuarios(paginadorClass.value)
+    apiUsers.value = response
+
+    paginadorClass.value.atualizarDadosAPI({
+      totalPaginas: response.totalPaginas,
+      totalRegistros: response.totalRegistros,
+    })
+
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
