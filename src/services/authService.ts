@@ -1,6 +1,7 @@
 import type { AlterarSenha, ConfirmarSenha, LoginModel } from '@/models/authModels/LoginModel'
 import http from './axios'
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
+import { usuarioAutenticado } from '@/stores/usuarioAutenticado'
 
 async function login(loginData: LoginModel): Promise<string> {
   try {
@@ -20,10 +21,11 @@ function logout() {
 
 async function confirmarSenha(confirmar: ConfirmarSenha): Promise<Boolean> {
   try {
-    const email = await getByToken()
-    confirmar.email_usuario = email.email
-    const response = await http.post('/auth/confirmar', confirmar)
-    return response.data
+    const usuarioToken = await getByToken()
+    usuarioAutenticado().usuario = usuarioToken
+    confirmar.email_usuario = usuarioToken.email
+    const { data } = await http.post('/auth/confirmar', confirmar)
+    return data
   } catch (error) {
     throw error
   }

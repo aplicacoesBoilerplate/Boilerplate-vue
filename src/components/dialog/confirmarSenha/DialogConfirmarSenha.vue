@@ -5,6 +5,11 @@
       <v-card prepend-icon="mdi-delete-outline" title="Confirme a sua senha antes de completar essa operação">
         <v-card-text>
           <v-row dense>
+            <v-col cols="12">
+              <v-text-field clearable v-model="confirmarSenha.email" :rules="[rules.required, rules.emailFormat]"
+                label="email*" disabled counter>
+              </v-text-field>
+            </v-col>
             <v-col cols="12" md="6">
               <v-text-field clearable v-model="confirmarSenha.senha" :rules="[rules.required, rules.min, rules.max]"
                 :type="showPassword1 ? 'text' : 'password'" hint="Mínimo de 8 caracteres" label="Senha*" counter>
@@ -56,12 +61,13 @@
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 
 // Classes
-import { ConfirmarSenhaClass } from './confirmarSenha/ClassConfirmarSenha'
+import { ConfirmarSenhaClass } from './ClassConfirmarSenha'
 
 // Models
 
 // Services
 import { rules } from '@/utils/rules'
+import { authServices } from '@/services/authService'
 
 // Vue
 import { ref, computed, watch } from 'vue'
@@ -88,9 +94,17 @@ const exibir = computed({
   set: (val) => confirmarSenha.value.show = val
 })
 
-watch(exibir, (val) => {
+watch(exibir, async (val) => {
   if (!val) {
     resetForm()
+  } else {
+    try {
+      const usuarioToken = await authServices().getByToken()
+      confirmarSenha.value.email = usuarioToken.email
+    } catch (error) {
+      useSnackbarStore().showSnackbar(error, 'red')
+      throw error
+    }
   }
 });
 
@@ -102,8 +116,8 @@ function clearFields() {
 }
 
 function resetForm() {
-  exibir.value = false
-  confirmarSenha.value.fecharDialogComReset()
+  clearFields()
+  confirmarSenha.value.closeDialog()
 }
 
 async function submitForm() {
@@ -118,19 +132,4 @@ async function submitForm() {
   }
 }
 
-
-// async function submitForm() {
-//   try {
-//     // await authServices().confirmarSenha(confirmarSenha.value)
-
-//     if (confirmarSenha.value.callback)
-//       await confirmarSenha.value.executeCallback()
-
-//     resetForm()
-
-//     useSnackbarStore().showSnackbar('Operação realizada com sucesso!', 'success')
-//   } catch (error) {
-//     useSnackbarStore().showSnackbar(error, 'red')
-//   }
-// }
 </script>

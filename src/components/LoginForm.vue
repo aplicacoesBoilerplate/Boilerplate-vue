@@ -25,7 +25,7 @@
               </v-col>
 
               <v-col cols="12">
-                <v-btn class="mt-2" type="submit" block color="success">Login
+                <v-btn class="mt-2" type="submit" :disabled="!formIsValid" block color="success">Login
                 </v-btn>
               </v-col>
             </v-row>

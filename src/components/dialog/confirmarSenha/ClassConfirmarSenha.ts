@@ -3,6 +3,8 @@ export class ConfirmarSenhaClass {
   email: string
   senha: string
   confirmarSenha: string
+  novaSenha?: string
+  confirmarNovaSenha?: string
   callback?: () => Promise<void> | null
 
   constructor() {
@@ -11,26 +13,20 @@ export class ConfirmarSenhaClass {
     this.senha = ''
     this.confirmarSenha = ''
     this.callback = undefined
+    this.novaSenha = ''
+    this.confirmarNovaSenha = ''
   }
 
   openDialog() {
     this.show = true
-    console.log('Show confirmar senha:', this.show)
   }
 
   clearFields() {
-    this.email = ''
     this.senha = ''
     this.confirmarSenha = ''
   }
 
   closeDialog() {
-    this.clearFields()
-    this.show = false
-    this.callback = undefined
-  }
-
-  fecharDialogComReset() {
     this.clearFields()
     this.show = false
     this.callback = undefined

@@ -2,18 +2,18 @@
   <v-dialog v-model="exibir" max-width="650">
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
-      <v-card :prepend-icon="dialogStoreUsers.isEditing.value ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
-        :title="dialogStoreUsers.isEditing.value ? `Editar usuário: ${user.idUsuario}` : 'Criar novo usuário'">
+      <v-card :prepend-icon="dialogUsers.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
+        :title="dialogUsers.isEditing ? `Editar usuário: ${user.idUsuario}` : 'Criar novo usuário'">
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
               <v-text-field clearable v-model="user.nome" :counter="100" :rules="[rules.required, rules.max]"
-                label="Nome de usuário*" required></v-text-field>
+                label="Nome de usuário*" required />
             </v-col>
 
             <v-col cols="12" md="6">
               <v-text-field clearable v-model="user.email" :counter="100" hint="E-mail de acesso" persistent-hint
-                label="e-mail*" :rules="[rules.required, rules.min, rules.max, rules.emailFormat]"></v-text-field>
+                label="e-mail*" :rules="[rules.required, rules.min, rules.max, rules.emailFormat]" />
             </v-col>
 
             <v-col cols="12" class="d-flex justify-center">
@@ -22,16 +22,16 @@
             </v-col>
           </v-row>
 
-          <v-row dense v-if="isEditing">
+          <v-row dense v-if="dialogUsers.isEditing">
             <v-col cols="6" class="d-flex justify-center">
-              <v-switch v-model="user.contaBloqueada" color="red" label="Status bloqueio"></v-switch>
+              <v-switch v-model="user.contaBloqueada" color="red" label="Status bloqueio" />
             </v-col>
             <v-col cols="6" class="d-flex justify-center">
-              <v-switch v-model="user.ativo" color="success" label="Status conta ativa"></v-switch>
+              <v-switch v-model="user.ativo" color="success" label="Status conta ativa" />
             </v-col>
           </v-row>
 
-          <v-row dense v-if="isEditing">
+          <v-row dense v-if="dialogUsers.isEditing">
             <v-col cols="6" class="d-flex justify-center">
               <v-switch v-model="user.autorizaSaida" color="success" label="Autoriza saídas"></v-switch>
             </v-col>
@@ -79,55 +79,57 @@
 </template>
 
 <script setup lang="ts">
-// Componentes
+// Classes
+import type { DialogUsersClass } from './ClassDialogUsers'
 // Store
-import { useDialogStoreUsers } from '../dialogUser/dialogStoreUsers' // Será removido
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Models
-import { PermissoesUsuarios, type UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
+import { PermissoesUsuarios } from '@/models/usersModels/UsuariosModels'
 // Services
+import { usuariosServices } from '@/services/usuariosService'
 import { rules } from '@/utils/rules'
 // Vue
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
 const showPassword = ref(false)
-const dialogStoreUsers = useDialogStoreUsers()
-const isEditing = dialogStoreUsers.isEditing
 const permissoes = PermissoesUsuarios
 
-const exibir = defineModel<boolean>('exibir', { required: false, default: false })
+interface Props {
+  modelValue: DialogUsersClass
+}
 
-const user = ref<UsuarioConsulta>({
-  ...dialogStoreUsers.emptyUser
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: DialogUsersClass): void
+}>()
+
+const user = computed(() => props.modelValue.usuario)
+const dialogUsers = computed(() => props.modelValue)
+const exibir = computed({
+  get: () => dialogUsers.value.show,
+  set: (val) => dialogUsers.value.show = val
 })
-
-watch(() => dialogStoreUsers.userToEdit.value, (userToEdit) => {
-  if (userToEdit) {
-    user.value = { ...userToEdit }
-  } else {
-    user.value = {
-      ...dialogStoreUsers.emptyUser
-    }
-  }
-}, { immediate: true })
 
 watch(exibir, (val) => {
   if (!val) {
     resetForm()
   }
+  if (val && !dialogUsers.value.isEditing) {
+    clearFields();
+  }
 });
 
 function clearFields() {
-  user.value = { ...dialogStoreUsers.emptyUser };
+  dialogUsers.value.clearFields()
 }
 
 function resetForm() {
-  clearFields();
-  // dialogStoreUsers.closeUserDialog()
-  showPassword.value = false
-  exibir.value = false
+  dialogUsers.value.clearFields()
+  dialogUsers.value.closeDialog()
+  showPassword.value = false // Exibir senha
+  exibir.value = false // Exibir componente
 }
 
 async function createNewUser() {
@@ -135,7 +137,7 @@ async function createNewUser() {
   if (!valid) return
 
   try {
-    await dialogStoreUsers.createNewUser(user.value);
+    await usuariosServices.createUser(user.value);
     useSnackbarStore().showSnackbar('Usuário criado com sucesso!', 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
@@ -149,7 +151,7 @@ async function updateUser() {
   if (!valid) return
 
   try {
-    await dialogStoreUsers.updateUser(user.value);
+    await usuariosServices.updateUser(user.value)
     useSnackbarStore().showSnackbar('Usuário modificado com sucesso!', 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
@@ -161,7 +163,7 @@ async function updateUser() {
 async function submitForm() {
   const { valid } = await formRef.value.validate()
   if (!valid) return
-  dialogStoreUsers.isEditing.value ? await updateUser() : await createNewUser()
+  dialogUsers.value.isEditing ? await updateUser() : await createNewUser()
 }
 
 </script>

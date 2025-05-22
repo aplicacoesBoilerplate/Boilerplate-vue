@@ -40,8 +40,8 @@
 
             <v-col cols="4">
               <v-text-field clearable v-model="alterarSenhaUsuario.senhaUsuario" :rules="[rules.required]"
-                :type="showPassword1 ? 'text' : 'password'" hint="Insira novamente" persistent-hint label="Senha atual*"
-                counter>
+                :type="showPassword1 ? 'text' : 'password'" hint="Insira novamente a sua senha" persistent-hint
+                label="Senha atual*" counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword1 = !showPassword1"
@@ -97,20 +97,34 @@
       </v-card-actions>
     </v-card>
   </div>
+  <DialogConfirmarSenha :model-value="confirmarSenha"
+    @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
 </template>
 
 <script setup lang="ts">
+// Componentes
+import { ConfirmarSenhaClass } from '@/components/dialog/confirmarSenha/ClassConfirmarSenha';
+import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
+
+// Classes
 import type { AlterarSenha } from '@/models/authModels/LoginModel';
-import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
-import { authServices } from '@/services/authService';
-import { useDialogStoreConfirmarSenha } from '@/stores/dialogStoreConfirmaSenha';
+
+// Stores
 import { useSnackbarStore } from '@/stores/SnackbarStore';
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
-import { ref, onMounted, computed } from 'vue';
-import { rules } from '@/utils/rules'
-import { useServicesUsuario } from '@/services/usuariosService';
 
-const confirmarSenha = useDialogStoreConfirmarSenha()
+// Models
+import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
+
+// Services
+import { usuariosServices } from '@/services/usuariosService';
+import { authServices } from '@/services/authService';
+import { rules } from '@/utils/rules'
+
+// Vue
+import { ref, onMounted, computed } from 'vue';
+
+const confirmarSenha = ref(new ConfirmarSenhaClass())
 const usuarioStore = usuarioAutenticado()
 const model = ref<UsuarioConsulta>({
   nome: '',
@@ -148,16 +162,19 @@ function resetModel() {
   model.value = clone<UsuarioConsulta>(usuarioStore.usuario)
 }
 
+function abrirDialogConfirmacao(callback: () => Promise<void>) {
+  confirmarSenha.value.setCallback(callback)
+  confirmarSenha.value.openDialog()
+}
+
 function confirmarUsuario() {
-  confirmarSenha.setCallbackPosSenha(async () => {
+  abrirDialogConfirmacao(async () => {
     try {
       usuarioConfirmado.value = true
     } catch (error) {
       useSnackbarStore().showSnackbar(error, 'red')
     }
   })
-
-  confirmarSenha.openDialogConfirmarSenha()
 }
 
 async function alterarSenha() {
@@ -174,7 +191,7 @@ async function alterarSenha() {
 
 async function modificarUsuario() {
   try {
-    await useServicesUsuario.updateUser(model.value)
+    await usuariosServices.updateUser(model.value)
     usuarioStore.usuario = model.value
     useSnackbarStore().showSnackbar('Perfil atualizado com sucesso!', 'success')
   } catch (error) {

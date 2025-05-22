@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { useServicesUsuario } from '@/services/usuariosService'
+import { usuariosServices } from '@/services/usuariosService'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 import SnackbarNotifications from './Snackbar.vue'
 import { rules } from '@/utils/rules'
@@ -76,7 +76,7 @@ const newUser = ref(
 // Mesmo método de criar usuário porém sem autenticação e com um body menor
 async function solicitarAcesso() {
   try {
-    await useServicesUsuario.solicitarAcesso(newUser.value)
+    await usuariosServices.solicitarAcesso(newUser.value)
     useSnackbarStore().showSnackbar('Conta registrada, aguarde a liberação de um administrador', 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')

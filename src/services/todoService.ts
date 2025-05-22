@@ -1,6 +1,6 @@
 import http from './axios'
 import type { Task } from '@/models/TaskModel'
-import { useServicesUsuario } from './usuariosService'
+import { usuariosServices } from './usuariosService'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 
 async function getAllTasks(): Promise<Task[]> {
@@ -10,7 +10,7 @@ async function getAllTasks(): Promise<Task[]> {
     const enriquecimentoComResponsavel = await Promise.all(
       tasks.map(async (task: Task) => {
         try {
-          const user = await useServicesUsuario.getUserById(task.idEmployee)
+          const user = await usuariosServices.getUserById(task.idEmployee)
           return {
             ...task,
             employeeName: user.nome,
@@ -43,7 +43,7 @@ async function getTaskById(id: number | string): Promise<Task> {
 
 async function createTask(task: Omit<Task, 'id'>): Promise<Task> {
   try {
-    const user = await useServicesUsuario.getUserById(task.idEmployee)
+    const user = await usuariosServices.getUserById(task.idEmployee)
     task.employeeName = user.nome
     try {
       const response = await http.post('/todos', task)
@@ -64,7 +64,7 @@ async function updateTask(task: Task): Promise<Task> {
   await getTaskById(task.id!)
   if (task.dateDelivery != null && task.dateDelivery != '') task.status = 'Completed'
   try {
-    const user = await useServicesUsuario.getUserById(task.idEmployee)
+    const user = await usuariosServices.getUserById(task.idEmployee)
     task.employeeName = user.nome
     try {
       const response = await http.patch(`/todos/${task.id}`, task)

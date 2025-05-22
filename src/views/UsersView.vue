@@ -3,15 +3,16 @@
   <BtnOpenDialog :callback="openNewUser" :label="'Criar novo usuário'" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogUsers v-model:exibir="showDialog" />
+  <DialogUsers :model-value="dialogUsers"
+    @update:modelValue="(val: DialogUsersClass) => Object.assign(dialogUsers, val)" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de usuários</span>
       <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
-        @click="aoMudarOrdem(paginadorClass.orderBy! || 'ASC')">
-        <v-icon>{{ paginadorClass.orderBy! == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
+        @click="aoMudarOrdem(paginadorClass.orderBy || 'ASC')">
+        <v-icon>{{ paginadorClass.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
         </v-icon>
       </v-btn>
 
@@ -43,7 +44,7 @@
     <!-- Exibição dos usuários -->
     <v-virtual-scroll :items="apiUsers?.registros" height="500" item-height="50" v-else>
       <template v-slot:default="{ item: user }">
-        <v-list-item :title="`${user.idUsuario} - ${user.nome.toUpperCase()}`" :subtitle="`#email: ${user.email}`">
+        <v-list-item :title="`${user.idUsuario} - ${user.nome}`" :subtitle="`#email: ${user.email}`">
 
           <!-- Ícone de cartão de usuário -->
           <template v-slot:prepend>
@@ -195,26 +196,27 @@
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
-import DialogConfirmarSenha from '@/components/dialog/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
+import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
 
 // Classes
-import { PaginatorClass } from '@/components/paginator/ClassPaginator'; // Classe
+import { PaginatorClass } from '@/components/paginator/ClassPaginator';
+import { ConfirmarSenhaClass } from '@/components/dialog/confirmarSenha/ClassConfirmarSenha';
+import { DialogUsersClass } from '@/components/dialog/dialogUser/ClassDialogUsers';
 
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore';
-import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers' // Store do dialog para os usuários
+import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers' // Store do dialog para os usuários, será removido
 
 // Models
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
+import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
 
 // Services
-import { useServicesUsuario } from '@/services/usuariosService';
+import { usuariosServices } from '@/services/usuariosService';
 import { authServices } from "@/services/authService.ts";
 
 // Vue
 import { onMounted, ref, watch } from 'vue';
-import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
-import { ConfirmarSenhaClass } from '@/components/dialog/confirmarSenha/ClassConfirmarSenha';
 //#endregion
 
 //#region Variáveis
@@ -227,7 +229,8 @@ const usersDialog = useDialogStoreUsers() // Dialog para os usuários
 
 // Classes
 const confirmarSenha = ref(new ConfirmarSenhaClass())
-const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'ASC', search: '' })) // Classe para a paginação
+const dialogUsers = ref(new DialogUsersClass())
+const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'DESC', search: '' })) // Classe para a paginação
 
 // Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
@@ -261,12 +264,14 @@ watch(() => paginadorClass.value, () => {
 //#region Dialog de usuários
 // Métodos para manipular o dialog de usuário
 function openNewUser() {
-  usersDialog.startCreatingNewUser()
+  // usersDialog.startCreatingNewUser()
+  dialogUsers.value.openDialog()
   showDialog.value = true
 }
 
 function completeFormEditUserDialog(user: UsuarioConsulta) {
-  usersDialog.completeFormEditUserDialog(user)
+  // usersDialog.completeFormEditUserDialog(user)
+  dialogUsers.value.completeForm(user.idUsuario!)
   showDialog.value = true
 }
 //#endregion
@@ -285,7 +290,7 @@ function abrirDialogConfirmacao(callback: () => Promise<void>) {
 async function getAllUsers() {
   loading.value = true
   try {
-    const response = await useServicesUsuario.getAllUsers(paginadorClass.value)
+    const response = await usuariosServices.getAllUsers(paginadorClass.value)
 
     apiUsers.value = response
 
@@ -304,7 +309,7 @@ async function getAllUsers() {
 async function searchUsuarios() {
   loading.value = true
   try {
-    apiUsers.value = await useServicesUsuario.searchUsuarios(paginadorClass.value)
+    apiUsers.value = await usuariosServices.searchUsuarios(paginadorClass.value)
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
@@ -315,23 +320,31 @@ async function searchUsuarios() {
 
 // Função para facilitar o bloqueio e desbloqueio da conta de um usuário
 async function toggleBloqueioUsuario(user: UsuarioConsulta) {
+  const userToEdit = { ...user }
+  userToEdit.contaBloqueada = !userToEdit.contaBloqueada
   try {
-    await usersDialog.toggleBloqueioUsuario(user)
+    await usuariosServices.updateUser(userToEdit)
     useSnackbarStore().showSnackbar(`Usuário ${user.contaBloqueada ? 'desbloqueado' : 'bloqueado'} com sucesso!`, 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
+  } finally {
+    await getAllUsers()
   }
 }
 
 // Função para facilitar a ativação e inativação da conta de um usuário
 async function toggleUsuarioAtivo(user: UsuarioConsulta) {
+  const userToEdit = { ...user }
+  userToEdit.ativo = !userToEdit.ativo
   try {
-    await usersDialog.toggleUsuarioAtivo(user)
+    await usuariosServices.updateUser(userToEdit)
     useSnackbarStore().showSnackbar(`Usuário ${user.ativo ? 'inativado' : 'ativado'} com sucesso!`, 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
+  } finally {
+    await getAllUsers()
   }
 }
 
@@ -347,19 +360,18 @@ async function resetarSenhaAoPadrao(emailUsuario: string) {
       throw error
     }
   })
-
 }
 
 // Função para deletar a conta de um usuário
 function deleteUser(idUser: number) {
   abrirDialogConfirmacao(async () => {
     try {
-      await useServicesUsuario.deleteUser(idUser)
+      await usuariosServices.deleteUser(idUser)
       useSnackbarStore().showSnackbar('Usuário removido!', 'success')
     } catch (error) {
       useSnackbarStore().showSnackbar(error, 'red')
     } finally {
-      useDialogStoreUsers().apiUsers.value = await useServicesUsuario.getAllUsers(paginadorClass.value)
+      await getAllUsers()
     }
   })
 }
