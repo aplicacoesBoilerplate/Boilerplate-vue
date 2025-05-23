@@ -205,7 +205,6 @@ import { DialogUsersClass } from '@/components/dialog/dialogUser/ClassDialogUser
 
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore';
-import { useDialogStoreUsers } from '@/components/dialog/dialogUser/dialogStoreUsers' // Store do dialog para os usuários, será removido
 
 // Models
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
@@ -231,15 +230,15 @@ const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPagi
 
 // Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
-var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>()
 const searchUsuario = ref<string>() // Parâmetro para consultar usuários
+var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>() // Armazena os dados da resposta das req para exibição no front
 
 //#endregion
 
 //#region Funcionalidades do Vue
 
 onMounted(async () => {
-  getAllUsers()
+  await getAllUsers()
 })
 
 watch(() => searchUsuario.value, async (newValue) => {
@@ -261,13 +260,11 @@ watch(() => paginadorClass.value, () => {
 //#region Dialog de usuários
 // Métodos para manipular o dialog de usuário
 function openNewUser() {
-  // usersDialog.startCreatingNewUser()
   dialogUsers.value.openDialog()
   showDialog.value = true
 }
 
 function completeFormEditUserDialog(user: UsuarioConsulta) {
-  // usersDialog.completeFormEditUserDialog(user)
   dialogUsers.value.completeForm(user.idUsuario!)
   showDialog.value = true
 }
