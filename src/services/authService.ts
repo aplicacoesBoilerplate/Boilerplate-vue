@@ -19,6 +19,15 @@ function logout() {
   sessionStorage.removeItem('token')
 }
 
+async function getByToken(): Promise<UsuarioConsulta> {
+  try {
+    const { data } = await http.get('/auth/me')
+    return data
+  } catch (error) {
+    throw error
+  }
+}
+
 async function confirmarSenha(confirmar: ConfirmarSenha): Promise<Boolean> {
   try {
     const usuarioToken = await getByToken()
@@ -40,14 +49,26 @@ async function alterarSenha(alter: AlterarSenha) {
   }
 }
 
-async function getByToken(): Promise<UsuarioConsulta> {
-  try {
-    const { data } = await http.get('/auth/me')
-    return data
-  } catch (error) {
-    throw error
-  }
-}
+// async function controleBloqueios(usuario: UsuarioConsulta, operacao: string) {
+//   const params = { ...usuario }
+//   try {
+//     switch (operacao) {
+//       case 'ativo': {
+//         params.ativo = !usuario.ativo
+//         break
+//       }
+//       case 'bloqueio': {
+//         params.contaBloqueada = !usuario.contaBloqueada
+//         break
+//       }
+//       default:
+//         return
+//     }
+//     await http.put('/auth/controle', params)
+//   } catch (error) {
+//     throw error
+//   }
+// }
 
 async function resetarSenhaAoPadrao(emailUsuario: string) {
   try {
@@ -64,6 +85,7 @@ export function authServices() {
     confirmarSenha,
     alterarSenha,
     getByToken,
+    // controleBloqueios,
     resetarSenhaAoPadrao,
   }
 }

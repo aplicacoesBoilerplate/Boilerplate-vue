@@ -33,9 +33,9 @@ export const usuariosServices = {
   },
 
   // Serviço para consumir o endpoint da API de consulta de um usuário pelo Id
-  async getUserById(id: number | string): Promise<UsuarioConsulta> {
+  async getUserById(idUsuario: number): Promise<UsuarioConsulta> {
     try {
-      const { data } = await http.get(`/usuarios/${id}`)
+      const { data } = await http.get(`/usuarios/${idUsuario}`)
       return data.usuario
     } catch (error) {
       throw error

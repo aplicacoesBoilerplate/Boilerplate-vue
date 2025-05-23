@@ -3,8 +3,10 @@ export class PaginatorClass {
   offset: number
   totalPaginas?: number
   totalRegistros?: number
-  orderBy?: string
-  search?: string
+  orderBy?: string // Ordenação da exibição da lista
+  search?: string // Parâmetro de busca
+  status?: string // Status da saída consultada
+  aprovacao?: boolean // Parâmetro de busca para autorizações de saídas por aprovação
 
   constructor({
     limite = 10,
@@ -39,5 +41,4 @@ export class PaginatorClass {
     const novaOrdem = ordem == 'ASC' ? 'DESC' : 'ASC'
     this.orderBy = novaOrdem
   }
-  
 }
