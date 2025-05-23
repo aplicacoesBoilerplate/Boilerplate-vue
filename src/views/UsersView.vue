@@ -402,7 +402,7 @@ function toggleUser(id: number) {
   expandedUserId.value = expandedUserId.value === id ? null : id
 }
 
-// Usuado no alert quando não o usuário não foi encontrado para exibir novamente a lista com o getAll
+// Usado no alert quando não o usuário não foi encontrado para exibir novamente a lista com o getAll
 function clearSearch() {
   paginadorClass.value.search = ''
 }

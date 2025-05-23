@@ -7,3 +7,5 @@ export interface OperacoesMotivos {
   descricaoMotivo: string
   categoriaMotivo: string
 }
+
+export const CategoriasMotivo = ['SAÚDE', 'FILHO']

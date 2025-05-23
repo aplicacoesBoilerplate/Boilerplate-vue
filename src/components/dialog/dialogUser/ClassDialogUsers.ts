@@ -20,6 +20,11 @@ export class DialogUsersClass {
     this.show = true
   }
 
+  async getUsuarioById(idUsuario?: number) {
+    if (idUsuario)
+      this.usuario = await usuariosServices.getUserById(idUsuario)
+  }
+
   clearFields() {
     if (this.isEditing) {
       this.getUsuarioById(this.usuario.idUsuario)
@@ -30,10 +35,6 @@ export class DialogUsersClass {
         permissao: 'EMITE_SAIDA',
       }
     }
-  }
-
-  async getUsuarioById(idUsuario?: number) {
-    if (idUsuario) this.usuario = await usuariosServices.getUserById(idUsuario)
   }
 
   closeDialog() {

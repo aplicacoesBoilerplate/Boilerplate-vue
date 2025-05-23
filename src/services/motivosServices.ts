@@ -30,7 +30,7 @@ export const motivosServices = {
   },
 
   // Realizar o cadastro de um mono motivo
-  async insertMotivo(novoMotivo: OperacoesMotivos): Promise<MotivoConsulta> {
+  async createMotivo(novoMotivo: OperacoesMotivos): Promise<MotivoConsulta> {
     try {
       const { data } = await http.post(`/motivos`, novoMotivo)
       return data

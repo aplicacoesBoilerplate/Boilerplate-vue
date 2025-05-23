@@ -71,8 +71,8 @@ const modelValue = computed({
 
 const routerOption = ref([
   // { id: '0', icon: 'mdi-', path: '/', title: '' },
-  { id: '1', icon: 'mdi-list-box-outline', path: '/tasks', title: 'View all tasks' },
-  { id: '2', icon: 'mdi-account-group', path: '/users', title: 'View all users' },
+  { id: '1', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
+  { id: '2', icon: 'mdi-list-box-outline', path: '/motivos', title: 'Motivos' },
 ])
 
 // Service do auth para logout
