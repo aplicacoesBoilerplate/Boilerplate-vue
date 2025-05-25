@@ -1,0 +1,57 @@
+import type { AutorizacoesConsulta } from "@/models/saidasModels/saidasModels"
+import { autorizacoesServices } from "@/services/autorizacoesServices"
+
+
+export class DialogAutorizacoesClass {
+  show: boolean
+  isEditing: boolean
+  autorizacao: AutorizacoesConsulta
+
+  constructor() {
+    this.show = false
+    this.isEditing = false
+    this.autorizacao = {
+      idFuncionarioAutorizacao: 0,
+      idSaida: 0,
+      aprovacaoSaida: false,
+      observacaoAutorizacao: '',
+      dataAutorizacao: ''
+    }
+  }
+
+  openDialog() {
+    this.show = true
+  }
+
+  async getAutorizacao(idAutorizacao?: number) {
+    if (idAutorizacao) this.autorizacao = (await autorizacoesServices.getAutorizacaoById(idAutorizacao))
+  }
+
+  clearFields() {
+    if (this.isEditing) {
+      this.getAutorizacao(this.autorizacao.idAutorizacao)
+    } else {
+      this.autorizacao = {
+        idFuncionarioAutorizacao: 0,
+        idSaida: 0,
+        aprovacaoSaida: false,
+        observacaoAutorizacao: '',
+        dataAutorizacao: ''
+      }
+    }
+  }
+
+  closeDialog() {
+    this.show = false
+    this.isEditing = false
+    this.clearFields()
+  }
+
+  async completeForm(idAutorizacao?: number) {
+    this.show = true
+    this.isEditing = true
+    if (idAutorizacao != null) {
+      await this.getAutorizacao(idAutorizacao)
+    }
+  }
+}

@@ -24,7 +24,7 @@ http.interceptors.response.use(
   (error: AxiosError) => {
     if (!error) Promise.reject('Erro inesperado!')
 
-    if (error.response && error.response.status === 401) {
+    if ((error.response && error.response.status === 401) || !sessionStorage.getItem('token')) {
       useSnackbarStore().showSnackbar('Login expirado!', 'red')
       sessionStorage.removeItem('token')
       router.push('/')

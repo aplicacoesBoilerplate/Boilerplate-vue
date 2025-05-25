@@ -4,16 +4,7 @@
       <div>
         <v-card class="mx-auto" max-width="300">
           <v-list density="compact">
-            <v-list-subheader>ROUTERS</v-list-subheader>
-
-            <v-list-item color="primary">
-              <div class="pb-2 custom-button-wrapper" @mouseenter="hover = true" @mouseleave="hover = false">
-                <v-btn class="menu-btn" color="black" block @click="openNewTask()">
-                  <v-icon :class="{ rotate: hover }" class="mr-2" color="white">mdi-plus-circle-outline</v-icon>
-                  <span class="text-white">Create a new task</span>
-                </v-btn>
-              </div>
-            </v-list-item>
+            <v-list-subheader>ROTINAS</v-list-subheader>
 
             <v-list-item v-for="router in routerOption" :key="router.id" color="primary">
               <RouterLink :to="router.path" custom v-slot="{ navigate }">
@@ -34,25 +25,15 @@
       </div>
     </div>
   </v-navigation-drawer>
-  <DialogNewTask />
 </template>
 
 <script setup lang="ts">
 //#region hidden
 import { computed, ref } from 'vue'
-import DialogNewTask from './dialog/dialogTask/DialogTask.vue'
-import { useDialogStoreTask } from './dialog/dialogTask/dialogStoreTask'
 import { authServices } from '@/services/authService'
-import router from '@/router'
 import { useRouter } from 'vue-router'
 
-const hover = ref(false)
-const dialogStoreNewTask = useDialogStoreTask()
 const redirectRouter = useRouter()
-
-function openNewTask() {
-  dialogStoreNewTask.startCreatingNewTask()
-}
 
 const props = defineProps<{
   collapse: boolean
@@ -67,14 +48,6 @@ const modelValue = computed({
   set: value => emit('update:collapse', value)
 })
 
-//#endregion
-
-const routerOption = ref([
-  // { id: '0', icon: 'mdi-', path: '/', title: '' },
-  { id: '1', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
-  { id: '2', icon: 'mdi-list-box-outline', path: '/motivos', title: 'Motivos' },
-])
-
 // Service do auth para logout
 const authService = authServices()
 
@@ -82,4 +55,15 @@ function logout() {
   authService.logout()
   redirectRouter.push('/');
 }
+
+//#endregion
+
+const routerOption = ref([
+  // { id: '0', icon: 'mdi-', path: '/', title: '' },
+  { id: '1', icon: 'mdi-arrow-right-thin-circle-outline', path: '/saidas', title: 'Saídas' },
+  { id: '2', icon: 'mdi-lock-check', path: '/autorizacoes', title: 'Autorizações' },
+  { id: '3', icon: 'mdi-list-box-outline', path: '/motivos', title: 'Motivos' },
+  { id: '4', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
+])
 </script>
+
