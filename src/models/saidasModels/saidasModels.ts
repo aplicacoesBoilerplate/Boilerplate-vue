@@ -1,12 +1,12 @@
 export interface SaidaConsulta {
-  idSaida: number
+  idSaida?: number
   idFuncionarioResponsavelSaida: number
   numeroRegistroFuncionario: number
   nomeFuncionario: string
   setorFuncionario: string
   motivoSaida: number
   observacao_saida: string
-  statusSaida: number
+  statusSaida?: number
   dataSolicitacaoSaida: string
   dataAprovacaoSaida: string
   dataPrevisaoSaidaFuncionario: string
@@ -16,10 +16,16 @@ export interface SaidaConsulta {
   dataChegadaFuncionario: string
 }
 
-export interface AutorizacoesSaida extends SaidaConsulta {
+export interface AutorizacoesConsulta {
+  idAutorizacao?: number
   idFuncionarioAutorizacao: number
   idSaida: number
   aprovacaoSaida: boolean
   observacaoAutorizacao: string
   dataAutorizacao: string
+}
+
+export interface AutorizacoesSaidaConsulta {
+  autorizacao: AutorizacoesConsulta
+  saida: SaidaConsulta
 }

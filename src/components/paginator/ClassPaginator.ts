@@ -7,6 +7,7 @@ export class PaginatorClass {
   search?: string // Parâmetro de busca
   status?: string // Status da saída consultada
   aprovacao?: boolean // Parâmetro de busca para autorizações de saídas por aprovação
+  idFuncionarioResponsavel?: number
 
   constructor({
     limite = 10,

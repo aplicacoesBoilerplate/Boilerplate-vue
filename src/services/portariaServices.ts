@@ -2,7 +2,7 @@
 import type { PaginatorClass } from '@/components/paginator/ClassPaginator'
 // Models
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
-import type { AutorizacoesSaida, SaidaConsulta as Saida } from '@/models/saidasModels/saidasModels'
+import type { AutorizacoesSaidaConsulta, SaidaConsulta as Saida } from '@/models/saidasModels/saidasModels'
 // Services
 import http from './axios'
 
@@ -20,7 +20,7 @@ export const portariaServices = {
   },
 
   // Retorna a saída com todas as suas autorizações
-  async getAutorizacoesSaida(idSaida: number): Promise<AutorizacoesSaida> {
+  async getAutorizacoesSaida(idSaida: number): Promise<AutorizacoesSaidaConsulta> {
     try {
       const { data } = await http.get(`/portaria/consulta/${idSaida}`)
       return data
@@ -30,7 +30,7 @@ export const portariaServices = {
   },
 
   // Lança a data que o usuário saiu, o valor é a data no momento em que a requisição foi efetuada
-  async LancarHoraSaida(idSaida: number): Promise<AutorizacoesSaida> {
+  async LancarHoraSaida(idSaida: number): Promise<AutorizacoesSaidaConsulta> {
     try {
       const { data } = await http.get(`/portaria/${idSaida}/saida`)
       return data
@@ -40,7 +40,7 @@ export const portariaServices = {
   },
 
   // Lança a data que o usuário retornou, o valor é a data no momento em que a requisição foi efetuada
-  async LancarHoraRetorno(idSaida: number): Promise<AutorizacoesSaida> {
+  async LancarHoraRetorno(idSaida: number): Promise<AutorizacoesSaidaConsulta> {
     try {
       const { data } = await http.get(`/portaria/${idSaida}/retorno`)
       return data
