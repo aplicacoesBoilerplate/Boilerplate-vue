@@ -3,20 +3,18 @@
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
       <v-card :prepend-icon="dialogSaidas.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
-        :title="dialogSaidas.isEditing ? `Editar motivo: ${saida.idSaida}` : 'Criar novo motivo'">
+        :title="dialogSaidas.isEditing ? `Editar saída: ${saida.idSaida}` : 'Solicitar nova saída'">
         <v-card-text>
           <v-row dense>
-            <v-col cols="12" md="6">
-              <v-textarea clearable label="Observação" variant="outlined" counter
-                v-model="saida.observacao_saida"
-                :rules="[rules.required]" required
-              />
+            <v-col cols="12" md="6" class="d-flex justify-center">
+              <v-autocomplete clearable v-model="saida.motivoSaida" label="Motivo*" :items="apiMotivos?.registros"
+                :item-title="'descricaoMotivo'" :item-value="'idMotivo'" :rules="[rules.required]" />
             </v-col>
 
-            <!-- <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-autocomplete clearable v-model="saida.motivoSaida" label="Categoria*" :items="Motivos"
-                :rules="[rules.required, rules.includes(Motivos)]" />
-            </v-col> -->
+            <v-col cols="12">
+              <v-textarea clearable label="Observação saída" variant="outlined" counter
+                v-model="saida.observacao_saida" />
+            </v-col>
           </v-row>
 
           <v-row dense class="p-0 m-0">
@@ -52,20 +50,25 @@
 
 <script setup lang="ts">
 // Classes
+import { PaginatorClass } from '@/components/paginator/ClassPaginator'
 import type { DialogSaidasClass } from './ClassDialogSaidas'
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Models
+import type { MotivoConsulta } from '@/models/motivosModels/MotivosModels'
+import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 // Services
+import { motivosServices } from '@/services/motivosServices'
 import { saidasServices } from '@/services/saidasServices'
 import { rules } from '@/utils/rules'
 // Vue
-import { computed, ref, watch } from 'vue'
-import type { MotivoConsulta } from '@/models/motivosModels/MotivosModels'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
 const showPassword = ref(false)
+
+const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'DESC', search: '' })) // Classe para a paginação
 
 interface Props {
   modelValue: DialogSaidasClass
@@ -81,6 +84,10 @@ const dialogSaidas = computed(() => props.modelValue)
 const exibir = computed({
   get: () => dialogSaidas.value.show,
   set: (val) => dialogSaidas.value.show = val
+})
+
+onMounted(async () => {
+  await getAllMotivos()
 })
 
 watch(exibir, (val) => {
@@ -123,7 +130,7 @@ async function updateSaida() {
 
   try {
     await saidasServices.atualizarSaida(saida.value, saida.value.idSaida)
-    useSnackbarStore().showSnackbar('Motivo modificado com sucesso!', 'success')
+    useSnackbarStore().showSnackbar('Saída modificada com sucesso!', 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
@@ -137,6 +144,23 @@ async function submitForm() {
   dialogSaidas.value.isEditing ? await updateSaida() : await cadastrarNovaSaida()
 }
 
-const Motivos: MotivoConsulta = {idMotivo: 1, categoriaMotivo: '', descricaoMotivo: ''}
+// Consulta todos os motivos para alimentar o autocomplete
+var apiMotivos = ref<HeaderPaginatorModel<MotivoConsulta>>()
+
+async function getAllMotivos() {
+  try {
+    const response = await motivosServices.getMotivos(paginadorClass.value)
+
+    apiMotivos.value = response
+
+    paginadorClass.value.atualizarDadosAPI({
+      totalPaginas: response.totalPaginas,
+      totalRegistros: response.totalRegistros,
+    })
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  }
+}
 
 </script>

@@ -60,10 +60,10 @@ function logout() {
 
 const routerOption = ref([
   // { id: '0', icon: 'mdi-', path: '/', title: '' },
-  { id: '1', icon: 'mdi-arrow-right-thin-circle-outline', path: '/saidas', title: 'Saídas' },
+  { id: '1', icon: 'mdi-camera-front-variant', path: '/saidas', title: 'Saídas' },
   { id: '2', icon: 'mdi-lock-check', path: '/autorizacoes', title: 'Autorizações' },
   { id: '3', icon: 'mdi-list-box-outline', path: '/motivos', title: 'Motivos' },
   { id: '4', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
+  { id: '5', icon: 'mdi-door-sliding', path: '/portaria', title: 'Portaria' },
 ])
 </script>
-

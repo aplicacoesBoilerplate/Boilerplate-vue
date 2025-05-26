@@ -42,10 +42,9 @@
     <v-virtual-scroll :items="apiAutorizacoes?.registros" height="500" item-height="50" v-else>
       <template v-slot:default="{ item: autorizacao }">
         <v-list-item
-          :title="`${autorizacao.idAutorizacao} - Aprovação: ${autorizacao.aprovacaoSaida? 'Autorizado' : 'Negado'}`"
+          :title="`${autorizacao.idAutorizacao} - Aprovação: ${autorizacao.aprovacaoSaida ? 'Autorizado' : 'Negado'}`"
           :subtitle="`#Data da autorização: ${autorizacao.dataAutorizacao ? `autorizacao.dataAutorizacao` : 'Não definido'}`"
-          :class="autorizacao.aprovacaoSaida ? 'bg-green-lighten-4' : 'bg-red-lighten-4'"
-        >
+          :class="autorizacao.aprovacaoSaida ? 'bg-green-lighten-4' : 'bg-red-lighten-4'">
 
           <!-- Ícone de cartão de autorização -->
           <template v-slot:prepend>
@@ -55,11 +54,12 @@
           <!-- Botões de funcionalidades de mais informações e edição -->
           <template v-slot:append>
             <div class="pe-2">
-              <v-btn size="small" variant="elevated" :color="autorizacao.aprovacaoSaida ? 'success': 'red'" icon="mdi-information-outline"
+              <v-btn size="small" variant="elevated" color="white" icon="mdi-information-outline"
                 @click="toggleAutorizacao(autorizacao.idAutorizacao)" title="Informações">
               </v-btn>
               <span class="pr-2" />
-              <v-btn icon="mdi-pencil" size="x-small" variant="tonal" :color="autorizacao.aprovacaoSaida ? 'info': 'red'"
+              <!-- <v-btn size="small" color="primary" icon="mdi-dots-vertical" title="Opções" /> -->
+              <v-btn icon="mdi-pencil" size="small" variant="elevated" color="primary"
                 @click="completeFormEditAutorizacaoDialog(autorizacao)" title="Editar" />
             </div>
           </template>
@@ -211,7 +211,7 @@ async function aoMudarOrdem(ordem: string) {
 //#region Demais funções
 // Função para controlar o v-expand-transition dos detalhes de cada autorização
 function toggleAutorizacao(id?: number) {
-  if(id != null)
+  if (id != null)
     expandedUserId.value = expandedUserId.value === id ? null : id
 }
 

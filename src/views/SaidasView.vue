@@ -16,7 +16,7 @@
         </v-icon>
       </v-btn>
 
-      <!-- Campo para consultar os usuários pelo search -->
+      <!-- Campo para consultar as saídas pelo search -->
       <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
         placeholder="Consultar funcionário" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
     </v-card-title>
@@ -41,21 +41,23 @@
       </v-alert>
     </div>
 
-    <!-- Exibição dos usuários -->
+    <!-- Exibição das saídas -->
     <v-virtual-scroll :items="apiSaidas?.registros" height="500" item-height="50" v-else>
-      <template v-slot:default="{ item: user }">
-        <v-list-item :title="`${user.idSaida}`" :subtitle="`#email: ${user.idFuncionarioResponsavelSaida}`">
+      <template v-slot:default="{ item: saida }">
+        <v-list-item :title="`${saida.idSaida} - ${saida.nomeFuncionario}: ${saida.numeroRegistroFuncionario}`"
+          :subtitle="identificarSubtitulo(saida)"
+          :class="saida.dataAprovacaoSaida ? 'bg-green-accent-2' : 'bg-red-darken-2'">
 
-          <!-- Ícone de cartão de usuário -->
+          <!-- Ícone de cartão de saída -->
           <template v-slot:prepend>
-            <v-icon>mdi-card-account-details-outline</v-icon>
+            <v-icon>mdi-exit-run</v-icon>
           </template>
 
           <!-- Botões de funcionalidades de mais informações e menu -->
           <template v-slot:append>
             <div class="pe-2">
-              <v-btn size="small" variant="elevated" color="dark" icon="mdi-information-outline"
-                @click="toggleSaida(user.idSaida)" title="Informações">
+              <v-btn size="small" variant="elevated" color="white" icon="mdi-information-outline"
+                @click="toggleSaida(saida.idSaida)" title="Informações">
               </v-btn>
             </div>
 
@@ -67,40 +69,14 @@
               <v-list>
                 <v-list-item>
                   <v-list-item-title>
-                    <!-- Editar usuário -->
+                    <!-- Editar saída -->
                     <v-btn icon="mdi-pencil" size="x-small" variant="tonal" color="primary"
-                      @click="completeFormEditSaidaDialog(user)" title="Editar" />
+                      @click="completeFormEditSaidaDialog(saida)" title="Editar" />
                     <span class="pr-2" />
-
-                    <!-- Visualizar vínculos do usuário com saídas -->
-                    <!-- <RouterLink to="/tasks" custom v-slot="{ navigate }">
-                      <v-btn icon="mdi-format-list-bulleted" size="x-small" variant="tonal" color="primary"
-                        @click="navigate" :disabled="user.idUsuario == 1" title="Vínculos" />
-                    </RouterLink>
-                    <span class="pr-2" /> -->
-
-                    <!-- Facilitador para bloqueio e desbloqueio do usuário -->
-                    <!-- <v-btn :icon="user.contaBloqueada ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline'"
-                      size="x-small" variant="tonal" :color="user.contaBloqueada ? 'red' : 'success'"
-                      @click="toggleBloqueioUsuario(user)" :disabled="user.idUsuario == 1"
-                      :title="user.contaBloqueada ? 'Desbloquear' : 'Bloquear'" />
-                    <span class="pr-2" /> -->
-
-                    <!-- Facilitador para ativar ou desativar um usuário -->
-                    <!-- <v-btn :icon="user.ativo ? 'mdi-account-check-outline' : 'mdi-account-cancel-outline'"
-                      size="x-small" variant="tonal" :color="user.ativo ? 'success' : 'red'"
-                      @click="toggleUsuarioAtivo(user)" :disabled="user.idUsuario == 1"
-                      :title="user.ativo ? 'Inativar' : 'Ativar'" />
-                    <span class="pr-2" /> -->
-
-                    <!-- Funcionalidade sensível de resetar senha do usuário, precisa de confirmação de senha -->
-                    <!-- <v-btn icon="mdi-lock-reset" size="x-small" variant="tonal" color="warning"
-                      @click="resetarSenhaAoPadrao(user.email)" :disabled="user.idUsuario == 1" title="Resetar senha" />
-                    <span class="pr-2" /> -->
 
                     <!-- Funcionalidade sensível de remoção de saída, precisa de confirmação de senha -->
                     <v-btn icon="mdi-delete-outline" size="x-small" variant="tonal" color="red"
-                      @click="deleteSaida(user.idSaida)" title="Remover" />
+                      @click="deleteSaida(saida.idSaida)" title="Remover" />
                   </v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -108,29 +84,64 @@
           </template>
         </v-list-item>
 
-        <!-- Card de detalhes para cada usuário, expanção controlada por uma variável -->
+        <!-- Card de detalhes para cada saída, expanção controlada por uma variável -->
         <v-expand-transition>
-          <div v-if="expandedSaidaId === user.idSaida" class="custom-expansion-panel">
+          <div v-if="expandedSaidaId === saida.idSaida" class="custom-expansion-panel">
             <v-row dense>
-              <!-- Retorno do funcionario -->
+              <!-- Data de solicitação da saída -->
               <v-col cols="6" class="d-flex justify-center">
-                <v-chip :color="user.confirmaRetorno ? 'success' : 'red'">
-                  Retorno confirmado?
-                  {{ user.confirmaRetorno ? 'Retorna' : 'Sem retorno' }}
+                <v-chip color="info">
+                  Solicitada em:
+                  {{ saida.dataSolicitacaoSaida }}
                 </v-chip>
               </v-col>
 
               <v-divider vertical />
 
-              <!-- Conta bloqueada -->
-              <!-- <v-col cols="6" class="d-flex justify-center">
-                <v-chip :color="!user. ? 'success' : 'red'">
-                  Login está liberado?
-                  {{ user.contaBloqueada ? 'Bloqueado' : 'Liberado' }}
+              <!-- Aprovação Saída -->
+              <v-col cols="6" class="d-flex justify-center">
+                <v-chip :color="saida.dataAprovacaoSaida ? 'success' : 'red'">
+                  Autorizada em:
+                  {{ saida.dataAprovacaoSaida ? saida.dataAprovacaoSaida : 'Não autorizada' }}
                 </v-chip>
-              </v-col> -->
+              </v-col>
 
               <v-divider />
+            </v-row>
+
+            <v-row dense v-if="saida.dataSaidaFuncionario || saida.dataChegadaFuncionario">
+              <!-- Previsão de saída -->
+              <v-col cols="6" class="d-flex justify-center">
+                <v-chip color="info">
+                  Data P. saída:
+                  {{ saida.dataPrevisaoSaidaFuncionario }}
+                </v-chip>
+              </v-col>
+
+              <v-divider vertical />
+
+              <!-- Saída real -->
+              <v-col cols="6" class="d-flex justify-center">
+                <v-chip color="info">
+                  Data P. retorno:
+                  {{ saida.confirmaRetorno ? `${saida.dataPrevisaoChegadaFuncionario}` : 'Não retorna' }}
+                </v-chip>
+              </v-col>
+
+              <v-divider />
+            </v-row>
+
+            <v-row dense>
+              <v-col cols="12" color="info">
+                <!-- Motivo da saída -->
+                Motivo saída:
+                {{ saida.motivoSaida }}
+                <br /><br />
+                <!-- Observação da saída -->
+                Observações da saída: <br />
+                {{ saida.observacao_saida }}
+
+              </v-col>
             </v-row>
           </div>
         </v-expand-transition>
@@ -321,6 +332,30 @@ function clearSearch() {
   paginadorClass.value.search = ''
 }
 //#endregion
+
+function identificarSubtitulo(saida: SaidaConsulta): string {
+  const definindoSubtitulo = ref('')
+
+  if (saida.dataSaidaFuncionario) { // Se o funcionário possuí o campo de data de saída preenchido, significa que ele está fora da empresa
+    if (saida.confirmaRetorno) { // Ele pode ou não retornar
+      if (saida.dataChegadaFuncionario) { // Se ele puder retornar e tiver a data de retorno preenchida, ele já está na empresa novamente
+        definindoSubtitulo.value = `D. saída: ${saida.dataSaidaFuncionario} - D. retorno: ${saida.dataChegadaFuncionario}` // Se ele já saiu e retornou, mostrar as datas reais
+      } else { // Se ele já saiu mas ainda não retornou, mostrar a data real de saída e a previsão de retorno
+        definindoSubtitulo.value = `D. saída: ${saida.dataSaidaFuncionario} - P. retorno: ${saida.dataPrevisaoChegadaFuncionario}`
+      }
+    } else {
+      definindoSubtitulo.value = `D. saída: ${saida.dataSaidaFuncionario}` // Se ele não tem retorno, exibe apenas a saída
+    }
+  } else { // Em caso de ainda não ter a data de saída, significa que ainda está na empresa, portanto existe apenas a previsão
+    if (saida.confirmaRetorno) { // Se ele tem confirmação de retorno, mostrar as duas previsões
+      definindoSubtitulo.value = `P. saída: ${saida.dataPrevisaoSaidaFuncionario} - P. retorno: ${saida.dataPrevisaoChegadaFuncionario}`
+    } else { // Se ele não terá retorno, mostrar apenas a previsão de saída
+      definindoSubtitulo.value = `P. saída: ${saida.dataPrevisaoSaidaFuncionario}`
+    }
+  }
+
+  return definindoSubtitulo.value
+}
 
 </script>
 
