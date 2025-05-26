@@ -49,7 +49,7 @@
 
           <!-- Ícone de cartão de motivo -->
           <template v-slot:prepend>
-            <v-icon>mdi-card-account-details-outline</v-icon>
+            <v-icon>mdi-list-box-outline</v-icon>
           </template>
 
           <!-- Botões de menu -->
