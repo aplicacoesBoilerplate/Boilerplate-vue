@@ -1,0 +1,75 @@
+import type { SaidaConsulta } from '@/models/saidasModels/saidasModels'
+import { saidasServices } from '@/services/saidasServices'
+
+export class DialogSaidasClass {
+  show: boolean
+  isEditing: boolean
+  saida: SaidaConsulta
+
+  constructor() {
+    this.show = false
+    this.isEditing = false
+    this.saida = {
+      idSaida: 0,
+      idFuncionarioResponsavelSaida: 0,
+      numeroRegistroFuncionario: 0,
+      nomeFuncionario: '',
+      setorFuncionario: '',
+      motivoSaida: 0,
+      observacao_saida: '',
+      statusSaida: 0,
+      dataSolicitacaoSaida: '',
+      dataAprovacaoSaida: '',
+      dataPrevisaoSaidaFuncionario: '',
+      dataSaidaFuncionario: '',
+      confirmaRetorno: false,
+      dataPrevisaoChegadaFuncionario: '',
+      dataChegadaFuncionario: ''
+    }
+  }
+
+  openDialog() {
+    this.show = true
+  }
+
+  async getSaidaById(idSaida?: number) {
+    if (idSaida) this.saida = await saidasServices.getSaidaById(idSaida)
+  }
+
+  clearFields() {
+    if (this.isEditing) {
+      this.getSaidaById(this.saida.idSaida)
+    } else {
+      this.saida = {
+        idSaida: 0,
+        idFuncionarioResponsavelSaida: 0,
+        numeroRegistroFuncionario: 0,
+        nomeFuncionario: '',
+        setorFuncionario: '',
+        motivoSaida: 0,
+        observacao_saida: '',
+        statusSaida: 0,
+        dataSolicitacaoSaida: '',
+        dataAprovacaoSaida: '',
+        dataPrevisaoSaidaFuncionario: '',
+        dataSaidaFuncionario: '',
+        confirmaRetorno: false,
+        dataPrevisaoChegadaFuncionario: '',
+        dataChegadaFuncionario: ''
+      }
+    }
+  }
+
+  closeDialog() {
+    this.show = false
+    this.isEditing = false
+    this.clearFields()
+  }
+
+  async completeForm(idSaida?: number) {
+    this.show = true
+    this.isEditing = true
+    if (idSaida != null)
+      await this.getSaidaById(idSaida)
+  }
+}

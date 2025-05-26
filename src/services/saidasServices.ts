@@ -52,9 +52,9 @@ export const saidasServices = {
   },
 
   // Atualizar uma saída
-  async atualizarSaida(saidaAtualizada: Saida): Promise<Saida> {
+  async atualizarSaida(saidaAtualizada: Saida, idSaida?: number): Promise<Saida> {
     try {
-      const { data } = await http.put('/saidas', saidaAtualizada)
+      const { data } = await http.put(`/saidas/${idSaida}`, saidaAtualizada)
       return data
     } catch (error) {
       throw error

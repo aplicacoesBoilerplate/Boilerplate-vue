@@ -43,9 +43,11 @@ export class DialogUsersClass {
     this.clearFields()
   }
 
-  async completeForm(idUsuario: number) {
+  async completeForm(idAutorizacao?: number) {
     this.show = true
     this.isEditing = true
-    await this.getUsuarioById(idUsuario)
+    if (idAutorizacao != null) {
+      await this.getUsuarioById(idAutorizacao)
+    }
   }
 }
