@@ -64,7 +64,7 @@
   </v-app-bar>
   <DialogSearch v-model:exibir="showDialogSearch" />
   <SnackbarNotifications />
-  <BtnsNavigation />
+  <!-- <BtnsNavigation /> -->
 </template>
 
 <script setup lang=ts>

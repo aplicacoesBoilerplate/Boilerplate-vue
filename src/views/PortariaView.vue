@@ -1,15 +1,8 @@
 <template>
-  <!-- Botão que recebe o callback para abrir um dialog -->
-  <BtnOpenDialog :callback="openNovoMotivo" :label="'Criar novo motivo'" />
-
-  <!-- Dialog aberto pelo botão acima -->
-  <DialogMotivos :model-value="dialogMotivos"
-    @update:modelValue="(val: DialogMotivosClass) => Object.assign(dialogMotivos, val)" />
-
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
-  <v-card class="mx-auto" max-width="700">
+  <v-card class="mx-auto" max-width="1000">
     <v-card-title class="d-flex justify-space-between align-center">
-      <span class="text-h6">Lista de motivos</span>
+      <span class="text-h6">Portaria</span>
       <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
         @click="aoMudarOrdem(paginadorClass.orderBy || 'ASC')">
         <v-icon>{{ paginadorClass.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
@@ -18,7 +11,8 @@
 
       <!-- Campo para consultar os motivos pelo search -->
       <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
-        placeholder="Consultar motivos" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
+        placeholder="Consultar saídas do funcionário" hide-details prepend-inner-icon="mdi-magnify"
+        style="max-width: 300px" />
     </v-card-title>
     <v-divider />
 
@@ -29,7 +23,7 @@
 
     <!-- Alerta quando nenhum motivo consultado foi encontrado -->
     <div v-if="apiMotivos?.totalRegistros == 0 && loading == false" class="pt-4">
-      <v-alert text="Nenhum motivo encontrado!" type="info" variant="tonal">
+      <v-alert text="Nenhuma saída encontrada!" type="info" variant="tonal">
         <template v-slot:append>
           <v-btn color="warning" variant="plain" @click="clearSearch()">
             <v-icon class="pt-1">
@@ -80,12 +74,10 @@
       </template>
     </v-virtual-scroll>
   </v-card>
+
   <!-- Componente de paginação -->
   <Paginator :model-value="paginadorClass" @mudouLimite="aoMudarLimite" @mudouPagina="aoMudarPagina"
     v-if="apiMotivos?.totalRegistros! > 0 && !loading" />
-
-  <DialogConfirmarSenha :model-value="confirmarSenha"
-    @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
 </template>
 
 <script setup lang="ts">
@@ -233,19 +225,3 @@ function clearSearch() {
 //#endregion
 
 </script>
-
-<style scoped>
-.custom-expansion-panel {
-  margin: 0.8rem;
-}
-
-.custom-expansion-panel,
-strong {
-  padding-right: 0.5rem;
-  text-decoration: none;
-}
-
-.v-progress-circular {
-  margin: 1rem;
-}
-</style>

@@ -9,15 +9,14 @@
             <v-col cols="12">
               <v-textarea clearable label="Observação" variant="outlined" counter
                 v-model="autorizacao.observacaoAutorizacao"
-                :rules="[rules.requiredCondicionado(() => !autorizacao.aprovacaoSaida, 'Obrigatório se a saída não for autorizada')]"
-              />
-            </v-col>
-
-            <v-col cols="12" class="d-flex justify-center">
-              <v-switch v-model="autorizacao.aprovacaoSaida" :color="autorizacao.aprovacaoSaida ? 'success' : 'red'" label="Autorizar saída?" />
+                :rules="[rules.requiredCondicionado(() => !autorizacao.aprovacaoSaida, 'Obrigatório se a saída não for autorizada')]" />
             </v-col>
           </v-row>
-
+          <!--
+          Observação obrigatória: {{ !autorizacao.aprovacaoSaida }}
+          Saída aprovação: {{ autorizacao.aprovacaoSaida }}
+          Saída atual: {{ autorizacao }}
+ -->
           <v-row dense class="p-0 m-0">
             <v-col cols="12">
               <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">* indica
@@ -31,7 +30,7 @@
         <v-card-actions>
           <v-btn color="warning" variant="plain" @click="clearFields()">
             <v-icon class="pt-1">mdi-refresh</v-icon>
-            Limpar
+            {{ dialogAutorizacoes.isEditing ? 'Resetar' : 'Limpar' }}
           </v-btn>
           <v-spacer />
 
@@ -71,8 +70,10 @@ interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: DialogAutorizacoesClass): void
+  (e: 'update:modelValue', value: DialogAutorizacoesClass): void,
+  (e: 'atualizar-autorizacoes'): void // Evento utilizado para chamar uma nova requisição get no componente pai
 }>()
+
 
 const autorizacao = computed(() => props.modelValue.autorizacao)
 const dialogAutorizacoes = computed(() => props.modelValue)
@@ -101,16 +102,18 @@ function resetForm() {
   exibir.value = false // Exibir componente
 }
 
-async function updateAutorizacao() {
+async function atualizarAutorizacaoSaida() {
   const valid = await formRef.value.validate()
   if (!valid) return
-
+  const atualizarAutorizacao = { ...autorizacao.value }
   try {
-    await autorizacoesServices.atualizarAutorizacao(autorizacao.value, autorizacao.value.idAutorizacao)
-    useSnackbarStore().showSnackbar('Autorização modificada com sucesso!', 'success')
+    await autorizacoesServices.atualizarAutorizacao(atualizarAutorizacao, autorizacao.value.idAutorizacao)
+    useSnackbarStore().showSnackbar(`Autorização ${autorizacao.value.idAutorizacao} ${autorizacao.value.aprovacaoSaida ? 'concedida' : 'negada'} para a saída ${autorizacao.value.idSaida}`, 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
+  } finally {
+    emit('atualizar-autorizacoes')
   }
   resetForm();
 }
@@ -118,7 +121,6 @@ async function updateAutorizacao() {
 async function submitForm() {
   const { valid } = await formRef.value.validate()
   if (!valid) return
-  await updateAutorizacao()
+  await atualizarAutorizacaoSaida()
 }
-
 </script>

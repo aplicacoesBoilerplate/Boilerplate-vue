@@ -54,7 +54,7 @@
           <!-- Botões de funcionalidades de mais informações e menu -->
           <template v-slot:append>
             <div class="pe-2">
-              <v-btn size="small" variant="elevated" color="dark" icon="mdi-information-outline"
+              <v-btn size="small" variant="elevated" color="white" icon="mdi-information-outline"
                 @click="toggleUser(user.idUsuario!)" title="Informações">
               </v-btn>
             </div>

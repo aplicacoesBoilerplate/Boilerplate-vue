@@ -28,7 +28,9 @@ export const autorizacoesServices = {
   },
 
   // Consulta geral para as autorizações, aceita diversos parâmetros da paginação além de dois opcionais para status e responsável
-  async getAutorizacoes(paginador: PaginatorClass): Promise<HeaderPaginatorModel<AutorizacoesConsulta>> {
+  async getAutorizacoes(
+    paginador: PaginatorClass,
+  ): Promise<HeaderPaginatorModel<AutorizacoesConsulta>> {
     try {
       const { data } = await http.get('/autorizacoes/consulta', {
         params: paginador,
@@ -49,5 +51,5 @@ export const autorizacoesServices = {
     } catch (error) {
       throw error
     }
-  }
+  },
 }

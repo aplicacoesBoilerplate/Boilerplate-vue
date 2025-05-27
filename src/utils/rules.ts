@@ -1,13 +1,14 @@
 export const rules = {
   required: (v: string | number) => !!v || 'Campo obrigatório',
-  requiredCondicionado: (condicao: boolean | (() => boolean), mensagem = 'Campo obrigatório') =>
-  (valor: any) => {
-    const ativo = typeof condicao === 'function' ? condicao() : condicao
-    if (ativo && (!valor || (typeof valor === 'string' && valor.trim() === ''))) {
-      return mensagem
-    }
-    return true
-  },
+  requiredCondicionado:
+    (condicao: boolean | (() => boolean), mensagem = 'Campo obrigatório') =>
+    (valor: any) => {
+      const ativo = typeof condicao === 'function' ? condicao() : condicao
+      if (ativo && (!valor || (typeof valor === 'string' && valor.trim() === ''))) {
+        return mensagem
+      }
+      return true
+    },
   emailFormat: (value: string) => /.+@.+\..+/.test(value) || 'Formato de e-mail inválido.',
   min: (v: string | any[]) => v.length >= 8 || 'Mínimo de 8 caracteres',
   max: (v: string | any[]) => v.length <= 100 || 'Máximo 100 caracteres',
