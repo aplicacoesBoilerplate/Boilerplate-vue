@@ -1,7 +1,8 @@
 <template>
   <!-- Dialog aberto pela edição -->
   <DialogAutorizacoes :model-value="dialogAutorizacoes"
-    @update:modelValue="(val: DialogAutorizacoesClass) => Object.assign(dialogAutorizacoes, val)" />
+    @update:modelValue="(val: DialogAutorizacoesClass) => Object.assign(dialogAutorizacoes, val)"
+    @atualizar-autorizacoes="getAutorizacoes" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
@@ -43,8 +44,8 @@
       <template v-slot:default="{ item: autorizacao }">
         <v-list-item
           :title="`${autorizacao.idAutorizacao} - Aprovação: ${autorizacao.aprovacaoSaida ? 'Autorizado' : 'Negado'}`"
-          :subtitle="`#Data da autorização: ${autorizacao.dataAutorizacao ? `autorizacao.dataAutorizacao` : 'Não definido'}`"
-          :class="autorizacao.aprovacaoSaida ? 'bg-green-lighten-4' : 'bg-red-lighten-4'">
+          :subtitle="`#Data da autorização: ${autorizacao.dataAutorizacao ? `${autorizacao.dataAutorizacao}` : 'Não definido'}`"
+          :class="autorizacao.aprovacaoSaida ? 'bg-green-accent-2' : 'bg-red-darken-2'">
 
           <!-- Ícone de cartão de autorização -->
           <template v-slot:prepend>
@@ -58,9 +59,26 @@
                 @click="toggleAutorizacao(autorizacao.idAutorizacao)" title="Informações">
               </v-btn>
               <span class="pr-2" />
-              <!-- <v-btn size="small" color="primary" icon="mdi-dots-vertical" title="Opções" /> -->
-              <v-btn icon="mdi-pencil" size="small" variant="elevated" color="primary"
-                @click="completeFormEditAutorizacaoDialog(autorizacao)" title="Editar" />
+              <!-- Menu de opções -->
+              <v-menu transition="scale-transition">
+                <template v-slot:activator="{ props }">
+                  <v-btn size="small" color="primary" v-bind="props" icon="mdi-dots-vertical" title="Opções" />
+                </template>
+                <v-list>
+                  <v-list-item>
+                    <v-list-item-title>
+                      <!-- Editar saída -->
+                      <v-btn icon="mdi-lock" size="x-small" variant="tonal" color="red"
+                        @click="negarAutorizacaoSaida(autorizacao)" title="Rejeitar" />
+                      <span class="pr-2" />
+
+                      <!-- Funcionalidade sensível de remoção de saída, precisa de confirmação de senha -->
+                      <v-btn icon="mdi-lock-open-outline" size="x-small" variant="tonal" color="success"
+                        @click="emitirAutorizacao(autorizacao)" title="Liberar" />
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </div>
           </template>
         </v-list-item>
@@ -102,7 +120,6 @@
   <!-- Componente de paginação -->
   <Paginator :model-value="paginadorClass" @mudouLimite="aoMudarLimite" @mudouPagina="aoMudarPagina"
     v-if="apiAutorizacoes?.totalRegistros! > 0 && !loading" />
-
 </template>
 
 <script setup lang="ts">
@@ -112,6 +129,7 @@ import Paginator from '@/components/paginator/Paginator.vue' // Componente visua
 
 // Classes
 import { DialogAutorizacoesClass } from '@/components/dialog/dialogAutorizacoes/ClassDialogAutorizacoes';
+import DialogAutorizacoes from '@/components/dialog/dialogAutorizacoes/DialogAutorizacoes.vue';
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
 
 // Store
@@ -126,7 +144,6 @@ import { autorizacoesServices } from '@/services/autorizacoesServices';
 
 // Vue
 import { onMounted, ref, watch } from 'vue';
-import DialogAutorizacoes from '@/components/dialog/dialogAutorizacoes/DialogAutorizacoes.vue';
 //#endregion
 
 //#region Variáveis
@@ -161,11 +178,40 @@ watch(() => paginadorClass.value, () => {
 
 //#endregion
 
-//#region Dialog das autorizações
-// Preeche os campos ao editar uma autorização
-function completeFormEditAutorizacaoDialog(autorizacao: AutorizacoesConsulta) {
-  dialogAutorizacoes.value.completeForm(autorizacao.idAutorizacao)
+//#region para as autorizações facilitadas
+// Abre o dialog para inserir a observação por ter negado a autorização
+function negarAutorizacaoSaida(autorizacao: AutorizacoesConsulta) {
+  dialogAutorizacoes.value.completeForm(autorizacao.idAutorizacao, false)
   showDialog.value = true
+}
+
+// Informa que a autorização foi enviada
+async function emitirAutorizacao(autorizacao: AutorizacoesConsulta) {
+
+  if (autorizacao.observacaoAutorizacao) {
+    dialogAutorizacoes.value.completeForm(autorizacao.idAutorizacao, true)
+    showDialog.value = true
+    useSnackbarStore().showSnackbar('Reveja a observação da saída!', 'info')
+  } else {
+    const atualizarAutorizacao = { ...autorizacao }
+    atualizarAutorizacao.aprovacaoSaida = true
+
+    try {
+      const response = await autorizacoesServices.atualizarAutorizacao(atualizarAutorizacao, autorizacao.idAutorizacao)
+
+      apiAutorizacoes.value = response
+
+      paginadorClass.value.atualizarDadosAPI({
+        totalPaginas: response.totalPaginas,
+        totalRegistros: response.totalRegistros,
+      })
+
+      useSnackbarStore().showSnackbar(`Autorização ${autorizacao.idAutorizacao} concedida para a saída ${autorizacao.idSaida}`, 'success')
+    } catch (error) {
+      useSnackbarStore().showSnackbar(error, 'red')
+      throw error
+    }
+  }
 }
 //#endregion
 

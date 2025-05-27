@@ -1,6 +1,7 @@
 export const rules = {
   required: (v: string | number) => !!v || 'Campo obrigatório',
-  requiredCondicionado: (condicao: boolean | (() => boolean), mensagem = 'Campo obrigatório') =>
+  requiredCondicionado:
+    (condicao: boolean | (() => boolean), mensagem = 'Campo obrigatório') =>
     (valor: any) => {
       const ativo = typeof condicao === 'function' ? condicao() : condicao
       if (ativo && (!valor || (typeof valor === 'string' && valor.trim() === ''))) {

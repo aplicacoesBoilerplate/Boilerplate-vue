@@ -22,7 +22,7 @@ export interface AutorizacoesConsulta {
   idSaida: number
   aprovacaoSaida: boolean
   observacaoAutorizacao: string
-  dataAutorizacao: string
+  dataAutorizacao: string | null
 }
 
 export interface AutorizacoesSaidaConsulta {

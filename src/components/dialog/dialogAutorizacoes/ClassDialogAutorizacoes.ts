@@ -1,6 +1,5 @@
-import type { AutorizacoesConsulta } from "@/models/saidasModels/saidasModels"
-import { autorizacoesServices } from "@/services/autorizacoesServices"
-
+import type { AutorizacoesConsulta } from '@/models/saidasModels/saidasModels'
+import { autorizacoesServices } from '@/services/autorizacoesServices'
 
 export class DialogAutorizacoesClass {
   show: boolean
@@ -15,7 +14,7 @@ export class DialogAutorizacoesClass {
       idSaida: 0,
       aprovacaoSaida: false,
       observacaoAutorizacao: '',
-      dataAutorizacao: ''
+      dataAutorizacao: '',
     }
   }
 
@@ -23,8 +22,10 @@ export class DialogAutorizacoesClass {
     this.show = true
   }
 
-  async getAutorizacao(idAutorizacao?: number) {
-    if (idAutorizacao) this.autorizacao = (await autorizacoesServices.getAutorizacaoById(idAutorizacao))
+  async getAutorizacao(idAutorizacao?: number, aprovacao?: boolean) {
+    if (idAutorizacao)
+      this.autorizacao = await autorizacoesServices.getAutorizacaoById(idAutorizacao)
+    if (aprovacao != null) this.autorizacao.aprovacaoSaida = aprovacao
   }
 
   clearFields() {
@@ -36,7 +37,7 @@ export class DialogAutorizacoesClass {
         idSaida: 0,
         aprovacaoSaida: false,
         observacaoAutorizacao: '',
-        dataAutorizacao: ''
+        dataAutorizacao: '',
       }
     }
   }
@@ -47,11 +48,11 @@ export class DialogAutorizacoesClass {
     this.clearFields()
   }
 
-  async completeForm(idAutorizacao?: number) {
+  async completeForm(idAutorizacao?: number, aprovacao?: boolean) {
     this.show = true
     this.isEditing = true
     if (idAutorizacao != null) {
-      await this.getAutorizacao(idAutorizacao)
+      await this.getAutorizacao(idAutorizacao, aprovacao)
     }
   }
 }
