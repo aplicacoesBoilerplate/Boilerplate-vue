@@ -49,7 +49,7 @@
           <v-btn color="red" variant="plain" @click="resetForm()"><v-icon class="pt-1">mdi-close</v-icon>Close</v-btn>
 
           <v-btn color="success" variant="tonal" :disabled="!formIsValid"
-            type="submit"><v-icon>mdi-content-save-check</v-icon class="pt-1">Save</v-btn>
+            type="submit"><v-icon class="pt-1">mdi-check</v-icon>>Confirmar</v-btn>
         </v-card-actions>
       </v-card>
     </v-form>

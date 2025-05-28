@@ -18,7 +18,7 @@ export const autorizacoesServices = {
   },
 
   // Consultar uma autorização com base no id do registro das saídas
-  async getAutorizacaoBySaida(idSaida: number): Promise<AutorizacoesConsulta> {
+  async getAutorizacaoBySaida(idSaida: number): Promise<Array<AutorizacoesConsulta>> {
     try {
       const { data } = await http.get(`/autorizacoes/saida/${idSaida}`)
       return data
@@ -41,7 +41,7 @@ export const autorizacoesServices = {
     }
   },
 
-  // Método que será utilizado para modificar as autorizações, seja a permissão ou bloqueio
+  // Metodo que será utilizado para modificar as autorizações, seja a permissão ou bloqueio
   async atualizarAutorizacao(autorizacaoAtualizada: AutorizacoesConsulta, idAutorizacao?: number) {
     try {
       if (idAutorizacao != null) {
@@ -52,4 +52,14 @@ export const autorizacoesServices = {
       throw error
     }
   },
+
+  // Metodo que será utilizado para consultar as autorizações negadas de uma saída
+  async getAutorizacoesNegadasPorSaida(idSaida: number): Promise<HeaderPaginatorModel<AutorizacoesConsulta>> {
+    try {
+      const { data } = await http.get(`/autorizacoes/negadas/${idSaida}`)
+      return data
+    } catch (error) {
+      throw error
+    }
+  }
 }
