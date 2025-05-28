@@ -16,45 +16,41 @@
 
         <v-card-text>
           <v-row dense>
+            <!-- Parâmetro que será usado para consultar as informações do funcionário que irá sair -->
             <v-col cols="12" md="6" class="d-flex justify-center">
               <v-number-input clearable v-model="saida.numeroRegistroFuncionario" :reverse="false"
                 :rules="[rules.required]" controlVariant="stacked" label="N° de Registro do Funcionário*"
                 :hideInput="false" inset />
             </v-col>
 
+            <!-- Código do motivo -->
             <v-col cols="12" md="6" class="d-flex justify-center">
               <v-autocomplete clearable v-model="saida.motivoSaida" label="Motivo*" :items="apiMotivos?.registros"
                 :item-title="'descricaoMotivo'" :item-value="'idMotivo'" :rules="[rules.required]" />
             </v-col>
 
+            <!-- Informação retornada pela consulta -->
             <v-col cols="12" md="6" class="d-flex justify-center">
               <v-text-field clearable v-model="saida.nomeFuncionario" label="Nome do Funcionário" disabled />
             </v-col>
 
+            <!-- Informação retornada pela consulta -->
             <v-col cols="12" md="6" class="d-flex justify-center">
               <v-text-field clearable v-model="saida.setorFuncionario" label="Setor do Funcionário" disabled />
             </v-col>
 
+            <!-- Data e hora de previsão de saída do funcionário -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-date-input v-model="saida.dataPrevisaoSaidaFuncionario" clearable label="Data de previsão da saída"
-                prepend-icon="" prepend-inner-icon="$calendar" hint="Formato: dd/mm/yyyy" persistent-hint />
+              <DateTimePicker v-model="saida.dataPrevisaoSaidaFuncionario" label="Data e hora de previsão da saída" />
             </v-col>
 
-            <v-col cols="12" md="6">
-              <v-text-field v-model="horaPrevSaida" label="Hora da previsão de saída"
-                prepend-inner-icon="mdi-clock-time-four-outline" hint="Formato: hh:mm" persistent-hint />
-            </v-col>
-
+            <!-- Data e hora de previsão de retorno do funcionário -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-date-input v-model="saida.dataPrevisaoChegadaFuncionario" clearable label="Data de previsão do retorno"
-                prepend-icon="" prepend-inner-icon="$calendar" hint="Formato: dd/mm/yyyy" persistent-hint />
+              <DateTimePicker v-model="saida.dataPrevisaoChegadaFuncionario"
+                label="Data e hora de previsão de retorno" />
             </v-col>
 
-            <v-col cols="12" md="6">
-              <v-text-field v-model="horaPrevRetorno" label="Hora da previsão de retorno"
-                prepend-inner-icon="mdi-clock-time-four-outline" hint="Formato: hh:mm" persistent-hint />
-            </v-col>
-
+            <!-- Campo de observação da saída -->
             <v-col cols="12">
               <v-textarea clearable label="Observação saída" variant="outlined" counter
                 v-model="saida.observacao_saida" />
@@ -93,6 +89,8 @@
 </template>
 
 <script setup lang="ts">
+// Componentes
+import DateTimePicker from '@/components/DateTimePicker.vue';
 // Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator'
 import type { DialogSaidasClass } from './ClassDialogSaidas'
@@ -105,32 +103,14 @@ import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 import { motivosServices } from '@/services/motivosServices'
 import { saidasServices } from '@/services/saidasServices'
 import { rules } from '@/utils/rules'
-import dayjs from 'dayjs'
 // Vue
 import { computed, onMounted, ref, watch } from 'vue'
-import type { SaidaConsulta } from '@/models/saidasModels/saidasModels'
 
 const formRef = ref()
 const formIsValid = ref(false)
 const showPassword = ref(false)
 
 const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'DESC', search: '' })) // Classe para a paginação
-
-// Constantes para as datas
-const horaPrevSaida = ref(null)
-const horaPrevRetorno = ref(null)
-const dataSaida = ref<Date | null>(null)
-const formatarData = (date: Date) => {
-  return date ? dayjs(date).format('DD/MM/YYYY') : ''
-}
-
-const parseData = (str: string) => {
-  const [day, month, year] = str.split('/')
-  if (day && month && year) {
-    return new Date(`${year}-${month}-${day}`)
-  }
-  return null
-}
 
 interface Props {
   modelValue: DialogSaidasClass
@@ -139,6 +119,7 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: 'update:modelValue', value: DialogSaidasClass): void
+  (e: 'operacao-concluida'): void
 }>()
 
 const saida = computed(() => props.modelValue.saida)
@@ -172,26 +153,14 @@ function resetForm() {
   exibir.value = false // Exibir componente
 }
 
-function formatarDataParaAPI(saida: SaidaConsulta): SaidaConsulta {
-  const novaSaida = { ...saida }
-  const dataHoraPSaida = dayjs(`${saida.dataPrevisaoSaidaFuncionario} ${horaPrevSaida}`, 'DD/MM/YYYY HH:mm:ss').toDate()
-  const dataHoraPRetorno = dayjs(`${saida.dataPrevisaoChegadaFuncionario} ${horaPrevRetorno}`, 'DD/MM/YYYY HH:mm:ss').toDate()
-
-  // novaSaida.dataPrevisaoSaidaFuncionario = dataHoraPSaida
-  // if (saida.dataPrevisaoChegadaFuncionario)
-  //   novaSaida.dataPrevisaoChegadaFuncionario = dataHoraPRetorno
-
-  console.log('Data sem formatação:', saida.dataPrevisaoSaidaFuncionario, 'Hora:', horaPrevSaida, 'Data formatada:', dataHoraPSaida, 'Body:', novaSaida)
-  return novaSaida
-}
-
 async function cadastrarNovaSaida() {
   const valid = await formRef.value.validate()
   if (!valid) return
 
   try {
-    await saidasServices.novaSaida(formatarDataParaAPI(saida.value));
+    await saidasServices.novaSaida(saida.value);
     useSnackbarStore().showSnackbar('Saída solicitada com sucesso!', 'success')
+    emit('operacao-concluida')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
@@ -204,8 +173,9 @@ async function updateSaida() {
   if (!valid) return
 
   try {
-    await saidasServices.atualizarSaida(formatarDataParaAPI(saida.value), saida.value.idSaida)
+    await saidasServices.atualizarSaida(saida.value, saida.value.idSaida)
     useSnackbarStore().showSnackbar('Saída modificada com sucesso!', 'success')
+    emit('operacao-concluida')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
@@ -232,5 +202,4 @@ async function getAllMotivos() {
     throw error
   }
 }
-
 </script>

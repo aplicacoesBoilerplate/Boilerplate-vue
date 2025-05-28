@@ -15,7 +15,7 @@
       </v-btn>
 
       <!-- Campo para consultar as autorizações pelo usuários responsável inserindo no search -->
-      <v-text-field clearable v-model="paginadorClass.idFuncionarioResponsavel" density="compact" variant="outlined"
+      <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
         placeholder="Usuário responsável" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
     </v-card-title>
     <v-divider />
@@ -295,7 +295,7 @@ function toggleAutorizacao(id?: number) {
 
 // Usado no alert quando não a autorização não foi encontrada para exibir novamente a lista com o getAll
 function clearSearch() {
-  paginadorClass.value.idFuncionarioResponsavel = ''
+  paginadorClass.value.search = ''
 }
 
 //#endregion
