@@ -74,7 +74,7 @@
         <v-card-actions>
           <v-btn color="warning" variant="plain" @click="clearFields()">
             <v-icon class="pt-1">mdi-refresh</v-icon>
-            Limpar
+            {{ dialogSaidas.isEditing ? 'Desfazer' : 'Limpar' }}
           </v-btn>
           <v-spacer />
 
@@ -177,9 +177,9 @@ function formatarDataParaAPI(saida: SaidaConsulta): SaidaConsulta {
   const dataHoraPSaida = dayjs(`${saida.dataPrevisaoSaidaFuncionario} ${horaPrevSaida}`, 'DD/MM/YYYY HH:mm:ss').toDate()
   const dataHoraPRetorno = dayjs(`${saida.dataPrevisaoChegadaFuncionario} ${horaPrevRetorno}`, 'DD/MM/YYYY HH:mm:ss').toDate()
 
-  novaSaida.dataPrevisaoSaidaFuncionario = dataHoraPSaida
-  if (saida.dataPrevisaoChegadaFuncionario)
-    novaSaida.dataPrevisaoChegadaFuncionario = dataHoraPRetorno
+  // novaSaida.dataPrevisaoSaidaFuncionario = dataHoraPSaida
+  // if (saida.dataPrevisaoChegadaFuncionario)
+  //   novaSaida.dataPrevisaoChegadaFuncionario = dataHoraPRetorno
 
   console.log('Data sem formatação:', saida.dataPrevisaoSaidaFuncionario, 'Hora:', horaPrevSaida, 'Data formatada:', dataHoraPSaida, 'Body:', novaSaida)
   return novaSaida

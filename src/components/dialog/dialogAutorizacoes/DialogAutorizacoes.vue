@@ -30,7 +30,7 @@
         <v-card-actions>
           <v-btn color="warning" variant="plain" @click="clearFields()">
             <v-icon class="pt-1">mdi-refresh</v-icon>
-            {{ dialogAutorizacoes.isEditing ? 'Resetar' : 'Limpar' }}
+            {{ dialogAutorizacoes.isEditing ? 'Desfazer' : 'Limpar' }}
           </v-btn>
           <v-spacer />
 

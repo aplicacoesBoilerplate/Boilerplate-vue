@@ -1,32 +1,37 @@
-import type {AutorizacoesConsulta} from "@/models/saidasModels/saidasModels.ts";
-import {autorizacoesServices} from "@/services/autorizacoesServices.ts";
-import type {HeaderPaginatorModel} from "@/models/HeaderPaginatorModel.ts";
+import type { AutorizacoesConsulta } from '@/models/saidasModels/saidasModels.ts'
+import { autorizacoesServices } from '@/services/autorizacoesServices.ts'
+import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel.ts'
 
 export class DialogAutorizacoesNegadasClass {
   show: boolean
+  idAutorizacaoOrigem: number
   autorizacoesNegadas: HeaderPaginatorModel<AutorizacoesConsulta>
 
   constructor() {
     this.show = false
+    this.idAutorizacaoOrigem = 0
     this.autorizacoesNegadas = {
       limite: 0,
       offset: 0,
       totalPaginas: 0,
       totalRegistros: 0,
-      registros: [{
-        idAutorizacao: 0,
-        idFuncionarioAutorizacao: 0,
-        idSaida: 0,
-        aprovacaoSaida: false,
-        observacaoAutorizacao: '',
-        dataAutorizacao: ''
-      }]
+      registros: [
+        {
+          idAutorizacao: 0,
+          idFuncionarioAutorizacao: 0,
+          idSaida: 0,
+          aprovacaoSaida: false,
+          observacaoAutorizacao: '',
+          dataAutorizacao: '',
+        },
+      ],
     }
   }
 
-  async openDialog(idSaida: number) {
-    await this.getAutorizacoesNegadas(idSaida)
+  async openDialog(autorizacao: AutorizacoesConsulta) {
+    await this.getAutorizacoesNegadas(autorizacao.idSaida)
     this.show = true
+    if (autorizacao.idAutorizacao) this.idAutorizacaoOrigem = autorizacao.idAutorizacao
   }
 
   closeDialog() {
@@ -34,8 +39,9 @@ export class DialogAutorizacoesNegadasClass {
   }
 
   async getAutorizacoesNegadas(idSaida?: number) {
-    if (idSaida)
-      this.autorizacoesNegadas = await autorizacoesServices.getAutorizacoesNegadasPorSaida(idSaida)
+    if (idSaida) {
+      const response = await autorizacoesServices.getAutorizacoesNegadasPorSaida(idSaida)
+      this.autorizacoesNegadas = response
+    }
   }
-
 }

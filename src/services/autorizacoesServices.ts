@@ -35,6 +35,7 @@ export const autorizacoesServices = {
       const { data } = await http.get('/autorizacoes/consulta', {
         params: paginador,
       })
+
       return data
     } catch (error) {
       throw error
@@ -54,12 +55,14 @@ export const autorizacoesServices = {
   },
 
   // Metodo que será utilizado para consultar as autorizações negadas de uma saída
-  async getAutorizacoesNegadasPorSaida(idSaida: number): Promise<HeaderPaginatorModel<AutorizacoesConsulta>> {
+  async getAutorizacoesNegadasPorSaida(
+    idSaida: number,
+  ): Promise<HeaderPaginatorModel<AutorizacoesConsulta>> {
     try {
       const { data } = await http.get(`/autorizacoes/negadas/${idSaida}`)
       return data
     } catch (error) {
       throw error
     }
-  }
+  },
 }

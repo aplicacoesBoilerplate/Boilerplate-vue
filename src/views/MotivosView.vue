@@ -4,7 +4,8 @@
 
   <!-- Dialog aberto pelo botão acima -->
   <DialogMotivos :model-value="dialogMotivos"
-    @update:modelValue="(val: DialogMotivosClass) => Object.assign(dialogMotivos, val)" />
+    @update:modelValue="(val: DialogMotivosClass) => Object.assign(dialogMotivos, val)"
+    @operacao-concluida="getAllMotivos" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">

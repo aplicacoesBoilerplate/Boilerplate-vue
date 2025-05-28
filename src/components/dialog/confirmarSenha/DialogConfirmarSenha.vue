@@ -43,13 +43,13 @@
 
         <v-card-actions>
           <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon class="pt-1">mdi-refresh</v-icon>
-            Refresh</v-btn>
+            Limpar</v-btn>
           <v-spacer></v-spacer>
 
           <v-btn color="red" variant="plain" @click="resetForm()"><v-icon class="pt-1">mdi-close</v-icon>Close</v-btn>
 
-          <v-btn color="success" variant="tonal" :disabled="!formIsValid"
-            type="submit"><v-icon class="pt-1">mdi-check</v-icon>>Confirmar</v-btn>
+          <v-btn color="success" variant="tonal" :disabled="!formIsValid" type="submit"><v-icon
+              class="pt-1">mdi-check</v-icon>Confirmar</v-btn>
         </v-card-actions>
       </v-card>
     </v-form>

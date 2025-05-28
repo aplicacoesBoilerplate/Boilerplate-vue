@@ -16,28 +16,26 @@
       </v-app-bar-title>
     </RouterLink>
 
+
+    <!-- Botão de perfil -->
     <div class="d-flex justify-space-around">
-      <v-menu transition="slide-x-transition">
-        <template v-slot:activator="{ props }">
-          <v-btn icon color="primary" v-bind="props">
-            <v-icon color="white">mdi-book-open-page-variant-outline</v-icon>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item v-for="page in pages" :key="page.title">
-            <RouterLink :to="page.path" custom v-slot="{ navigate }">
-              <v-btn class="menu-btn" color="black" block @click="navigate">
-                <v-icon class="mr-2" color="white">{{ page.icon }}</v-icon>
-                <span class="text-white">{{ page.title }}</span>
-              </v-btn>
-            </RouterLink>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <RouterLink to="/profile" custom v-slot="{ navigate }">
+        <v-btn class="menu-btn" color="black" icon @click="navigate">
+          <v-icon class="mr-2" color="white">mdi-account-cog</v-icon>
+        </v-btn>
+      </RouterLink>
+    </div>
+
+
+    <!-- Botão de logout -->
+    <div class="d-flex justify-space-around">
+      <v-btn class="menu-btn" color="black" icon @click="logout()">
+        <v-icon class="mr-2" color="white">mdi-logout</v-icon>
+      </v-btn>
     </div>
 
     <div class="d-flex justify-space-around">
-      <v-menu transition="slide-x-transition">
+      <!-- <v-menu transition="slide-x-transition">
         <template v-slot:activator="{ props }">
           <v-btn icon color="primary" v-bind="props">
             <v-icon color="white">mdi-dots-vertical</v-icon>
@@ -53,14 +51,14 @@
             </RouterLink>
           </v-list-item>
         </v-list>
-      </v-menu>
+      </v-menu> -->
     </div>
 
-    <template v-slot:append>
+    <!-- <template v-slot:append>
       <v-btn icon @click="openSearch()">
         <v-icon color="white">mdi-magnify</v-icon>
       </v-btn>
-    </template>
+    </template> -->
   </v-app-bar>
   <DialogSearch v-model:exibir="showDialogSearch" />
   <SnackbarNotifications />
@@ -76,10 +74,11 @@ import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 import { useSnackbarStore } from '@/stores/SnackbarStore';
 // Services
 import { authServices } from '@/services/authService';
+import { useRouter } from 'vue-router'
 // Vue
 import { onMounted, ref } from 'vue';
-import BtnsNavigation from '@/components/BtnsNavigation.vue';
 
+const redirectRouter = useRouter()
 const usuarioLogado = usuarioAutenticado() // Armazenar o usuário autenticado
 const showDialogSearch = ref(false) // Exibir dialog de consulta
 
@@ -96,6 +95,11 @@ function openSearch() {
   // useDialogStoreSearch().openSearchDialog()
 
   showDialogSearch.value = true
+}
+
+function logout() {
+  authServices().logout()
+  redirectRouter.push('/');
 }
 
 // Páginas no bloco de utilidades
