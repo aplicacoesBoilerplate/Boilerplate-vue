@@ -25,7 +25,15 @@ export interface AutorizacoesConsulta {
   dataAutorizacao: string | null
 }
 
-export interface AutorizacoesSaidaConsulta {
-  autorizacao: AutorizacoesConsulta
-  saida: SaidaConsulta
+// Extende de saída e implementa as demais partes
+export interface AutorizacoesSaidaConsulta extends SaidaConsulta {
+  idAutorizacao?: number
+  idFuncionarioAutorizacao: number
+  idSaida: number
+  aprovacaoSaida: boolean
+  observacaoAutorizacao: string
+  dataAutorizacao: string | null
+  descricaoMotivo: string
+  categoriaMotivo: string
+  nomeResponsavel: string
 }

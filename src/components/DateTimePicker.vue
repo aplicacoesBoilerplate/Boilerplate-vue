@@ -1,6 +1,6 @@
 <template>
   <v-text-field :label="label" v-model="display" readonly @click="dialog = true"
-    prepend-inner-icon="mdi-calendar-clock" />
+    prepend-inner-icon="mdi-calendar-clock" :disabled="disabled"/>
 
   <v-menu v-model="dialog" width="auto" max-width="650" :close-on-content-click="false">
     <template #activator="{ props }">
@@ -47,6 +47,7 @@ import dayjs from 'dayjs'
 const props = defineProps<{
   label?: string
   icon?: string
+  disabled?: boolean
   modelValue?: string
 }>()
 

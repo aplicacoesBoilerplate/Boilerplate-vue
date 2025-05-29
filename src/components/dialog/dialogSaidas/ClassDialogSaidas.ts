@@ -4,11 +4,13 @@ import { saidasServices } from '@/services/saidasServices'
 export class DialogSaidasClass {
   show: boolean
   isEditing: boolean
+  visualizando: boolean
   saida: SaidaConsulta
 
   constructor() {
     this.show = false
     this.isEditing = false
+    this.visualizando = false
     this.saida = {
       idSaida: 0,
       idFuncionarioResponsavelSaida: 0,
@@ -69,6 +71,14 @@ export class DialogSaidasClass {
   async completeForm(idSaida?: number) {
     this.show = true
     this.isEditing = true
+    if (idSaida != null)
+      await this.getSaidaById(idSaida)
+  }
+
+  async visualizarInformacoes(idSaida?: number) {
+    this.show = true
+    this.isEditing = false
+    this.visualizando = true
     if (idSaida != null)
       await this.getSaidaById(idSaida)
   }

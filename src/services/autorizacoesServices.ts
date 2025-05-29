@@ -2,7 +2,10 @@
 import type { PaginatorClass } from '@/components/paginator/ClassPaginator'
 // Models
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
-import type { AutorizacoesConsulta } from '@/models/saidasModels/saidasModels'
+import type {
+  AutorizacoesConsulta,
+  AutorizacoesSaidaConsulta
+} from '@/models/saidasModels/saidasModels'
 // Services
 import http from './axios'
 
@@ -30,12 +33,24 @@ export const autorizacoesServices = {
   // Consulta geral para as autorizações, aceita diversos parâmetros da paginação além de dois opcionais para status e responsável
   async getAutorizacoes(
     paginador: PaginatorClass,
-  ): Promise<HeaderPaginatorModel<AutorizacoesConsulta>> {
+  ): Promise<HeaderPaginatorModel<AutorizacoesSaidaConsulta>> {
     try {
       const { data } = await http.get('/autorizacoes/consulta', {
         params: paginador,
       })
 
+      return data
+    } catch (error) {
+      throw error
+    }
+  },
+
+  // Metodo que será utilizado para consultar as autorizações negadas de uma saída
+  async getAutorizacoesNegadasPorSaida(
+    idSaida: number,
+  ): Promise<HeaderPaginatorModel<AutorizacoesConsulta>> {
+    try {
+      const { data } = await http.get(`/autorizacoes/negadas/${idSaida}`)
       return data
     } catch (error) {
       throw error
@@ -49,18 +64,6 @@ export const autorizacoesServices = {
         const { data } = await http.put(`/autorizacoes/${idAutorizacao}`, autorizacaoAtualizada)
         return data
       }
-    } catch (error) {
-      throw error
-    }
-  },
-
-  // Metodo que será utilizado para consultar as autorizações negadas de uma saída
-  async getAutorizacoesNegadasPorSaida(
-    idSaida: number,
-  ): Promise<HeaderPaginatorModel<AutorizacoesConsulta>> {
-    try {
-      const { data } = await http.get(`/autorizacoes/negadas/${idSaida}`)
-      return data
     } catch (error) {
       throw error
     }
