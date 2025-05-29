@@ -1,9 +1,9 @@
 <template>
   <div class="pb-2 custom-button-wrapper" @mouseenter="hover = true" @mouseleave="hover = false">
-    <v-btn icon @click="executarCallback" class="animated-btn">
-      <v-icon :class="{ rotate: hover }" color="white">mdi-plus-circle-outline</v-icon>
+    <v-btn icon @click="executarCallback" class="animated-btn" :size="size" :variant="variant || 'tonal'">
+      <v-icon :class="{ rotate: hover }" color="white">{{ icon || 'mdi-plus-circle-outline' }}</v-icon>
     </v-btn>
-    <span class="button-label" :class="{ visible: hover }">{{ label }}</span>
+    <span v-if="label" class="button-label" :class="{ visible: hover }">{{ label }}</span>
   </div>
 </template>
 
@@ -14,7 +14,10 @@ import { ref } from 'vue'
 // Props
 const props = defineProps<{
   callback: () => void | Promise<void>,
-  label: string
+  label?: string,
+  icon?: string,
+  size?: string,
+  variant: "flat" | "text" | "elevated" | "tonal" | "outlined" | "plain" | undefined
 }>()
 
 const hover = ref(false)
@@ -24,4 +27,5 @@ async function executarCallback() {
     await props.callback()
   }
 }
+
 </script>

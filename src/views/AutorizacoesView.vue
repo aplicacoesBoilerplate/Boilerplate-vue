@@ -15,8 +15,7 @@
       </v-btn>
 
       <!-- Campo para consultar as autorizações pelo usuários responsável inserindo no search -->
-      <v-text-field clearable v-model="paginadorClass.idFuncionarioResponsavel" density="compact"
-                    variant="outlined"
+      <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
                     placeholder="Usuário responsável" hide-details prepend-inner-icon="mdi-magnify"
                     style="max-width: 300px"/>
     </v-card-title>
@@ -70,16 +69,16 @@
                 <v-list>
                   <v-list-item>
                     <v-list-item-title>
-                      <!-- Editar saída -->
+                      <!-- Rejeitar autorização -->
                       <v-btn icon="mdi-lock" size="x-small" variant="tonal" color="red"
                              @click="negarAutorizacaoSaida(autorizacao)" title="Rejeitar"/>
                       <span class="pr-2"/>
 
-                      <!-- Funcionalidade sensível de remoção de saída, precisa de confirmação de senha -->
+                      <!-- Autorizar -->
                       <v-btn icon="mdi-lock-open-outline" size="x-small" variant="tonal"
                              color="success"
-                             @click="getAutorizacoesNegadasPorSaida(autorizacao.idSaida)"
-                      />
+                             @click="getAutorizacoesNegadasPorSaida(autorizacao)"
+                             title="Autorizar"/>
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
@@ -96,7 +95,7 @@
               <v-col cols="6" class="d-flex justify-center">
                 <v-chip color="info">
                   Usuário responsável:
-                  {{ autorizacao.idFuncionarioAutorizacao }}
+                  {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
                 </v-chip>
               </v-col>
 
@@ -107,7 +106,10 @@
                 <v-chip color="info">
                   Referente a saída:
                   {{ autorizacao.idSaida }}
+                  <span class="pr-2"/>
+                    <BtnOpenDialog :callback="() => visualizarInformacoes(autorizacao.idSaida)" icon="mdi-eye-outline" size="x-small" variant="outlined" color="info" class="pt-2"/>
                 </v-chip>
+
               </v-col>
 
               <v-col cols="12" v-if="autorizacao.observacaoAutorizacao">
@@ -121,11 +123,9 @@
         <v-divider/>
 
         <!-- Dialog para exibição de observações de autorizações negadas de uma saída -->
-        <DialogAutorizacoesNegadas
-          :model-value="dialogAutorizacoesNegadas"
-          @emitir-rejeicao="negarAutorizacaoSaida(autorizacao)"
-          @emitir-liberacao="emitirAutorizacao(autorizacao)"
-        />
+        <DialogAutorizacoesNegadas :model-value="dialogAutorizacoesNegadas"
+                                   @emitir-rejeicao="negarAutorizacaoSaida"
+                                   @emitir-liberacao="emitirAutorizacao"/>
 
       </template>
     </v-virtual-scroll>
@@ -133,6 +133,12 @@
   <!-- Componente de paginação -->
   <Paginator :model-value="paginadorClass" @mudouLimite="aoMudarLimite" @mudouPagina="aoMudarPagina"
              v-if="apiAutorizacoes?.totalRegistros! > 0 && !loading"/>
+
+  <!-- Dialog aberto pelo botão acima -->
+  <DialogSaidas :model-value="dialogSaidas"
+                @update:modelValue="(val: DialogSaidasClass) => Object.assign(dialogSaidas, val)"
+  />
+
 </template>
 
 <script setup lang="ts">
@@ -141,6 +147,8 @@
 import DialogAutorizacoesNegadas
   from "@/components/dialog/dialogAutorizacoesNegadasPorSaida/DialogAutorizacoesNegadas.vue";
 import DialogAutorizacoes from '@/components/dialog/dialogAutorizacoes/DialogAutorizacoes.vue';
+import DialogSaidas from "@/components/dialog/dialogSaidas/DialogSaidas.vue";
+import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue";
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
 
 // Classes
@@ -150,20 +158,24 @@ import {
 import {
   DialogAutorizacoesClass
 } from '@/components/dialog/dialogAutorizacoes/ClassDialogAutorizacoes';
+
 import {PaginatorClass} from '@/components/paginator/ClassPaginator';
-
 // Store
+
 import {useSnackbarStore} from '@/stores/SnackbarStore';
-
 // Models
-import type {AutorizacoesConsulta} from '@/models/saidasModels/saidasModels';
+import type {
+  AutorizacoesConsulta,
+  AutorizacoesSaidaConsulta
+} from '@/models/saidasModels/saidasModels';
+
 import type {HeaderPaginatorModel} from '@/models/HeaderPaginatorModel';
-
 // Services
-import {autorizacoesServices} from '@/services/autorizacoesServices';
 
+import {autorizacoesServices} from '@/services/autorizacoesServices';
 // Vue
 import {onMounted, ref, watch} from 'vue';
+import {DialogSaidasClass} from "@/components/dialog/dialogSaidas/ClassDialogSaidas.ts";
 //#endregion
 
 //#region Variáveis
@@ -172,6 +184,7 @@ const loading = ref(false) // Carregamento
 const showDialog = ref(false) // Dialog de autorizações
 
 // Classes
+const dialogSaidas = ref(new DialogSaidasClass())
 const dialogAutorizacoes = ref(new DialogAutorizacoesClass())
 const dialogAutorizacoesNegadas = ref(new DialogAutorizacoesNegadasClass())
 const paginadorClass = ref(new PaginatorClass({
@@ -186,7 +199,7 @@ const paginadorClass = ref(new PaginatorClass({
 // Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
 const searchResponsavel = ref<string>() // Parâmetro para consultar usuários
-var apiAutorizacoes = ref<HeaderPaginatorModel<AutorizacoesConsulta>>() // Armazena os dados da resposta das req para exibição no front
+var apiAutorizacoes = ref<HeaderPaginatorModel<AutorizacoesSaidaConsulta>>() // Armazena os dados da resposta das req para exibição no front
 
 //#endregion
 
@@ -215,7 +228,6 @@ function negarAutorizacaoSaida(autorizacao: AutorizacoesConsulta) {
 
 // Informa que a autorização foi enviada
 async function emitirAutorizacao(autorizacao: AutorizacoesConsulta) {
-
   if (autorizacao.observacaoAutorizacao) {
     dialogAutorizacoes.value.completeForm(autorizacao.idAutorizacao, true)
     showDialog.value = true
@@ -268,8 +280,16 @@ async function getAutorizacoes() {
 //#endregion
 
 //#region funções para o dialog de autorizações negadas
-async function getAutorizacoesNegadasPorSaida(idSaida: number) {
-  dialogAutorizacoesNegadas.value.openDialog(idSaida)
+async function getAutorizacoesNegadasPorSaida(autorizacao: AutorizacoesConsulta) {
+  try {
+    const response = (await autorizacoesServices.getAutorizacoesNegadasPorSaida(autorizacao.idSaida)).totalRegistros
+    if (response > 0)
+      dialogAutorizacoesNegadas.value.openDialog(autorizacao)
+    else
+      emitirAutorizacao(autorizacao)
+  } catch (error) {
+    throw error
+  }
 }
 
 //#endregion
@@ -288,6 +308,14 @@ async function aoMudarPagina(novaPagina: number) {
 async function aoMudarOrdem(ordem: string) {
   paginadorClass.value.alterarOrdenacao(ordem)
   await getAutorizacoes()
+}
+
+//#endregion
+
+//#region DialogSaida
+function visualizarInformacoes(idSaida: number) {
+  dialogSaidas.value.visualizarInformacoes(idSaida)
+  showDialog.value = true
 }
 
 //#endregion

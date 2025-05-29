@@ -60,7 +60,7 @@
         <v-card-actions>
           <v-btn color="warning" variant="plain" @click="clearFields()">
             <v-icon class="pt-1">mdi-refresh</v-icon>
-            Limpar
+            {{ dialogUsers.isEditing ? 'Desfazer' : 'Limpar' }}
           </v-btn>
           <v-spacer />
 
@@ -103,6 +103,7 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: 'update:modelValue', value: DialogUsersClass): void
+  (e: 'operacao-concluida'): void
 }>()
 
 const user = computed(() => props.modelValue.usuario)
@@ -139,6 +140,7 @@ async function createNewUser() {
   try {
     await usuariosServices.createUser(user.value);
     useSnackbarStore().showSnackbar('Usuário criado com sucesso!', 'success')
+    emit('operacao-concluida')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
@@ -149,10 +151,10 @@ async function createNewUser() {
 async function updateUser() {
   const valid = await formRef.value.validate()
   if (!valid) return
-
   try {
     await usuariosServices.updateUser(user.value)
     useSnackbarStore().showSnackbar('Usuário modificado com sucesso!', 'success')
+    emit('operacao-concluida')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error

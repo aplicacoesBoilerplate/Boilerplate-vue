@@ -4,7 +4,7 @@
 
   <!-- Dialog aberto pelo botão acima -->
   <DialogUsers :model-value="dialogUsers"
-    @update:modelValue="(val: DialogUsersClass) => Object.assign(dialogUsers, val)" />
+    @update:modelValue="(val: DialogUsersClass) => Object.assign(dialogUsers, val)" @operacao-concluida="getAllUsers" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">

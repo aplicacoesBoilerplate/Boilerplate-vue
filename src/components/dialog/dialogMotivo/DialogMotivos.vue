@@ -30,7 +30,7 @@
         <v-card-actions>
           <v-btn color="warning" variant="plain" @click="clearFields()">
             <v-icon class="pt-1">mdi-refresh</v-icon>
-            Limpar
+            {{ dialogMotivos.isEditing ? 'Desfazer' : 'Limpar' }}
           </v-btn>
           <v-spacer />
 
@@ -73,6 +73,7 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: 'update:modelValue', value: DialogMotivosClass): void
+  (e: 'operacao-concluida'): void
 }>()
 
 const motivo = computed(() => props.modelValue.motivo)
@@ -109,6 +110,7 @@ async function cadastrarNovoMotivo() {
   try {
     await motivosServices.createMotivo(motivo.value);
     useSnackbarStore().showSnackbar('Motivo criado com sucesso!', 'success')
+    emit('operacao-concluida')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
@@ -123,6 +125,7 @@ async function updateMotivo() {
   try {
     await motivosServices.updateMotivo(motivo.value, motivo.value.idMotivo)
     useSnackbarStore().showSnackbar('Motivo modificado com sucesso!', 'success')
+    emit('operacao-concluida')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error

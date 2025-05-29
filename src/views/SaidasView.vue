@@ -4,7 +4,8 @@
 
   <!-- Dialog aberto pelo botão acima -->
   <DialogSaidas :model-value="dialogSaidas"
-    @update:modelValue="(val: DialogSaidasClass) => Object.assign(dialogSaidas, val)" />
+    @update:modelValue="(val: DialogSaidasClass) => Object.assign(dialogSaidas, val)"
+    @operacao-concluida="getAllSaidas" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">

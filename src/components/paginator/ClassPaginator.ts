@@ -6,8 +6,8 @@ export class PaginatorClass {
   orderBy?: string // Ordenação da exibição da lista
   search?: string // Parâmetro de busca
   status?: string // Status da saída consultada
-  aprovacao?: boolean // Parâmetro de busca para autorizações de saídas por aprovação
-  idFuncionarioResponsavel?: number
+  aprovacao?: boolean | null // Parâmetro de busca para autorizações de saídas por aprovação
+  idFuncionarioResponsavel?: number | string
 
   constructor({
     limite = 10,
