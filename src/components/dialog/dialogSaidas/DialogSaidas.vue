@@ -6,8 +6,8 @@
         <v-card-title class="d-flex justify-space-between align-center mt-3">
           <span class="text-h6" v-if="!dialogSaidas.visualizando">
             <v-icon>{{
-                dialogSaidas.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'
-              }}</v-icon>
+              dialogSaidas.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'
+            }}</v-icon>
             {{ dialogSaidas.isEditing ? `Editar saída: ${saida.idSaida}` : 'Solicitar nova saída' }}
           </span>
 
@@ -17,10 +17,9 @@
           </span>
 
           <!-- Campo para consultar os usuários pelo search -->
-          <v-text-field v-if="!dialogSaidas.visualizando" clearable v-model="paginadorClass.search"
-                        density="compact" variant="outlined"
-                        placeholder="Buscar Funcionário" hide-details
-                        prepend-inner-icon="mdi-magnify" style="max-width: 300px"/>
+          <v-text-field v-if="!dialogSaidas.visualizando" clearable v-model="paginadorClass.search" density="compact"
+            variant="outlined" placeholder="Buscar Funcionário" hide-details prepend-inner-icon="mdi-magnify"
+            style="max-width: 300px" />
         </v-card-title>
 
         <v-card-text>
@@ -28,50 +27,48 @@
             <!-- Parâmetro que será usado para consultar as informações do funcionário que irá sair -->
             <v-col cols="12" md="6" class="d-flex justify-center">
               <v-number-input clearable v-model="saida.numeroRegistroFuncionario" :reverse="false"
-                              :rules="[rules.required]" controlVariant="stacked"
-                              label="N° de Registro do Funcionário*"
-                              :hideInput="false" inset :disabled="dialogSaidas.visualizando"/>
+                :rules="[rules.required]" controlVariant="stacked" label="N° de Registro do Funcionário*"
+                :hideInput="false" inset :disabled="dialogSaidas.visualizando" />
             </v-col>
 
             <!-- Código do motivo -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-autocomplete clearable v-model="saida.motivoSaida" label="Motivo*"
-                              :items="apiMotivos?.registros"
-                              :item-title="'descricaoMotivo'" :item-value="'idMotivo'"
-                              :rules="[rules.required]"
-                              :disabled="dialogSaidas.visualizando"/>
+              <v-autocomplete clearable v-model="saida.motivoSaida" label="Motivo*" :items="apiMotivos?.registros"
+                :item-title="'descricaoMotivo'" :item-value="'idMotivo'" :rules="[rules.required]"
+                :disabled="dialogSaidas.visualizando" />
             </v-col>
 
             <!-- Informação retornada pela consulta -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-text-field clearable v-model="saida.nomeFuncionario" label="Nome do Funcionário"
-                            disabled/>
+              <v-text-field clearable v-model="saida.nomeFuncionario" label="Nome do Funcionário" disabled />
             </v-col>
 
             <!-- Informação retornada pela consulta -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-text-field clearable v-model="saida.setorFuncionario" label="Setor do Funcionário"
-                            disabled/>
+              <v-text-field clearable v-model="saida.setorFuncionario" label="Setor do Funcionário" disabled />
             </v-col>
 
             <!-- Data e hora de previsão de saída do funcionário -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <DateTimePicker v-model="saida.dataPrevisaoSaidaFuncionario"
-                              label="Data e hora de previsão da saída"
-                              :disabled="dialogSaidas.visualizando"/>
+              <DateTimePicker v-model="saida.dataPrevisaoSaidaFuncionario" label="Data e hora de previsão da saída"
+                :disabled="dialogSaidas.visualizando" />
             </v-col>
 
             <!-- Data e hora de previsão de retorno do funcionário -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <DateTimePicker v-model="saida.dataPrevisaoChegadaFuncionario"
-                              label="Data e hora de previsão de retorno"
-                              :disabled="dialogSaidas.visualizando"/>
+              <DateTimePicker v-model="saida.dataPrevisaoChegadaFuncionario" label="Data e hora de previsão de retorno"
+                :disabled="dialogSaidas.visualizando" />
             </v-col>
 
             <!-- Campo de observação da saída -->
             <v-col cols="12">
-              <v-textarea clearable label="Observação saída" variant="outlined" counter
-                          v-model="saida.observacao_saida" :disabled="dialogSaidas.visualizando"/>
+              <v-textarea clearable label="Observação saída" variant="outlined" counter v-model="saida.observacao_saida"
+                :disabled="dialogSaidas.visualizando" />
+            </v-col>
+
+            <!-- Usuário responsável por emitir a saída -->
+            <v-col cols="12" md="6" class="d-flex justify-center" v-if="dialogSaidas.visualizando">
+              <v-text-field clearable v-model="saida.nomeFuncionarioResponsavelSaida" label="Emitida por" disabled />
             </v-col>
           </v-row>
 
@@ -83,14 +80,14 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-divider/>
+        <v-divider />
 
         <v-card-actions v-if="!dialogSaidas.visualizando">
           <v-btn color="warning" variant="plain" @click="clearFields()">
             <v-icon class="pt-1">mdi-refresh</v-icon>
             {{ dialogSaidas.isEditing ? 'Desfazer' : 'Limpar' }}
           </v-btn>
-          <v-spacer/>
+          <v-spacer />
 
           <v-btn color="red" variant="plain" @click="resetForm()">
             <v-icon class="pt-1">mdi-close</v-icon>
@@ -117,19 +114,19 @@
 // Componentes
 import DateTimePicker from '@/components/DateTimePicker.vue';
 // Classes
-import {PaginatorClass} from '@/components/paginator/ClassPaginator'
-import type {DialogSaidasClass} from './ClassDialogSaidas'
+import { PaginatorClass } from '@/components/paginator/ClassPaginator'
+import type { DialogSaidasClass } from './ClassDialogSaidas'
 // Store
-import {useSnackbarStore} from '@/stores/SnackbarStore'
+import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Models
-import type {MotivoConsulta} from '@/models/motivosModels/MotivosModels'
-import type {HeaderPaginatorModel} from '@/models/HeaderPaginatorModel'
+import type { MotivoConsulta } from '@/models/motivosModels/MotivosModels'
+import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 // Services
-import {motivosServices} from '@/services/motivosServices'
-import {saidasServices} from '@/services/saidasServices'
-import {rules} from '@/utils/rules'
+import { motivosServices } from '@/services/motivosServices'
+import { saidasServices } from '@/services/saidasServices'
+import { rules } from '@/utils/rules'
 // Vue
-import {computed, onMounted, ref, watch} from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -216,7 +213,7 @@ async function updateSaida() {
 }
 
 async function submitForm() {
-  const {valid} = await formRef.value.validate()
+  const { valid } = await formRef.value.validate()
   if (!valid) return
   dialogSaidas.value.isEditing ? await updateSaida() : await cadastrarNovaSaida()
 }

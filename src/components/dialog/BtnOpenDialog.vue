@@ -17,7 +17,7 @@ const props = defineProps<{
   label?: string,
   icon?: string,
   size?: string,
-  variant: "flat" | "text" | "elevated" | "tonal" | "outlined" | "plain" | undefined
+  variant?: "flat" | "text" | "elevated" | "tonal" | "outlined" | "plain" | undefined
 }>()
 
 const hover = ref(false)

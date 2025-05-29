@@ -1,10 +1,10 @@
 export interface SaidaConsulta {
   idSaida?: number
   idFuncionarioResponsavelSaida: number
+  nomeFuncionarioResponsavelSaida: string
   numeroRegistroFuncionario: number
   nomeFuncionario: string
   setorFuncionario: string
-  motivoSaida: number
   observacao_saida: string
   statusSaida?: number
   dataSolicitacaoSaida: string
@@ -14,6 +14,9 @@ export interface SaidaConsulta {
   confirmaRetorno: boolean
   dataPrevisaoChegadaFuncionario: string
   dataChegadaFuncionario: string
+  motivoSaida: number
+  descricaoMotivo: string
+  categoriaMotivo: string
 }
 
 export interface AutorizacoesConsulta {

@@ -136,11 +136,12 @@
               <v-col cols="12" color="info">
                 <!-- Motivo da saída -->
                 Motivo saída:
-                {{ saida.motivoSaida }}
-                <br /><br />
+                {{ saida.motivoSaida }}: {{ saida.categoriaMotivo }} - {{ saida.descricaoMotivo }}
+                <br />
+                Emitida por: {{ saida.nomeFuncionarioResponsavelSaida }}
+                <br />
                 <!-- Observação da saída -->
-                Observações da saída: <br />
-                {{ saida.observacao_saida }}
+                {{ saida.observacao_saida ? `Observações da saída: \n${saida.observacao_saida}` : '' }}
 
               </v-col>
             </v-row>
