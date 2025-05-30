@@ -6,7 +6,7 @@ export interface SaidaConsulta {
   nomeFuncionario: string
   setorFuncionario: string
   observacao_saida: string
-  statusSaida?: number
+  statusSaida?: string
   dataSolicitacaoSaida: string
   dataAprovacaoSaida: string
   dataPrevisaoSaidaFuncionario: string

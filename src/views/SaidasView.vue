@@ -47,7 +47,8 @@
       <template v-slot:default="{ item: saida }">
         <v-list-item :title="`${saida.idSaida} - ${saida.nomeFuncionario}: ${saida.numeroRegistroFuncionario}`"
           :subtitle="identificarSubtitulo(saida)"
-          :class="saida.dataAprovacaoSaida ? 'bg-green-accent-2' : 'bg-red-darken-2'">
+          :class="identificarStylePeloStatus(saida.statusSaida)"
+          >
 
           <!-- Ícone de cartão de saída -->
           <template v-slot:prepend>
@@ -135,10 +136,12 @@
             <v-row dense>
               <v-col cols="12" color="info">
                 <!-- Motivo da saída -->
+                Emitida por: {{ saida.nomeFuncionarioResponsavelSaida }}
+                <br />
+                Status: {{ saida.statusSaida }}
+                <br />
                 Motivo saída:
                 {{ saida.motivoSaida }}: {{ saida.categoriaMotivo }} - {{ saida.descricaoMotivo }}
-                <br />
-                Emitida por: {{ saida.nomeFuncionarioResponsavelSaida }}
                 <br />
                 <!-- Observação da saída -->
                 {{ saida.observacao_saida ? `Observações da saída: \n${saida.observacao_saida}` : '' }}
@@ -357,6 +360,23 @@ function identificarSubtitulo(saida: SaidaConsulta): string {
   }
 
   return definindoSubtitulo.value
+}
+
+function identificarStylePeloStatus(statusSaida?: string): string {
+  const corDaSaidaPeloStatus = ref('')
+
+  if (statusSaida) {
+    if (statusSaida == 'PENDENTE')
+      corDaSaidaPeloStatus.value = 'bg-blue-grey-lighten-3'
+    if (statusSaida == 'NEGADA')
+      corDaSaidaPeloStatus.value = 'bg-red-darken-2'
+    if (statusSaida == 'AUTORIZADA')
+      corDaSaidaPeloStatus.value = 'bg-green-accent-2'
+    if (statusSaida == 'AUTORIZAÇÕES PENDENTES')
+      corDaSaidaPeloStatus.value = 'bg-orange-darken-1'
+  }
+
+  return corDaSaidaPeloStatus.value
 }
 
 </script>

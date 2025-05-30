@@ -67,7 +67,7 @@
             </v-col>
 
             <!-- Usuário responsável por emitir a saída -->
-            <v-col cols="12" md="6" class="d-flex justify-center" v-if="dialogSaidas.visualizando">
+            <v-col cols="12" class="d-flex justify-center" v-if="dialogSaidas.visualizando">
               <v-text-field clearable v-model="saida.nomeFuncionarioResponsavelSaida" label="Emitida por" disabled />
             </v-col>
           </v-row>
