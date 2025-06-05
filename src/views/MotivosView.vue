@@ -11,8 +11,8 @@
   <v-card class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de motivos</span>
-      <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
-        @click="aoMudarOrdem(paginadorClass.orderBy || 'ASC')">
+
+      <v-btn icon size="x-small" color="primary" variant="outlined" title="Ordem" @click="aoMudarOrdem()">
         <v-icon>{{ paginadorClass.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
         </v-icon>
       </v-btn>
@@ -32,7 +32,7 @@
     <div v-if="apiMotivos?.totalRegistros == 0 && loading == false" class="pt-4">
       <v-alert text="Nenhum motivo encontrado!" type="info" variant="tonal">
         <template v-slot:append>
-          <v-btn color="warning" variant="plain" @click="clearSearch()">
+          <v-btn color="warning" variant="plain" @click="limparFiltros()">
             <v-icon class="pt-1">
               mdi-refresh
             </v-icon>
@@ -82,8 +82,8 @@
     </v-virtual-scroll>
   </v-card>
   <!-- Componente de paginação -->
-  <Paginator :model-value="paginadorClass" @mudouLimite="aoMudarLimite" @mudouPagina="aoMudarPagina"
-    v-if="apiMotivos?.totalRegistros! > 0 && !loading" />
+  <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
+    v-show="apiMotivos?.totalRegistros! > 0 && !loading" />
 
   <DialogConfirmarSenha :model-value="confirmarSenha"
     @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
@@ -141,10 +141,6 @@ watch(() => paginadorClass.value.search, async (newValue) => {
   if (newValue !== null && newValue !== '')
     getAllMotivos()
 })
-
-watch(() => paginadorClass.value, () => {
-  getAllMotivos()
-}, { deep: true })
 
 //#endregion
 
@@ -209,8 +205,7 @@ async function deleteMotivo(idMotivo: number) {
 //#endregion
 
 //#region Paginação
-async function aoMudarLimite(novoLimite: number) {
-  paginadorClass.value.atualizarLimite(novoLimite)
+async function onBuscar() {
   await getAllMotivos()
 }
 
@@ -219,17 +214,14 @@ async function aoMudarPagina(novaPagina: number) {
   await getAllMotivos()
 }
 
-async function aoMudarOrdem(ordem: string) {
-  paginadorClass.value.alterarOrdenacao(ordem)
+async function aoMudarOrdem() {
+  paginadorClass.value.alterarOrdenacao()
   await getAllMotivos()
 }
-//#endregion
 
-//#region Demais funções
-
-// Usado no alert quando não o motivo não foi encontrado para exibir novamente a lista com o getAll
-function clearSearch() {
-  paginadorClass.value.search = ''
+async function limparFiltros() {
+  paginadorClass.value.limparFiltros()
+  await getAllMotivos()
 }
 //#endregion
 

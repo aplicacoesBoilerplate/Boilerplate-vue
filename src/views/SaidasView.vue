@@ -12,17 +12,19 @@
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de saídas</span>
 
-      <BtnsFilterPaginator :show="filtrosSaidas" @alterado-ordem="aoMudarOrdem" />
-
-      <!-- <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
-        @click="aoMudarOrdem(paginadorClass.orderBy || 'ASC')">
-        <v-icon>{{ paginadorClass.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
-        </v-icon>
-      </v-btn> -->
+      <BtnsFilterPaginator :show="filtrosSaidas" @alterado-ordem="aoMudarOrdem"
+        @alterado-apenas-hoje="aoMudarApenasHoje" @alterado-aprovacao="aoMudarAprovacao"
+        @limpar-filtros="limparFiltros" />
 
       <!-- Campo para consultar as saídas pelo search -->
-      <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
-        placeholder="Consultar funcionário" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
+      <v-text-field v-model="paginadorClass.search" clearable density="compact" variant="outlined"
+        placeholder="Consultar funcionário" hide-details style="max-width: 300px">
+        <template #prepend-inner>
+          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="searchSaidas">
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </template>
+      </v-text-field>
     </v-card-title>
     <v-divider />
 
@@ -35,7 +37,7 @@
     <div v-if="apiSaidas?.totalRegistros == 0 && loading == false" class="pt-4">
       <v-alert text="Nenhum usuário encontrado!" type="info" variant="tonal">
         <template v-slot:append>
-          <v-btn color="warning" variant="plain" @click="clearSearch()">
+          <v-btn color="warning" variant="plain" @click="limparFiltros()">
             <v-icon class="pt-1">
               mdi-refresh
             </v-icon>
@@ -156,8 +158,8 @@
     </v-virtual-scroll>
   </v-card>
   <!-- Componente de paginação -->
-  <Paginator :model-value="paginadorClass" @mudouLimite="aoMudarLimite" @mudouPagina="aoMudarPagina"
-    v-if="apiSaidas?.totalRegistros! > 0 && !loading" />
+  <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
+    v-show="apiSaidas?.totalRegistros! > 0 && !loading" />
   <DialogConfirmarSenha :model-value="confirmarSenha"
     @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
 
@@ -202,8 +204,7 @@ const dialogSaidas = ref(new DialogSaidasClass())
 const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'DESC', search: '' })) // Classe para a paginação
 const filtrosSaidas = ref({
   exibirApenasHoje: true,
-  exibirAprovacao: true,
-  exibirToggle: false
+  exibirAprovacao: true
 })
 
 // Outros
@@ -217,20 +218,6 @@ var apiSaidas = ref<HeaderPaginatorModel<SaidaConsulta>>() // Armazena os dados 
 onMounted(async () => {
   await getAllSaidas()
 })
-
-watch(() => searchSaida.value, async (newValue) => {
-  if (newValue !== null && newValue !== '')
-    await searchSaidas()
-  else
-    getAllSaidas()
-})
-
-watch(() => paginadorClass.value, () => {
-  if (paginadorClass.value.search != null && paginadorClass.value.search != '')
-    searchSaidas()
-  else
-    getAllSaidas()
-}, { deep: true })
 
 //#endregion
 
@@ -316,8 +303,7 @@ function deleteSaida(idSaida?: number) {
 //#endregion
 
 //#region Paginação
-async function aoMudarLimite(novoLimite: number) {
-  paginadorClass.value.atualizarLimite(novoLimite)
+async function onBuscar() {
   await getAllSaidas()
 }
 
@@ -330,6 +316,22 @@ async function aoMudarOrdem() {
   paginadorClass.value.alterarOrdenacao()
   await getAllSaidas()
 }
+
+async function aoMudarAprovacao() {
+  paginadorClass.value.alterarFiltroAprovacao()
+  await getAllSaidas()
+}
+
+async function aoMudarApenasHoje() {
+  paginadorClass.value.alterarFiltroApenasHoje()
+  await getAllSaidas()
+}
+
+async function limparFiltros() {
+  paginadorClass.value.limparFiltros()
+  await getAllSaidas()
+}
+
 //#endregion
 
 //#region Demais funções
@@ -339,10 +341,6 @@ function toggleSaida(id?: number) {
     expandedSaidaId.value = expandedSaidaId.value === id ? null : id
 }
 
-// Usado no alert quando não o usuário não foi encontrado para exibir novamente a lista com o getAll
-function clearSearch() {
-  paginadorClass.value.search = ''
-}
 //#endregion
 
 function identificarSubtitulo(saida: SaidaConsulta): string {

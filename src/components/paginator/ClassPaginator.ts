@@ -7,7 +7,7 @@ export class PaginatorClass {
   search?: string // Parâmetro de busca
   apenasHoje?: boolean | null // Filtro para a portaria consutar apenas os registros do dia ou todos
   aprovacao?: boolean | null // Parâmetro de busca para autorizações de saídas por aprovação
-  idFuncionarioResponsavel?: number | string
+  idFuncionarioResponsavel?: number | string | null
 
   constructor({
     limite = 10,
@@ -48,5 +48,16 @@ export class PaginatorClass {
 
   alterarFiltroApenasHoje() {
     this.apenasHoje = !this.apenasHoje
+  }
+
+  // Novo clear para os alerts de sem registro
+  limparFiltros() {
+    this.apenasHoje = false
+    this.aprovacao = null
+    this.idFuncionarioResponsavel = null
+    this.search = ''
+    this.orderBy = 'DESC'
+    this.limite = 10
+    this.offset = this.offset
   }
 }

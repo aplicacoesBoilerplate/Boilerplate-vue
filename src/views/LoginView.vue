@@ -6,11 +6,6 @@
       </v-btn>
       <span class="button-label" :class="{ visible: hover }">Solicitar acesso</span>
     </RouterLink>
-    <span class="pr-5"></span>
-    <v-btn icon @click="confirmarSenha.show = true" class="animated-btn">
-      <v-icon color="white">mdi-lock-reset</v-icon>
-    </v-btn>
-    <span class="button-label" :class="{ visible: hover }">Alterar senha</span>
   </div>
   <v-container class="d-flex justify-center align-center"
     style="margin: 0; padding: 0; height: 90vh; overflow: hidden;">

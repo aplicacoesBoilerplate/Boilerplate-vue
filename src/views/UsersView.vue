@@ -17,8 +17,14 @@
       </v-btn>
 
       <!-- Campo para consultar os usuários pelo search -->
-      <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
-        placeholder="Consultar usuários" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
+      <v-text-field v-model="paginadorClass.search" clearable density="compact" variant="outlined"
+        placeholder="Consultar usuário" hide-details style="max-width: 300px">
+        <template #prepend-inner>
+          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="searchUsuarios">
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </template>
+      </v-text-field>
     </v-card-title>
     <v-divider />
 
@@ -31,7 +37,7 @@
     <div v-if="apiUsers?.totalRegistros == 0 && loading == false" class="pt-4">
       <v-alert text="Nenhum usuário encontrado!" type="info" variant="tonal">
         <template v-slot:append>
-          <v-btn color="warning" variant="plain" @click="clearSearch()">
+          <v-btn color="warning" variant="plain" @click="limparFiltros()">
             <v-icon class="pt-1">
               mdi-refresh
             </v-icon>
@@ -183,8 +189,8 @@
     </v-virtual-scroll>
   </v-card>
   <!-- Componente de paginação -->
-  <Paginator :model-value="paginadorClass" @mudouLimite="aoMudarLimite" @mudouPagina="aoMudarPagina"
-    v-if="apiUsers?.totalRegistros! > 0 && !loading" />
+  <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
+    v-show="apiUsers?.totalRegistros! > 0 && !loading" />
   <DialogConfirmarSenha :model-value="confirmarSenha"
     @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
 
@@ -196,7 +202,6 @@
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
-import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
 import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
 
 // Classes
@@ -240,20 +245,6 @@ var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>() // Armazena os dados
 onMounted(async () => {
   await getAllUsers()
 })
-
-watch(() => searchUsuario.value, async (newValue) => {
-  if (newValue !== null && newValue !== '')
-    await searchUsuarios()
-  else
-    getAllUsers()
-})
-
-watch(() => paginadorClass.value, () => {
-  if (paginadorClass.value.search != null && paginadorClass.value.search != '')
-    searchUsuarios()
-  else
-    getAllUsers()
-}, { deep: true })
 
 //#endregion
 
@@ -380,8 +371,7 @@ function deleteUser(idUser: number) {
 //#endregion
 
 //#region Paginação
-async function aoMudarLimite(novoLimite: number) {
-  paginadorClass.value.atualizarLimite(novoLimite)
+async function onBuscar() {
   await getAllUsers()
 }
 
@@ -394,17 +384,18 @@ async function aoMudarOrdem() {
   paginadorClass.value.alterarOrdenacao()
   await getAllUsers()
 }
+
+async function limparFiltros() {
+  paginadorClass.value.limparFiltros()
+  await getAllUsers()
+}
+
 //#endregion
 
 //#region Demais funções
 // Função para controlar o v-expand-transition dos detalhes de cada usuario
 function toggleUser(id: number) {
   expandedUserId.value = expandedUserId.value === id ? null : id
-}
-
-// Usado no alert quando não o usuário não foi encontrado para exibir novamente a lista com o getAll
-function clearSearch() {
-  paginadorClass.value.search = ''
 }
 //#endregion
 

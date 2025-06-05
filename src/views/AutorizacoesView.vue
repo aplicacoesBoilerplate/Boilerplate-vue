@@ -1,36 +1,33 @@
 <template>
   <!-- Dialog aberto pela edição -->
   <DialogAutorizacoes :model-value="dialogAutorizacoes"
-                      @update:modelValue="(val: DialogAutorizacoesClass) => Object.assign(dialogAutorizacoes, val)"
-                      @atualizar-autorizacoes="getAutorizacoes"/>
+    @update:modelValue="(val: DialogAutorizacoesClass) => Object.assign(dialogAutorizacoes, val)"
+    @atualizar-autorizacoes="getAutorizacoes" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de autorizações</span>
-      <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
-             @click="aoMudarOrdem(paginadorClass.orderBy || 'ASC')">
-        <v-icon>{{ paginadorClass.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
-        </v-icon>
-      </v-btn>
+      <BtnsFilterPaginator :show="filtrosAutorizacoes" @alterado-ordem="aoMudarOrdem"
+        @alterado-apenas-hoje="aoMudarApenasHoje" @alterado-aprovacao="aoMudarAprovacao"
+        @limpar-filtros="limparFiltros" />
 
       <!-- Campo para consultar as autorizações pelo usuários responsável inserindo no search -->
       <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
-                    placeholder="Usuário responsável" hide-details prepend-inner-icon="mdi-magnify"
-                    style="max-width: 300px"/>
+        placeholder="Usuário responsável" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
     </v-card-title>
-    <v-divider/>
+    <v-divider />
 
     <!-- Loading -->
     <div class="d-flex justify-center" v-if="loading">
-      <v-progress-circular color="primary" indeterminate/>
+      <v-progress-circular color="primary" indeterminate />
     </div>
 
     <!-- Alerta quando nenhuma autorização consultada foi encontrada -->
     <div v-if="apiAutorizacoes?.totalRegistros == 0 && loading == false" class="pt-4">
       <v-alert text="Nenhuma autorização encontrada!" type="info" variant="tonal">
         <template v-slot:append>
-          <v-btn color="warning" variant="plain" @click="clearSearch()">
+          <v-btn color="warning" variant="plain" @click="limparFiltros()">
             <v-icon class="pt-1">
               mdi-refresh
             </v-icon>
@@ -57,28 +54,25 @@
           <template v-slot:append>
             <div class="pe-2">
               <v-btn size="small" variant="elevated" color="white" icon="mdi-information-outline"
-                     @click="toggleAutorizacao(autorizacao.idAutorizacao)" title="Informações">
+                @click="toggleAutorizacao(autorizacao.idAutorizacao)" title="Informações">
               </v-btn>
-              <span class="pr-2"/>
+              <span class="pr-2" />
               <!-- Menu de opções -->
               <v-menu transition="scale-transition">
                 <template v-slot:activator="{ props }">
-                  <v-btn size="small" color="primary" v-bind="props" icon="mdi-dots-vertical"
-                         title="Opções"/>
+                  <v-btn size="small" color="primary" v-bind="props" icon="mdi-dots-vertical" title="Opções" />
                 </template>
                 <v-list>
                   <v-list-item>
                     <v-list-item-title>
                       <!-- Rejeitar autorização -->
                       <v-btn icon="mdi-lock" size="x-small" variant="tonal" color="red"
-                             @click="negarAutorizacaoSaida(autorizacao)" title="Rejeitar"/>
-                      <span class="pr-2"/>
+                        @click="negarAutorizacaoSaida(autorizacao)" title="Rejeitar" />
+                      <span class="pr-2" />
 
                       <!-- Autorizar -->
-                      <v-btn icon="mdi-lock-open-outline" size="x-small" variant="tonal"
-                             color="success"
-                             @click="getAutorizacoesNegadasPorSaida(autorizacao)"
-                             title="Autorizar"/>
+                      <v-btn icon="mdi-lock-open-outline" size="x-small" variant="tonal" color="success"
+                        @click="getAutorizacoesNegadasPorSaida(autorizacao)" title="Autorizar" />
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
@@ -99,54 +93,53 @@
                 </v-chip>
               </v-col>
 
-              <v-divider vertical/>
+              <v-divider vertical />
 
               <!-- Registro da saída relacionada -->
               <v-col cols="6" class="d-flex justify-center">
                 <v-chip color="info">
                   Referente a saída:
                   {{ autorizacao.idSaida }}
-                  <span class="pr-2"/>
-                    <BtnOpenDialog :callback="() => visualizarInformacoes(autorizacao.idSaida)" icon="mdi-eye-outline" size="x-small" variant="outlined" color="info" class="pt-2"/>
+                  <span class="pr-2" />
+                  <BtnOpenDialog :callback="() => visualizarInformacoes(autorizacao.idSaida)" icon="mdi-eye-outline"
+                    size="x-small" variant="outlined" color="info" class="pt-2" />
                 </v-chip>
 
               </v-col>
 
               <v-col cols="12" v-if="autorizacao.observacaoAutorizacao">
-                <v-divider/>
-                Observação: <br/>
+                <v-divider />
+                Observação: <br />
                 {{ autorizacao.observacaoAutorizacao }}
               </v-col>
             </v-row>
           </div>
         </v-expand-transition>
-        <v-divider/>
+        <v-divider />
 
         <!-- Dialog para exibição de observações de autorizações negadas de uma saída -->
-        <DialogAutorizacoesNegadas :model-value="dialogAutorizacoesNegadas"
-                                   @emitir-rejeicao="negarAutorizacaoSaida"
-                                   @emitir-liberacao="emitirAutorizacao"/>
+        <DialogAutorizacoesNegadas :model-value="dialogAutorizacoesNegadas" @emitir-rejeicao="negarAutorizacaoSaida"
+          @emitir-liberacao="emitirAutorizacao" />
 
       </template>
     </v-virtual-scroll>
   </v-card>
   <!-- Componente de paginação -->
-  <Paginator :model-value="paginadorClass" @mudouLimite="aoMudarLimite" @mudouPagina="aoMudarPagina"
-             v-if="apiAutorizacoes?.totalRegistros! > 0 && !loading"/>
+  <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
+    v-show="apiAutorizacoes?.totalRegistros! > 0 && !loading" />
 
   <!-- Dialog aberto pelo botão acima -->
   <DialogSaidas :model-value="dialogSaidas"
-                @update:modelValue="(val: DialogSaidasClass) => Object.assign(dialogSaidas, val)"
-  />
+    @update:modelValue="(val: DialogSaidasClass) => Object.assign(dialogSaidas, val)" /> <!--Um crime-->
 
 </template>
 
 <script setup lang="ts">
 //#region Imports
 // Componentes
-import DialogAutorizacoesNegadas
-  from "@/components/dialog/dialogAutorizacoesNegadasPorSaida/DialogAutorizacoesNegadas.vue";
+import DialogAutorizacoesNegadas from "@/components/dialog/dialogAutorizacoesNegadasPorSaida/DialogAutorizacoesNegadas.vue";
 import DialogAutorizacoes from '@/components/dialog/dialogAutorizacoes/DialogAutorizacoes.vue';
+import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
 import DialogSaidas from "@/components/dialog/dialogSaidas/DialogSaidas.vue";
 import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue";
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
@@ -159,23 +152,23 @@ import {
   DialogAutorizacoesClass
 } from '@/components/dialog/dialogAutorizacoes/ClassDialogAutorizacoes';
 
-import {PaginatorClass} from '@/components/paginator/ClassPaginator';
+import { PaginatorClass } from '@/components/paginator/ClassPaginator';
 // Store
 
-import {useSnackbarStore} from '@/stores/SnackbarStore';
+import { useSnackbarStore } from '@/stores/SnackbarStore';
 // Models
 import type {
   AutorizacoesConsulta,
   AutorizacoesSaidaConsulta
 } from '@/models/saidasModels/saidasModels';
 
-import type {HeaderPaginatorModel} from '@/models/HeaderPaginatorModel';
+import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
 // Services
 
-import {autorizacoesServices} from '@/services/autorizacoesServices';
+import { autorizacoesServices } from '@/services/autorizacoesServices';
 // Vue
-import {onMounted, ref, watch} from 'vue';
-import {DialogSaidasClass} from "@/components/dialog/dialogSaidas/ClassDialogSaidas.ts";
+import { onMounted, ref, watch } from 'vue';
+import { DialogSaidasClass } from "@/components/dialog/dialogSaidas/ClassDialogSaidas.ts";
 //#endregion
 
 //#region Variáveis
@@ -194,7 +187,11 @@ const paginadorClass = ref(new PaginatorClass({
   totalRegistros: 0,
   orderBy: 'DESC',
   search: ''
-})) // Classe para a paginação
+}))
+const filtrosAutorizacoes = ref({
+  exibirApenasHoje: true,
+  exibirAprovacao: true
+})
 
 // Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
@@ -213,10 +210,6 @@ watch(() => searchResponsavel.value, async (newValue) => {
   getAutorizacoes()
 })
 
-watch(() => paginadorClass.value, () => {
-  getAutorizacoes()
-}, {deep: true})
-
 //#endregion
 
 //#region para as autorizações facilitadas
@@ -233,7 +226,7 @@ async function emitirAutorizacao(autorizacao: AutorizacoesConsulta) {
     showDialog.value = true
     useSnackbarStore().showSnackbar('Reveja a observação da saída!', 'info')
   } else {
-    const atualizarAutorizacao = {...autorizacao}
+    const atualizarAutorizacao = { ...autorizacao }
     atualizarAutorizacao.aprovacaoSaida = true
 
     try {
@@ -261,6 +254,7 @@ async function emitirAutorizacao(autorizacao: AutorizacoesConsulta) {
 async function getAutorizacoes() {
   loading.value = true
   try {
+
     const response = await autorizacoesServices.getAutorizacoes(paginadorClass.value)
 
     apiAutorizacoes.value = response
@@ -269,6 +263,7 @@ async function getAutorizacoes() {
       totalPaginas: response.totalPaginas,
       totalRegistros: response.totalRegistros,
     })
+
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
@@ -294,9 +289,9 @@ async function getAutorizacoesNegadasPorSaida(autorizacao: AutorizacoesConsulta)
 
 //#endregion
 
-//#region Paginação
-async function aoMudarLimite(novoLimite: number) {
-  paginadorClass.value.atualizarLimite(novoLimite)
+//#region Paginação e filtros
+
+async function onBuscar() {
   await getAutorizacoes()
 }
 
@@ -305,8 +300,23 @@ async function aoMudarPagina(novaPagina: number) {
   await getAutorizacoes()
 }
 
-async function aoMudarOrdem(ordem: string) {
-  paginadorClass.value.alterarOrdenacao(ordem)
+async function aoMudarOrdem() {
+  paginadorClass.value.alterarOrdenacao()
+  await getAutorizacoes()
+}
+
+async function aoMudarAprovacao() {
+  paginadorClass.value.alterarFiltroAprovacao()
+  await getAutorizacoes()
+}
+
+async function aoMudarApenasHoje() {
+  paginadorClass.value.alterarFiltroApenasHoje()
+  await getAutorizacoes()
+}
+
+async function limparFiltros() {
+  paginadorClass.value.limparFiltros()
   await getAutorizacoes()
 }
 
@@ -326,12 +336,6 @@ function toggleAutorizacao(id?: number) {
   if (id != null)
     expandedUserId.value = expandedUserId.value === id ? null : id
 }
-
-// Usado no alert quando não a autorização não foi encontrada para exibir novamente a lista com o getAll
-function clearSearch() {
-  paginadorClass.value.search = ''
-}
-
 //#endregion
 </script>
 
