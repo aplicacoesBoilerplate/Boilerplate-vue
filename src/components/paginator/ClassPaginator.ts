@@ -5,7 +5,7 @@ export class PaginatorClass {
   totalRegistros?: number
   orderBy?: string // Ordenação da exibição da lista
   search?: string // Parâmetro de busca
-  status?: string // Status da saída consultada
+  apenasHoje?: boolean | null // Filtro para a portaria consutar apenas os registros do dia ou todos
   aprovacao?: boolean | null // Parâmetro de busca para autorizações de saídas por aprovação
   idFuncionarioResponsavel?: number | string
 
@@ -38,8 +38,15 @@ export class PaginatorClass {
     this.offset = novaPagina
   }
 
-  alterarOrdenacao(ordem: string) {
-    const novaOrdem = ordem == 'ASC' ? 'DESC' : 'ASC'
-    this.orderBy = novaOrdem
+  alterarOrdenacao() {
+    this.orderBy = this.orderBy == 'ASC' ? 'DESC' : 'ASC'
+  }
+
+  alterarFiltroAprovacao() {
+    this.aprovacao = !this.aprovacao
+  }
+
+  alterarFiltroApenasHoje() {
+    this.apenasHoje = !this.apenasHoje
   }
 }

@@ -3,11 +3,14 @@
   <v-card class="mx-auto" max-width="1000">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Portaria</span>
-      <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
+
+      <BtnsFilterPaginator :show="filtrosPortaria" @alterado-ordem="aoMudarOrdem" />
+
+      <!-- <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
         @click="aoMudarOrdem(paginadorClass.orderBy || 'ASC')">
         <v-icon>{{ paginadorClass.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
         </v-icon>
-      </v-btn>
+      </v-btn> -->
 
       <!-- Campo para consultar os motivos pelo search -->
       <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
@@ -83,10 +86,8 @@
 <script setup lang="ts">
 //#region Imports
 // Componentes
-import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
-import DialogMotivos from '@/components/dialog/dialogMotivo/DialogMotivos.vue'; // Componente visual para o dialog de motivos
-import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
+import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
 
 // Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
@@ -116,6 +117,11 @@ const showDialog = ref(false) // Dialog de motivos
 const confirmarSenha = ref(new ConfirmarSenhaClass())
 const dialogMotivos = ref(new DialogMotivosClass())
 const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'DESC', search: '' })) // Classe para a paginação
+const filtrosPortaria = ref({
+  exibirApenasHoje: true,
+  exibirAprovacao: true,
+  exibirToggle: false
+})
 
 // Outros
 var apiMotivos = ref<HeaderPaginatorModel<MotivoConsulta>>() // Armazena os dados da resposta das req para exibição no front
@@ -210,8 +216,8 @@ async function aoMudarPagina(novaPagina: number) {
   await getAllMotivos()
 }
 
-async function aoMudarOrdem(ordem: string) {
-  paginadorClass.value.alterarOrdenacao(ordem)
+async function aoMudarOrdem() {
+  paginadorClass.value.alterarOrdenacao()
   await getAllMotivos()
 }
 //#endregion

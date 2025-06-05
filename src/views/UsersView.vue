@@ -10,8 +10,8 @@
   <v-card class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de usuários</span>
-      <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
-        @click="aoMudarOrdem(paginadorClass.orderBy || 'ASC')">
+
+      <v-btn icon size="x-small" color="primary" variant="outlined" title="Ordem" @click="aoMudarOrdem()">
         <v-icon>{{ paginadorClass.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
         </v-icon>
       </v-btn>
@@ -193,9 +193,10 @@
 <script setup lang="ts">
 //#region Imports
 // Componentes
+import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
-import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
+import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
 import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
 
 // Classes
@@ -236,7 +237,6 @@ var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>() // Armazena os dados
 //#endregion
 
 //#region Funcionalidades do Vue
-
 onMounted(async () => {
   await getAllUsers()
 })
@@ -390,8 +390,8 @@ async function aoMudarPagina(novaPagina: number) {
   await getAllUsers()
 }
 
-async function aoMudarOrdem(ordem: string) {
-  paginadorClass.value.alterarOrdenacao(ordem)
+async function aoMudarOrdem() {
+  paginadorClass.value.alterarOrdenacao()
   await getAllUsers()
 }
 //#endregion

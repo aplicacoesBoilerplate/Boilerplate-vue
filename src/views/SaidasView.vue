@@ -11,11 +11,14 @@
   <v-card class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de saídas</span>
-      <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
+
+      <BtnsFilterPaginator :show="filtrosSaidas" @alterado-ordem="aoMudarOrdem" />
+
+      <!-- <v-btn title="Ordem" variant="outlined" color="primary" density="compact"
         @click="aoMudarOrdem(paginadorClass.orderBy || 'ASC')">
         <v-icon>{{ paginadorClass.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
         </v-icon>
-      </v-btn>
+      </v-btn> -->
 
       <!-- Campo para consultar as saídas pelo search -->
       <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
@@ -46,9 +49,7 @@
     <v-virtual-scroll :items="apiSaidas?.registros" height="500" item-height="50" v-else>
       <template v-slot:default="{ item: saida }">
         <v-list-item :title="`${saida.idSaida} - ${saida.nomeFuncionario}: ${saida.numeroRegistroFuncionario}`"
-          :subtitle="identificarSubtitulo(saida)"
-          :class="identificarStylePeloStatus(saida.statusSaida)"
-          >
+          :subtitle="identificarSubtitulo(saida)" :class="identificarStylePeloStatus(saida.statusSaida)">
 
           <!-- Ícone de cartão de saída -->
           <template v-slot:prepend>
@@ -168,6 +169,7 @@
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
 import DialogSaidas from '@/components/dialog/dialogSaidas/DialogSaidas.vue'; // Componente visual para o dialog de saídas
+import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
 import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
 
 // Classes
@@ -198,6 +200,11 @@ const showDialog = ref(false) // Dialog de saídas
 const confirmarSenha = ref(new ConfirmarSenhaClass())
 const dialogSaidas = ref(new DialogSaidasClass())
 const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'DESC', search: '' })) // Classe para a paginação
+const filtrosSaidas = ref({
+  exibirApenasHoje: true,
+  exibirAprovacao: true,
+  exibirToggle: false
+})
 
 // Outros
 const expandedSaidaId = ref<number | null>(null) // Painel de informações da saída
@@ -319,8 +326,8 @@ async function aoMudarPagina(novaPagina: number) {
   await getAllSaidas()
 }
 
-async function aoMudarOrdem(ordem: string) {
-  paginadorClass.value.alterarOrdenacao(ordem)
+async function aoMudarOrdem() {
+  paginadorClass.value.alterarOrdenacao()
   await getAllSaidas()
 }
 //#endregion
