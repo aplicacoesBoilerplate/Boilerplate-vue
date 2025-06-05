@@ -40,3 +40,8 @@ export interface AutorizacoesSaidaConsulta extends SaidaConsulta {
   categoriaMotivo: string
   nomeResponsavel: string
 }
+
+// Saídas com uma lista de autorizações
+export interface SaidasComAutorizacoes extends SaidaConsulta {
+  autorizacoes: AutorizacoesConsulta
+}
