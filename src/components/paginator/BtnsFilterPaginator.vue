@@ -9,7 +9,7 @@
           <div class="d-flex flex-row">
             <!-- Filtro para ordenação dos registros -->
             <v-btn icon size="x-small" color="primary" variant="tonal" title="Ordem" @click="aoMudarOrdem()">
-              <v-icon>{{ copyPaginadorClass.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
+              <v-icon>{{ paginator.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
               </v-icon>
             </v-btn>
 
@@ -17,8 +17,8 @@
               <span class="pr-2" />
               <!-- Filtro para considerar apenas os registros do dia -->
               <v-btn icon="mdi-calendar-today-outline" size="x-small" variant="tonal"
-                :color="copyPaginadorClass.apenasHoje ? 'success' : 'info'"
-                :title="copyPaginadorClass.apenasHoje ? 'Buscar todos os dias' : 'Buscar apenas hoje'"
+                :color="paginator.apenasHoje ? 'success' : 'info'"
+                :title="paginator.apenasHoje ? 'Clique para buscar registros de todos os dias' : 'Clique para buscar registros apenas de hoje'"
                 @click="alterarFiltroApenasHoje()" />
             </div>
 
@@ -26,9 +26,17 @@
               <span class="pr-2" />
               <!-- Filtro para apenas aprovados -->
               <v-btn icon="mdi-bookmark-check-outline" size="x-small" variant="tonal"
-                :color="copyPaginadorClass.aprovacao ? 'success' : 'info'"
-                :title="copyPaginadorClass.aprovacao ? 'Buscar Negados' : 'Buscar aprovados'"
+                :color="paginator.aprovacao ? 'success' : 'info'"
+                :title="paginator.aprovacao ? 'Clique para buscar apenas registros negados' : 'Clique para buscar apenas registros aprovados'"
                 @click="alterarFiltroAprovacao()" />
+            </div>
+
+            <div v-if="showFilter.exibirAlterarInput">
+              <span class="pr-2" />
+              <!-- Filtro para apenas aprovados -->
+              <v-btn icon="mdi-swap-horizontal-bold" size="x-small" variant="tonal"
+                :color="paginator.alterarInput ? 'success' : 'info'"
+                title="Clique para alterar os campos de busca no filtro" @click="alterarInputBusca()" />
             </div>
 
             <span class="pr-2" />
@@ -44,40 +52,43 @@
 
 <script setup lang="ts">
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
-import { computed, ref } from 'vue';
-
-const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'DESC', search: '' }))
-const copyPaginadorClass = paginadorClass.value
+import { computed } from 'vue';
 
 interface Props {
   show: {
     exibirApenasHoje?: boolean | false // Controle de visualização no componente da portaria para exibir ou não o filtro de apenas hoje, o valor padrão é false
     exibirAprovacao?: boolean | false // Controle de visualização no componente de consultar autorizações para exibir ou não o filtro de aprovações, o valor padrão é false
+    exibirAlterarInput?: boolean | false // Controla a exibição do botão que emite o evento para trocar o campo de input
   }
 }
 
 const props = defineProps<Props>()
+const paginator = defineModel<PaginatorClass>('paginator', {
+  required: true
+})
 const emit = defineEmits<{
   (e: 'alterado-ordem'): void
   (e: 'alterado-apenasHoje'): void
   (e: 'alterado-aprovacao'): void
+  (e: 'alterar-input'): void
   (e: 'limpar-filtros'): void
 }>()
 const showFilter = computed(() => props.show)
 
 function aoMudarOrdem() {
-  copyPaginadorClass.orderBy = copyPaginadorClass.orderBy == 'ASC' ? 'DESC' : 'ASC'
   emit('alterado-ordem')
 }
 
 function alterarFiltroApenasHoje() {
-  copyPaginadorClass.apenasHoje = !copyPaginadorClass.apenasHoje
   emit('alterado-apenasHoje')
 }
 
 function alterarFiltroAprovacao() {
-  copyPaginadorClass.aprovacao = !copyPaginadorClass.aprovacao
   emit('alterado-aprovacao')
+}
+
+function alterarInputBusca() {
+  emit('alterar-input')
 }
 
 function retornarFiltrosPadroes() {

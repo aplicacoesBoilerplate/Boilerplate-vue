@@ -18,8 +18,14 @@
       </v-btn>
 
       <!-- Campo para consultar os motivos pelo search -->
-      <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
-        placeholder="Consultar motivos" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
+      <v-text-field v-model="paginadorClass.search" clearable density="compact" variant="outlined"
+        placeholder="Consultar motivos" hide-details style="max-width: 300px">
+        <template #prepend-inner>
+          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="getAllMotivos">
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </template>
+      </v-text-field>
     </v-card-title>
     <v-divider />
 
@@ -135,11 +141,6 @@ var apiMotivos = ref<HeaderPaginatorModel<MotivoConsulta>>() // Armazena os dado
 
 onMounted(async () => {
   await getAllMotivos()
-})
-
-watch(() => paginadorClass.value.search, async (newValue) => {
-  if (newValue !== null && newValue !== '')
-    getAllMotivos()
 })
 
 //#endregion

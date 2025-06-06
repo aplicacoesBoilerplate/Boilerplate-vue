@@ -4,7 +4,7 @@
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Portaria</span>
 
-      <BtnsFilterPaginator :show="filtrosPortaria" @alterado-ordem="aoMudarOrdem"
+      <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosPortaria" @alterado-ordem="aoMudarOrdem"
         @alterado-apenas-hoje="aoMudarApenasHoje" @alterado-aprovacao="aoMudarAprovacao"
         @limpar-filtros="limparFiltros" />
 

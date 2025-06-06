@@ -8,13 +8,31 @@
   <v-card class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de autorizações</span>
-      <BtnsFilterPaginator :show="filtrosAutorizacoes" @alterado-ordem="aoMudarOrdem"
+      <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosAutorizacoes" @alterado-ordem="aoMudarOrdem"
         @alterado-apenas-hoje="aoMudarApenasHoje" @alterado-aprovacao="aoMudarAprovacao"
-        @limpar-filtros="limparFiltros" />
+        @alterar-input="alterarInputSearch" @limpar-filtros="limparFiltros" />
+
+      <!-- Campo para consultar as autorizações pelos demais campos de busca inserindo no search -->
+      <v-text-field v-if="!paginadorClass.alterarInput" v-model="paginadorClass.search" clearable density="compact"
+        variant="outlined" placeholder="Consultar autorizações" hide-details style="max-width: 300px">
+        <template #prepend-inner>
+          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="getAutorizacoes">
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </template>
+      </v-text-field>
 
       <!-- Campo para consultar as autorizações pelo usuários responsável inserindo no search -->
-      <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
-        placeholder="Usuário responsável" hide-details prepend-inner-icon="mdi-magnify" style="max-width: 300px" />
+      <v-text-field v-else v-model="paginadorClass.funcionarioResponsavel" clearable density="compact"
+        variant="outlined" placeholder="Consultar responsável" hide-details style="max-width: 300px">
+        <template #prepend-inner>
+          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.funcionarioResponsavel"
+            @click="getAutorizacoes">
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </template>
+      </v-text-field>
+
     </v-card-title>
     <v-divider />
 
@@ -190,12 +208,12 @@ const paginadorClass = ref(new PaginatorClass({
 }))
 const filtrosAutorizacoes = ref({
   exibirApenasHoje: true,
-  exibirAprovacao: true
+  exibirAprovacao: true,
+  exibirAlterarInput: true
 })
 
 // Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
-const searchResponsavel = ref<string>() // Parâmetro para consultar usuários
 var apiAutorizacoes = ref<HeaderPaginatorModel<AutorizacoesSaidaConsulta>>() // Armazena os dados da resposta das req para exibição no front
 
 //#endregion
@@ -204,10 +222,6 @@ var apiAutorizacoes = ref<HeaderPaginatorModel<AutorizacoesSaidaConsulta>>() // 
 
 onMounted(async () => {
   await getAutorizacoes()
-})
-
-watch(() => searchResponsavel.value, async (newValue) => {
-  getAutorizacoes()
 })
 
 //#endregion
@@ -315,6 +329,10 @@ async function aoMudarApenasHoje() {
   await getAutorizacoes()
 }
 
+function alterarInputSearch() {
+  paginadorClass.value.alterarInput = !paginadorClass.value.alterarInput
+}
+
 async function limparFiltros() {
   paginadorClass.value.limparFiltros()
   await getAutorizacoes()
@@ -330,13 +348,12 @@ function visualizarInformacoes(idSaida: number) {
 
 //#endregion
 
-//#region Demais funções
 // Função para controlar o v-expand-transition dos detalhes de cada autorização
 function toggleAutorizacao(id?: number) {
   if (id != null)
     expandedUserId.value = expandedUserId.value === id ? null : id
 }
-//#endregion
+
 </script>
 
 <style scoped>

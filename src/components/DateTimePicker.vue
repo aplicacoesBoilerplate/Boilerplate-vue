@@ -1,6 +1,6 @@
 <template>
-  <v-text-field :label="label" v-model="display" readonly @click="dialog = true"
-    prepend-inner-icon="mdi-calendar-clock" :disabled="disabled"/>
+  <v-text-field :label="label" v-model="display" readonly @click="dialog = true" prepend-inner-icon="mdi-calendar-clock"
+    :disabled="disabled" />
 
   <v-menu v-model="dialog" width="auto" max-width="650" :close-on-content-click="false">
     <template #activator="{ props }">
@@ -59,6 +59,27 @@ const dialog = ref(false)
 const step = ref(1)
 const date = ref<Date | null>(null)
 const time = ref<string | null>(null)
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    if (!val) {
+      date.value = null
+      time.value = null
+      return
+    }
+
+    const [datePart, timePart] = val.split(' ')
+    const [day, month, year] = datePart.split('/')
+    const [hour, minute] = timePart.split(':')
+
+    const jsDate = new Date(Number(year), Number(month) - 1, Number(day))
+    date.value = jsDate
+    time.value = `${hour}:${minute}`
+  },
+  { immediate: true }
+)
+
 
 const minDate = dayjs().format('YYYY-MM-DD')
 

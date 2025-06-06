@@ -12,15 +12,15 @@
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de saídas</span>
 
-      <BtnsFilterPaginator :show="filtrosSaidas" @alterado-ordem="aoMudarOrdem"
+      <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosSaidas" @alterado-ordem="aoMudarOrdem"
         @alterado-apenas-hoje="aoMudarApenasHoje" @alterado-aprovacao="aoMudarAprovacao"
         @limpar-filtros="limparFiltros" />
 
       <!-- Campo para consultar as saídas pelo search -->
       <v-text-field v-model="paginadorClass.search" clearable density="compact" variant="outlined"
-        placeholder="Consultar funcionário" hide-details style="max-width: 300px">
+        placeholder="Consultar saída" hide-details style="max-width: 300px">
         <template #prepend-inner>
-          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="searchSaidas">
+          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="getAllSaidas">
             <v-icon>mdi-magnify</v-icon>
           </v-btn>
         </template>
@@ -209,7 +209,6 @@ const filtrosSaidas = ref({
 
 // Outros
 const expandedSaidaId = ref<number | null>(null) // Painel de informações da saída
-const searchSaida = ref<string>() // Parâmetro para consultar saidas
 var apiSaidas = ref<HeaderPaginatorModel<SaidaConsulta>>() // Armazena os dados da resposta das req para exibição no front
 
 //#endregion

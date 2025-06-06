@@ -4,25 +4,15 @@ export class PaginatorClass {
   totalPaginas?: number
   totalRegistros?: number
   orderBy?: string // Ordenação da exibição da lista
-  search?: string // Parâmetro de busca
+  search?: string | null // Parâmetro de busca
   apenasHoje?: boolean | null // Filtro para a portaria consutar apenas os registros do dia ou todos
   aprovacao?: boolean | null // Parâmetro de busca para autorizações de saídas por aprovação
-  idFuncionarioResponsavel?: number | string | null
+  alterarInput?: boolean | null // Campo para controlar a exibição de input de busca que podem receber mais de um parâmetro (Autorizações e Saídas)
+  funcionarioResponsavel?: string | null // (Autorizações e Saídas)
 
-  constructor({
-    limite = 10,
-    offset = 1,
-    totalPaginas = 0,
-    totalRegistros = 0,
-    orderBy = '',
-    search = '',
-  }: Partial<PaginatorClass> = {}) {
+  constructor({ limite = 10, offset = 1 }: Partial<PaginatorClass> = {}) {
     this.limite = limite
     this.offset = offset
-    this.totalPaginas = totalPaginas
-    this.totalRegistros = totalRegistros
-    this.orderBy = orderBy
-    this.search = search
   }
 
   atualizarDadosAPI(dados: Pick<PaginatorClass, 'totalPaginas' | 'totalRegistros'>) {
@@ -44,20 +34,22 @@ export class PaginatorClass {
 
   alterarFiltroAprovacao() {
     this.aprovacao = !this.aprovacao
+    this.offset = 1
   }
 
   alterarFiltroApenasHoje() {
     this.apenasHoje = !this.apenasHoje
+    this.offset = 1
   }
 
-  // Novo clear para os alerts de sem registro
   limparFiltros() {
     this.apenasHoje = false
-    this.aprovacao = null
-    this.idFuncionarioResponsavel = null
-    this.search = ''
-    this.orderBy = 'DESC'
-    this.limite = 10
+    this.aprovacao = false
+    this.funcionarioResponsavel = null
+    this.search = null
+    this.alterarInput = false
+    this.orderBy = this.orderBy
+    this.limite = this.limite
     this.offset = this.offset
   }
 }

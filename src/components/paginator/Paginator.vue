@@ -9,24 +9,20 @@
   </span>
 
   <div class="d-flex justify-center mt-2">
-    <div class="pr-2">
-      <v-btn icon size="small" color="primary" title="Buscar">
-        <v-icon class="d-flex justify-center" @click="onBuscar()">mdi-update</v-icon>
-      </v-btn>
-    </div>
-
-    <v-number-input v-model="paginator.limite" label="Limite" :max="100" hide-details hide-input-details
-      control-variant="stacked" density="compact" variant="outlined" style="max-width: 200px;" class="mr-2" />
+    <v-number-input clearable v-model="paginator.limite" label="Limite" :min="1" :max="100" hide-details
+      control-variant="stacked" density="compact" variant="outlined" style="max-width: 250px;">
+      <template #prepend-inner>
+        <v-btn icon variant="text" size="small" :disabled="!paginator.limite" @click="onBuscar()">
+          <v-icon>mdi-magnify</v-icon>
+        </v-btn>
+      </template>
+    </v-number-input>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import type { PaginatorClass } from './ClassPaginator';
-
-
-
 
 const paginator = defineModel<PaginatorClass>('paginator', {
   required: true

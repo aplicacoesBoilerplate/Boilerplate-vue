@@ -1,6 +1,6 @@
 <template>
   <div class="pb-2 custom-button-wrapper" @mouseenter="hover = true" @mouseleave="hover = false">
-    <v-btn icon @click="executarCallback" class="animated-btn" :size="size" :variant="variant || 'tonal'">
+    <v-btn icon @click="executarCallback" class="animated-btn " :size="size" :variant="variant || 'tonal'">
       <v-icon :class="{ rotate: hover }" color="white">{{ icon || 'mdi-plus-circle-outline' }}</v-icon>
     </v-btn>
     <span v-if="label" class="button-label" :class="{ visible: hover }">{{ label }}</span>
