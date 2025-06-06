@@ -236,7 +236,6 @@ const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPagi
 
 // Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
-const searchUsuario = ref<string>() // Parâmetro para consultar usuários
 var apiUsers = ref<HeaderPaginatorModel<UsuarioConsulta>>() // Armazena os dados da resposta das req para exibição no front
 
 //#endregion

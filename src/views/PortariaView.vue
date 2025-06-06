@@ -2,16 +2,21 @@
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="1000">
     <v-card-title class="d-flex justify-space-between align-center">
-      <span class="text-h6">Portaria</span>
+      <span class="text-h6">Controle Portaria</span>
 
       <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosPortaria" @alterado-ordem="aoMudarOrdem"
         @alterado-apenas-hoje="aoMudarApenasHoje" @alterado-aprovacao="aoMudarAprovacao"
         @limpar-filtros="limparFiltros" />
 
-      <!-- Campo para consultar os motivos pelo search -->
-      <v-text-field clearable v-model="paginadorClass.search" density="compact" variant="outlined"
-        placeholder="Consultar saídas do funcionário" hide-details prepend-inner-icon="mdi-magnify"
-        style="max-width: 300px" />
+      <!-- Campo para consultar as saídas pelo search -->
+      <v-text-field v-model="paginadorClass.search" clearable density="compact" variant="outlined"
+        placeholder="Consultar por funcionário" hide-details style="max-width: 300px">
+        <template #prepend-inner>
+          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="getPortaria">
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </template>
+      </v-text-field>
     </v-card-title>
     <v-divider />
 
@@ -20,9 +25,9 @@
       <v-progress-circular color="primary" indeterminate />
     </div>
 
-    <!-- Alerta quando nenhum motivo consultado foi encontrado -->
-    <div v-if="apiMotivos?.totalRegistros == 0 && loading == false" class="pt-4">
-      <v-alert text="Nenhuma saída encontrada!" type="info" variant="tonal">
+    <!-- Alerta quando nenhum usuário consultado foi encontrado -->
+    <div v-if="apiPortaria?.totalRegistros == 0 && loading == false" class="pt-4">
+      <v-alert text="Nenhum registro encontrado!" type="info" variant="tonal">
         <template v-slot:append>
           <v-btn color="warning" variant="plain" @click="limparFiltros()">
             <v-icon class="pt-1">
@@ -34,49 +39,115 @@
       </v-alert>
     </div>
 
-    <!-- Exibição dos motivos -->
-    <v-virtual-scroll :items="apiMotivos?.registros" height="500" item-height="50" v-else>
-      <template v-slot:default="{ item: motivo }">
-        <v-list-item :title="`${motivo.idMotivo} - ${motivo.descricaoMotivo}`"
-          :subtitle="`#categoria: ${motivo.categoriaMotivo}`">
+    <!-- Exibição das saídas -->
+    <v-virtual-scroll :items="apiPortaria?.registros" height="500" item-height="50" v-else>
+      <template v-slot:default="{ item: portaria }">
+        <v-list-item :title="`${portaria.idSaida} - ${portaria.nomeFuncionario}: ${portaria.numeroRegistroFuncionario}`"
+          :subtitle="identificarSubtitulo(portaria)" :class="identificarStylePeloStatus(portaria.statusSaida)">
 
-          <!-- Ícone de cartão de motivo -->
+          <!-- Ícone de cartão de saída -->
           <template v-slot:prepend>
-            <v-icon>mdi-list-box-outline</v-icon>
+            <v-icon>mdi-exit-run</v-icon>
           </template>
 
-          <!-- Botões de menu -->
+          <!-- Botões de funcionalidades de mais informações e menu -->
           <template v-slot:append>
-            <!-- Menu de opções -->
-            <v-menu transition="scale-transition">
-              <template v-slot:activator="{ props }">
-                <v-btn size="small" color="primary" v-bind="props" icon="mdi-dots-vertical" title="Opções" />
-              </template>
-              <v-list>
-                <v-list-item>
-                  <v-list-item-title>
-                    <!-- Editar motivo -->
-                    <v-btn icon="mdi-pencil" size="x-small" variant="tonal" color="primary"
-                      @click="completeFormEditMotivoDialog(motivo)" title="Editar" />
-                    <span class="pr-2" />
-
-                    <!-- Funcionalidade sensível de remoção de motivo, precisa de confirmação de senha -->
-                    <v-btn icon="mdi-delete-outline" size="x-small" variant="tonal" color="red"
-                      @click="deleteMotivo(motivo.idMotivo)" title="Remover" />
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <div class="pe-2">
+              <v-btn size="small" variant="elevated" color="info" icon="mdi-location-exit"
+                @click="lancamentoSaidaFuncionario(portaria.idSaida)" :disabled="portaria.dataSaidaFuncionario != null"
+                title="Lançar horário de saída">
+              </v-btn>
+            </div>
+            <div class="pe-2">
+              <v-btn size="small" variant="elevated" color="info" icon="mdi-arrow-u-down-left"
+                @click="lancamentoRetornoFuncionario(portaria.idSaida)"
+                :disabled="!portaria.confirmaRetorno || portaria.dataChegadaFuncionario != null || portaria.dataSaidaFuncionario == null"
+                title="Lançar horário de retorno">
+              </v-btn>
+            </div>
+            <div>
+              <v-btn size="small" variant="elevated" color="white" icon="mdi-information-outline"
+                @click="toggleSaida(portaria.idSaida)" title="Informações">
+              </v-btn>
+            </div>
           </template>
         </v-list-item>
+
+        <!-- Card de detalhes para cada saída, expanção controlada por uma variável -->
+        <v-expand-transition>
+          <div v-if="expandedSaidaId === portaria.idSaida" class="custom-expansion-panel">
+            <v-row dense>
+              <!-- Data de solicitação da saída -->
+              <v-col cols="6" class="d-flex justify-center">
+                <v-chip color="info">
+                  Solicitada em:
+                  {{ portaria.dataSolicitacaoSaida }}
+                </v-chip>
+              </v-col>
+
+              <v-divider vertical />
+
+              <!-- Aprovação Saída -->
+              <v-col cols="6" class="d-flex justify-center">
+                <v-chip :color="portaria.dataAprovacaoSaida ? 'success' : 'red'">
+                  Autorizada em:
+                  {{ portaria.dataAprovacaoSaida ? portaria.dataAprovacaoSaida : 'Não autorizada' }}
+                </v-chip>
+              </v-col>
+
+              <v-divider />
+            </v-row>
+
+            <v-row dense v-if="portaria.dataSaidaFuncionario || portaria.dataChegadaFuncionario">
+              <!-- Previsão de saída -->
+              <v-col cols="6" class="d-flex justify-center">
+                <v-chip color="info">
+                  Data P. saída:
+                  {{ portaria.dataPrevisaoSaidaFuncionario }}
+                </v-chip>
+              </v-col>
+
+              <v-divider vertical />
+
+              <!-- Saída real -->
+              <v-col cols="6" class="d-flex justify-center">
+                <v-chip color="info">
+                  Data P. retorno:
+                  {{ portaria.confirmaRetorno ? `${portaria.dataPrevisaoChegadaFuncionario}` : 'Não retorna' }}
+                </v-chip>
+              </v-col>
+
+              <v-divider />
+            </v-row>
+
+            <v-row dense>
+              <v-col cols="12" color="info">
+                <!-- Motivo da saída -->
+                Emitida por: {{ portaria.nomeFuncionarioResponsavelSaida }}
+                <br />
+                Status: {{ portaria.statusSaida }}
+                <br />
+                Motivo saída:
+                {{ portaria.motivoSaida }}: {{ portaria.categoriaMotivo }} - {{ portaria.descricaoMotivo }}
+                <br />
+                <!-- Observação da saída -->
+                {{ portaria.observacao_saida ? `Observações da saída: \n${portaria.observacao_saida}` : '' }}
+
+              </v-col>
+            </v-row>
+          </div>
+        </v-expand-transition>
         <v-divider />
       </template>
     </v-virtual-scroll>
   </v-card>
-
   <!-- Componente de paginação -->
   <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
-    v-show="apiMotivos?.totalRegistros! > 0 && !loading" />
+    v-show="apiPortaria?.totalRegistros! > 0 && !loading" />
+
+  <DialogConfirmarSenha :model-value="confirmarSenha"
+    @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
+
 </template>
 
 <script setup lang="ts">
@@ -84,34 +155,33 @@
 // Componentes
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
 import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
+import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue';
 
 // Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
-import { DialogMotivosClass } from '@/components/dialog/dialogMotivo/ClassDialogMotivos';
 import { ConfirmarSenhaClass } from '@/components/dialog/confirmarSenha/ClassConfirmarSenha';
 
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore';
 
 // Models
-import type { MotivoConsulta } from '@/models/motivosModels/MotivosModels';
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
+import type { SaidasComAutorizacoes } from '@/models/saidasModels/saidasModels';
 
 // Services
-import { motivosServices } from '@/services/motivosServices';
+import { portariaServices } from '@/services/portariaServices';
+import { saidasServices } from '@/services/saidasServices';
 
 // Vue
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 //#endregion
 
 //#region Variáveis
 // Booleanos
 const loading = ref(false) // Carregamento
-const showDialog = ref(false) // Dialog de motivos
 
 // Classes
 const confirmarSenha = ref(new ConfirmarSenhaClass())
-const dialogMotivos = ref(new DialogMotivosClass())
 const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'DESC', search: '' })) // Classe para a paginação
 const filtrosPortaria = ref({
   exibirApenasHoje: true,
@@ -119,48 +189,27 @@ const filtrosPortaria = ref({
 })
 
 // Outros
-var apiMotivos = ref<HeaderPaginatorModel<MotivoConsulta>>() // Armazena os dados da resposta das req para exibição no front
+const expandedSaidaId = ref<number | null>(null) // Painel de informações da saída
+var apiPortaria = ref<HeaderPaginatorModel<SaidasComAutorizacoes>>() // Armazena os dados da resposta das req para exibição no front
 
 //#endregion
 
 //#region Funcionalidades do Vue
 
 onMounted(async () => {
-  await getAllMotivos()
+  await getPortaria()
 })
-
-watch(() => paginadorClass.value.search, async (newValue) => {
-  if (newValue !== null && newValue !== '')
-    getAllMotivos()
-})
-
-//#endregion
-
-//#region Dialog de motivos
-
-function completeFormEditMotivoDialog(motivo: MotivoConsulta) {
-  dialogMotivos.value.completeForm(motivo.idMotivo)
-  showDialog.value = true
-}
-//#endregion
-
-//#region Dialog confirmar senha
-// Abrir o dialog já com o callback setado
-function abrirDialogConfirmacao(callback: () => Promise<void>) {
-  confirmarSenha.value.setCallback(callback)
-  confirmarSenha.value.openDialog()
-}
 
 //#endregion
 
 //#region funções de consulta, controle e manipulação de motivos
 // Consulta paginada de todos os motivos, aceita diversos parâmetros, inclusive o search
-async function getAllMotivos() {
+async function getPortaria() {
   loading.value = true
   try {
-    const response = await motivosServices.getMotivos(paginadorClass.value)
+    const response = await portariaServices.getAllSaidas(paginadorClass.value)
 
-    apiMotivos.value = response
+    apiPortaria.value = response
 
     paginadorClass.value.atualizarDadosAPI({
       totalPaginas: response.totalPaginas,
@@ -174,53 +223,139 @@ async function getAllMotivos() {
   }
 }
 
-//#region Funções sensíveis
-// Função para deletar um motivo
-async function deleteMotivo(idMotivo: number) {
-  abrirDialogConfirmacao(async () => {
+async function lancamentoSaidaFuncionario(idSaida?: number) {
+  if (idSaida) {
+    const saida = await saidasServices.getSaidaById(idSaida)
+    if (saida.dataAprovacaoSaida == null) {
+      confirmarSenha.value.openDialog()
+    }
+
     try {
-      await motivosServices.deleteMotivo(idMotivo)
-      useSnackbarStore().showSnackbar('Motivo removido!', 'success')
+      await portariaServices.LancarHoraSaida(idSaida)
+      useSnackbarStore().showSnackbar('Hora de saída lançada atualizada!', 'success')
     } catch (error) {
       useSnackbarStore().showSnackbar(error, 'red')
+      throw error
     } finally {
-      await getAllMotivos()
+      loading.value = false
+      await getPortaria()
     }
-  })
+  }
 }
-//#endregion
+
+async function lancamentoRetornoFuncionario(idSaida?: number) {
+  if (idSaida) {
+    try {
+      await portariaServices.LancarHoraRetorno(idSaida)
+      useSnackbarStore().showSnackbar('Hora de retorno lançada atualizada!', 'success')
+    } catch (error) {
+      useSnackbarStore().showSnackbar(error, 'red')
+      throw error
+    } finally {
+      loading.value = false
+      await getPortaria()
+    }
+  }
+}
+
 //#endregion
 
 //#region Paginação
 async function onBuscar() {
-  await getAllMotivos()
+  await getPortaria()
 }
 
 async function aoMudarPagina(novaPagina: number) {
   paginadorClass.value.atualizarPagina(novaPagina)
-  await getAllMotivos()
+  await getPortaria()
 }
 
 async function aoMudarOrdem() {
   paginadorClass.value.alterarOrdenacao()
-  await getAllMotivos()
+  await getPortaria()
 }
 
 async function aoMudarAprovacao() {
   paginadorClass.value.alterarFiltroAprovacao()
-  await getAllMotivos()
+  await getPortaria()
 }
 
 async function aoMudarApenasHoje() {
   paginadorClass.value.alterarFiltroApenasHoje()
-  await getAllMotivos()
+  await getPortaria()
 }
 
 async function limparFiltros() {
   paginadorClass.value.limparFiltros()
-  await getAllMotivos()
+  await getPortaria()
+}
+
+//#endregion
+
+//#region Demais funções
+// Função para controlar o v-expand-transition dos detalhes de cada saída
+function toggleSaida(id?: number) {
+  if (id != null)
+    expandedSaidaId.value = expandedSaidaId.value === id ? null : id
+}
+
+function identificarSubtitulo(saida: SaidasComAutorizacoes): string {
+  const definindoSubtitulo = ref('')
+
+  if (saida.dataSaidaFuncionario) { // Se o funcionário possuí o campo de data de saída preenchido, significa que ele está fora da empresa
+    if (saida.confirmaRetorno) { // Ele pode ou não retornar
+      if (saida.dataChegadaFuncionario) { // Se ele puder retornar e tiver a data de retorno preenchida, ele já está na empresa novamente
+        definindoSubtitulo.value = `D. saída: ${saida.dataSaidaFuncionario} - D. retorno: ${saida.dataChegadaFuncionario}` // Se ele já saiu e retornou, mostrar as datas reais
+      } else { // Se ele já saiu mas ainda não retornou, mostrar a data real de saída e a previsão de retorno
+        definindoSubtitulo.value = `D. saída: ${saida.dataSaidaFuncionario} - P. retorno: ${saida.dataPrevisaoChegadaFuncionario}`
+      }
+    } else {
+      definindoSubtitulo.value = `D. saída: ${saida.dataSaidaFuncionario}` // Se ele não tem retorno, exibe apenas a saída
+    }
+  } else { // Em caso de ainda não ter a data de saída, significa que ainda está na empresa, portanto existe apenas a previsão
+    if (saida.confirmaRetorno) { // Se ele tem confirmação de retorno, mostrar as duas previsões
+      definindoSubtitulo.value = `P. saída: ${saida.dataPrevisaoSaidaFuncionario} - P. retorno: ${saida.dataPrevisaoChegadaFuncionario}`
+    } else { // Se ele não terá retorno, mostrar apenas a previsão de saída
+      definindoSubtitulo.value = `P. saída: ${saida.dataPrevisaoSaidaFuncionario}`
+    }
+  }
+
+  return definindoSubtitulo.value
+}
+
+function identificarStylePeloStatus(statusSaida?: string): string {
+  const corDaSaidaPeloStatus = ref('')
+
+  if (statusSaida) {
+    if (statusSaida == 'PENDENTE')
+      corDaSaidaPeloStatus.value = 'bg-blue-grey-lighten-3'
+    if (statusSaida == 'NEGADA')
+      corDaSaidaPeloStatus.value = 'bg-red-darken-2'
+    if (statusSaida == 'AUTORIZADA')
+      corDaSaidaPeloStatus.value = 'bg-green-accent-2'
+    if (statusSaida == 'AUTORIZAÇÕES PENDENTES')
+      corDaSaidaPeloStatus.value = 'bg-orange-darken-1'
+  }
+
+  return corDaSaidaPeloStatus.value
 }
 
 //#endregion
 
 </script>
+
+<style scoped>
+.custom-expansion-panel {
+  margin: 0.8rem;
+}
+
+.custom-expansion-panel,
+strong {
+  padding-right: 0.5rem;
+  text-decoration: none;
+}
+
+.v-progress-circular {
+  margin: 1rem;
+}
+</style>

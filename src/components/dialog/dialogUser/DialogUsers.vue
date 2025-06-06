@@ -37,20 +37,19 @@
             </v-col>
             <v-col cols="6" class="d-flex justify-center">
               <v-date-input clearable label="Data expiração da conta" prepend-icon="" prepend-inner-icon="$calendar"
-                variant="solo" :rules="[rules.dateAfter(() => new Date())]"></v-date-input>
+                variant="solo"></v-date-input>
             </v-col>
           </v-row>
 
           <v-row dense class="p-0 m-0">
             <v-col cols="12">
-              <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">* indica
-                campos obrigatórios
+              <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">
+                * indica campos obrigatórios
               </small>
             </v-col>
             <v-col cols="12">
-              <small class="d-flex justify-center text-caption text-medium-emphasis">O usuário será
-                criado com a senha
-                padrão
+              <small class="d-flex justify-center text-caption text-medium-emphasis">
+                O usuário será criado com a senha padrão
               </small>
             </v-col>
           </v-row>
