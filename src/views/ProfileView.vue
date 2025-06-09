@@ -18,8 +18,10 @@
 
           <v-col md="5" sm="4">
             <v-autocomplete clearable v-model="model.permissao" label="Permissão*"
-              :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'" :items="permissoes"
-              :rules="[rules.required, rules.includes(permissoes)]" />
+              :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'"
+              :items="PermissoesUsuariosAutoComplete" :rules="[rules.required, rules.includes(PermissoesUsuarios)]"
+              item-text="texto" item-value="valor" />
+
           </v-col>
 
           <v-col md="2" sm="4" class="d-flex justify-center">
@@ -118,7 +120,7 @@ import { useSnackbarStore } from '@/stores/SnackbarStore';
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 
 // Models
-import { PermissoesUsuarios, type UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
+import { PermissoesUsuarios, PermissoesUsuariosAutoComplete, type UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
 
 // Services
 import { usuariosServices } from '@/services/usuariosService';
