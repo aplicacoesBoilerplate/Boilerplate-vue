@@ -58,3 +58,12 @@ export const PermissoesUsuarios = [
   'EMITE_SAIDA',
   'PORTARIA',
 ]
+
+// Lista de objetos com as permissões dos usuários com chave e valor
+export const PermissoesUsuariosAutoComplete = [
+  { texto: 'ADMINISTRADOR AUTORIZADO', valor: 'ADMINISTRADOR_AUTORIZADO' },
+  { texto: 'ADMINISTRADOR', valor: 'ADMINISTRADOR' },
+  { texto: 'EMITE AUTORIZACAO', valor: 'EMITE_AUTORIZACAO' },
+  { texto: 'EMITE SAIDA', valor: 'EMITE_SAIDA' },
+  { texto: 'PORTARIA', valor: 'PORTARIA' },
+]
