@@ -1,23 +1,22 @@
 <template>
-  <v-text-field v-bind="$attrs" :model-value="localValue" @update:model-value="handleUpdate" :density="style.density"
-    :variant="style.inputVariant" :label="style.label" :hint="style.hint" :hide-details="style.hideDetails" clearable
-    style="max-width: 300px">
+  <v-textarea v-bind="$attrs" :model-value="localValue" @update:model-value="handleUpdate" :density="style.density"
+    :variant="style.inputVariant" :label="style.label" clearable>
     <template #prepend-inner>
       <div v-if="style.showPrepend">
-        <v-btn icon :disabled="style.disabled" :variant="style.btnVariant" size="small"
+        <v-btn icon :disabled="style.disabled" :density="style.density" :variant="style.btnVariant"
           @click="emit('on-prepend-click')">
           <v-icon>{{ style.icon }}</v-icon>
         </v-btn>
       </div>
     </template>
-  </v-text-field>
+  </v-textarea>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
 interface Props {
-  modelValue?: string | null
+  modelValue: string
   style: {
     icon?: string | 'mdi-magnify'
     density?: 'default' | 'compact' | 'comfortable'
@@ -25,8 +24,6 @@ interface Props {
     inputVariant?: "filled" | "outlined" | "plain" | "solo" | "solo-filled" | "solo-inverted" | "underlined"
     btnVariant?: "flat" | "text" | "elevated" | "tonal" | "outlined" | "plain" | undefined
     label?: string | ''
-    hint?: string | ''
-    hideDetails?: boolean | false
     showPrepend?: boolean | true
   }
 }
@@ -37,19 +34,18 @@ const emit = defineEmits<{
   (e: 'on-prepend-click'): void
 }>()
 
-// Valor local do input
+// Valor local convertido para uppercase
 const localValue = ref((props.modelValue ?? '').toUpperCase())
 
-// Atualiza localValue quando a prop externa muda (ex: ao vir de uma requisição)
+// Sincroniza localValue quando a prop externa muda
 watch(() => props.modelValue, (newVal) => {
   localValue.value = (newVal ?? '').toUpperCase()
 })
 
-// Emite valor em uppercase sempre que o input for alterado
+// Emite o valor convertido
 function handleUpdate(value: string | null) {
   const upper = (value ?? '').toUpperCase()
   localValue.value = upper
   emit('update:modelValue', upper)
 }
-
 </script>

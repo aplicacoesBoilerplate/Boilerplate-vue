@@ -9,14 +9,17 @@
         @limpar-filtros="limparFiltros" />
 
       <!-- Campo para consultar as saídas pelo search -->
-      <v-text-field v-model="paginadorClass.search" clearable density="compact" variant="outlined"
-        placeholder="Consultar por funcionário" hide-details style="max-width: 300px">
-        <template #prepend-inner>
-          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="getPortaria">
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn>
-        </template>
-      </v-text-field>
+      <InputUpperCase v-model:="paginadorClass.search" :style="{
+        icon: 'mdi-magnify',
+        density: 'compact',
+        disabled: !paginadorClass.search,
+        inputVariant: 'outlined',
+        btnVariant: 'text',
+        label: 'Consultar por funcionário',
+        showPrepend: true,
+        hint: 'Motivo, registro, nome ou setor',
+        hideDetails: false,
+      }" @on-prepend-click="getPortaria" />
     </v-card-title>
     <v-divider />
 
@@ -72,7 +75,8 @@
             </div>
             <div>
               <v-btn size="small" variant="elevated" color="white" icon="mdi-lock-check"
-                @click="toggleAutorizacoesDaSaida(portaria.idSaida)" title="Autorizações" :disabled="portaria.autorizacoes.length == 0 ">
+                @click="toggleAutorizacoesDaSaida(portaria.idSaida)" title="Autorizações"
+                :disabled="portaria.autorizacoes.length == 0">
               </v-btn>
             </div>
           </template>
@@ -150,26 +154,26 @@
             <v-row dense v-for="autorizacao in portaria.autorizacoes">
               <!-- Data de solicitação da saída -->
               <v-col cols="6">
-                  Responsável pela autorização:
-                  {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
+                Responsável pela autorização:
+                {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
               </v-col>
               <v-col cols="6 d-flex justify-end">
-                  <v-chip :color="autorizacao.aprovacaoSaida ? 'success' : 'red'">
+                <v-chip :color="autorizacao.aprovacaoSaida ? 'success' : 'red'">
                   {{ autorizacao.aprovacaoSaida ? 'Aprovada' : 'Rejeitada' }}
                 </v-chip>
               </v-col>
 
               <!-- Segunda linha -->
               <v-col cols="12">
-                  Data da autorização:
-                  {{ autorizacao.dataAutorizacao }}
+                Data da autorização:
+                {{ autorizacao.dataAutorizacao }}
               </v-col>
 
               <!-- Terceira linha -->
               <v-col cols="12">
-                  Observações desta autorização:
-                  {{ autorizacao.observacaoAutorizacao }}
-                </v-col>
+                Observações desta autorização:
+                {{ autorizacao.observacaoAutorizacao }}
+              </v-col>
 
               <v-divider />
             </v-row>
@@ -192,9 +196,10 @@
 <script setup lang="ts">
 //#region Imports
 // Componentes
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
 import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
-import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue';
+import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
 
 // Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';

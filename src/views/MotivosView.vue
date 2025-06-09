@@ -18,14 +18,17 @@
       </v-btn>
 
       <!-- Campo para consultar os motivos pelo search -->
-      <v-text-field v-model="paginadorClass.search" clearable density="compact" variant="outlined"
-        placeholder="Consultar motivos" hide-details style="max-width: 300px">
-        <template #prepend-inner>
-          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="getAllMotivos">
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn>
-        </template>
-      </v-text-field>
+      <InputUpperCase v-model:="paginadorClass.search" :style="{
+        icon: 'mdi-magnify',
+        density: 'compact',
+        disabled: !paginadorClass.search,
+        inputVariant: 'outlined',
+        btnVariant: 'text',
+        label: 'Consultar motivos',
+        showPrepend: true,
+        hint: 'Código, descrição ou categoria',
+        hideDetails: false,
+      }" @on-prepend-click="getAllMotivos" />
     </v-card-title>
     <v-divider />
 
@@ -102,6 +105,7 @@ import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfi
 import DialogMotivos from '@/components/dialog/dialogMotivo/DialogMotivos.vue'; // Componente visual para o dialog de motivos
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
 
 // Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
@@ -164,7 +168,6 @@ function abrirDialogConfirmacao(callback: () => Promise<void>) {
   confirmarSenha.value.setCallback(callback)
   confirmarSenha.value.openDialog()
 }
-
 //#endregion
 
 //#region funções de consulta, controle e manipulação de motivos

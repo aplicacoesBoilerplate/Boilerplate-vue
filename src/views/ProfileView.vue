@@ -8,28 +8,28 @@
           </v-col>
 
           <v-col md="3" sm="4">
-            <InputUpperCase v-model:="model.nome" :style="styleInputNome" @on-prepend-click="console.log('Clicou no botão!')"
-            style="max-width: 300px" />
-
-            <v-text-field clearable label="Nome" required v-model="model.nome"></v-text-field>
+            <InputUpperCase v-model:="model.nome" :style="{ label: 'Nome' }" />
           </v-col>
 
           <v-col md="8" sm="6">
-            <v-text-field clearable label="Email" required v-model="model.email"
-              hint="Atualizar seu e-mail altera seu login no sistema!"></v-text-field>
+            <InputUpperCase v-model:="model.email"
+              :style="{ label: 'Email', hint: 'Atualizar seu e-mail altera seu login no sistema!' }" />
           </v-col>
 
           <v-col md="5" sm="4">
-            <v-text-field clearable label="Permissao" disabled v-model="model.permissao"></v-text-field>
+            <v-autocomplete clearable v-model="model.permissao" label="Permissão*"
+              :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'" :items="permissoes"
+              :rules="[rules.required, rules.includes(permissoes)]" />
           </v-col>
 
           <v-col md="2" sm="4" class="d-flex justify-center">
-            <v-switch v-model="model.autorizaSaida" color="success" label="Autoriza saídas" disabled></v-switch>
+            <v-switch v-model="model.autorizaSaida" color="success" label="Autoriza saídas"
+              :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'" />
           </v-col>
 
           <v-col md="5" sm="4" class="d-flex justify-center">
             <v-date-input clearable label="Data expiração da conta" prepend-icon="" prepend-inner-icon="$calendar"
-              variant="solo" disabled></v-date-input>
+              variant="solo" :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'" />
           </v-col>
         </v-row>
 
@@ -118,7 +118,7 @@ import { useSnackbarStore } from '@/stores/SnackbarStore';
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 
 // Models
-import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
+import { PermissoesUsuarios, type UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
 
 // Services
 import { usuariosServices } from '@/services/usuariosService';
@@ -130,12 +130,14 @@ import { ref, onMounted, computed } from 'vue';
 
 const confirmarSenha = ref(new ConfirmarSenhaClass())
 const usuarioStore = usuarioAutenticado()
+const permissao = usuarioAutenticado().usuario.permissao
 const model = ref<UsuarioConsulta>({
   nome: '',
   email: '',
 })
 const usuarioOriginal = ref<UsuarioConsulta>()
 const usuarioConfirmado = ref(false)
+const permissoes = PermissoesUsuarios
 const formRef = ref()
 const formIsValid = ref(false)
 const showPassword1 = ref(false)
@@ -147,16 +149,6 @@ const alterarSenhaUsuario = ref<AlterarSenha>({
   novaSenha: '',
   confirmarNovaSenha: ''
 })
-
-//#region definindo status
-
-const styleInputNome = ref({
-  inputVariant: 'filled',
-  label: 'Nome',
-  showPrepend: false
-})
-
-//#endregion
 
 onMounted(async () => {
   usuarioStore.usuario = await authServices().getByToken()
@@ -213,5 +205,4 @@ async function modificarUsuario() {
     throw error
   }
 }
-
 </script>

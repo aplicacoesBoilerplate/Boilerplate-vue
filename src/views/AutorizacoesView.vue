@@ -13,25 +13,30 @@
         @alterar-input="alterarInputSearch" @limpar-filtros="limparFiltros" />
 
       <!-- Campo para consultar as autorizações pelos demais campos de busca inserindo no search -->
-      <v-text-field v-if="!paginadorClass.alterarInput" v-model="paginadorClass.search" clearable density="compact"
-        variant="outlined" placeholder="Consultar autorizações" hide-details style="max-width: 300px">
-        <template #prepend-inner>
-          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="getAutorizacoes">
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn>
-        </template>
-      </v-text-field>
+      <InputUpperCase v-if="!paginadorClass.alterarInput" v-model:="paginadorClass.search" :style="{
+        icon: 'mdi-magnify',
+        density: 'compact',
+        disabled: !paginadorClass.search,
+        inputVariant: 'outlined',
+        btnVariant: 'text',
+        label: 'Consultar autorizações',
+        showPrepend: true,
+        hint: 'Motivo, registro, nome ou setor',
+        hideDetails: false,
+      }" @on-prepend-click="getAutorizacoes" />
 
       <!-- Campo para consultar as autorizações pelo usuários responsável inserindo no search -->
-      <v-text-field v-else v-model="paginadorClass.funcionarioResponsavel" clearable density="compact"
-        variant="outlined" placeholder="Consultar responsável" hide-details style="max-width: 300px">
-        <template #prepend-inner>
-          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.funcionarioResponsavel"
-            @click="getAutorizacoes">
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn>
-        </template>
-      </v-text-field>
+      <InputUpperCase v-else v-model:="paginadorClass.funcionarioResponsavel" :style="{
+        icon: 'mdi-magnify',
+        density: 'compact',
+        disabled: !paginadorClass.funcionarioResponsavel,
+        inputVariant: 'outlined',
+        btnVariant: 'text',
+        label: 'Consultar responsável',
+        showPrepend: true,
+        hint: 'Código, nome, email',
+        hideDetails: false,
+      }" @on-prepend-click="getAutorizacoes" />
 
     </v-card-title>
     <v-divider />
@@ -160,7 +165,8 @@ import DialogAutorizacoes from '@/components/dialog/dialogAutorizacoes/DialogAut
 import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
 import DialogSaidas from "@/components/dialog/dialogSaidas/DialogSaidas.vue";
 import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue";
-import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
+import Paginator from '@/components/paginator/Paginator.vue'; // Componente visual para a paginação de registros
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
 
 // Classes
 import { DialogAutorizacoesNegadasClass } from "@/components/dialog/dialogAutorizacoesNegadasPorSaida/ClassDialogAutorizacoesNegadas.ts";
@@ -338,7 +344,6 @@ function visualizarInformacoes(idSaida: number) {
   dialogSaidas.value.visualizarInformacoes(idSaida)
   showDialog.value = true
 }
-
 //#endregion
 
 // Função para controlar o v-expand-transition dos detalhes de cada autorização

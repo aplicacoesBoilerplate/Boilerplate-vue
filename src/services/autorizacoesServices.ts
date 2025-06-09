@@ -4,7 +4,7 @@ import type { PaginatorClass } from '@/components/paginator/ClassPaginator'
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 import type {
   AutorizacoesConsulta,
-  AutorizacoesSaidaConsulta
+  AutorizacoesSaidaConsulta,
 } from '@/models/saidasModels/saidasModels'
 // Services
 import http from './axios'

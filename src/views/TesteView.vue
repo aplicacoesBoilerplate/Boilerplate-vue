@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DateTimePicker from '@/components/DateTimePicker.vue';
+import InputTextUpperCase from '@/components/InputTextUpperCase.vue';
 import InputUpperCase from '@/components/InputUpperCase.vue';
 import { ref } from 'vue'
 const saidaFuncionario1 = ref('')
@@ -33,39 +34,48 @@ const styleTeste = ref({
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
     </template>
-  </v-text-field>
+</v-text-field>
 
-  <br>
-  <br>
+<br>
+<br>
 
-  <v-text-field v-model="search2" clearable density="compact" variant="outlined" placeholder="Consultar motivos"
-    hide-details style="max-width: 300px">
-    <template #prepend-inner>
+<v-text-field v-model="search2" clearable density="compact" variant="outlined" placeholder="Consultar motivos"
+  hide-details style="max-width: 300px">
+  <template #prepend-inner>
       <v-btn icon variant="text" size="small" :disabled="!search2"
         @click="console.log('Uso de método: ', search2.toUpperCase())">
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
     </template>
-  </v-text-field>
+</v-text-field>
 
-  <br>
-  <br>
+<br>
+<br>
 
-  search com diretiva: {{ search }}
-  <br>
-  search2 com método: {{ search2 }}
+search com diretiva: {{ search }}
+<br>
+search2 com método: {{ search2 }}
 
-  <br>
-  <br> -->
+<br>
+<br> -->
 
   <InputUpperCase v-model:="search" :style="styleTeste" @on-prepend-click="console.log('Clicou no botão!')"
     style="max-width: 300px" />
 
-    {{ search }}
+  {{ search }}
 
-    <InputUpperCase v-model:="search2" :style="styleTeste" @on-prepend-click="console.log('Clicou no botão!')"
-    style="max-width: 300px" />
+  <InputUpperCase v-model:="search2" :style="{
+    icon: 'mdi-magnify',
+    density: 'compact',
+    disabled: false,
+    inputVariant: 'outlined',
+    btnVariant: 'text',
+    label: 'Consultar',
+    showPrepend: true
+  }" @on-prepend-click="console.log('Clicou no botão!')" />
 
-    {{ search2 }}
+  {{ search2 }}
+
+  <InputTextUpperCase v-model:="search" style="max-width: 300px" />
 
 </template>
