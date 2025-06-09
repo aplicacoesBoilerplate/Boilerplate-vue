@@ -7,20 +7,23 @@
         <v-card-text>
           <v-row dense>
             <v-col cols="12">
-              <v-textarea clearable label="Observação" variant="outlined" counter
-                v-model="autorizacao.observacaoAutorizacao"
+              <InputTextUpperCase v-model:="autorizacao.observacaoAutorizacao" :style="{
+                density: 'compact',
+                disabled: false,
+                inputVariant: 'outlined',
+                label: 'Observação',
+                hideDetails: false,
+                counter: true,
+                maxWidth: 650,
+              }"
                 :rules="[rules.requiredCondicionado(() => !autorizacao.aprovacaoSaida, 'Obrigatório se a saída não for autorizada')]" />
             </v-col>
           </v-row>
-          <!--
-          Observação obrigatória: {{ !autorizacao.aprovacaoSaida }}
-          Saída aprovação: {{ autorizacao.aprovacaoSaida }}
-          Saída atual: {{ autorizacao }}
- -->
+
           <v-row dense class="p-0 m-0">
             <v-col cols="12">
-              <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">* indica
-                campos obrigatórios
+              <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">
+                * indica campos obrigatórios
               </small>
             </v-col>
           </v-row>
@@ -49,11 +52,13 @@
 </template>
 
 <script setup lang="ts">
+// Componentes
+import InputTextUpperCase from '@/components/InputTextUpperCase.vue'; // Componente visual para o input upper case
+
 // Classes
 import type { DialogAutorizacoesClass } from './ClassDialogAutorizacoes'
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore'
-// Models
 // Services
 import { autorizacoesServices } from '@/services/autorizacoesServices'
 import { rules } from '@/utils/rules'

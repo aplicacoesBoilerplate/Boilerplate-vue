@@ -17,9 +17,16 @@
           </span>
 
           <!-- Campo para consultar os usuários pelo search -->
-          <v-text-field v-if="!dialogSaidas.visualizando" clearable v-model="paginadorClass.search" density="compact"
-            variant="outlined" placeholder="Buscar Funcionário" hide-details prepend-inner-icon="mdi-magnify"
-            style="max-width: 300px" />
+          <InputUpperCase v-if="!dialogSaidas.visualizando" v-model:="paginadorClass.search" :style="{
+            icon: 'mdi-magnify',
+            density: 'compact',
+            disabled: false,
+            inputVariant: 'outlined',
+            btnVariant: 'text',
+            label: 'Buscar funcionário',
+            showPrepend: true,
+            maxWidth: 650,
+          }" @on-prepend-click="console.log('Simulando consulta')" />
         </v-card-title>
 
         <v-card-text>
@@ -40,12 +47,22 @@
 
             <!-- Informação retornada pela consulta -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-text-field clearable v-model="saida.nomeFuncionario" label="Nome do Funcionário" disabled />
+              <InputUpperCase v-model:="saida.nomeFuncionario" :style="{
+                disabled: true,
+                inputVariant: 'outlined',
+                label: 'Nome do funcionário',
+                maxWidth: 650,
+              }" />
             </v-col>
 
             <!-- Informação retornada pela consulta -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-text-field clearable v-model="saida.setorFuncionario" label="Setor do Funcionário" disabled />
+              <InputUpperCase v-model:="saida.setorFuncionario" :style="{
+                disabled: true,
+                inputVariant: 'outlined',
+                label: 'Setor do funcionário',
+                maxWidth: 650,
+              }" />
             </v-col>
 
             <!-- Data e hora de previsão de saída do funcionário -->
@@ -62,20 +79,32 @@
 
             <!-- Campo de observação da saída -->
             <v-col cols="12">
-              <v-textarea clearable label="Observação saída" variant="outlined" counter v-model="saida.observacao_saida"
-                :disabled="dialogSaidas.visualizando" />
+              <InputTextUpperCase v-model:="saida.observacao_saida" :style="{
+                density: 'compact',
+                disabled: dialogSaidas.visualizando,
+                inputVariant: 'outlined',
+                label: 'Observação da saída',
+                hideDetails: false,
+                counter: true,
+                maxWidth: 650,
+              }" />
             </v-col>
 
             <!-- Usuário responsável por emitir a saída -->
             <v-col cols="12" class="d-flex justify-center" v-if="dialogSaidas.visualizando">
-              <v-text-field clearable v-model="saida.nomeFuncionarioResponsavelSaida" label="Emitida por" disabled />
+              <InputUpperCase v-model:="saida.nomeFuncionarioResponsavelSaida" :style="{
+                disabled: true,
+                inputVariant: 'outlined',
+                label: 'Emitida por:',
+                maxWidth: 650,
+              }" />
             </v-col>
           </v-row>
 
           <v-row dense class="p-0 m-0" v-if="!dialogSaidas.visualizando">
             <v-col cols="12">
-              <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">* indica
-                campos obrigatórios
+              <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">
+                * indica campos obrigatórios
               </small>
             </v-col>
           </v-row>
@@ -112,7 +141,9 @@
 
 <script setup lang="ts">
 // Componentes
-import DateTimePicker from '@/components/DateTimePicker.vue';
+import DateTimePicker from '@/components/DateTimePicker.vue'; // Componente visual para data e hora
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual para o input upper case
+import InputTextUpperCase from '@/components/InputTextUpperCase.vue'; // Componente visual para o input text area upper case
 // Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator'
 import type { DialogSaidasClass } from './ClassDialogSaidas'

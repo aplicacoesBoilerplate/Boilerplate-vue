@@ -17,14 +17,17 @@
       </v-btn>
 
       <!-- Campo para consultar os usuários pelo search -->
-      <v-text-field v-model="paginadorClass.search" clearable density="compact" variant="outlined"
-        placeholder="Consultar usuário" hide-details style="max-width: 300px">
-        <template #prepend-inner>
-          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="searchUsuarios">
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn>
-        </template>
-      </v-text-field>
+      <InputUpperCase v-model:="paginadorClass.search" :style="{
+        icon: 'mdi-magnify',
+        density: 'compact',
+        disabled: !paginadorClass.search,
+        inputVariant: 'outlined',
+        btnVariant: 'text',
+        label: 'Consultar usuário',
+        showPrepend: true,
+        hint: 'Código, nome, email ou permissao',
+        maxWidth: 300,
+      }" @on-prepend-click="getAllUsers" />
     </v-card-title>
     <v-divider />
 
@@ -199,7 +202,8 @@
 <script setup lang="ts">
 //#region Imports
 // Componentes
-import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
+import Paginator from '@/components/paginator/Paginator.vue'; // Componente visual para a paginação de registros
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
 import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
@@ -282,25 +286,6 @@ async function getAllUsers() {
       totalPaginas: response.totalPaginas,
       totalRegistros: response.totalRegistros,
     })
-  } catch (error) {
-    useSnackbarStore().showSnackbar(error, 'red')
-    throw error
-  } finally {
-    loading.value = false
-  }
-}
-// Consulta com parâmetro de usuários, também pagina os resultados
-async function searchUsuarios() {
-  loading.value = true
-  try {
-    const response = await usuariosServices.searchUsuarios(paginadorClass.value)
-    apiUsers.value = response
-
-    paginadorClass.value.atualizarDadosAPI({
-      totalPaginas: response.totalPaginas,
-      totalRegistros: response.totalRegistros,
-    })
-
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error

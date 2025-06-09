@@ -10,7 +10,8 @@
             :title="`${autorizacao.idAutorizacao} - Aprovação: ${autorizacao.aprovacaoSaida ? 'Autorizado' : 'Negado'}`"
             :subtitle="`#Data da autorização: ${autorizacao.dataAutorizacao ? `${autorizacao.dataAutorizacao}` : 'Não definido'}`">
             <p>
-              Negado por: {{ autorizacao.idFuncionarioAutorizacao }} <br>
+              Negado por: {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
+              <br>
               {{ autorizacao.observacaoAutorizacao }}
             </p>
           </v-list-item>

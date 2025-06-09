@@ -10,13 +10,17 @@
           <v-col cols="12">
             <v-row dense>
               <v-col cols="6">
-                <v-text-field clearable v-model="newUser.nome" :counter="100" :rules="[rules.required, rules.max]"
-                  label="Nome de usuário*" required />
+                <InputUpperCase v-model:="newUser.nome" :style="{
+                  label: 'Nome de usuário*',
+                  counter: 100
+                }" :rules="[rules.required, rules.max]" />
               </v-col>
 
               <v-col cols="6">
-                <v-text-field clearable v-model="newUser.email" :counter="100"
-                  :rules="[rules.required, rules.emailFormat]" label="E-mail*" required />
+                <InputUpperCase v-model:="newUser.email" :style="{
+                  label: 'Email*',
+                  counter: 100
+                }" :rules="[rules.required, rules.emailFormat]" />
               </v-col>
 
               <v-col cols="6">
@@ -54,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
 import { usuariosServices } from '@/services/usuariosService'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 import SnackbarNotifications from './Snackbar.vue'

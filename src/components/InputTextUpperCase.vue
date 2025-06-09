@@ -1,16 +1,16 @@
 <template>
-  <v-text-field v-bind="$attrs" :model-value="localValue" @update:model-value="handleUpdate" :density="style.density"
-    :variant="style.inputVariant" :label="style.label" :hint="style.hint" :hide-details="style.hideDetails"
-    :counter="style.counter" clearable :style="dynamicStyle" :rules="rules">
+  <v-textarea v-bind="$attrs" :model-value="localValue" @update:model-value="handleUpdate" :density="style.density"
+    :variant="style.inputVariant" :label="style.label" clearable :style="dynamicStyle" :rules="rules"
+    :counter="style.counter">
     <template #prepend-inner>
       <div v-if="style.showPrepend">
-        <v-btn icon :disabled="style.disabled" :variant="style.btnVariant" size="small"
+        <v-btn icon :disabled="style.disabled" :density="style.density" :variant="style.btnVariant"
           @click="emit('on-prepend-click')">
           <v-icon>{{ style.icon }}</v-icon>
         </v-btn>
       </div>
     </template>
-  </v-text-field>
+  </v-textarea>
 </template>
 
 <script setup lang="ts">
@@ -18,7 +18,7 @@ import { computed, ref, watch } from 'vue'
 import type { ValidationRule } from 'vuetify'
 
 interface Props {
-  modelValue?: string | null
+  modelValue: string
   style: {
     icon?: string | 'mdi-magnify'
     density?: 'default' | 'compact' | 'comfortable'
@@ -41,10 +41,10 @@ const emit = defineEmits<{
   (e: 'on-prepend-click'): void
 }>()
 
-// Valor local do input
+// Valor local convertido para uppercase
 const localValue = ref((props.modelValue ?? '').toUpperCase())
 
-// Atualiza localValue quando a prop externa muda (ex: ao vir de uma requisição)
+// Sincroniza localValue quando a prop externa muda
 watch(() => props.modelValue, (newVal) => {
   localValue.value = (newVal ?? '').toUpperCase()
 })
@@ -56,7 +56,7 @@ const dynamicStyle = computed(() => {
   }
 })
 
-// Emite valor em uppercase sempre que o input for alterado
+// Emite o valor convertido
 function handleUpdate(value: string | null) {
   const upper = (value ?? '').toUpperCase()
   localValue.value = upper

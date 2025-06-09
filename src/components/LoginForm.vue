@@ -10,8 +10,8 @@
           <v-col cols="12">
             <v-row dense>
               <v-col cols="12">
-                <v-text-field clearable v-model="loginForm.email_usuario" :rules="[rules.required, rules.emailFormat]"
-                  label="E-mail" required />
+                <InputUpperCase v-model:="loginForm.email_usuario" :style="{ label: 'Email*', maxWidth: 400 }"
+                  :rules="[rules.required, rules.emailFormat]" />
               </v-col>
 
               <v-col cols="12">
@@ -37,15 +37,25 @@
 </template>
 
 <script setup lang="ts">
-import { rules } from '@/utils/rules'
-import { type LoginModel } from '@/models/authModels/LoginModel'
-import { authServices } from '@/services/authService'
-import { ref, type Ref } from 'vue'
-import { useRouter } from 'vue-router'
-import type { VForm } from 'vuetify/components'
-import SnackbarNotifications from './Snackbar.vue'
+// Componentes
+import SnackbarNotifications from './Snackbar.vue'; // Componente visual da barra de notificações
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
+
+// Stores
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado'
+
+// Models
+import { type LoginModel } from '@/models/authModels/LoginModel'
+
+// Services
+import { rules } from '@/utils/rules'
+import { authServices } from '@/services/authService'
+
+// Vue
+import type { VForm } from 'vuetify/components'
+import { useRouter } from 'vue-router'
+import { ref, type Ref } from 'vue'
 
 const formRef: Ref<VForm | null> = ref(null)
 const formIsValid = ref(false)

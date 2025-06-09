@@ -17,14 +17,18 @@
         @limpar-filtros="limparFiltros" />
 
       <!-- Campo para consultar as saídas pelo search -->
-      <v-text-field v-model="paginadorClass.search" clearable density="compact" variant="outlined"
-        placeholder="Consultar saída" hide-details style="max-width: 300px">
-        <template #prepend-inner>
-          <v-btn icon variant="text" size="small" :disabled="!paginadorClass.search" @click="getAllSaidas">
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn>
-        </template>
-      </v-text-field>
+      <InputUpperCase v-model:="paginadorClass.search" :style="{
+        icon: 'mdi-magnify',
+        density: 'compact',
+        disabled: !paginadorClass.search,
+        inputVariant: 'outlined',
+        btnVariant: 'text',
+        label: 'Consultar saída',
+        showPrepend: true,
+        hint: 'Motivo, obs, status, registro, nome ou setor',
+        maxWidth: 300,
+      }" @on-prepend-click="getAllSaidas" />
+
     </v-card-title>
     <v-divider />
 
@@ -168,7 +172,8 @@
 <script setup lang="ts">
 //#region Imports
 // Componentes
-import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
+import Paginator from '@/components/paginator/Paginator.vue'; // Componente visual para a paginação de registros
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
 import DialogSaidas from '@/components/dialog/dialogSaidas/DialogSaidas.vue'; // Componente visual para o dialog de saídas
 import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
