@@ -19,9 +19,11 @@ export interface SaidaConsulta {
   categoriaMotivo: string
 }
 
+// Corpo padrão das autorizações
 export interface AutorizacoesConsulta {
   idAutorizacao?: number
   idFuncionarioAutorizacao: number
+  nomeResponsavel: string
   idSaida: number
   aprovacaoSaida: boolean
   observacaoAutorizacao: string
@@ -43,5 +45,5 @@ export interface AutorizacoesSaidaConsulta extends SaidaConsulta {
 
 // Saídas com uma lista de autorizações
 export interface SaidasComAutorizacoes extends SaidaConsulta {
-  autorizacoes: AutorizacoesConsulta
+  autorizacoes: Array<AutorizacoesConsulta>
 }

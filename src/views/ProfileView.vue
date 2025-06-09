@@ -8,6 +8,9 @@
           </v-col>
 
           <v-col md="3" sm="4">
+            <InputUpperCase v-model:="model.nome" :style="styleInputNome" @on-prepend-click="console.log('Clicou no botão!')"
+            style="max-width: 300px" />
+
             <v-text-field clearable label="Nome" required v-model="model.nome"></v-text-field>
           </v-col>
 
@@ -103,6 +106,7 @@
 
 <script setup lang="ts">
 // Componentes
+import InputUpperCase from '@/components/InputUpperCase.vue';
 import { ConfirmarSenhaClass } from '@/components/dialog/confirmarSenha/ClassConfirmarSenha';
 import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
 
@@ -143,6 +147,16 @@ const alterarSenhaUsuario = ref<AlterarSenha>({
   novaSenha: '',
   confirmarNovaSenha: ''
 })
+
+//#region definindo status
+
+const styleInputNome = ref({
+  inputVariant: 'filled',
+  label: 'Nome',
+  showPrepend: false
+})
+
+//#endregion
 
 onMounted(async () => {
   usuarioStore.usuario = await authServices().getByToken()

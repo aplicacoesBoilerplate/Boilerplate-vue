@@ -80,7 +80,6 @@ watch(
   { immediate: true }
 )
 
-
 const minDate = dayjs().format('YYYY-MM-DD')
 
 // Exibe o valor formatado
@@ -118,4 +117,5 @@ function clear() {
   time.value = null
   emit('update:modelValue', '')
 }
+
 </script>

@@ -5,7 +5,7 @@ import { ref } from 'vue'
 const saidaFuncionario1 = ref('')
 const saidaFuncionario2 = ref('06/06/2025 12:00:00')
 const search = ref('')
-const search2 = ref('')
+const search2 = ref('teste')
 const styleTeste = ref({
   icon: 'mdi-magnify',
   density: 'compact',
@@ -18,7 +18,7 @@ const styleTeste = ref({
 </script>
 
 <template>
-  <DateTimePicker v-model="saidaFuncionario1" label="Data e hora da saída" />
+  <!-- <DateTimePicker v-model="saidaFuncionario1" label="Data e hora da saída" />
   <p>Data selecionada: {{ saidaFuncionario1 }}</p>
   <DateTimePicker v-model="saidaFuncionario2" label="Data e hora da saída" icon="mdi-calendar-clock" />
   <p>Data selecionada: {{ saidaFuncionario2 }}</p>
@@ -56,11 +56,16 @@ const styleTeste = ref({
   search2 com método: {{ search2 }}
 
   <br>
-  <br>
+  <br> -->
 
   <InputUpperCase v-model:="search" :style="styleTeste" @on-prepend-click="console.log('Clicou no botão!')"
     style="max-width: 300px" />
 
-  {{ search }}
+    {{ search }}
+
+    <InputUpperCase v-model:="search2" :style="styleTeste" @on-prepend-click="console.log('Clicou no botão!')"
+    style="max-width: 300px" />
+
+    {{ search2 }}
 
 </template>

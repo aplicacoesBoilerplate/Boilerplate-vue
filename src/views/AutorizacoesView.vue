@@ -163,27 +163,20 @@ import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue";
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
 
 // Classes
-import {
-  DialogAutorizacoesNegadasClass
-} from "@/components/dialog/dialogAutorizacoesNegadasPorSaida/ClassDialogAutorizacoesNegadas.ts";
-import {
-  DialogAutorizacoesClass
-} from '@/components/dialog/dialogAutorizacoes/ClassDialogAutorizacoes';
-
+import { DialogAutorizacoesNegadasClass } from "@/components/dialog/dialogAutorizacoesNegadasPorSaida/ClassDialogAutorizacoesNegadas.ts";
+import { DialogAutorizacoesClass } from '@/components/dialog/dialogAutorizacoes/ClassDialogAutorizacoes';
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
+
 // Store
-
 import { useSnackbarStore } from '@/stores/SnackbarStore';
+
 // Models
-import type {
-  AutorizacoesConsulta,
-  AutorizacoesSaidaConsulta
-} from '@/models/saidasModels/saidasModels';
-
+import type { AutorizacoesConsulta, AutorizacoesSaidaConsulta } from '@/models/saidasModels/saidasModels';
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
-// Services
 
+// Services
 import { autorizacoesServices } from '@/services/autorizacoesServices';
+
 // Vue
 import { onMounted, ref, watch } from 'vue';
 import { DialogSaidasClass } from "@/components/dialog/dialogSaidas/ClassDialogSaidas.ts";

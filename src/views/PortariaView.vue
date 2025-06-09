@@ -65,9 +65,14 @@
                 title="Lançar horário de retorno">
               </v-btn>
             </div>
-            <div>
+            <div class="pe-2">
               <v-btn size="small" variant="elevated" color="white" icon="mdi-information-outline"
                 @click="toggleSaida(portaria.idSaida)" title="Informações">
+              </v-btn>
+            </div>
+            <div>
+              <v-btn size="small" variant="elevated" color="white" icon="mdi-lock-check"
+                @click="toggleAutorizacoesDaSaida(portaria.idSaida)" title="Autorizações" :disabled="portaria.autorizacoes.length == 0 ">
               </v-btn>
             </div>
           </template>
@@ -132,11 +137,45 @@
                 <br />
                 <!-- Observação da saída -->
                 {{ portaria.observacao_saida ? `Observações da saída: \n${portaria.observacao_saida}` : '' }}
-
               </v-col>
             </v-row>
           </div>
         </v-expand-transition>
+
+        <v-divider />
+
+        <!-- Card de detalhes para as autorizacoes cada saída, expanção controlada por uma variável -->
+        <v-expand-transition>
+          <div v-if="expandedAutorizacoesDaSaida === portaria.idSaida" class="custom-expansion-panel">
+            <v-row dense v-for="autorizacao in portaria.autorizacoes">
+              <!-- Data de solicitação da saída -->
+              <v-col cols="6">
+                  Responsável pela autorização:
+                  {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
+              </v-col>
+              <v-col cols="6 d-flex justify-end">
+                  <v-chip :color="autorizacao.aprovacaoSaida ? 'success' : 'red'">
+                  {{ autorizacao.aprovacaoSaida ? 'Aprovada' : 'Rejeitada' }}
+                </v-chip>
+              </v-col>
+
+              <!-- Segunda linha -->
+              <v-col cols="12">
+                  Data da autorização:
+                  {{ autorizacao.dataAutorizacao }}
+              </v-col>
+
+              <!-- Terceira linha -->
+              <v-col cols="12">
+                  Observações desta autorização:
+                  {{ autorizacao.observacaoAutorizacao }}
+                </v-col>
+
+              <v-divider />
+            </v-row>
+          </div>
+        </v-expand-transition>
+
         <v-divider />
       </template>
     </v-virtual-scroll>
@@ -170,7 +209,6 @@ import type { SaidasComAutorizacoes } from '@/models/saidasModels/saidasModels';
 
 // Services
 import { portariaServices } from '@/services/portariaServices';
-import { saidasServices } from '@/services/saidasServices';
 
 // Vue
 import { onMounted, ref } from 'vue';
@@ -190,6 +228,7 @@ const filtrosPortaria = ref({
 
 // Outros
 const expandedSaidaId = ref<number | null>(null) // Painel de informações da saída
+const expandedAutorizacoesDaSaida = ref<number | null>(null) // Painel de informações da saída
 var apiPortaria = ref<HeaderPaginatorModel<SaidasComAutorizacoes>>() // Armazena os dados da resposta das req para exibição no front
 
 //#endregion
@@ -225,10 +264,10 @@ async function getPortaria() {
 
 async function lancamentoSaidaFuncionario(idSaida?: number) {
   if (idSaida) {
-    const saida = await saidasServices.getSaidaById(idSaida)
-    if (saida.dataAprovacaoSaida == null) {
-      confirmarSenha.value.openDialog()
-    }
+    // const saida = await saidasServices.getSaidaById(idSaida)
+    // if (saida.dataAprovacaoSaida == null) {
+    //   confirmarSenha.value.openDialog()
+    // }
 
     try {
       await portariaServices.LancarHoraSaida(idSaida)
@@ -297,6 +336,11 @@ async function limparFiltros() {
 function toggleSaida(id?: number) {
   if (id != null)
     expandedSaidaId.value = expandedSaidaId.value === id ? null : id
+}
+
+function toggleAutorizacoesDaSaida(id?: number) {
+  if (id != null)
+    expandedAutorizacoesDaSaida.value = expandedAutorizacoesDaSaida.value === id ? null : id
 }
 
 function identificarSubtitulo(saida: SaidasComAutorizacoes): string {
