@@ -26,7 +26,7 @@
         label: 'Consultar usuário',
         showPrepend: true,
         hint: 'Código, nome, email ou permissao',
-        hideDetails: false,
+        maxWidth: 300,
       }" @on-prepend-click="getAllUsers" />
     </v-card-title>
     <v-divider />

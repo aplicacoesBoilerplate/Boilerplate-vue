@@ -7,13 +7,24 @@
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="user.nome" :counter="100" :rules="[rules.required, rules.max]"
-                label="Nome de usuário*" required />
+              <InputUpperCase v-model:="user.nome" :style="{
+                disabled: true,
+                inputVariant: 'outlined',
+                label: 'Nome de usuário*',
+                maxWidth: 650,
+                counter: 100,
+              }" :rules="[rules.required, rules.max]" />
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="user.email" :counter="100" hint="E-mail de acesso" persistent-hint
-                label="e-mail*" :rules="[rules.required, rules.min, rules.max, rules.emailFormat]" />
+              <InputUpperCase v-model:="user.nome" :style="{
+                disabled: true,
+                inputVariant: 'outlined',
+                label: 'E-mail*',
+                hint: 'E-mail de acesso',
+                maxWidth: 650,
+                counter: 100,
+              }" :rules="[rules.required, rules.min, rules.max, rules.emailFormat]" />
             </v-col>
 
             <v-col cols="12" class="d-flex justify-center">
@@ -78,6 +89,8 @@
 </template>
 
 <script setup lang="ts">
+// Componentes
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual para o input upper case
 // Classes
 import type { DialogUsersClass } from './ClassDialogUsers'
 // Store

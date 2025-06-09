@@ -18,7 +18,7 @@
         label: 'Consultar por funcionário',
         showPrepend: true,
         hint: 'Motivo, registro, nome ou setor',
-        hideDetails: false,
+        maxWidth: 300,
       }" @on-prepend-click="getPortaria" />
     </v-card-title>
     <v-divider />

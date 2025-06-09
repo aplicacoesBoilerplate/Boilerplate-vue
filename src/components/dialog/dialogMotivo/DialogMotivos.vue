@@ -7,8 +7,12 @@
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="motivo.descricaoMotivo" :counter="100"
-                :rules="[rules.required, rules.max]" label="Descrição motivo*" required />
+              <InputUpperCase v-model:="motivo.descricaoMotivo" :style="{
+                inputVariant: 'outlined',
+                label: 'Descrição motivo',
+                maxWidth: 650,
+                counter: 100,
+              }" :rules="[rules.required, rules.max]" />
             </v-col>
 
             <v-col cols="12" md="6" class="d-flex justify-center">
@@ -19,8 +23,8 @@
 
           <v-row dense class="p-0 m-0">
             <v-col cols="12">
-              <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">* indica
-                campos obrigatórios
+              <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">
+                * indica campos obrigatórios
               </small>
             </v-col>
           </v-row>
@@ -49,6 +53,9 @@
 </template>
 
 <script setup lang="ts">
+// Componentes
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual para o input upper case
+
 // Classes
 import type { DialogMotivosClass } from './ClassDialogMotivos'
 // Store

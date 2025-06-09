@@ -22,7 +22,7 @@
         label: 'Consultar autorizações',
         showPrepend: true,
         hint: 'Motivo, registro, nome ou setor',
-        hideDetails: false,
+        maxWidth: 300,
       }" @on-prepend-click="getAutorizacoes" />
 
       <!-- Campo para consultar as autorizações pelo usuários responsável inserindo no search -->
@@ -35,7 +35,7 @@
         label: 'Consultar responsável',
         showPrepend: true,
         hint: 'Código, nome, email',
-        hideDetails: false,
+        maxWidth: 300,
       }" @on-prepend-click="getAutorizacoes" />
 
     </v-card-title>

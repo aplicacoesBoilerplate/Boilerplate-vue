@@ -71,11 +71,12 @@ search2 com método: {{ search2 }}
     inputVariant: 'outlined',
     btnVariant: 'text',
     label: 'Consultar',
-    showPrepend: true
+    showPrepend: true,
+    maxWidth: 300,
   }" @on-prepend-click="console.log('Clicou no botão!')" />
 
   {{ search2 }}
 
-  <InputTextUpperCase v-model:="search" style="max-width: 300px" />
+  <InputTextUpperCase v-model:="search" :style="{ maxWidth: 300 }" />
 
 </template>

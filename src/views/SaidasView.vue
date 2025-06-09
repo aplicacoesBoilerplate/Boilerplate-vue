@@ -26,7 +26,7 @@
         label: 'Consultar saída',
         showPrepend: true,
         hint: 'Motivo, obs, status, registro, nome ou setor',
-        hideDetails: false,
+        maxWidth: 300,
       }" @on-prepend-click="getAllSaidas" />
 
     </v-card-title>

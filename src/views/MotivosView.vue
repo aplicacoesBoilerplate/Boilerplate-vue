@@ -27,7 +27,7 @@
         label: 'Consultar motivos',
         showPrepend: true,
         hint: 'Código, descrição ou categoria',
-        hideDetails: false,
+        maxWidth: 300,
       }" @on-prepend-click="getAllMotivos" />
     </v-card-title>
     <v-divider />
