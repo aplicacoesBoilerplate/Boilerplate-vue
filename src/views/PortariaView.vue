@@ -188,8 +188,7 @@
   <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
     v-show="apiPortaria?.totalRegistros! > 0 && !loading" />
 
-  <DialogConfirmarSenha :model-value="confirmarSenha"
-    @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
+  <DialogConfirmarSenha :model-value="confirmarSenha" @update:modelValue="clonarObjetoConfirmarSenha(confirmarSenha)" />
 
 </template>
 
@@ -387,6 +386,10 @@ function identificarStylePeloStatus(statusSaida?: string): string {
   }
 
   return corDaSaidaPeloStatus.value
+}
+
+function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
+  return () => Object.assign(confirmarSenha, val)
 }
 
 //#endregion

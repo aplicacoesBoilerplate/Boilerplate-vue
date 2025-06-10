@@ -3,8 +3,7 @@
   <BtnOpenDialog :callback="openNovoMotivo" :label="'Criar novo motivo'" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogMotivos :model-value="dialogMotivos"
-    @update:modelValue="(val: DialogMotivosClass) => Object.assign(dialogMotivos, val)"
+  <DialogMotivos :model-value="dialogMotivos" @update:modelValue="clonarObjetoDialogMotivos(dialogMotivos)"
     @operacao-concluida="getAllMotivos" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
@@ -94,8 +93,7 @@
   <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
     v-show="apiMotivos?.totalRegistros! > 0 && !loading" />
 
-  <DialogConfirmarSenha :model-value="confirmarSenha"
-    @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
+  <DialogConfirmarSenha :model-value="confirmarSenha" @update:modelValue="clonarObjetoConfirmarSenha(confirmarSenha)" />
 </template>
 
 <script setup lang="ts">
@@ -227,6 +225,17 @@ async function limparFiltros() {
   paginadorClass.value.limparFiltros()
   await getAllMotivos()
 }
+//#endregion
+
+//#region demais funções
+function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
+  return () => Object.assign(confirmarSenha, val)
+}
+
+function clonarObjetoDialogMotivos(val: DialogMotivosClass) {
+  return () => Object.assign(dialogMotivos, val)
+}
+
 //#endregion
 
 </script>

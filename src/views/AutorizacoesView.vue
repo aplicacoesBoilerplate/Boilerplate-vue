@@ -1,8 +1,7 @@
 <template>
   <!-- Dialog aberto pela edição -->
   <DialogAutorizacoes :model-value="dialogAutorizacoes"
-    @update:modelValue="(val: DialogAutorizacoesClass) => Object.assign(dialogAutorizacoes, val)"
-    @atualizar-autorizacoes="getAutorizacoes" />
+    @update:modelValue="clonarObjetoDialogAutorizacoes(dialogAutorizacoes)" @atualizar-autorizacoes="getAutorizacoes" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
@@ -152,8 +151,7 @@
     v-show="apiAutorizacoes?.totalRegistros! > 0 && !loading" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogSaidas :model-value="dialogSaidas"
-    @update:modelValue="(val: DialogSaidasClass) => Object.assign(dialogSaidas, val)" /> <!--Um crime-->
+  <DialogSaidas :model-value="dialogSaidas" @update:modelValue="clonarObjetoDialogSaidas(dialogSaidas)" />
 
 </template>
 
@@ -346,11 +344,21 @@ function visualizarInformacoes(idSaida: number) {
 }
 //#endregion
 
+//#region demais funcoes
 // Função para controlar o v-expand-transition dos detalhes de cada autorização
 function toggleAutorizacao(id?: number) {
   if (id != null)
     expandedUserId.value = expandedUserId.value === id ? null : id
 }
+
+function clonarObjetoDialogAutorizacoes(val: DialogAutorizacoesClass) {
+  return () => Object.assign(dialogAutorizacoes, val)
+}
+
+function clonarObjetoDialogSaidas(val: DialogSaidasClass) {
+  return () => Object.assign(dialogSaidas, val)
+}
+//#endregion
 
 </script>
 
