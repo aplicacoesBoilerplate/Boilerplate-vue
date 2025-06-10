@@ -386,11 +386,11 @@ function identificarStylePeloStatus(statusSaida?: string): string {
 }
 
 function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
-  return () => Object.assign(confirmarSenha, val)
+  Object.assign(confirmarSenha, val)
 }
 
 function clonarObjetoDialogSaidas(val: DialogSaidasClass) {
-  return () => Object.assign(dialogSaidas, val)
+  Object.assign(dialogSaidas, val)
 }
 
 //#endregion

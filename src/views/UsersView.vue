@@ -82,11 +82,11 @@
                     <span class="pr-2" />
 
                     <!-- Visualizar vínculos do usuário com saídas -->
-                    <RouterLink to="/tasks" custom v-slot="{ navigate }">
+                    <!-- <RouterLink to="/tasks" custom v-slot="{ navigate }">
                       <v-btn icon="mdi-format-list-bulleted" size="x-small" variant="tonal" color="primary"
                         @click="navigate" :disabled="user.idUsuario == 1" title="Vínculos" />
                     </RouterLink>
-                    <span class="pr-2" />
+                    <span class="pr-2" /> -->
 
                     <!-- Facilitador para bloqueio e desbloqueio do usuário -->
                     <v-btn :icon="user.contaBloqueada ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline'"
@@ -382,11 +382,11 @@ function toggleUser(id: number) {
 }
 
 function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
-  return () => Object.assign(confirmarSenha, val)
+  Object.assign(confirmarSenha, val)
 }
 
 function clonarObjetoDialogUsers(val: DialogUsersClass) {
-  return () => Object.assign(dialogUsers, val)
+  Object.assign(dialogUsers, val)
 }
 //#endregion
 

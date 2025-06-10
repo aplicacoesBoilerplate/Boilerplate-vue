@@ -352,11 +352,11 @@ function toggleAutorizacao(id?: number) {
 }
 
 function clonarObjetoDialogAutorizacoes(val: DialogAutorizacoesClass) {
-  return () => Object.assign(dialogAutorizacoes, val)
+  Object.assign(dialogAutorizacoes, val)
 }
 
 function clonarObjetoDialogSaidas(val: DialogSaidasClass) {
-  return () => Object.assign(dialogSaidas, val)
+  Object.assign(dialogSaidas, val)
 }
 //#endregion
 

@@ -229,11 +229,11 @@ async function limparFiltros() {
 
 //#region demais funções
 function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
-  return () => Object.assign(confirmarSenha, val)
+  Object.assign(confirmarSenha, val)
 }
 
 function clonarObjetoDialogMotivos(val: DialogMotivosClass) {
-  return () => Object.assign(dialogMotivos, val)
+  Object.assign(dialogMotivos, val)
 }
 
 //#endregion
