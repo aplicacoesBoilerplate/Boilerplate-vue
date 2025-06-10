@@ -96,62 +96,85 @@
         <v-expand-transition>
           <div v-if="expandedSaidaId === saida.idSaida" class="custom-expansion-panel">
             <v-row dense>
-              <!-- Data de solicitação da saída -->
-              <v-col cols="6" class="d-flex justify-center">
+              <!-- Informações do usuário -->
+              <v-col cols="12" class="d-flex justify-center">
                 <v-chip color="info">
-                  Solicitada em:
-                  {{ saida.dataSolicitacaoSaida }}
+                  INFORMAÇÕES DA SAÍDA
                 </v-chip>
               </v-col>
+              <br>
+              <br>
 
-              <v-divider vertical />
+              <!-- Data de solicitação da saída -->
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Solicitada em:
+                  </p>
+                  <p class="text-success">
+                    {{ saida.dataSolicitacaoSaida }}
+                  </p>
+                </div>
+              </v-col>
 
               <!-- Aprovação Saída -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-chip :color="saida.dataAprovacaoSaida ? 'success' : 'red'">
-                  Autorizada em:
-                  {{ saida.dataAprovacaoSaida ? saida.dataAprovacaoSaida : 'Não autorizada' }}
-                </v-chip>
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Autorizada em:
+                  </p>
+                  <p :class="saida.dataAprovacaoSaida ? 'text-success' : 'text-red'">
+                    {{ saida.dataAprovacaoSaida ? saida.dataAprovacaoSaida : 'Não autorizada' }}
+                  </p>
+                </div>
               </v-col>
 
-              <v-divider />
-            </v-row>
-
-            <v-row dense v-if="saida.dataSaidaFuncionario || saida.dataChegadaFuncionario">
-              <!-- Previsão de saída -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-chip color="info">
-                  Data P. saída:
-                  {{ saida.dataPrevisaoSaidaFuncionario }}
-                </v-chip>
+              <!-- Previsão de Saída -->
+              <v-col v-if="saida.dataSaidaFuncionario || saida.dataChegadaFuncionario" cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Previsão para saída:
+                  </p>
+                  <p class="text-success">
+                    {{ saida.dataPrevisaoSaidaFuncionario }}
+                  </p>
+                </div>
               </v-col>
 
-              <v-divider vertical />
+              <!-- Previsão de retorno -->
+              <v-col v-if="saida.dataSaidaFuncionario || saida.dataChegadaFuncionario" cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Previsão para retorno:
+                  </p>
+                  <p class="text-success">
+                    {{ saida.confirmaRetorno ? `${saida.dataPrevisaoChegadaFuncionario}` : 'Não retorna' }}
+                  </p>
+                </div>
+              </v-col>
 
               <!-- Saída real -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-chip color="info">
-                  Data P. retorno:
-                  {{ saida.confirmaRetorno ? `${saida.dataPrevisaoChegadaFuncionario}` : 'Não retorna' }}
-                </v-chip>
+              <v-col v-if="saida.dataSaidaFuncionario" cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Data da saída:
+                  </p>
+                  <p class="text-success">
+                    {{ saida.dataSaidaFuncionario }}
+                  </p>
+                </div>
               </v-col>
 
-              <v-divider />
-            </v-row>
-
-            <v-row dense>
-              <v-col cols="12" color="info">
-                <!-- Motivo da saída -->
-                Emitida por: {{ saida.nomeFuncionarioResponsavelSaida }}
-                <br />
-                Status: {{ saida.statusSaida }}
-                <br />
-                Motivo saída:
-                {{ saida.motivoSaida }}: {{ saida.categoriaMotivo }} - {{ saida.descricaoMotivo }}
-                <br />
-                <!-- Observação da saída -->
-                {{ saida.observacao_saida ? `Observações da saída: \n${saida.observacao_saida}` : '' }}
-
+              <!-- Retorno real -->
+              <v-col v-if="saida.dataSaidaFuncionario" cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Data do retorno:
+                  </p>
+                  <p class="text-success">
+                    {{ saida.confirmaRetorno ? `${saida.dataChegadaFuncionario}` : 'Não retorna' }}
+                  </p>
+                </div>
               </v-col>
             </v-row>
           </div>

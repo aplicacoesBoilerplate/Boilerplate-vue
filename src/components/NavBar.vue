@@ -1,7 +1,7 @@
 <template>
   <v-app-bar app flat color="black">
     <template v-slot:prepend>
-      <v-app-bar-nav-icon @click="$emit('toggle')">
+      <v-app-bar-nav-icon @click="$emit('toggle')" title="Recursos">
         <v-icon color="white">mdi-menu</v-icon>
       </v-app-bar-nav-icon>
     </template>
@@ -20,7 +20,7 @@
     <!-- Botão de perfil -->
     <div class="d-flex justify-space-around">
       <RouterLink to="/profile" custom v-slot="{ navigate }">
-        <v-btn class="menu-btn" color="black" icon @click="navigate">
+        <v-btn class="menu-btn" color="black" icon @click="navigate" title="Perfil">
           <v-icon class="mr-2" color="white">mdi-account-cog</v-icon>
         </v-btn>
       </RouterLink>
@@ -29,7 +29,7 @@
 
     <!-- Botão de logout -->
     <div class="d-flex justify-space-around">
-      <v-btn class="menu-btn" color="black" icon @click="logout()">
+      <v-btn class="menu-btn" color="black" icon @click="logout()" title="Sair do sistema">
         <v-icon class="mr-2" color="white">mdi-logout</v-icon>
       </v-btn>
     </div>
@@ -37,7 +37,6 @@
   </v-app-bar>
   <DialogSearch v-model:exibir="showDialogSearch" />
   <SnackbarNotifications />
-  <!-- <BtnsNavigation /> -->
 </template>
 
 <script setup lang=ts>
@@ -57,7 +56,7 @@ const redirectRouter = useRouter()
 const usuarioLogado = usuarioAutenticado() // Armazenar o usuário autenticado
 const showDialogSearch = ref(false) // Exibir dialog de consulta
 
-// Se o usuário armazenado estiver vazio consultar o usuário da sessão ao montar o componente
+// Se o usuário armazenado estiver vazio e o token ainda estiver no session store, consultar o usuário da sessão ao montar o componente
 onMounted(async () => {
   if (!!usuarioLogado.usuario && sessionStorage.getItem('token') !== '')
     usuarioLogado.usuario = await authServices().getByToken()
@@ -65,27 +64,10 @@ onMounted(async () => {
     useSnackbarStore().showSnackbar('Usuário não identificado!', 'red')
 })
 
-// Função para controlar a exibição do dialog de consulta geral
-function openSearch() {
-  // useDialogStoreSearch().openSearchDialog()
-
-  showDialogSearch.value = true
-}
-
 function logout() {
   authServices().logout()
   redirectRouter.push('/');
 }
-
-// Páginas no bloco de utilidades
-const pages = ref([
-  { title: 'Home', path: '/dashboard', icon: 'mdi-home-outline' },
-])
-
-// Paginas no bloco de configurações
-const optionConfig = ref([
-  { title: 'Profile', path: '/profile', icon: 'mdi-account-cog' },
-])
 
 // Propriedade da barra de navegação que controla a exibição da side bar
 const props = defineProps<{

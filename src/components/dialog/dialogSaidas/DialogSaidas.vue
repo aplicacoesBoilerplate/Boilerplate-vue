@@ -7,7 +7,7 @@
           <span class="text-h6" v-if="!dialogSaidas.visualizando">
             <v-icon>{{
               dialogSaidas.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'
-            }}</v-icon>
+              }}</v-icon>
             {{ dialogSaidas.isEditing ? `Editar saída: ${saida.idSaida}` : 'Solicitar nova saída' }}
           </span>
 
@@ -78,7 +78,7 @@
 
             <!-- Campo de observação da saída -->
             <v-col cols="12">
-              <InputTextUpperCase v-model:="saida.observacao_saida" :style="{
+              <InputTextUpperCase v-model:="saida.observacaoSaida" :style="{
                 density: 'compact',
                 inputDisabled: dialogSaidas.visualizando,
                 inputVariant: 'outlined',

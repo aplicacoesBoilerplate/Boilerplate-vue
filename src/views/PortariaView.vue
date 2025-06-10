@@ -73,12 +73,6 @@
                 @click="toggleSaida(portaria.idSaida)" title="Informações">
               </v-btn>
             </div>
-            <div>
-              <v-btn size="small" variant="elevated" color="white" icon="mdi-lock-check"
-                @click="toggleAutorizacoesDaSaida(portaria.idSaida)" title="Autorizações"
-                :disabled="portaria.autorizacoes.length == 0">
-              </v-btn>
-            </div>
           </template>
         </v-list-item>
 
@@ -86,96 +80,153 @@
         <v-expand-transition>
           <div v-if="expandedSaidaId === portaria.idSaida" class="custom-expansion-panel">
             <v-row dense>
-              <!-- Data de solicitação da saída -->
-              <v-col cols="6" class="d-flex justify-center">
+              <!-- Informações do responsável pelo erro -->
+              <v-col cols="12" class="d-flex justify-center">
                 <v-chip color="info">
-                  Solicitada em:
-                  {{ portaria.dataSolicitacaoSaida }}
+                  INFORMAÇÕES DESTA SAÍDA
                 </v-chip>
               </v-col>
-
-              <v-divider vertical />
-
-              <!-- Aprovação Saída -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-chip :color="portaria.dataAprovacaoSaida ? 'success' : 'red'">
-                  Autorizada em:
-                  {{ portaria.dataAprovacaoSaida ? portaria.dataAprovacaoSaida : 'Não autorizada' }}
-                </v-chip>
-              </v-col>
-
-              <v-divider />
+              <br>
             </v-row>
 
-            <v-row dense v-if="portaria.dataSaidaFuncionario || portaria.dataChegadaFuncionario">
+            <v-row dense v-if="portaria.dataSaidaFuncionario">
               <!-- Previsão de saída -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-chip color="info">
-                  Data P. saída:
-                  {{ portaria.dataPrevisaoSaidaFuncionario }}
-                </v-chip>
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Data da previsão para saída:
+                  </p>
+                  <p class="text-success">
+                    {{ portaria.dataPrevisaoSaidaFuncionario }}
+                  </p>
+                </div>
               </v-col>
 
-              <v-divider vertical />
-
-              <!-- Saída real -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-chip color="info">
-                  Data P. retorno:
-                  {{ portaria.confirmaRetorno ? `${portaria.dataPrevisaoChegadaFuncionario}` : 'Não retorna' }}
-                </v-chip>
+              <!-- Previsão de retorno -->
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Data da previsão para retorno:
+                  </p>
+                  <p class="text-success">
+                    {{ portaria.confirmaRetorno ? `${portaria.dataPrevisaoChegadaFuncionario}` : 'Não retorna' }}
+                  </p>
+                </div>
               </v-col>
-
-              <v-divider />
             </v-row>
 
             <v-row dense>
-              <v-col cols="12" color="info">
-                <!-- Motivo da saída -->
-                Emitida por: {{ portaria.nomeFuncionarioResponsavelSaida }}
-                <br />
-                Status: {{ portaria.statusSaida }}
-                <br />
-                Motivo saída:
-                {{ portaria.motivoSaida }}: {{ portaria.categoriaMotivo }} - {{ portaria.descricaoMotivo }}
-                <br />
-                <!-- Observação da saída -->
-                {{ portaria.observacao_saida ? `Observações da saída: \n${portaria.observacao_saida}` : '' }}
+              <!-- Motivo da saída -->
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Emitida por:
+                  </p>
+                  <p class="text-success">
+                    {{ portaria.nomeFuncionarioResponsavelSaida }}
+                  </p>
+                </div>
+              </v-col>
+
+              <!-- Status da saída -->
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Status:
+                  </p>
+                  <p :class="portaria.statusSaida == 'AUTORIZADA' ? 'text-success' : 'text-red'">
+                    {{ portaria.statusSaida }}
+                  </p>
+                </div>
+              </v-col>
+
+
+              <!-- Motivo saída -->
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Motivo saída:
+                  </p>
+                  <p class="text-success">
+                    {{ portaria.motivoSaida }}: {{ portaria.categoriaMotivo }} - {{ portaria.descricaoMotivo }}
+                  </p>
+                </div>
+              </v-col>
+
+              <!-- Observação da saída -->
+              <v-col v-if="portaria.observacaoSaida != null" cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Observações da saída:
+                  </p>
+                  <p class="text-success">
+                    {{ portaria.observacaoSaida }}
+                  </p>
+                </div>
               </v-col>
             </v-row>
-          </div>
-        </v-expand-transition>
 
-        <v-divider />
+            <v-divider v-if="portaria.autorizacoes.length > 0" />
 
-        <!-- Card de detalhes para as autorizacoes cada saída, expanção controlada por uma variável -->
-        <v-expand-transition>
-          <div v-if="expandedAutorizacoesDaSaida === portaria.idSaida" class="custom-expansion-panel">
-            <v-row dense v-for="autorizacao in portaria.autorizacoes">
-              <!-- Data de solicitação da saída -->
-              <v-col cols="6">
-                Responsável pela autorização:
-                {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
-              </v-col>
-              <v-col cols="6 d-flex justify-end">
-                <v-chip :color="autorizacao.aprovacaoSaida ? 'success' : 'red'">
-                  {{ autorizacao.aprovacaoSaida ? 'Aprovada' : 'Rejeitada' }}
+            <v-row dense v-if="portaria.autorizacoes.length > 0">
+              <!-- Informações do responsável pelo erro -->
+              <v-col cols="12" class="d-flex justify-center">
+                <v-chip color="info">
+                  INFORMAÇÕES DAS AUTORIZAÇÕES DESTA SAÍDA
                 </v-chip>
               </v-col>
+              <br>
+            </v-row>
 
-              <!-- Segunda linha -->
+            <v-row dense v-for="(autorizacao, index) in portaria.autorizacoes">
+              <!-- Responsável pela autorização -->
               <v-col cols="12">
-                Data da autorização:
-                {{ autorizacao.dataAutorizacao }}
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Responsável pela autorização:
+                  </p>
+                  <p class="text-success">
+                    {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
+                  </p>
+                </div>
               </v-col>
 
-              <!-- Terceira linha -->
+              <!-- Status da autorização -->
               <v-col cols="12">
-                Observações desta autorização:
-                {{ autorizacao.observacaoAutorizacao }}
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Saída:
+                  </p>
+                  <p :class="autorizacao.aprovacaoSaida ? 'text-success' : 'text-red'">
+                    {{ autorizacao.aprovacaoSaida ? 'Aprovada' : 'Negada' }}
+                  </p>
+                </div>
               </v-col>
 
-              <v-divider />
+              <!-- Data da resposta da autorização -->
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Data de emissão:
+                  </p>
+                  <p class="text-success">
+                    {{ autorizacao.dataAutorizacao }}
+                  </p>
+                </div>
+              </v-col>
+
+              <!-- Observações da autorização -->
+              <v-col v-if="autorizacao.observacaoAutorizacao != null" cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Observações desta autorização:
+                  </p>
+                  <p>
+                    {{ autorizacao.observacaoAutorizacao }}
+                  </p>
+                </div>
+              </v-col>
+              <v-divider v-if="(index + 1) < portaria.autorizacoes.length" />
             </v-row>
           </div>
         </v-expand-transition>
@@ -188,8 +239,6 @@
   <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
     v-show="apiPortaria?.totalRegistros! > 0 && !loading" />
 
-  <DialogConfirmarSenha :model-value="confirmarSenha" @update:modelValue="clonarObjetoConfirmarSenha(confirmarSenha)" />
-
 </template>
 
 <script setup lang="ts">
@@ -198,11 +247,9 @@
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
 import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
-import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
 
 // Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
-import { ConfirmarSenhaClass } from '@/components/dialog/confirmarSenha/ClassConfirmarSenha';
 
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore';
@@ -221,9 +268,7 @@ import { onMounted, ref } from 'vue';
 //#region Variáveis
 // Booleanos
 const loading = ref(false) // Carregamento
-
 // Classes
-const confirmarSenha = ref(new ConfirmarSenhaClass())
 const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'DESC', search: '' })) // Classe para a paginação
 const filtrosPortaria = ref({
   exibirApenasHoje: true,
@@ -232,7 +277,6 @@ const filtrosPortaria = ref({
 
 // Outros
 const expandedSaidaId = ref<number | null>(null) // Painel de informações da saída
-const expandedAutorizacoesDaSaida = ref<number | null>(null) // Painel de informações da saída
 var apiPortaria = ref<HeaderPaginatorModel<SaidasComAutorizacoes>>() // Armazena os dados da resposta das req para exibição no front
 
 //#endregion
@@ -342,11 +386,6 @@ function toggleSaida(id?: number) {
     expandedSaidaId.value = expandedSaidaId.value === id ? null : id
 }
 
-function toggleAutorizacoesDaSaida(id?: number) {
-  if (id != null)
-    expandedAutorizacoesDaSaida.value = expandedAutorizacoesDaSaida.value === id ? null : id
-}
-
 function identificarSubtitulo(saida: SaidasComAutorizacoes): string {
   const definindoSubtitulo = ref('')
 
@@ -387,11 +426,6 @@ function identificarStylePeloStatus(statusSaida?: string): string {
 
   return corDaSaidaPeloStatus.value
 }
-
-function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
-  Object.assign(confirmarSenha, val)
-}
-
 //#endregion
 
 </script>

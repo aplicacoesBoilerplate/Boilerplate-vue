@@ -107,18 +107,50 @@
         <v-expand-transition>
           <div v-if="expandedUserId === autorizacao.idAutorizacao" class="custom-expansion-panel">
             <v-row dense>
-              <!-- Autorização aprovação -->
-              <v-col cols="6" class="d-flex justify-center">
+              <!-- Informações do responsável pelo erro -->
+              <v-col cols="12" class="d-flex justify-center">
                 <v-chip color="info">
-                  Usuário responsável:
-                  {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
+                  INFORMAÇÕES DA AUTORIZAÇÃO
                 </v-chip>
               </v-col>
+              <br>
 
-              <v-divider vertical />
+              <!-- Responsável pela autorização -->
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Responsável pela autorização:
+                  </p>
+                  <p class="text-success">
+                    {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
+                  </p>
+                </div>
+              </v-col>
+              <!-- Status da autorização -->
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Aprovação:
+                  </p>
+                  <p :class="autorizacao.aprovacaoSaida ? 'text-success' : 'text-red'">
+                    {{ autorizacao.aprovacaoSaida ? 'AUTORIZADA' : 'NEGADA' }}
+                  </p>
+                </div>
+              </v-col>
+              <!-- Data da resposta da autorização -->
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Data de emissão:
+                  </p>
+                  <p class="text-success">
+                    {{ autorizacao.dataAutorizacao }}
+                  </p>
+                </div>
+              </v-col>
 
               <!-- Registro da saída relacionada -->
-              <v-col cols="6" class="d-flex justify-center">
+              <v-col cols="12" class="d-flex justify-center">
                 <v-chip color="info">
                   Referente a saída:
                   {{ autorizacao.idSaida }}
@@ -126,14 +158,21 @@
                   <BtnOpenDialog :callback="() => visualizarInformacoes(autorizacao.idSaida)" icon="mdi-eye-outline"
                     size="x-small" variant="outlined" color="info" class="pt-2" />
                 </v-chip>
-
               </v-col>
 
-              <v-col cols="12" v-if="autorizacao.observacaoAutorizacao">
-                <v-divider />
-                Observação: <br />
-                {{ autorizacao.observacaoAutorizacao }}
+              <v-divider v-if="autorizacao.observacaoAutorizacao" />
+
+              <v-col v-if="autorizacao.observacaoAutorizacao" cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Observação:
+                  </p>
+                  <p>
+                    {{ autorizacao.observacaoAutorizacao }}
+                  </p>
+                </div>
               </v-col>
+
             </v-row>
           </div>
         </v-expand-transition>

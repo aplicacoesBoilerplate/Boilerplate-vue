@@ -120,68 +120,77 @@
         <!-- Card de detalhes para cada usuário, expanção controlada por uma variável -->
         <v-expand-transition>
           <div v-if="expandedUserId === user.idUsuario" class="custom-expansion-panel">
+            <v-divider />
             <v-row dense>
-              <!-- Conta ativa -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-chip :color="user.ativo ? 'success' : 'red'">
-                  Conta está ativa?
-                  {{ user.ativo ? 'Ativo' : 'Inativo' }}
+              <!-- Informações do usuário -->
+              <v-col cols="12" class="d-flex justify-center">
+                <v-chip color="info">
+                  INFORMAÇÕES DO USUÁRIO
                 </v-chip>
               </v-col>
+              <br>
+              <br>
 
-              <v-divider vertical />
+              <!-- Conta ativa -->
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Status da conta:
+                  </p>
+                  <p :class="user.ativo ? 'text-success' : 'text-red'">
+                    {{ user.ativo ? 'Ativo' : 'Inativo' }}
+                  </p>
+                </div>
+              </v-col>
 
               <!-- Conta bloqueada -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-chip :color="!user.contaBloqueada ? 'success' : 'red'">
-                  Login está liberado?
-                  {{ user.contaBloqueada ? 'Bloqueado' : 'Liberado' }}
-                </v-chip>
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Login:
+                  </p>
+                  <p :class="!user.contaBloqueada ? 'text-success' : 'text-red'">
+                    {{ user.contaBloqueada ? 'Bloqueado' : 'Liberado' }}
+                  </p>
+                </div>
               </v-col>
-
-              <v-divider />
-            </v-row>
-
-            <v-row dense>
-              <!-- Conta com a senha expirada, geralmente quando é a senha padrão -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-chip :color="!user.senhaExpirada ? 'success' : 'red'">
-                  Estado da senha?
-                  {{ user.senhaExpirada ? 'Expirada' : 'Válida' }}
-                </v-chip>
-              </v-col>
-
-              <v-divider vertical />
 
               <!-- Mostra se o usuário tem permissão para autorizar saídas ou não -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-chip :color="user.autorizaSaida ? 'success' : 'red'">
-                  Autoriza saídas?
-                  {{ user.autorizaSaida ? 'Autoriza' : 'Não autoriza' }}
-                </v-chip>
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Autoriza saída:
+                  </p>
+                  <p :class="user.autorizaSaida ? 'text-success' : 'text-red'">
+                    {{ user.autorizaSaida ? 'Autoriza' : 'Não autoriza' }}
+                  </p>
+                </div>
               </v-col>
-              <v-divider />
-            </v-row>
 
-
-            <v-row dense>
               <!-- Permissão do usuário -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-icon class="pt-3">mdi-badge-account-outline</v-icon>
-                <v-chip :color="user.permissao != null ? 'info' : 'red'">
-                  {{ user.permissao != null ? user.permissao : 'Permissão pendente' }}<br>
-                </v-chip>
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <v-icon class="pr-2">mdi-badge-account-outline</v-icon>
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Nível da permissão de acesso:
+                  </p>
+                  <p :class="user.permissao != null ? 'text-success' : 'text-red'">
+                    {{ user.permissao != null ? user.permissao : 'Permissão pendente' }}<br>
+                  </p>
+                </div>
               </v-col>
-
-              <v-divider vertical />
 
               <!-- Previsão de expiração da conta -->
-              <v-col cols="6" class="d-flex justify-center">
-                <v-icon class="pt-2 pr-2">mdi-account-clock-outline</v-icon>
-                <v-chip color="warning">
-                  <strong>Data expiração:</strong>
-                  {{ user.contaExpiraEm || "Sem previsão" }}
-                </v-chip>
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <v-icon class="pr-2">mdi-account-clock-outline</v-icon>
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Data expiração da conta:
+                  </p>
+                  <p :class="user.contaExpiraEm != null ? 'text-warning' : 'text-success'">
+                    {{ user.contaExpiraEm || "Sem previsão" }}
+                  </p>
+                </div>
               </v-col>
             </v-row>
 

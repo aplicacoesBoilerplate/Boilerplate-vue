@@ -108,6 +108,7 @@
               </v-col>
               <br>
               <br>
+
               <v-col cols="12">
                 <div class="d-flex flex-row">
                   <p class="text-warning" style="padding-right: 0.35rem;">
@@ -184,7 +185,7 @@
 import Paginator from '@/components/paginator/Paginator.vue'; // Componente visual para a paginação de registros
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
 import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue"; // Botão padrão para se comunicar com os dialogs enviando a função de callback
-import DialogSaidas from "@/components/dialog/dialogSaidas/DialogSaidas.vue";
+import DialogSaidas from "@/components/dialog/dialogSaidas/DialogSaidas.vue"; // Componente visual para o dialog das saídas, utilizado para exibição das informações
 import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
 
 // Classes
