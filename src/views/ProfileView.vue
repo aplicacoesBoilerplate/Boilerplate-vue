@@ -207,7 +207,7 @@ async function modificarUsuario() {
 }
 
 function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
-  return () => Object.assign(confirmarSenha, val)
+  Object.assign(confirmarSenha, val)
 }
 
 </script>

@@ -1,10 +1,10 @@
 <template>
   <v-text-field v-bind="$attrs" :model-value="localValue" @update:model-value="handleUpdate" :density="style.density"
     :variant="style.inputVariant" :label="style.label" :hint="style.hint" :hide-details="style.hideDetails"
-    :counter="style.counter" clearable :style="dynamicStyle" :rules="rules">
+    :counter="style.counter" clearable :style="dynamicStyle" :rules="rules" :disabled="style.inputDisabled">
     <template #prepend-inner>
       <div v-if="style.showPrepend">
-        <v-btn icon :disabled="style.disabled" :variant="style.btnVariant" size="small"
+        <v-btn icon :disabled="style.btnDisabled" :variant="style.btnVariant" size="small"
           @click="emit('on-prepend-click')">
           <v-icon>{{ style.icon }}</v-icon>
         </v-btn>
@@ -22,7 +22,8 @@ interface Props {
   style: {
     icon?: string | 'mdi-magnify'
     density?: 'default' | 'compact' | 'comfortable'
-    disabled?: boolean | false
+    inputDisabled?: boolean | false
+    btnDisabled?: boolean | false
     inputVariant?: "filled" | "outlined" | "plain" | "solo" | "solo-filled" | "solo-inverted" | "underlined"
     btnVariant?: "flat" | "text" | "elevated" | "tonal" | "outlined" | "plain" | undefined
     label?: string | ''

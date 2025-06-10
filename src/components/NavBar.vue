@@ -10,8 +10,8 @@
       <v-app-bar-title @click="navigate" class="cursor-pointer d-flex justify-center">
         {{
           usuarioLogado.usuario.nome != ''
-            ? `Controle de saídas - ${usuarioLogado.usuario.nome}`
-            : 'Controle de saídas'
+            ? `CONTROLE DE SAÍDAS - ${usuarioLogado.usuario.nome}`
+            : 'CONTROLE DE SAÍDAS'
         }}
       </v-app-bar-title>
     </RouterLink>
@@ -34,31 +34,6 @@
       </v-btn>
     </div>
 
-    <div class="d-flex justify-space-around">
-      <!-- <v-menu transition="slide-x-transition">
-        <template v-slot:activator="{ props }">
-          <v-btn icon color="primary" v-bind="props">
-            <v-icon color="white">mdi-dots-vertical</v-icon>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item v-for="page in optionConfig" :key="page.title">
-            <RouterLink :to="page.path" custom v-slot="{ navigate }">
-              <v-btn class="menu-btn" color="black" block @click="navigate">
-                <v-icon class="mr-2" color="white">{{ page.icon }}</v-icon>
-                <span class="text-white">{{ page.title }}</span>
-              </v-btn>
-            </RouterLink>
-          </v-list-item>
-        </v-list>
-      </v-menu> -->
-    </div>
-
-    <!-- <template v-slot:append>
-      <v-btn icon @click="openSearch()">
-        <v-icon color="white">mdi-magnify</v-icon>
-      </v-btn>
-    </template> -->
   </v-app-bar>
   <DialogSearch v-model:exibir="showDialogSearch" />
   <SnackbarNotifications />

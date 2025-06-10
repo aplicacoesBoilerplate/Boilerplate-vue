@@ -47,6 +47,7 @@ const routerOption = ref([
   { id: '3', icon: 'mdi-list-box-outline', path: '/motivos', title: 'Motivos' },
   { id: '4', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
   { id: '5', icon: 'mdi-door-sliding', path: '/portaria', title: 'Portaria' },
-  { id: '6', icon: 'mdi-test-tube', path: '/testes', title: 'Testes' },
+  { id: '6', icon: 'mdi-alert-circle-outline', path: '/errors', title: 'Errors' },
+  { id: '7', icon: 'mdi-test-tube', path: '/testes', title: 'Testes' },
 ])
 </script>

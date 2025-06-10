@@ -67,7 +67,7 @@ search2 com método: {{ search2 }}
   <InputUpperCase v-model:="search2" :style="{
     icon: 'mdi-magnify',
     density: 'compact',
-    disabled: false,
+    btnDisabled: false,
     inputVariant: 'outlined',
     btnVariant: 'text',
     label: 'Consultar',

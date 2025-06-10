@@ -9,6 +9,7 @@ import SaidasView from '@/views/SaidasView.vue'
 import AutorizacoesView from '@/views/AutorizacoesView.vue'
 import PortariaView from '@/views/PortariaView.vue'
 import TesteView from '@/views/TesteView.vue'
+import ErrorsView from '@/views/ErrorsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,6 +58,11 @@ const router = createRouter({
       path: '/portaria',
       name: 'portaria',
       component: PortariaView,
+    },
+    {
+      path: '/errors',
+      name: 'errors',
+      component: ErrorsView,
     },
     {
       path: '/testes',
