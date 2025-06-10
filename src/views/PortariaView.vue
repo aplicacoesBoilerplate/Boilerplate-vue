@@ -12,13 +12,13 @@
       <InputUpperCase v-model:="paginadorClass.search" :style="{
         icon: 'mdi-magnify',
         density: 'compact',
-        disabled: !paginadorClass.search,
+        btnDisabled: !paginadorClass.search,
         inputVariant: 'outlined',
         btnVariant: 'text',
         label: 'Consultar por funcionário',
         showPrepend: true,
         hint: 'Motivo, registro, nome ou setor',
-        maxWidth: 300,
+        maxWidth: 400,
       }" @on-prepend-click="getPortaria" />
     </v-card-title>
     <v-divider />

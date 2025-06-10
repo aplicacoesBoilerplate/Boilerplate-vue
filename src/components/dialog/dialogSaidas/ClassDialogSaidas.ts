@@ -19,14 +19,17 @@ export class DialogSaidasClass {
       setorFuncionario: '',
       motivoSaida: 0,
       observacao_saida: '',
-      statusSaida: 0,
+      statusSaida: '',
       dataSolicitacaoSaida: '',
       dataAprovacaoSaida: '',
       dataPrevisaoSaidaFuncionario: '',
       dataSaidaFuncionario: '',
       confirmaRetorno: false,
       dataPrevisaoChegadaFuncionario: '',
-      dataChegadaFuncionario: ''
+      dataChegadaFuncionario: '',
+      nomeFuncionarioResponsavelSaida: '',
+      descricaoMotivo: '',
+      categoriaMotivo: '',
     }
   }
 
@@ -50,14 +53,17 @@ export class DialogSaidasClass {
         setorFuncionario: '',
         motivoSaida: 0,
         observacao_saida: '',
-        statusSaida: 0,
+        statusSaida: '',
         dataSolicitacaoSaida: '',
         dataAprovacaoSaida: '',
         dataPrevisaoSaidaFuncionario: '',
         dataSaidaFuncionario: '',
         confirmaRetorno: false,
         dataPrevisaoChegadaFuncionario: '',
-        dataChegadaFuncionario: ''
+        dataChegadaFuncionario: '',
+        nomeFuncionarioResponsavelSaida: '',
+        descricaoMotivo: '',
+        categoriaMotivo: '',
       }
     }
   }
@@ -71,15 +77,13 @@ export class DialogSaidasClass {
   async completeForm(idSaida?: number) {
     this.show = true
     this.isEditing = true
-    if (idSaida != null)
-      await this.getSaidaById(idSaida)
+    if (idSaida != null) await this.getSaidaById(idSaida)
   }
 
   async visualizarInformacoes(idSaida?: number) {
     this.show = true
     this.isEditing = false
     this.visualizando = true
-    if (idSaida != null)
-      await this.getSaidaById(idSaida)
+    if (idSaida != null) await this.getSaidaById(idSaida)
   }
 }

@@ -20,7 +20,7 @@
       <InputUpperCase v-model:="paginadorClass.search" :style="{
         icon: 'mdi-magnify',
         density: 'compact',
-        disabled: !paginadorClass.search,
+        btnDisabled: !paginadorClass.search,
         inputVariant: 'outlined',
         btnVariant: 'text',
         label: 'Consultar motivos',
@@ -121,7 +121,7 @@ import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
 import { motivosServices } from '@/services/motivosServices';
 
 // Vue
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 //#endregion
 
 //#region Variáveis

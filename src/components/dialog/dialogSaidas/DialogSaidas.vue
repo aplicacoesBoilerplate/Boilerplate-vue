@@ -20,7 +20,6 @@
           <InputUpperCase v-if="!dialogSaidas.visualizando" v-model:="paginadorClass.search" :style="{
             icon: 'mdi-magnify',
             density: 'compact',
-            disabled: false,
             inputVariant: 'outlined',
             btnVariant: 'text',
             label: 'Buscar funcionário',
@@ -48,7 +47,7 @@
             <!-- Informação retornada pela consulta -->
             <v-col cols="12" md="6" class="d-flex justify-center">
               <InputUpperCase v-model:="saida.nomeFuncionario" :style="{
-                disabled: true,
+                inputDisabled: true,
                 inputVariant: 'outlined',
                 label: 'Nome do funcionário',
                 maxWidth: 650,
@@ -58,7 +57,7 @@
             <!-- Informação retornada pela consulta -->
             <v-col cols="12" md="6" class="d-flex justify-center">
               <InputUpperCase v-model:="saida.setorFuncionario" :style="{
-                disabled: true,
+                inputDisabled: true,
                 inputVariant: 'outlined',
                 label: 'Setor do funcionário',
                 maxWidth: 650,
@@ -81,7 +80,7 @@
             <v-col cols="12">
               <InputTextUpperCase v-model:="saida.observacao_saida" :style="{
                 density: 'compact',
-                disabled: dialogSaidas.visualizando,
+                inputDisabled: dialogSaidas.visualizando,
                 inputVariant: 'outlined',
                 label: 'Observação da saída',
                 hideDetails: false,
@@ -93,7 +92,7 @@
             <!-- Usuário responsável por emitir a saída -->
             <v-col cols="12" class="d-flex justify-center" v-if="dialogSaidas.visualizando">
               <InputUpperCase v-model:="saida.nomeFuncionarioResponsavelSaida" :style="{
-                disabled: true,
+                inputDisabled: true,
                 inputVariant: 'outlined',
                 label: 'Emitida por:',
                 maxWidth: 650,

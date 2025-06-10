@@ -19,7 +19,7 @@
       <InputUpperCase v-model:="paginadorClass.search" :style="{
         icon: 'mdi-magnify',
         density: 'compact',
-        disabled: !paginadorClass.search,
+        btnDisabled: !paginadorClass.search,
         inputVariant: 'outlined',
         btnVariant: 'text',
         label: 'Consultar saída',

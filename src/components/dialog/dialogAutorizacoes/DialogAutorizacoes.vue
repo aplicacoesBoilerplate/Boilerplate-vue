@@ -9,7 +9,6 @@
             <v-col cols="12">
               <InputTextUpperCase v-model:="autorizacao.observacaoAutorizacao" :style="{
                 density: 'compact',
-                disabled: false,
                 inputVariant: 'outlined',
                 label: 'Observação',
                 hideDetails: false,

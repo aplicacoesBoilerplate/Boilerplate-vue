@@ -15,7 +15,7 @@
       <InputUpperCase v-if="!paginadorClass.alterarInput" v-model:="paginadorClass.search" :style="{
         icon: 'mdi-magnify',
         density: 'compact',
-        disabled: !paginadorClass.search,
+        btnDisabled: !paginadorClass.search,
         inputVariant: 'outlined',
         btnVariant: 'text',
         label: 'Consultar autorizações',
@@ -28,7 +28,7 @@
       <InputUpperCase v-else v-model:="paginadorClass.funcionarioResponsavel" :style="{
         icon: 'mdi-magnify',
         density: 'compact',
-        disabled: !paginadorClass.funcionarioResponsavel,
+        btnDisabled: !paginadorClass.funcionarioResponsavel,
         inputVariant: 'outlined',
         btnVariant: 'text',
         label: 'Consultar responsável',
@@ -169,6 +169,7 @@ import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visu
 // Classes
 import { DialogAutorizacoesNegadasClass } from "@/components/dialog/dialogAutorizacoesNegadasPorSaida/ClassDialogAutorizacoesNegadas.ts";
 import { DialogAutorizacoesClass } from '@/components/dialog/dialogAutorizacoes/ClassDialogAutorizacoes';
+import { DialogSaidasClass } from "@/components/dialog/dialogSaidas/ClassDialogSaidas.ts";
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
 
 // Store
@@ -183,7 +184,6 @@ import { autorizacoesServices } from '@/services/autorizacoesServices';
 
 // Vue
 import { onMounted, ref, watch } from 'vue';
-import { DialogSaidasClass } from "@/components/dialog/dialogSaidas/ClassDialogSaidas.ts";
 //#endregion
 
 //#region Variáveis
