@@ -8,9 +8,18 @@
 
             <v-list-item v-for="router in routerOption" :key="router.id" color="primary">
               <RouterLink :to="router.path" custom v-slot="{ navigate }">
-                <v-btn class="menu-btn" color="black" block @click="navigate">
-                  <v-icon class="mr-2" color="white">{{ router.icon }}</v-icon>
-                  <span class="text-white">{{ router.title }}</span>
+                <v-btn class="menu-btn position-relative d-flex justify-center align-center" color="black" block
+                  @click="navigate" :title="router.title" :disabled="disabledRouterOption(router.path)">
+                  <!-- Ícone fixo na esquerda -->
+                  <v-icon class="position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%);"
+                    color="white">
+                    {{ router.icon }}
+                  </v-icon>
+
+                  <!-- Texto centralizado -->
+                  <span class="text-white" style="z-index: 1;">
+                    {{ router.title }}
+                  </span>
                 </v-btn>
               </RouterLink>
             </v-list-item>
@@ -23,6 +32,7 @@
 
 <script setup lang="ts">
 //#region hidden
+import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 import { computed, ref } from 'vue'
 
 const props = defineProps<{
@@ -48,6 +58,64 @@ const routerOption = ref([
   { id: '4', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
   { id: '5', icon: 'mdi-door-sliding', path: '/portaria', title: 'Portaria' },
   { id: '6', icon: 'mdi-alert-circle-outline', path: '/errors', title: 'Errors' },
-  { id: '7', icon: 'mdi-test-tube', path: '/testes', title: 'Testes' },
 ])
+
+function disabledRouterOption(path: string): boolean {
+
+  const disabledRouter = ref(true) // Começa bloqueado para não correr o risco de expor todos os componentes se caso perder o usuário autenticado
+  const permissao = usuarioAutenticado().usuario.permissao
+
+  switch (path) {
+    case '/saidas': { // Apenas a portaria não pode acessar as rotas de saída
+      if (permissao == 'PORTARIA') {
+        disabledRouter.value = true
+      }
+      else
+        disabledRouter.value = false
+      break
+    }
+    case '/autorizacoes': { // Além dos admins, quem emite autorização também pode acessar este recurso
+      if (permissao == 'ADMINISTRADOR' || permissao == 'ADMINISTRADOR_AUTORIZADO' || permissao == 'EMITE_AUTORIZACAO') {
+        disabledRouter.value = false
+      } else
+        disabledRouter.value = true
+      break
+    }
+    case '/motivos': { // Qualquer autenticado pode acessar os motivos
+      if (!!permissao)
+        disabledRouter.value = false
+      else
+        disabledRouter.value = true
+      break
+    }
+    case '/users': { // Apenas admins podem acessar os usuários
+      if (permissao == 'ADMINISTRADOR' || permissao == 'ADMINISTRADOR_AUTORIZADO') {
+        disabledRouter.value = false
+      } else
+        disabledRouter.value = true
+      break
+    }
+    case '/portaria': { // Apenas a portaria pode acessar as rotas de portaria
+      if (permissao == 'PORTARIA') {
+        disabledRouter.value = false
+      }
+      else
+        disabledRouter.value = true
+      break
+    }
+    case '/errors': { // Apenas admins podem acessar o histórico de erros
+      if (permissao == 'ADMINISTRADOR' || permissao == 'ADMINISTRADOR_AUTORIZADO') {
+        disabledRouter.value = false
+      } else
+        disabledRouter.value = true
+      break
+    }
+    default: {
+      disabledRouter.value = true
+    }
+  }
+
+  return disabledRouter.value
+}
+
 </script>
