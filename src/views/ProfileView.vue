@@ -101,8 +101,7 @@
       </v-card-actions>
     </v-card>
   </div>
-  <DialogConfirmarSenha :model-value="confirmarSenha"
-    @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
+  <DialogConfirmarSenha :model-value="confirmarSenha" @update:modelValue="clonarObjetoConfirmarSenha(confirmarSenha)" />
 </template>
 
 <script setup lang="ts">
@@ -206,4 +205,9 @@ async function modificarUsuario() {
     throw error
   }
 }
+
+function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
+  return () => Object.assign(confirmarSenha, val)
+}
+
 </script>

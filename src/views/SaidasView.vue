@@ -3,8 +3,7 @@
   <BtnOpenDialog :callback="openNewSaida" :label="'Solicitar nova saída'" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogSaidas :model-value="dialogSaidas"
-    @update:modelValue="(val: DialogSaidasClass) => Object.assign(dialogSaidas, val)"
+  <DialogSaidas :model-value="dialogSaidas" @update:modelValue="clonarObjetoDialogSaidas(dialogSaidas)"
     @operacao-concluida="getAllSaidas" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
@@ -164,8 +163,7 @@
   <!-- Componente de paginação -->
   <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
     v-show="apiSaidas?.totalRegistros! > 0 && !loading" />
-  <DialogConfirmarSenha :model-value="confirmarSenha"
-    @update:modelValue="(val: ConfirmarSenhaClass) => Object.assign(confirmarSenha, val)" />
+  <DialogConfirmarSenha :model-value="confirmarSenha" @update:modelValue="clonarObjetoConfirmarSenha(confirmarSenha)" />
 
 </template>
 
@@ -345,7 +343,6 @@ function toggleSaida(id?: number) {
     expandedSaidaId.value = expandedSaidaId.value === id ? null : id
 }
 
-//#endregion
 
 function identificarSubtitulo(saida: SaidaConsulta): string {
   const definindoSubtitulo = ref('')
@@ -388,6 +385,15 @@ function identificarStylePeloStatus(statusSaida?: string): string {
   return corDaSaidaPeloStatus.value
 }
 
+function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
+  return () => Object.assign(confirmarSenha, val)
+}
+
+function clonarObjetoDialogSaidas(val: DialogSaidasClass) {
+  return () => Object.assign(dialogSaidas, val)
+}
+
+//#endregion
 </script>
 
 <style scoped>
