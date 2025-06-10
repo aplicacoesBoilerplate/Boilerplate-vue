@@ -10,16 +10,16 @@ const route = useRoute();
 
 <template>
   <v-app theme="dark">
-    <template v-if="route.path !== '/' && route.path !== '/register'">
-      <Navigation />
-    </template>
-    <v-main v-if="route.path == '/' || route.path == '/register'">
+    <Navigation v-if="route.path !== '/' && route.path !== '/register'" />
+
+    <v-main>
       <v-container>
         <RouterView />
       </v-container>
     </v-main>
   </v-app>
 </template>
+
 
 <style global>
 html,

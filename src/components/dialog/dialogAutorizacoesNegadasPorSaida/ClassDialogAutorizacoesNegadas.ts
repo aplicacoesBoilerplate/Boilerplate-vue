@@ -19,6 +19,7 @@ export class DialogAutorizacoesNegadasClass {
         {
           idAutorizacao: 0,
           idFuncionarioAutorizacao: 0,
+          nomeResponsavel: '',
           idSaida: 0,
           aprovacaoSaida: false,
           observacaoAutorizacao: '',
@@ -38,6 +39,7 @@ export class DialogAutorizacoesNegadasClass {
     this.show = false
   }
 
+  // Consulta as autorizações negadas para uma saída específica
   async getAutorizacoesNegadas(idSaida?: number) {
     if (idSaida) {
       const response = await autorizacoesServices.getAutorizacoesNegadasPorSaida(idSaida)

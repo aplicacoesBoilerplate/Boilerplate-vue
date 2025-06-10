@@ -11,6 +11,7 @@ export class DialogAutorizacoesClass {
     this.isEditing = false
     this.autorizacao = {
       idFuncionarioAutorizacao: 0,
+      nomeResponsavel: '',
       idSaida: 0,
       aprovacaoSaida: false,
       observacaoAutorizacao: '',
@@ -34,6 +35,7 @@ export class DialogAutorizacoesClass {
     } else {
       this.autorizacao = {
         idFuncionarioAutorizacao: 0,
+        nomeResponsavel: '',
         idSaida: 0,
         aprovacaoSaida: false,
         observacaoAutorizacao: '',
@@ -48,6 +50,7 @@ export class DialogAutorizacoesClass {
     this.clearFields()
   }
 
+  // Método para abrir o diálogo de autorização com os dados preenchidos
   async completeForm(idAutorizacao?: number, aprovacao?: boolean) {
     this.show = true
     this.isEditing = true
