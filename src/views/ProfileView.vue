@@ -8,20 +8,19 @@
           </v-col>
 
           <v-col md="3" sm="4">
-            <InputUpperCase v-model:="model.nome" :style="{ label: 'Nome' }" />
+            <InputUpperCase v-model:="model.nome" :style="{ label: 'Nome', maxWidth: 1000 }" />
           </v-col>
 
           <v-col md="8" sm="6">
             <InputUpperCase v-model:="model.email"
-              :style="{ label: 'Email', hint: 'Atualizar seu e-mail altera seu login no sistema!' }" />
+              :style="{ label: 'Email', hint: 'Atualizar seu e-mail altera seu login no sistema!', maxWidth: 10000 }" />
           </v-col>
 
           <v-col md="5" sm="4">
             <v-autocomplete clearable v-model="model.permissao" label="Permissão*"
-              :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'"
-              :items="PermissoesUsuariosAutoComplete" :rules="[rules.required, rules.includes(PermissoesUsuarios)]"
-              item-text="texto" item-value="valor" />
-
+              :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'" :items="permissoes"
+              :item-title="'chave'" :item-value="'valor'"
+              :rules="[rules.required, rules.includes(PermissoesUsuarios)]" />
           </v-col>
 
           <v-col md="2" sm="4" class="d-flex justify-center">
@@ -139,7 +138,7 @@ const model = ref<UsuarioConsulta>({
 })
 const usuarioOriginal = ref<UsuarioConsulta>()
 const usuarioConfirmado = ref(false)
-const permissoes = PermissoesUsuarios
+const permissoes = PermissoesUsuariosAutoComplete
 const formRef = ref()
 const formIsValid = ref(false)
 const showPassword1 = ref(false)

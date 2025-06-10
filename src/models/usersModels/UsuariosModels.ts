@@ -59,11 +59,17 @@ export const PermissoesUsuarios = [
   'PORTARIA',
 ]
 
+// Tipagem da lista
+interface permissoesAutoComplete {
+  chave: string
+  valor: string
+}
+
 // Lista de objetos com as permissões dos usuários com chave e valor
-export const PermissoesUsuariosAutoComplete = [
-  { texto: 'ADMINISTRADOR AUTORIZADO', valor: 'ADMINISTRADOR_AUTORIZADO' },
-  { texto: 'ADMINISTRADOR', valor: 'ADMINISTRADOR' },
-  { texto: 'EMITE AUTORIZACAO', valor: 'EMITE_AUTORIZACAO' },
-  { texto: 'EMITE SAIDA', valor: 'EMITE_SAIDA' },
-  { texto: 'PORTARIA', valor: 'PORTARIA' },
+export const PermissoesUsuariosAutoComplete: Array<permissoesAutoComplete> = [
+  { chave: 'ADMINISTRADOR AUTORIZADO', valor: 'ADMINISTRADOR_AUTORIZADO' },
+  { chave: 'ADMINISTRADOR', valor: 'ADMINISTRADOR' },
+  { chave: 'EMITE AUTORIZACAO', valor: 'EMITE_AUTORIZACAO' },
+  { chave: 'EMITE SAIDA', valor: 'EMITE_SAIDA' },
+  { chave: 'PORTARIA', valor: 'PORTARIA' },
 ]

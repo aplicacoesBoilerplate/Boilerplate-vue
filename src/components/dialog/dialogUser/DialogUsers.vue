@@ -17,7 +17,7 @@
             </v-col>
 
             <v-col cols="12" md="6">
-              <InputUpperCase v-model:="user.nome" :style="{
+              <InputUpperCase v-model:="user.email" :style="{
                 disabled: true,
                 inputVariant: 'outlined',
                 label: 'E-mail*',
@@ -28,8 +28,9 @@
             </v-col>
 
             <v-col cols="12" class="d-flex justify-center">
-              <v-autocomplete clearable v-model="user.permissao" label="Permissão*" :items="permissoes"
-                :rules="[rules.required, rules.includes(permissoes)]" />
+              <v-autocomplete clearable v-model="user.permissao" label="Permissão*" :items="permissoesAutoComplete"
+                :item-title="'chave'" :item-value="'valor'"
+                :rules="[rules.required, rules.includes(permissoesRules)]" />
             </v-col>
           </v-row>
 
@@ -96,7 +97,7 @@ import type { DialogUsersClass } from './ClassDialogUsers'
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Models
-import { PermissoesUsuarios } from '@/models/usersModels/UsuariosModels'
+import { PermissoesUsuarios, PermissoesUsuariosAutoComplete } from '@/models/usersModels/UsuariosModels'
 // Services
 import { usuariosServices } from '@/services/usuariosService'
 import { rules } from '@/utils/rules'
@@ -106,7 +107,8 @@ import { computed, ref, watch } from 'vue'
 const formRef = ref()
 const formIsValid = ref(false)
 const showPassword = ref(false)
-const permissoes = PermissoesUsuarios
+const permissoesRules = PermissoesUsuarios
+const permissoesAutoComplete = PermissoesUsuariosAutoComplete
 
 interface Props {
   modelValue: DialogUsersClass
