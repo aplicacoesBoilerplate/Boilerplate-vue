@@ -11,8 +11,8 @@
               </v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="confirmarSenha.senha" :rules="[rules.required, rules.min, rules.max]"
-                :type="showPassword1 ? 'text' : 'password'" hint="Mínimo de 8 caracteres" label="Senha*" counter>
+              <v-text-field clearable v-model="confirmarSenha.senha" :rules="[rules.required, rules.max]"
+                :type="showPassword1 ? 'text' : 'password'" hint="Insira a sua senha de login" label="Senha*" counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword1 = !showPassword1"
