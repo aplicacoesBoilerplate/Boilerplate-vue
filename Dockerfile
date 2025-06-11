@@ -23,5 +23,5 @@ RUN chmod +x /entrypoint.sh
 # Executa entrypoint antes de iniciar nginx
 ENTRYPOINT ["/entrypoint.sh"]
 
-EXPOSE 80
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

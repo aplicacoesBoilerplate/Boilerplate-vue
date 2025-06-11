@@ -14,12 +14,12 @@ const route = useRoute();
 
     <v-main>
       <v-container>
-        <RouterView />
+        <RouterView v-if="route.path == '/' || route.path == '/register'" />
+        <!-- v-if acima evita duplicidade na exibição dos componentes -->
       </v-container>
     </v-main>
   </v-app>
 </template>
-
 
 <style global>
 html,

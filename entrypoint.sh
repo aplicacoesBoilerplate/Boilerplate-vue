@@ -1,6 +1,8 @@
 #!/bin/sh
 
-echo "🛠️  Gerando env.js..."
+# A linha acima é um shebang que faz forçar shell interpretável
+
+echo "Gerando env.js..."
 
 cat <<EOF > /usr/share/nginx/html/env.js
 window.env = {
