@@ -90,11 +90,11 @@
             </v-menu>
           </template>
         </v-list-item>
-        <!-- Card de detalhes para cada saída, expanção controlada por uma variável -->
+        <!-- Card de detalhes para cada motivo, expanção controlada por uma variável -->
         <v-expand-transition>
           <div v-if="expandedMotivoId === motivo.idMotivo" class="custom-expansion-panel">
             <v-row dense>
-              <!-- Informações do usuário -->
+              <!-- Informações do motivo -->
               <v-col cols="12" class="d-flex justify-center">
                 <v-chip color="info">
                   INFORMAÇÕES DO MOTIVO

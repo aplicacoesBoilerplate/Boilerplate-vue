@@ -37,7 +37,7 @@ export const categoriasServices = {
     }
   },
 
-  async updateMotivo(
+  async updateCategoria(
     categoriaAtualizada: CategoriasMotivos
   ): Promise<CategoriasMotivos> {
     try {
@@ -48,7 +48,7 @@ export const categoriasServices = {
     }
   },
 
-  async deleteMotivo(idCategoria: number): Promise<CategoriasMotivos> {
+  async deleteCategoria(idCategoria: number): Promise<CategoriasMotivos> {
     try {
       const { data } = await http.delete(`/categorias/${idCategoria}`)
       return data

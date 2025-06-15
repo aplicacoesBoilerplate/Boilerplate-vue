@@ -1,31 +1,31 @@
 <template>
   <!-- Botão que recebe o callback para abrir um dialog -->
-  <BtnOpenDialog :callback="openNovoMotivo" :label="'Criar novo motivo'" />
+  <BtnOpenDialog :callback="openNovaCategoria" :label="'Criar nova categoria'" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogMotivos :model-value="dialogMotivos" @update:modelValue="clonarObjetoDialogMotivos(dialogMotivos)"
-    @operacao-concluida="getAllMotivos" />
+  <DialogCategorias :model-value="dialogCategorias" @update:modelValue="clonarObjetoDialogCategorias(dialogCategorias)"
+    @operacao-concluida="getAllCategorias" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
-      <span class="text-h6">Lista de motivos</span>
+      <span class="text-h6">Lista de categorias</span>
 
-      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirApenasHoje: true }" @alterado-ordem="aoMudarOrdem"
+      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirApenasHoje: true, exibirAprovacao: true }" @alterado-ordem="aoMudarOrdem"
         @alterado-aprovacao="aoMudarAprovacao" @limpar-filtros="limparFiltros" />
 
-      <!-- Campo para consultar os motivos pelo search -->
+      <!-- Campo para consultar as categorias pelo search -->
       <InputUpperCase v-model:="paginadorClass.search" :style="{
         icon: 'mdi-magnify',
         density: 'compact',
         btnDisabled: !paginadorClass.search,
         inputVariant: 'outlined',
         btnVariant: 'text',
-        label: 'Consultar motivos',
+        label: 'Consultar categorias',
         showPrepend: true,
-        hint: 'Código, descrição ou categoria',
+        hint: 'Código ou descrição',
         maxWidth: 300,
-      }" @on-prepend-click="getAllMotivos" />
+      }" @on-prepend-click="getAllCategorias" />
     </v-card-title>
     <v-divider />
 
@@ -34,9 +34,9 @@
       <v-progress-circular color="primary" indeterminate />
     </div>
 
-    <!-- Alerta quando nenhum motivo consultado foi encontrado -->
-    <div v-if="apiMotivos?.totalRegistros == 0 && loading == false" class="pt-4">
-      <v-alert text="Nenhum motivo encontrado!" type="info" variant="tonal">
+    <!-- Alerta quando nenhuma categoria consultado foi encontrada -->
+    <div v-if="apiCategorias?.totalRegistros == 0 && loading == false" class="pt-4">
+      <v-alert text="Nenhuma categoria encontrada!" type="info" variant="tonal">
         <template v-slot:append>
           <v-btn color="warning" variant="plain" @click="limparFiltros()">
             <v-icon class="pt-1">
@@ -48,19 +48,26 @@
       </v-alert>
     </div>
 
-    <!-- Exibição dos motivos -->
-    <v-virtual-scroll :items="apiMotivos?.registros" height="500" item-height="50" v-else>
-      <template v-slot:default="{ item: motivo }">
-        <v-list-item :title="`${motivo.idMotivo} - ${motivo.descricaoMotivo}`"
-          :subtitle="`#categoria: ${motivo.descricaoCategoria}`">
+    <!-- Exibição das categorias -->
+    <v-virtual-scroll :items="apiCategorias?.registros" height="500" item-height="50" v-else>
+      <template v-slot:default="{ item: categoria }">
+        <v-list-item :title="`${categoria.idCategoria} - ${categoria.descricaoCategoria}`"
+          :subtitle="`#emergencial: ${categoria.emergencial}`">
 
-          <!-- Ícone de cartão de motivo -->
+          <!-- Ícone de cartão de categoria -->
           <template v-slot:prepend>
-            <v-icon>mdi-list-box-outline</v-icon>
+            <v-icon>mdi-bookmark-multiple-outline</v-icon>
           </template>
 
           <!-- Botões de menu -->
           <template v-slot:append>
+
+            <div class="pe-2">
+              <v-btn size="small" variant="elevated" color="white" icon="mdi-information-outline"
+                @click="toggleCategoria(categoria.idCategoria)" title="Informações">
+              </v-btn>
+            </div>
+
             <!-- Menu de opções -->
             <v-menu transition="scale-transition">
               <template v-slot:activator="{ props }">
@@ -69,28 +76,28 @@
               <v-list>
                 <v-list-item>
                   <v-list-item-title>
-                    <!-- Editar motivo -->
+                    <!-- Editar categoria -->
                     <v-btn icon="mdi-pencil" size="x-small" variant="tonal" color="primary"
-                      @click="completeFormEditMotivoDialog(motivo)" title="Editar" />
+                      @click="completeFormEditCategoriaDialog(categoria)" title="Editar" />
                     <span class="pr-2" />
 
-                    <!-- Funcionalidade sensível de remoção de motivo, precisa de confirmação de senha -->
+                    <!-- Funcionalidade sensível de remoção de categoria, precisa de confirmação de senha -->
                     <v-btn icon="mdi-delete-outline" size="x-small" variant="tonal" color="red"
-                      @click="deleteMotivo(motivo.idMotivo)" title="Remover" />
+                      @click="deleteCategoria(categoria.idCategoria)" title="Remover" />
                   </v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
           </template>
         </v-list-item>
-        <!-- Card de detalhes para cada saída, expanção controlada por uma variável -->
+        <!-- Card de detalhes para cada categoria, expanção controlada por uma variável -->
         <v-expand-transition>
-          <div v-if="expandedMotivoId === motivo.idMotivo" class="custom-expansion-panel">
+          <div v-if="expandedCategoriaId === categoria.idCategoria" class="custom-expansion-panel">
             <v-row dense>
-              <!-- Informações do usuário -->
+              <!-- Informações da categoria -->
               <v-col cols="12" class="d-flex justify-center">
                 <v-chip color="info">
-                  INFORMAÇÕES DO MOTIVO
+                  INFORMAÇÕES DA CATEGORIA
                 </v-chip>
               </v-col>
               <br>
@@ -102,18 +109,7 @@
                     Descrição:
                   </p>
                   <p class="text-success">
-                    {{ motivo.descricaoMotivo }}
-                  </p>
-                </div>
-              </v-col>
-
-              <v-col cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Categoria:
-                  </p>
-                  <p class="text-success">
-                    {{ motivo.idCategoria }} - {{ motivo.descricaoCategoria }}
+                    {{ categoria.descricaoCategoria }}
                   </p>
                 </div>
               </v-col>
@@ -123,8 +119,8 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Emergencial:
                   </p>
-                  <p :class="!motivo.emergencial ? 'text-success' : 'text-red'">
-                    {{ motivo.emergencial ? 'SIM' : 'NÃO' }}
+                  <p :class="!categoria.emergencial ? 'text-success' : 'text-red'">
+                    {{ categoria.emergencial ? 'SIM' : 'NÃO' }}
                   </p>
                 </div>
               </v-col>
@@ -137,7 +133,7 @@
   </v-card>
   <!-- Componente de paginação -->
   <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
-    v-show="apiMotivos?.totalRegistros! > 0 && !loading" />
+    v-show="apiCategorias?.totalRegistros! > 0 && !loading" />
 
   <DialogConfirmarSenha :model-value="confirmarSenha" @update:modelValue="clonarObjetoConfirmarSenha(confirmarSenha)" />
 </template>
@@ -146,26 +142,26 @@
 //#region Imports
 // Componentes
 import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
+import DialogCategorias from '@/components/dialog/dialogCategorias/DialogCategorias.vue';  // Componente visual para o dialog de categorias
 import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
-import DialogMotivos from '@/components/dialog/dialogMotivo/DialogMotivos.vue'; // Componente visual para o dialog de motivos
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
 import Paginator from '@/components/paginator/Paginator.vue' // Componente visual para a paginação de registros
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
 
 // Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
-import { DialogMotivosClass } from '@/components/dialog/dialogMotivo/ClassDialogMotivos';
 import { ConfirmarSenhaClass } from '@/components/dialog/confirmarSenha/ClassConfirmarSenha';
+import { DialogCategoriasClass } from '@/components/dialog/dialogCategorias/ClassDialogCategorias';
 
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore';
 
 // Models
-import type { MotivoConsulta } from '@/models/motivosModels/MotivosModels';
+import type { CategoriasMotivos } from '@/models/motivosModels/MotivosModels';
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
 
 // Services
-import { motivosServices } from '@/services/motivosServices';
+import { categoriasServices } from '@/services/categoriasServices';
 
 // Vue
 import { onMounted, ref } from 'vue';
@@ -174,35 +170,35 @@ import { onMounted, ref } from 'vue';
 //#region Variáveis
 // Booleanos
 const loading = ref(false) // Carregamento
-const showDialog = ref(false) // Dialog de motivos
+const showDialog = ref(false) // Dialog de categorias
 
 // Classes
 const confirmarSenha = ref(new ConfirmarSenhaClass())
-const dialogMotivos = ref(new DialogMotivosClass())
+const dialogCategorias = ref(new DialogCategoriasClass())
 const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'DESC', search: '' })) // Classe para a paginação
 
 // Outros
-var apiMotivos = ref<HeaderPaginatorModel<MotivoConsulta>>() // Armazena os dados da resposta das req para exibição no front
-const expandedMotivoId = ref<number | null>(null) // Painel de informações do motivo
+var apiCategorias = ref<HeaderPaginatorModel<CategoriasMotivos>>() // Armazena os dados da resposta das req para exibição no front
+const expandedCategoriaId = ref<number | null>(null) // Painel de informações da categoria
 //#endregion
 
 //#region Funcionalidades do Vue
 
 onMounted(async () => {
-  await getAllMotivos()
+  await getAllCategorias()
 })
 
 //#endregion
 
-//#region Dialog de motivos
-// Métodos para manipular o dialog de motivo
-function openNovoMotivo() {
-  dialogMotivos.value.openDialog()
+//#region Dialog de categorias
+// Métodos para manipular o dialog de categorias
+function openNovaCategoria() {
+  dialogCategorias.value.openDialog()
   showDialog.value = true
 }
 
-function completeFormEditMotivoDialog(motivo: MotivoConsulta) {
-  dialogMotivos.value.completeForm(motivo.idMotivo)
+function completeFormEditCategoriaDialog(categoria: CategoriasMotivos) {
+  dialogCategorias.value.completeForm(categoria.idCategoria)
   showDialog.value = true
 }
 //#endregion
@@ -215,14 +211,14 @@ function abrirDialogConfirmacao(callback: () => Promise<void>) {
 }
 //#endregion
 
-//#region funções de consulta, controle e manipulação de motivos
-// Consulta paginada de todos os motivos, aceita diversos parâmetros, inclusive o search
-async function getAllMotivos() {
+//#region funções de consulta, controle e manipulação de categorias
+// Consulta paginada de todas as categorias, aceita diversos parâmetros, inclusive o search
+async function getAllCategorias() {
   loading.value = true
   try {
-    const response = await motivosServices.getMotivos(paginadorClass.value)
+    const response = await categoriasServices.getCategorias(paginadorClass.value)
 
-    apiMotivos.value = response
+    apiCategorias.value = response
 
     paginadorClass.value.atualizarDadosAPI({
       totalPaginas: response.totalPaginas,
@@ -237,16 +233,16 @@ async function getAllMotivos() {
 }
 
 //#region Funções sensíveis
-// Função para deletar um motivo
-async function deleteMotivo(idMotivo: number) {
+// Função para deletar uma categoria
+async function deleteCategoria(idCategoria: number) {
   abrirDialogConfirmacao(async () => {
     try {
-      await motivosServices.deleteMotivo(idMotivo)
-      useSnackbarStore().showSnackbar('Motivo removido!', 'success')
+      await categoriasServices.deleteCategoria(idCategoria)
+      useSnackbarStore().showSnackbar('Categoria removida!', 'success')
     } catch (error) {
       useSnackbarStore().showSnackbar(error, 'red')
     } finally {
-      await getAllMotivos()
+      await getAllCategorias()
     }
   })
 }
@@ -255,27 +251,27 @@ async function deleteMotivo(idMotivo: number) {
 
 //#region Paginação
 async function onBuscar() {
-  await getAllMotivos()
+  await getAllCategorias()
 }
 
 async function aoMudarPagina(novaPagina: number) {
   paginadorClass.value.atualizarPagina(novaPagina)
-  await getAllMotivos()
+  await getAllCategorias()
 }
 
 async function aoMudarOrdem() {
   paginadorClass.value.alterarOrdenacao()
-  await getAllMotivos()
+  await getAllCategorias()
 }
 
 async function aoMudarAprovacao() {
   paginadorClass.value.alterarFiltroAprovacao()
-  await getAllMotivos()
+  await getAllCategorias()
 }
 
 async function limparFiltros() {
   paginadorClass.value.limparFiltros()
-  await getAllMotivos()
+  await getAllCategorias()
 }
 //#endregion
 
@@ -284,8 +280,14 @@ function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
   Object.assign(confirmarSenha, val)
 }
 
-function clonarObjetoDialogMotivos(val: DialogMotivosClass) {
-  Object.assign(dialogMotivos, val)
+function clonarObjetoDialogCategorias(val: DialogCategoriasClass) {
+  Object.assign(dialogCategorias, val)
+}
+
+// Função para controlar o v-expand-transition dos detalhes de cada erro
+function toggleCategoria(id?: number) {
+  if (id != null)
+    expandedCategoriaId.value = expandedCategoriaId.value === id ? null : id
 }
 
 //#endregion
