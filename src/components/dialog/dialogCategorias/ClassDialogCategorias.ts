@@ -42,10 +42,10 @@ export class DialogCategoriasClass {
     this.clearFields()
   }
 
-  async completeForm(idMotivo: number) {
+  async completeForm(idCategoria: number) {
     this.show = true
     this.isEditing = true
-    await this.getCategoriaById(idMotivo)
+    await this.getCategoriaById(idCategoria)
   }
 
 }
