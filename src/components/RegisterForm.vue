@@ -12,20 +12,23 @@
               <v-col cols="6">
                 <InputUpperCase v-model:="newUser.nome" :style="{
                   label: 'Nome de usuário*',
-                  counter: 100
+                  counter: 100,
+                  inputVariant: 'outlined'
                 }" :rules="[rules.required, rules.max]" />
               </v-col>
 
               <v-col cols="6">
                 <InputUpperCase v-model:="newUser.email" :style="{
                   label: 'Email*',
-                  counter: 100
+                  counter: 100,
+                  inputVariant: 'outlined'
                 }" :rules="[rules.required, rules.emailFormat]" />
               </v-col>
 
               <v-col cols="6">
                 <v-text-field clearable v-model="newUser.senha" :rules="[rules.required, rules.min, rules.max]"
-                  :type="showPassword1 ? 'text' : 'password'" hint="Mínimo de 8 caracteres" label="Senha*" counter>
+                  :type="showPassword1 ? 'text' : 'password'" hint="Mínimo de 8 caracteres" label="Senha*"
+                  variant="outlined" counter>
                   <template v-slot:append-inner>
                     <v-btn :icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword1 = !showPassword1"
                       variant="text" />
@@ -36,7 +39,8 @@
               <v-col cols="6">
                 <v-text-field clearable v-model="newUser.confirmarSenha"
                   :rules="[rules.required, rules.equals(() => newUser.senha)]"
-                  :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*" counter>
+                  :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*"
+                  variant="outlined" counter>
                   <template v-slot:append-inner>
                     <v-btn :icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword2 = !showPassword2"
                       variant="text" />
@@ -45,8 +49,8 @@
               </v-col>
 
               <v-col cols="12">
-                <v-btn class="mt-2" type="submit" :disabled="!formIsValid" block color="success">Realizar solicitação de
-                  acesso
+                <v-btn class="mt-2" type="submit" :disabled="!formIsValid" block color="success">
+                  Realizar solicitação de acesso
                 </v-btn>
               </v-col>
             </v-row>
@@ -88,5 +92,4 @@ async function solicitarAcesso() {
     throw error
   }
 }
-
 </script>

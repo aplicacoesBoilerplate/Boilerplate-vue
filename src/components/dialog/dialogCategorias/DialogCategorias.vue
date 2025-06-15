@@ -2,23 +2,30 @@
   <v-dialog v-model="exibir" max-width="650">
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
-      <v-card :prepend-icon="dialogMotivos.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
-        :title="dialogMotivos.isEditing ? `Editar motivo: ${motivo.idMotivo}` : 'Criar novo motivo'">
+      <v-card :prepend-icon="dialogCategorias.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
+        :title="dialogCategorias.isEditing ? `Editar categoria: ${categoria.idCategoria}` : 'Criar nova categoria'">
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <InputUpperCase v-model:="motivo.descricaoMotivo" :style="{
+              <InputUpperCase v-model:="categoria.descricaoCategoria" :style="{
                 inputVariant: 'outlined',
-                label: 'Descrição motivo',
+                label: 'Descrição categoria',
                 maxWidth: 650,
                 counter: 100,
               }" :rules="[rules.required, rules.max]" />
             </v-col>
 
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-autocomplete clearable v-model="motivo.idCategoria" label="Categoria*" :items="ApiCategorias.registros"
+              <v-checkbox
+                v-model="categoria.emergencial"
+                color="red"
+                label="Emergencial?"
+                hide-details
+              />
+
+              <!-- <v-autocomplete clearable v-model="categoria.idCategoria" label="Categoria*" :items="ApiCategorias.registros"
                 :item-title="'descricaoCategoria'" :item-value="'idCategoria'"
-                :rules="[rules.required]" variant="outlined"/>
+                :rules="[rules.required]" variant="outlined"/> -->
             </v-col>
           </v-row>
 
@@ -35,7 +42,7 @@
         <v-card-actions>
           <v-btn color="warning" variant="plain" @click="clearFields()">
             <v-icon class="pt-1">mdi-refresh</v-icon>
-            {{ dialogMotivos.isEditing ? 'Desfazer' : 'Limpar' }}
+            {{ dialogCategorias.isEditing ? 'Desfazer' : 'Limpar' }}
           </v-btn>
           <v-spacer />
 
@@ -58,13 +65,12 @@
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual para o input upper case
 // Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
-import type { DialogMotivosClass } from './ClassDialogMotivos'
+import type { DialogCategoriasClass } from './ClassDialogCategorias'
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Models
 // Services
 import { categoriasServices } from '@/services/categoriasServices';
-import { motivosServices } from '@/services/motivosServices'
 import { rules } from '@/utils/rules'
 // Vue
 import { computed, onMounted, ref, watch } from 'vue'
@@ -76,20 +82,20 @@ const paginadorClass = ref(new PaginatorClass())
 const ApiCategorias = ref()
 
 interface Props {
-  modelValue: DialogMotivosClass
+  modelValue: DialogCategoriasClass
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: DialogMotivosClass): void
+  (e: 'update:modelValue', value: DialogCategoriasClass): void
   (e: 'operacao-concluida'): void
 }>()
 
-const motivo = computed(() => props.modelValue.motivo)
-const dialogMotivos = computed(() => props.modelValue)
+const categoria = computed(() => props.modelValue.categoria)
+const dialogCategorias = computed(() => props.modelValue)
 const exibir = computed({
-  get: () => dialogMotivos.value.show,
-  set: (val) => dialogMotivos.value.show = val
+  get: () => dialogCategorias.value.show,
+  set: (val) => dialogCategorias.value.show = val
 })
 
 // Alimentar os dados para as categorias
@@ -102,29 +108,29 @@ watch(exibir, (val) => {
   if (!val) {
     resetForm()
   }
-  if (val && !dialogMotivos.value.isEditing) {
+  if (val && !dialogCategorias.value.isEditing) {
     clearFields();
   }
 });
 
 function clearFields() {
-  dialogMotivos.value.clearFields()
+  dialogCategorias.value.clearFields()
 }
 
 function resetForm() {
-  dialogMotivos.value.clearFields()
-  dialogMotivos.value.closeDialog()
+  dialogCategorias.value.clearFields()
+  dialogCategorias.value.closeDialog()
   showPassword.value = false // Exibir senha
   exibir.value = false // Exibir componente
 }
 
-async function cadastrarNovoMotivo() {
+async function cadastrarNovaCategoria() {
   const valid = await formRef.value.validate()
   if (!valid) return
 
   try {
-    await motivosServices.createMotivo(motivo.value);
-    useSnackbarStore().showSnackbar('Motivo criado com sucesso!', 'success')
+    await categoriasServices.createCategoria(categoria.value);
+    useSnackbarStore().showSnackbar('Categoria criada com sucesso!', 'success')
     emit('operacao-concluida')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
@@ -133,13 +139,13 @@ async function cadastrarNovoMotivo() {
   resetForm();
 }
 
-async function updateMotivo() {
+async function updateCategoria() {
   const valid = await formRef.value.validate()
   if (!valid) return
 
   try {
-    await motivosServices.updateMotivo(motivo.value, motivo.value.idMotivo)
-    useSnackbarStore().showSnackbar('Motivo modificado com sucesso!', 'success')
+    await categoriasServices.updateCategoria(categoria.value)
+    useSnackbarStore().showSnackbar('Categoria modificada com sucesso!', 'success')
     emit('operacao-concluida')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
@@ -151,7 +157,7 @@ async function updateMotivo() {
 async function submitForm() {
   const { valid } = await formRef.value.validate()
   if (!valid) return
-  dialogMotivos.value.isEditing ? await updateMotivo() : await cadastrarNovoMotivo()
+  dialogCategorias.value.isEditing ? await updateCategoria() : await cadastrarNovaCategoria()
 }
 
 </script>

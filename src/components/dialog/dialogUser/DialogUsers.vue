@@ -27,7 +27,7 @@
 
             <v-col cols="12" class="d-flex justify-center">
               <v-autocomplete clearable v-model="user.permissao" label="Permissão*" :items="permissoesAutoComplete"
-                :item-title="'chave'" :item-value="'valor'"
+                :item-title="'chave'" :item-value="'valor'" variant="outlined"
                 :rules="[rules.required, rules.includes(permissoesRules)]" />
             </v-col>
           </v-row>

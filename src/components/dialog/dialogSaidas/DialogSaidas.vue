@@ -24,7 +24,9 @@
             btnVariant: 'text',
             label: 'Buscar funcionário',
             showPrepend: true,
-            maxWidth: 650,
+            maxWidth: 300,
+            hint: 'Nome do funcionário ou N° do registro',
+            btnDisabled: !paginadorClass.search
           }" @on-prepend-click="console.log('Simulando consulta')" />
         </v-card-title>
 
@@ -34,14 +36,14 @@
             <v-col cols="12" md="6" class="d-flex justify-center">
               <v-number-input clearable v-model="saida.numeroRegistroFuncionario" :reverse="false"
                 :rules="[rules.required]" controlVariant="stacked" label="N° de Registro do Funcionário*"
-                :hideInput="false" inset :disabled="dialogSaidas.visualizando" />
+                :hideInput="false" inset :disabled="dialogSaidas.visualizando" variant="outlined"/>
             </v-col>
 
             <!-- Código do motivo -->
             <v-col cols="12" md="6" class="d-flex justify-center">
               <v-autocomplete clearable v-model="saida.motivoSaida" label="Motivo*" :items="apiMotivos?.registros"
                 :item-title="'descricaoMotivo'" :item-value="'idMotivo'" :rules="[rules.required]"
-                :disabled="dialogSaidas.visualizando" />
+                :disabled="dialogSaidas.visualizando" variant="outlined" />
             </v-col>
 
             <!-- Informação retornada pela consulta -->
@@ -67,13 +69,13 @@
             <!-- Data e hora de previsão de saída do funcionário -->
             <v-col cols="12" md="6" class="d-flex justify-center">
               <DateTimePicker v-model="saida.dataPrevisaoSaidaFuncionario" label="Data e hora de previsão da saída"
-                :disabled="dialogSaidas.visualizando" />
+                :disabled="dialogSaidas.visualizando" variant="outlined" />
             </v-col>
 
             <!-- Data e hora de previsão de retorno do funcionário -->
             <v-col cols="12" md="6" class="d-flex justify-center">
               <DateTimePicker v-model="saida.dataPrevisaoChegadaFuncionario" label="Data e hora de previsão de retorno"
-                :disabled="dialogSaidas.visualizando" />
+                :disabled="dialogSaidas.visualizando" variant="outlined" />
             </v-col>
 
             <!-- Campo de observação da saída -->
