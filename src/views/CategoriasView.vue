@@ -59,15 +59,8 @@
             <v-icon>mdi-list-box-outline</v-icon>
           </template>
 
-          <!-- Botões de funcionalidades de mais informações e menu -->
+          <!-- Botões de menu -->
           <template v-slot:append>
-
-            <div class="pe-2">
-              <v-btn size="small" variant="elevated" color="white" icon="mdi-information-outline"
-                @click="toggleMotivo(motivo.idMotivo)" title="Informações">
-              </v-btn>
-            </div>
-
             <!-- Menu de opções -->
             <v-menu transition="scale-transition">
               <template v-slot:activator="{ props }">
@@ -293,12 +286,6 @@ function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
 
 function clonarObjetoDialogMotivos(val: DialogMotivosClass) {
   Object.assign(dialogMotivos, val)
-}
-
-// Função para controlar o v-expand-transition dos detalhes de cada erro
-function toggleMotivo(id?: number) {
-  if (id != null)
-    expandedMotivoId.value = expandedMotivoId.value === id ? null : id
 }
 
 //#endregion

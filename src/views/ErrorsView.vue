@@ -9,7 +9,7 @@
         @alterado-apenas-hoje="aoMudarApenasHoje" @alterado-aprovacao="aoMudarAprovacao"
         @limpar-filtros="limparFiltros" />
 
-      <!-- Campo para consultar os motivos pelo search -->
+      <!-- Campo para consultar os errors pelo search -->
       <InputUpperCase v-model:="paginadorClass.search" :style="{
         icon: 'mdi-magnify',
         density: 'compact',
@@ -29,7 +29,7 @@
       <v-progress-circular color="primary" indeterminate />
     </div>
 
-    <!-- Alerta quando nenhum motivo consultado foi encontrado -->
+    <!-- Alerta quando nenhum erro consultado foi encontrado -->
     <div v-if="apiErrors?.totalRegistros == 0 && loading == false" class="pt-4">
       <v-alert text="Nenhum erro encontrado!" type="info" variant="tonal">
         <template v-slot:append>
@@ -225,7 +225,7 @@ onMounted(async () => {
 //#endregion
 
 //#region funções de consulta de errors
-// Consulta paginada de todos os motivos, aceita diversos parâmetros, inclusive o search
+// Consulta paginada de todos os errors, aceita diversos parâmetros, inclusive o search
 async function getAllErrors() {
   loading.value = true
   try {

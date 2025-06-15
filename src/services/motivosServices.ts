@@ -10,7 +10,7 @@ export const motivosServices = {
   // Consulta para retornar os motivos cadastrados paginando os mesmos
   async getMotivos(paginador: PaginatorClass): Promise<HeaderPaginatorModel<MotivoConsulta>> {
     try {
-      const { data } = await http.get('/motivos/consulta', {
+      const { data } = await http.get('/motivos/consulta/detalhe', {
         params: paginador,
       })
       return data
@@ -22,7 +22,7 @@ export const motivosServices = {
   // Retorna apenas um motivo com base no registro do mesmo
   async getMotivoById(idMotivo: number): Promise<MotivoConsulta> {
     try {
-      const { data } = await http.get(`/motivos/${idMotivo}`)
+      const { data } = await http.get(`/motivos/${idMotivo}/detalhe`)
       return data
     } catch (error) {
       throw error

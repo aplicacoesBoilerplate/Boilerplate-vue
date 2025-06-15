@@ -9,6 +9,7 @@ export class PaginatorClass {
   aprovacao?: boolean | null // Parâmetro de busca para autorizações de saídas por aprovação
   alterarInput?: boolean | null // Campo para controlar a exibição de input de busca que podem receber mais de um parâmetro (Autorizações e Saídas)
   funcionarioResponsavel?: string | null // (Autorizações e Saídas)
+  autocomplete?: boolean | null
 
   constructor({ limite = 10, offset = 1 }: Partial<PaginatorClass> = {}) {
     this.limite = limite
@@ -42,6 +43,10 @@ export class PaginatorClass {
     this.offset = 1
   }
 
+  alterarBuscarParaAutocomplete() {
+    this.autocomplete = !this.autocomplete
+  }
+
   limparFiltros() {
     this.apenasHoje = false
     this.aprovacao = false
@@ -52,4 +57,5 @@ export class PaginatorClass {
     this.limite = this.limite
     this.offset = this.offset
   }
+
 }

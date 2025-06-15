@@ -16,8 +16,9 @@
             </v-col>
 
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-autocomplete clearable v-model="motivo.categoriaMotivo" label="Categoria*" :items="categoriasMotivo"
-                :rules="[rules.required, rules.includes(categoriasMotivo)]" />
+              <v-autocomplete clearable v-model="motivo.idCategoria" label="Categoria*" :items="ApiCategorias.registros"
+                :item-title="'descricaoCategoria'" :item-value="'idCategoria'"
+                :rules="[rules.required]" />
             </v-col>
           </v-row>
 
@@ -55,23 +56,24 @@
 <script setup lang="ts">
 // Componentes
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual para o input upper case
-
 // Classes
+import { PaginatorClass } from '@/components/paginator/ClassPaginator';
 import type { DialogMotivosClass } from './ClassDialogMotivos'
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Models
-import { CategoriasMotivo } from '@/models/motivosModels/MotivosModels'
 // Services
+import { categoriasServices } from '@/services/categoriasServices';
 import { motivosServices } from '@/services/motivosServices'
 import { rules } from '@/utils/rules'
 // Vue
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
 const showPassword = ref(false)
-const categoriasMotivo = CategoriasMotivo
+const paginadorClass = ref(new PaginatorClass())
+const ApiCategorias = ref()
 
 interface Props {
   modelValue: DialogMotivosClass
@@ -88,6 +90,12 @@ const dialogMotivos = computed(() => props.modelValue)
 const exibir = computed({
   get: () => dialogMotivos.value.show,
   set: (val) => dialogMotivos.value.show = val
+})
+
+// Alimentar os dados para as categorias
+onMounted(async() => {
+  paginadorClass.value.autocomplete = true
+  ApiCategorias.value = await  categoriasServices.getCategorias(paginadorClass.value)
 })
 
 watch(exibir, (val) => {

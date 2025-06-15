@@ -1,18 +1,16 @@
-import type { MotivoConsulta } from '@/models/motivosModels/MotivosModels'
-import { motivosServices } from '@/services/motivosServices'
+import type { CategoriasMotivos } from '@/models/motivosModels/MotivosModels'
+import { categoriasServices } from '@/services/categoriasServices'
 
-export class DialogMotivosClass {
+export class DialogCategoriasClass {
   show: boolean
   isEditing: boolean
-  motivo: MotivoConsulta
+  categoria: CategoriasMotivos
 
   constructor() {
     this.show = false
     this.isEditing = false
-    this.motivo = {
-      idMotivo: 0,
+    this.categoria = {
       idCategoria: 0,
-      descricaoMotivo: '',
       descricaoCategoria: '',
       emergencial: false
     }
@@ -22,18 +20,16 @@ export class DialogMotivosClass {
     this.show = true
   }
 
-  async getMotivoById(idMotivo?: number) {
-    if (idMotivo) this.motivo = await motivosServices.getMotivoById(idMotivo)
+  async getCategoriaById(idCategoria?: number) {
+    if (idCategoria) this.categoria = await categoriasServices.getCategoriaById(idCategoria)
   }
 
   clearFields() {
     if (this.isEditing) {
-      this.getMotivoById(this.motivo.idMotivo)
+      this.getCategoriaById(this.categoria.idCategoria)
     } else {
-      this.motivo = {
-        idMotivo: 0,
+      this.categoria = {
         idCategoria: 0,
-        descricaoMotivo: '',
         descricaoCategoria: '',
         emergencial: false
       }
@@ -49,6 +45,7 @@ export class DialogMotivosClass {
   async completeForm(idMotivo: number) {
     this.show = true
     this.isEditing = true
-    await this.getMotivoById(idMotivo)
+    await this.getCategoriaById(idMotivo)
   }
+
 }
