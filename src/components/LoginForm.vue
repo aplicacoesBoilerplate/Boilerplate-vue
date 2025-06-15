@@ -11,12 +11,12 @@
             <v-row dense>
               <v-col cols="12">
                 <InputUpperCase v-model:="loginForm.email_usuario" :style="{ label: 'Email*', maxWidth: 400 }"
-                  :rules="[rules.required, rules.emailFormat]" />
+                  :rules="[rules.required, rules.emailFormat]" variant="outlined" />
               </v-col>
 
               <v-col cols="12">
                 <v-text-field clearable v-model="loginForm.senha_usuario" :rules="[rules.required]"
-                  :type="showPassword ? 'text' : 'password'" label="Senha">
+                  :type="showPassword ? 'text' : 'password'" label="Senha" variant="outlined">
                   <template v-slot:append-inner>
                     <v-btn :icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword = !showPassword"
                       variant="text" />

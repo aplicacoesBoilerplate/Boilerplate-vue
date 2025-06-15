@@ -55,9 +55,10 @@ const routerOption = ref([
   { id: '1', icon: 'mdi-camera-front-variant', path: '/saidas', title: 'Saídas' },
   { id: '2', icon: 'mdi-lock-check', path: '/autorizacoes', title: 'Autorizações' },
   { id: '3', icon: 'mdi-list-box-outline', path: '/motivos', title: 'Motivos' },
-  { id: '4', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
-  { id: '5', icon: 'mdi-door-sliding', path: '/portaria', title: 'Portaria' },
-  { id: '6', icon: 'mdi-alert-circle-outline', path: '/errors', title: 'Errors' },
+  { id: '4', icon: 'mdi-bookmark-multiple-outline', path: '/categorias', title: 'Categorias' },
+  { id: '5', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
+  { id: '6', icon: 'mdi-door-sliding', path: '/portaria', title: 'Portaria' },
+  { id: '7', icon: 'mdi-alert-circle-outline', path: '/errors', title: 'Errors' },
 ])
 
 function disabledRouterOption(path: string): boolean {
@@ -81,11 +82,18 @@ function disabledRouterOption(path: string): boolean {
         disabledRouter.value = true
       break
     }
-    case '/motivos': { // Qualquer autenticado pode acessar os motivos
-      if (!!permissao)
-        disabledRouter.value = false
-      else
+    case '/motivos': { // Qualquer autenticado pode acessar os motivos, mas bloqueia para portaria apenas por ser conveniente
+      if (permissao == 'PORTARIA')
         disabledRouter.value = true
+      else
+        disabledRouter.value = false
+      break
+    }
+    case '/categorias': { // Apenas quem emite saída, todos, exceto a portaria
+      if (permissao == 'PORTARIA')
+        disabledRouter.value = true
+      else
+        disabledRouter.value = false
       break
     }
     case '/users': { // Apenas admins podem acessar os usuários

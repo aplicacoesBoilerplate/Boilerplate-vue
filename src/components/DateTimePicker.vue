@@ -1,6 +1,6 @@
 <template>
   <v-text-field :label="label" v-model="display" readonly @click="dialog = true" prepend-inner-icon="mdi-calendar-clock"
-    :disabled="disabled" />
+    :disabled="disabled" :variant="variant"/>
 
   <v-menu v-model="dialog" width="auto" max-width="650" :close-on-content-click="false">
     <template #activator="{ props }">
@@ -48,6 +48,7 @@ const props = defineProps<{
   label?: string
   icon?: string
   disabled?: boolean
+  variant?: "filled" | "outlined" | "plain" | "underlined" | "solo" | "solo-inverted" | "solo-filled" | undefined
   modelValue?: string
 }>()
 
@@ -117,5 +118,4 @@ function clear() {
   time.value = null
   emit('update:modelValue', '')
 }
-
 </script>

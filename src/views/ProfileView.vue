@@ -8,29 +8,29 @@
           </v-col>
 
           <v-col md="3" sm="4">
-            <InputUpperCase v-model:="model.nome" :style="{ label: 'Nome', maxWidth: 1000 }" />
+            <InputUpperCase v-model:="model.nome" :style="{ label: 'Nome', maxWidth: 1000, inputVariant: 'outlined' }" />
           </v-col>
 
           <v-col md="8" sm="6">
             <InputUpperCase v-model:="model.email"
-              :style="{ label: 'Email', hint: 'Atualizar seu e-mail altera seu login no sistema!', maxWidth: 10000 }" />
+              :style="{ label: 'Email', hint: 'Atualizar seu e-mail altera seu login no sistema!', maxWidth: 10000, inputVariant: 'outlined' }" />
           </v-col>
 
           <v-col md="5" sm="4">
             <v-autocomplete clearable v-model="model.permissao" label="Permissão*"
-              :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'" :items="permissoes"
-              :item-title="'chave'" :item-value="'valor'"
+              :disabled="permissao == 'PORTARIA' || permissao == 'EMITE_SAIDA' || permissao == 'EMITE_AUTORIZACAO'"
+              :items="permissoes" :item-title="'chave'" :item-value="'valor'" variant="outlined"
               :rules="[rules.required, rules.includes(PermissoesUsuarios)]" />
           </v-col>
 
           <v-col md="2" sm="4" class="d-flex justify-center">
-            <v-switch v-model="model.autorizaSaida" color="success" label="Autoriza saídas"
-              :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'" />
+            <v-switch v-model="model.autorizaSaida" color="success" label="Autoriza saídas" variant="outlined"
+              :disabled="permissao == 'PORTARIA' || permissao == 'EMITE_SAIDA' || permissao == 'EMITE_AUTORIZACAO'" />
           </v-col>
 
           <v-col md="5" sm="4" class="d-flex justify-center">
             <v-date-input clearable label="Data expiração da conta" prepend-icon="" prepend-inner-icon="$calendar"
-              variant="solo" :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'" />
+              variant="outlined" :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'" />
           </v-col>
         </v-row>
 
@@ -45,7 +45,7 @@
             <v-col cols="4">
               <v-text-field clearable v-model="alterarSenhaUsuario.senhaUsuario" :rules="[rules.required]"
                 :type="showPassword1 ? 'text' : 'password'" hint="Insira novamente a sua senha" persistent-hint
-                label="Senha atual*" counter>
+                label="Senha atual*" variant="outlined" counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword1 = !showPassword1"
@@ -58,7 +58,7 @@
             <v-col cols="4">
               <v-text-field clearable v-model="alterarSenhaUsuario.novaSenha"
                 :rules="[rules.required, rules.min, rules.max]" :type="showPassword2 ? 'text' : 'password'"
-                hint="Mínimo de 8 caracteres" label="Nova senha*" counter>
+                hint="Mínimo de 8 caracteres" label="Nova senha*" variant="outlined" counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword2 = !showPassword2"
@@ -71,7 +71,7 @@
               <v-text-field clearable v-model="alterarSenhaUsuario.confirmarNovaSenha"
                 :rules="[rules.required, rules.equals(() => alterarSenhaUsuario.novaSenha)]"
                 :type="showPassword3 ? 'text' : 'password'" hint="Deve coincidir com a nova senha"
-                label="Confirmar sua nova senha*" counter>
+                label="Confirmar sua nova senha*" variant="outlined" counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword3 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword3 = !showPassword3"

@@ -7,12 +7,13 @@
           <v-row dense>
             <v-col cols="12">
               <v-text-field clearable v-model="confirmarSenha.email" :rules="[rules.required, rules.emailFormat]"
-                label="email*" disabled counter>
+                label="email*" variant="outlined" disabled counter>
               </v-text-field>
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field clearable v-model="confirmarSenha.senha" :rules="[rules.required, rules.max]"
-                :type="showPassword1 ? 'text' : 'password'" hint="Insira a sua senha de login" label="Senha*" counter>
+                :type="showPassword1 ? 'text' : 'password'" hint="Insira a sua senha de login" label="Senha*"
+                variant="outlined" counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword1 = !showPassword1"
@@ -25,7 +26,7 @@
               <v-text-field clearable v-model="confirmarSenha.confirmarSenha"
                 :rules="[rules.required, rules.equals(() => confirmarSenha.senha)]"
                 :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*"
-                hint="As senhas devem coincidir" counter>
+                hint="As senhas devem coincidir" variant="outlined" counter>
 
                 <template v-slot:append-inner>
                   <v-btn :icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword2 = !showPassword2"

@@ -18,7 +18,7 @@
             <v-col cols="12" md="6" class="d-flex justify-center">
               <v-autocomplete clearable v-model="motivo.idCategoria" label="Categoria*" :items="ApiCategorias.registros"
                 :item-title="'descricaoCategoria'" :item-value="'idCategoria'"
-                :rules="[rules.required]" />
+                :rules="[rules.required]" variant="outlined"/>
             </v-col>
           </v-row>
 

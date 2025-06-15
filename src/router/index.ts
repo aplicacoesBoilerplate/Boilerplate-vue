@@ -10,6 +10,7 @@ import AutorizacoesView from '@/views/AutorizacoesView.vue'
 import PortariaView from '@/views/PortariaView.vue'
 import TesteView from '@/views/TesteView.vue'
 import ErrorsView from '@/views/ErrorsView.vue'
+import CategoriasView from '@/views/CategoriasView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +49,11 @@ const router = createRouter({
       path: '/motivos',
       name: 'motivos',
       component: MotivosView,
+    },
+    {
+      path: '/categorias',
+      name: 'categorias',
+      component: CategoriasView,
     },
     {
       path: '/users',
