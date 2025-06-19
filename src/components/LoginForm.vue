@@ -1,6 +1,10 @@
 <template>
   <SnackbarNotifications />
   <div>
+    <!-- Loading -->
+    <div class="d-flex justify-center mb-5" v-if="loading">
+      <v-progress-circular color="primary" indeterminate />
+    </div>
     <v-card class="mx-auto" width="400">
       <v-card-title class="d-flex justify-center pt-5">
         Login
@@ -63,11 +67,13 @@ const showPassword = ref(false)
 const loginForm = ref<LoginModel>({ email_usuario: '', senha_usuario: '' })
 const redirectRouter = useRouter()
 const authService = authServices()
+const loading = ref(false) // Carregamento
 
 async function authLogin() {
   const isValid = await formRef.value?.validate()
   if (isValid) {
     try {
+      loading.value = true
       await authService.login(loginForm.value!)
       redirectRouter.push('/dashboard');
       const usuarioLogado = await authServices().getByToken()
@@ -76,6 +82,8 @@ async function authLogin() {
     } catch (err) {
       useSnackbarStore().showSnackbar(err, 'red')
       throw err
+    } finally {
+      loading.value = false
     }
   }
 }

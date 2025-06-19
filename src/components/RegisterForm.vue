@@ -1,6 +1,10 @@
 <template>
   <SnackbarNotifications />
   <div>
+    <!-- Loading -->
+    <div class="d-flex justify-center mb-5" v-if="loading">
+      <v-progress-circular color="primary" indeterminate />
+    </div>
     <v-card class="mx-auto" width="650">
       <v-card-title class="d-flex justify-center pt-5">
         Dados de acesso
@@ -81,15 +85,25 @@ const newUser = ref(
     confirmarSenha: ''
   }
 )
+const loading = ref(false) // Carregamento
 
 // Mesmo método de criar usuário porém sem autenticação e com um body menor
 async function solicitarAcesso() {
   try {
+    loading.value = true
     await usuariosServices.solicitarAcesso(newUser.value)
     useSnackbarStore().showSnackbar('Conta registrada, aguarde a liberação de um administrador', 'success')
+    newUser.value =   {
+      nome: '',
+      email: '',
+      senha: '',
+      confirmarSenha: ''
+    }
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
+  } finally {
+    loading.value = false
   }
 }
 </script>
