@@ -1,3 +1,4 @@
+import type { funcionarioRegistradoDP } from '@/models/firebirdModels/firebirdModels'
 import type { SaidaConsulta } from '@/models/saidasModels/saidasModels'
 import { saidasServices } from '@/services/saidasServices'
 
@@ -86,4 +87,11 @@ export class DialogSaidasClass {
     this.visualizando = true
     if (idSaida != null) await this.getSaidaById(idSaida)
   }
+
+  async definirRegistroPorBusca(registroDP: funcionarioRegistradoDP) {
+    this.saida.numeroRegistroFuncionario = registroDP.registroDP
+    this.saida.nomeFuncionario = registroDP.nome
+    this.saida.setorFuncionario = registroDP.descricaoSetor
+  }
+
 }
