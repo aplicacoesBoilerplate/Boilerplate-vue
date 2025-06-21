@@ -10,6 +10,12 @@
         </v-btn>
       </div>
     </template>
+    <template #append-inner>
+      <!-- Loading -->
+      <div class="d-flex justify-center" v-if="style.showLoading">
+        <v-progress-circular color="primary" indeterminate />
+      </div>
+    </template>
   </v-text-field>
 </template>
 
@@ -31,6 +37,7 @@ interface Props {
     hideDetails?: boolean | "auto"
     counter?: string | number | true
     showPrepend?: boolean | true
+    showLoading?: boolean | false
     maxWidth?: number
   }
   rules?: ValidationRule[] | undefined

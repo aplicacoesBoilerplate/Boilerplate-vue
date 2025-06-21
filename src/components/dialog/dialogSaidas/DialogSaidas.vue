@@ -16,18 +16,6 @@
             Visualizar informações da saída
           </span>
 
-          <!-- Campo para consultar os usuários pelo search -->
-          <InputUpperCase v-if="!dialogSaidas.visualizando" v-model:="paginadorClass.search" :style="{
-            icon: 'mdi-magnify',
-            density: 'compact',
-            inputVariant: 'outlined',
-            btnVariant: 'text',
-            label: 'Buscar funcionário',
-            showPrepend: true,
-            maxWidth: 300,
-            hint: 'Nome do funcionário ou N° do registro',
-            btnDisabled: !paginadorClass.search
-          }" @on-prepend-click="console.log('Simulando consulta')" />
         </v-card-title>
 
         <v-card-text>
@@ -36,7 +24,16 @@
             <v-col cols="12" md="6" class="d-flex justify-center">
               <v-number-input clearable v-model="saida.numeroRegistroFuncionario" :reverse="false"
                 :rules="[rules.required]" controlVariant="stacked" label="N° de Registro do Funcionário*"
-                :hideInput="false" inset :disabled="dialogSaidas.visualizando" variant="outlined"/>
+                :hideInput="false" inset :disabled="dialogSaidas.visualizando" variant="outlined">
+                <template #prepend-inner>
+                  <div>
+                    <v-btn icon variant="text" size="small"
+                      title="Buscar funcionario" @click="consultarRegistroDP(saida.numeroRegistroFuncionario)">
+                      <v-icon>mdi-magnify</v-icon>
+                    </v-btn>
+                  </div>
+                </template>
+              </v-number-input>
             </v-col>
 
             <!-- Código do motivo -->
@@ -53,6 +50,7 @@
                 inputVariant: 'outlined',
                 label: 'Nome do funcionário',
                 maxWidth: 650,
+                showLoading: showLoadingRegistro,
               }" />
             </v-col>
 
@@ -63,6 +61,7 @@
                 inputVariant: 'outlined',
                 label: 'Setor do funcionário',
                 maxWidth: 650,
+                showLoading: showLoadingRegistro,
               }" />
             </v-col>
 
@@ -138,6 +137,9 @@
       </v-card>
     </v-form>
   </v-dialog>
+
+  <DialogRegistroDP :model-value="dialogRegistros" @update:modelValue="clonarObjetoDialogRegistrosDP(dialogRegistros)" @selecionado="getValuesRegistroDP()" />
+
 </template>
 
 <script setup lang="ts">
@@ -145,7 +147,9 @@
 import DateTimePicker from '@/components/DateTimePicker.vue'; // Componente visual para data e hora
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual para o input upper case
 import InputTextUpperCase from '@/components/InputTextUpperCase.vue'; // Componente visual para o input text area upper case
+import DialogRegistroDP from '@/components/dialog/dialogSaidas/dialogRegistroDP/DialogRegistroDP.vue'; // Componente visual para a busca de funcionários
 // Classes
+import { DialogRegistroDPClass } from './dialogRegistroDP/ClassDialogRegistroDP';
 import { PaginatorClass } from '@/components/paginator/ClassPaginator'
 import type { DialogSaidasClass } from './ClassDialogSaidas'
 // Store
@@ -154,6 +158,7 @@ import { useSnackbarStore } from '@/stores/SnackbarStore'
 import type { MotivoConsulta } from '@/models/motivosModels/MotivosModels'
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
 // Services
+import { firebirdServices } from '@/services/firebirdService';
 import { motivosServices } from '@/services/motivosServices'
 import { saidasServices } from '@/services/saidasServices'
 import { rules } from '@/utils/rules'
@@ -163,7 +168,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 const formRef = ref()
 const formIsValid = ref(false)
 const showPassword = ref(false)
-
+const showLoadingRegistro = ref(false)
+const dialogRegistros = ref(new DialogRegistroDPClass())
 const paginadorClass = ref(new PaginatorClass({
   limite: 10,
   offset: 1,
@@ -252,7 +258,6 @@ async function submitForm() {
 
 // Consulta todos os motivos para alimentar o autocomplete
 var apiMotivos = ref<HeaderPaginatorModel<MotivoConsulta>>()
-
 async function getAllMotivos() {
   try {
     const response = await motivosServices.getMotivos(paginadorClass.value)
@@ -263,4 +268,40 @@ async function getAllMotivos() {
     throw error
   }
 }
+
+async function consultarRegistroDP(codRegistro?: number) {
+  try {
+    showLoadingRegistro.value = true
+    if (codRegistro) {
+      const codRegistroConvertido = codRegistro.toString()
+      const response = await firebirdServices.getRegistroDP(codRegistroConvertido)
+      if (response) {
+        saida.value.numeroRegistroFuncionario = response[0].registroDP
+        saida.value.nomeFuncionario = response[0].nome
+        saida.value.setorFuncionario = response[0].descricaoSetor
+      }
+    } else {
+      dialogRegistros.value.openDialog()
+    }
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+  } finally {
+    showLoadingRegistro.value = false
+  }
+}
+
+function getValuesRegistroDP() {
+  const valuesRegistro = dialogRegistros.value.getValues()
+
+  if (valuesRegistro.registroDP > 0) {
+    saida.value.numeroRegistroFuncionario = valuesRegistro.registroDP
+    saida.value.nomeFuncionario = valuesRegistro.nome
+    saida.value.setorFuncionario = valuesRegistro.descricaoSetor
+  }
+}
+
+function clonarObjetoDialogRegistrosDP(val: DialogRegistroDPClass) {
+  Object.assign(dialogRegistros, val)
+}
+
 </script>

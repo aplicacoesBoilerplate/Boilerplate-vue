@@ -1,6 +1,6 @@
 <template>
   <v-snackbar absolute v-model="snackbar.visible" :color="snackbar.color" :timeout="snackbarTimeout"
-    location="top right" variant="outlined" rounded multi-line>
+    location="top right" variant="elevated" rounded multi-line>
     {{ snackbar.message }}
 
     <template #actions>
@@ -9,7 +9,7 @@
       </v-btn>
     </template>
 
-    <v-progress-linear :model-value="progress" height="4" :color="snackbar.color" absolute bottom />
+    <v-progress-linear :model-value="progress" height="4" color="white" absolute bottom />
   </v-snackbar>
 </template>
 

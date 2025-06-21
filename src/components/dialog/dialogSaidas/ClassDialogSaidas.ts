@@ -88,10 +88,4 @@ export class DialogSaidasClass {
     if (idSaida != null) await this.getSaidaById(idSaida)
   }
 
-  async definirRegistroPorBusca(registroDP: funcionarioRegistradoDP) {
-    this.saida.numeroRegistroFuncionario = registroDP.registroDP
-    this.saida.nomeFuncionario = registroDP.nome
-    this.saida.setorFuncionario = registroDP.descricaoSetor
-  }
-
 }
