@@ -6,23 +6,25 @@
           <v-list density="compact">
             <v-list-subheader>ROTINAS</v-list-subheader>
 
-            <v-list-item v-for="router in routerOption" :key="router.id" color="primary">
-              <RouterLink :to="router.path" custom v-slot="{ navigate }">
-                <v-btn class="menu-btn position-relative d-flex justify-center align-center" color="black" block
-                  @click="navigate" :title="router.title" :disabled="disabledRouterOption(router.path)">
-                  <!-- Ícone fixo na esquerda -->
-                  <v-icon class="position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%);"
-                    color="white">
-                    {{ router.icon }}
-                  </v-icon>
+            <div v-for="router in routerOption" :key="router.id">
+              <v-list-item color="primary" v-if="disabledRouterOption(router.path)">
+                <RouterLink :to="router.path" custom v-slot="{ navigate }">
+                  <v-btn class="menu-btn position-relative d-flex justify-center align-center" color="black" block
+                    @click="navigate" :title="router.title">
+                    <!-- Ícone fixo na esquerda -->
+                    <v-icon class="position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%);"
+                      color="white">
+                      {{ router.icon }}
+                    </v-icon>
 
-                  <!-- Texto centralizado -->
-                  <span class="text-white" style="z-index: 1;">
-                    {{ router.title }}
-                  </span>
-                </v-btn>
-              </RouterLink>
-            </v-list-item>
+                    <!-- Texto centralizado -->
+                    <span class="text-white" style="z-index: 1;">
+                      {{ router.title }}
+                    </span>
+                  </v-btn>
+                </RouterLink>
+              </v-list-item>
+            </div>
           </v-list>
         </v-card>
       </div>
@@ -63,67 +65,67 @@ const routerOption = ref([
 
 function disabledRouterOption(path: string): boolean {
 
-  const disabledRouter = ref(true) // Começa bloqueado para não correr o risco de expor todos os componentes se caso perder o usuário autenticado
+  const showRouter = ref(false) // Começa bloqueado para não correr o risco de expor todos os componentes se caso perder o usuário autenticado
   const permissao = usuarioAutenticado().usuario.permissao
 
   switch (path) {
     case '/saidas': { // Apenas a portaria não pode acessar as rotas de saída
       if (permissao == 'PORTARIA') {
-        disabledRouter.value = true
+        showRouter.value = false
       }
       else
-        disabledRouter.value = false
+        showRouter.value = true
       break
     }
     case '/autorizacoes': { // Além dos admins, quem emite autorização também pode acessar este recurso
       if (permissao == 'ADMINISTRADOR' || permissao == 'ADMINISTRADOR_AUTORIZADO' || permissao == 'EMITE_AUTORIZACAO') {
-        disabledRouter.value = false
+        showRouter.value = true
       } else
-        disabledRouter.value = true
+        showRouter.value = false
       break
     }
     case '/motivos': { // Qualquer autenticado pode acessar os motivos, mas bloqueia para portaria apenas por ser conveniente
       if (permissao == 'PORTARIA')
-        disabledRouter.value = true
+        showRouter.value = false
       else
-        disabledRouter.value = false
+        showRouter.value = true
       break
     }
     case '/categorias': { // Apenas quem emite saída, todos, exceto a portaria
       if (permissao == 'PORTARIA')
-        disabledRouter.value = true
+        showRouter.value = false
       else
-        disabledRouter.value = false
+        showRouter.value = true
       break
     }
     case '/users': { // Apenas admins podem acessar os usuários
       if (permissao == 'ADMINISTRADOR' || permissao == 'ADMINISTRADOR_AUTORIZADO') {
-        disabledRouter.value = false
+        showRouter.value = true
       } else
-        disabledRouter.value = true
+        showRouter.value = false
       break
     }
     case '/portaria': { // Apenas a portaria pode acessar as rotas de portaria
       if (permissao == 'PORTARIA') {
-        disabledRouter.value = false
+        showRouter.value = true
       }
       else
-        disabledRouter.value = true
+        showRouter.value = false
       break
     }
     case '/errors': { // Apenas admins podem acessar o histórico de erros
       if (permissao == 'ADMINISTRADOR' || permissao == 'ADMINISTRADOR_AUTORIZADO') {
-        disabledRouter.value = false
+        showRouter.value = true
       } else
-        disabledRouter.value = true
+        showRouter.value = false
       break
     }
     default: {
-      disabledRouter.value = true
+      showRouter.value = false
     }
   }
 
-  return disabledRouter.value
+  return showRouter.value
 }
 
 </script>

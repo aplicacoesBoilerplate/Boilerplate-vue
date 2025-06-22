@@ -67,13 +67,13 @@
 
             <!-- Data e hora de previsão de saída do funcionário -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <DateTimePicker v-model="saida.dataPrevisaoSaidaFuncionario" label="Data e hora de previsão da saída"
+              <DateTimePicker v-model="saida.dataPrevisaoSaidaFuncionario" label="Previsão da saída"
                 :disabled="dialogSaidas.visualizando" variant="outlined" />
             </v-col>
 
             <!-- Data e hora de previsão de retorno do funcionário -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <DateTimePicker v-model="saida.dataPrevisaoChegadaFuncionario" label="Data e hora de previsão de retorno"
+              <DateTimePicker v-model="saida.dataPrevisaoChegadaFuncionario" label="Previsão de retorno"
                 :disabled="dialogSaidas.visualizando" variant="outlined" />
             </v-col>
 

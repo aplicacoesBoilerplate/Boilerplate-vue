@@ -1,5 +1,4 @@
 <template>
-  <SnackbarNotifications />
   <div>
     <!-- Loading -->
     <div class="d-flex justify-center mb-5" v-if="loading">
@@ -69,7 +68,6 @@
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
 import { usuariosServices } from '@/services/usuariosService'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
-import SnackbarNotifications from './Snackbar.vue'
 import { rules } from '@/utils/rules'
 import { ref } from 'vue'
 

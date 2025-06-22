@@ -16,7 +16,6 @@
       </v-app-bar-title>
     </RouterLink>
 
-
     <!-- Botão de perfil -->
     <div class="d-flex justify-space-around">
       <RouterLink to="/profile" custom v-slot="{ navigate }">
@@ -25,7 +24,6 @@
         </v-btn>
       </RouterLink>
     </div>
-
 
     <!-- Botão de logout -->
     <div class="d-flex justify-space-around">
@@ -36,12 +34,10 @@
 
   </v-app-bar>
   <DialogSearch v-model:exibir="showDialogSearch" />
-  <SnackbarNotifications />
 </template>
 
 <script setup lang=ts>
 // Componentes
-import SnackbarNotifications from './Snackbar.vue';
 import DialogSearch from './dialog/DialogSearch.vue';
 // Store
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado';

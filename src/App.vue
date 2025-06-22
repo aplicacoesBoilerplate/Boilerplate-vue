@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // Componentes
+import SnackbarNotifications from '@/components/Snackbar.vue';
 import Navigation from './components/Navigation.vue';
 
 // Vue
@@ -10,6 +11,7 @@ const route = useRoute();
 
 <template>
   <v-app theme="dark">
+    <SnackbarNotifications />
     <Navigation v-if="route.path !== '/' && route.path !== '/register'" />
 
     <v-main>
