@@ -1,5 +1,5 @@
 <template>
-  <v-text-field v-bind="$attrs" :model-value="localValue" @update:model-value="handleUpdate" :density="style.density"
+  <v-text-field ref="inputRef" v-bind="$attrs" :model-value="localValue" @input="handleInput" :density="style.density"
     :variant="style.inputVariant" :label="style.label" :hint="style.hint" :hide-details="style.hideDetails"
     :counter="style.counter" clearable :style="dynamicStyle" :rules="rules" :disabled="style.inputDisabled">
     <template #prepend-inner>
@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 import type { ValidationRule } from 'vuetify'
 
 interface Props {
@@ -49,12 +49,15 @@ const emit = defineEmits<{
   (e: 'on-prepend-click'): void
 }>()
 
+// Referência do input real para manipular cursor
+const inputRef = ref()
+
 // Valor local do input
 const localValue = ref((props.modelValue ?? '').toUpperCase())
 
 // Atualiza localValue quando a prop externa muda (ex: ao vir de uma requisição)
-watch(() => props.modelValue, (newVal) => {
-  localValue.value = (newVal ?? '').toUpperCase()
+watch(() => props.modelValue, (novoValor) => {
+  localValue.value = (novoValor ?? '').toUpperCase()
 })
 
 // Computed para o style informando o tamanho máximo do input
@@ -65,9 +68,26 @@ const dynamicStyle = computed(() => {
 })
 
 // Emite valor em uppercase sempre que o input for alterado
-function handleUpdate(value: string | null) {
-  const upper = (value ?? '').toUpperCase()
-  localValue.value = upper
-  emit('update:modelValue', upper)
+function handleInput(event: Event) {
+  const target = event.target as HTMLInputElement
+
+  const original = target.value
+  const transformed = original.toUpperCase()
+
+  // Salva a posição do cursor ANTES da transformação
+  const selectionStart = target.selectionStart
+  const offset = transformed.length - original.length
+
+  localValue.value = transformed
+  emit('update:modelValue', transformed)
+
+  // Aguarda o DOM atualizar e restaura o cursor manualmente
+  nextTick(() => {
+    const inputEl = inputRef.value?.$el.querySelector('input') as HTMLInputElement
+    if (inputEl && selectionStart != null) {
+      const newPos = selectionStart + offset
+      inputEl.setSelectionRange(newPos, newPos)
+    }
+  })
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <v-textarea v-bind="$attrs" :model-value="localValue" @update:model-value="handleUpdate" :density="style.density"
+  <v-textarea ref="inputRef" v-bind="$attrs" :model-value="localValue" @input="handleInput" :density="style.density"
     :variant="style.inputVariant" :label="style.label" clearable :style="dynamicStyle" :rules="rules"
     :disabled="style.inputDisabled" :counter="style.counter">
     <template #prepend-inner>
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 import type { ValidationRule } from 'vuetify'
 
 interface Props {
@@ -42,6 +42,9 @@ const emit = defineEmits<{
   (e: 'on-prepend-click'): void
 }>()
 
+// Referência do input real para manipular cursor
+const inputRef = ref()
+
 // Valor local convertido para uppercase
 const localValue = ref((props.modelValue ?? '').toUpperCase())
 
@@ -58,9 +61,27 @@ const dynamicStyle = computed(() => {
 })
 
 // Emite o valor convertido
-function handleUpdate(value: string | null) {
-  const upper = (value ?? '').toUpperCase()
-  localValue.value = upper
-  emit('update:modelValue', upper)
+function handleInput(event: Event) {
+  const target = event.target as HTMLInputElement
+
+  const original = target.value
+  const transformed = original.toUpperCase()
+
+  // Salva a posição do cursor ANTES da transformação
+  const selectionStart = target.selectionStart
+  const offset = transformed.length - original.length
+
+  localValue.value = transformed
+  emit('update:modelValue', transformed)
+
+  // Aguarda o DOM atualizar e restaura o cursor manualmente
+  nextTick(() => {
+    const inputEl = inputRef.value?.$el.querySelector('textarea') as HTMLTextAreaElement
+    if (inputEl && selectionStart != null) {
+      const newPos = selectionStart + offset
+      inputEl.setSelectionRange(newPos, newPos)
+    }
+  })
 }
+
 </script>
