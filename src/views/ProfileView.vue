@@ -8,7 +8,8 @@
           </v-col>
 
           <v-col md="3" sm="4">
-            <InputUpperCase v-model:="model.nome" :style="{ label: 'Nome', maxWidth: 1000, inputVariant: 'outlined' }" />
+            <InputUpperCase v-model:="model.nome"
+              :style="{ label: 'Nome', maxWidth: 1000, inputVariant: 'outlined' }" />
           </v-col>
 
           <v-col md="8" sm="6">
@@ -133,7 +134,7 @@ const usuarioStore = usuarioAutenticado()
 const permissao = usuarioAutenticado().usuario.permissao
 const model = ref<UsuarioConsulta>({
   nome: '',
-  email: '',
+  email: '@SIERMOVEIS.COM.BR',
 })
 const usuarioOriginal = ref<UsuarioConsulta>()
 const usuarioConfirmado = ref(false)

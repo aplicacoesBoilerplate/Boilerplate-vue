@@ -11,7 +11,7 @@ export class DialogUsersClass {
     this.isEditing = false
     this.usuario = {
       nome: '',
-      email: '',
+      email: '@SIERMOVEIS.COM.BR',
       permissao: 'EMITE_SAIDA',
     }
   }
@@ -31,7 +31,7 @@ export class DialogUsersClass {
     } else {
       this.usuario = {
         nome: '',
-        email: '',
+        email: '@SIERMOVEIS.COM.BR',
         permissao: 'EMITE_SAIDA',
       }
     }

@@ -42,8 +42,7 @@
               <v-col cols="6">
                 <v-text-field clearable v-model="newUser.confirmarSenha"
                   :rules="[rules.required, rules.equals(() => newUser.senha)]"
-                  :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*"
-                  variant="outlined" counter>
+                  :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*" variant="outlined" counter>
                   <template v-slot:append-inner>
                     <v-btn :icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword2 = !showPassword2"
                       variant="text" />
@@ -78,7 +77,7 @@ const showPassword2 = ref(false)
 const newUser = ref(
   {
     nome: '',
-    email: '',
+    email: '@SIERMOVEIS.COM.BR',
     senha: '',
     confirmarSenha: ''
   }
@@ -91,9 +90,9 @@ async function solicitarAcesso() {
     loading.value = true
     await usuariosServices.solicitarAcesso(newUser.value)
     useSnackbarStore().showSnackbar('Conta registrada, aguarde a liberação de um administrador', 'success')
-    newUser.value =   {
+    newUser.value = {
       nome: '',
-      email: '',
+      email: '@SIERMOVEIS.COM.BR',
       senha: '',
       confirmarSenha: ''
     }
@@ -104,4 +103,5 @@ async function solicitarAcesso() {
     loading.value = false
   }
 }
+
 </script>
