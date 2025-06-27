@@ -111,7 +111,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Solicitada em:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ saida.dataSolicitacaoSaida }}
                   </p>
                 </div>
@@ -135,7 +135,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Previsão para saída:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ saida.dataPrevisaoSaidaFuncionario }}
                   </p>
                 </div>
@@ -147,7 +147,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Previsão para retorno:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ saida.confirmaRetorno ? `${saida.dataPrevisaoChegadaFuncionario}` : 'Não retorna' }}
                   </p>
                 </div>
@@ -159,7 +159,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Data da saída:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ saida.dataSaidaFuncionario }}
                   </p>
                 </div>
@@ -171,11 +171,78 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Data do retorno:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ saida.confirmaRetorno ? `${saida.dataChegadaFuncionario}` : 'Não retorna' }}
                   </p>
                 </div>
               </v-col>
+
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Saída para o Funcionário:
+                  </p>
+                  <p>
+                    {{ saida.numeroRegistroFuncionario }}: {{ saida.nomeFuncionario }}
+                  </p>
+                </div>
+              </v-col>
+
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Setor do funcionário:
+                  </p>
+                  <p>
+                    {{ saida.setorFuncionario }}
+                  </p>
+                </div>
+              </v-col>
+
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Motivo da saída:
+                  </p>
+                  <p>
+                    {{ saida.motivoSaida }}: {{ saida.descricaoMotivo }}
+                  </p>
+                </div>
+              </v-col>
+
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Solicitada em:
+                  </p>
+                  <p>
+                    {{ saida.dataSolicitacaoSaida }}
+                  </p>
+                </div>
+              </v-col>
+
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Responsável pela saída:
+                  </p>
+                  <p>
+                    {{ saida.nomeFuncionarioResponsavelSaida }}
+                  </p>
+                </div>
+              </v-col>
+
+              <v-col cols="12">
+                <div class="d-flex flex-row">
+                  <p class="text-info" style="padding-right: 0.35rem;">
+                    Observação da saída:
+                  </p>
+                  <p>
+                    {{ saida.observacaoSaida }}
+                  </p>
+                </div>
+              </v-col>
+
             </v-row>
           </div>
         </v-expand-transition>

@@ -20,7 +20,7 @@
         btnVariant: 'text',
         label: 'Consultar autorizações',
         showPrepend: true,
-        hint: 'Motivo, registro, nome ou setor',
+        hint: 'Motivo, categoria, registro, nome ou setor',
         maxWidth: 300,
       }" @on-prepend-click="getAutorizacoes" />
 
@@ -121,7 +121,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Responsável pela autorização:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
                   </p>
                 </div>
@@ -143,8 +143,8 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Data de emissão:
                   </p>
-                  <p class="text-success">
-                    {{ autorizacao.dataAutorizacao }}
+                  <p :class="autorizacao.dataAutorizacao ? 'text-success' : 'text-red'">
+                    {{ autorizacao.dataAutorizacao ? autorizacao.dataAutorizacao : 'Não definido' }}
                   </p>
                 </div>
               </v-col>

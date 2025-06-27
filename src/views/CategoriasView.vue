@@ -11,8 +11,8 @@
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de categorias</span>
 
-      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirApenasHoje: true, exibirAprovacao: true }" @alterado-ordem="aoMudarOrdem"
-        @alterado-aprovacao="aoMudarAprovacao" @limpar-filtros="limparFiltros" />
+      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirApenasHoje: true, exibirAprovacao: true }"
+        @alterado-ordem="aoMudarOrdem" @alterado-aprovacao="aoMudarAprovacao" @limpar-filtros="limparFiltros" />
 
       <!-- Campo para consultar as categorias pelo search -->
       <InputUpperCase v-model:="paginadorClass.search" :style="{
@@ -93,6 +93,8 @@
         <!-- Card de detalhes para cada categoria, expanção controlada por uma variável -->
         <v-expand-transition>
           <div v-if="expandedCategoriaId === categoria.idCategoria" class="custom-expansion-panel">
+            <v-divider />
+
             <v-row dense>
               <!-- Informações da categoria -->
               <v-col cols="12" class="d-flex justify-center">
@@ -108,7 +110,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Descrição:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ categoria.descricaoCategoria }}
                   </p>
                 </div>

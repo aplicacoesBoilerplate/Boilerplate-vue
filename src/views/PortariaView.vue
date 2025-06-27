@@ -96,7 +96,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Data da previsão para saída:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ portaria.dataPrevisaoSaidaFuncionario }}
                   </p>
                 </div>
@@ -108,7 +108,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Data da previsão para retorno:
                   </p>
-                  <p class="text-success">
+                  <p :class="portaria.confirmaRetorno ? '' : 'text-red'">
                     {{ portaria.confirmaRetorno ? `${portaria.dataPrevisaoChegadaFuncionario}` : 'Não retorna' }}
                   </p>
                 </div>
@@ -122,7 +122,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Emitida por:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ portaria.nomeFuncionarioResponsavelSaida }}
                   </p>
                 </div>
@@ -147,7 +147,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Motivo saída:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ portaria.motivoSaida }}: {{ portaria.categoriaMotivo }} - {{ portaria.descricaoMotivo }}
                   </p>
                 </div>
@@ -159,7 +159,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Observações da saída:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ portaria.observacaoSaida }}
                   </p>
                 </div>
@@ -185,7 +185,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Responsável pela autorização:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
                   </p>
                 </div>
@@ -209,7 +209,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Data de emissão:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ autorizacao.dataAutorizacao }}
                   </p>
                 </div>

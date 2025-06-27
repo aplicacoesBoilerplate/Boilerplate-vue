@@ -93,6 +93,8 @@
         <!-- Card de detalhes para cada motivo, expanção controlada por uma variável -->
         <v-expand-transition>
           <div v-if="expandedMotivoId === motivo.idMotivo" class="custom-expansion-panel">
+            <v-divider />
+
             <v-row dense>
               <!-- Informações do motivo -->
               <v-col cols="12" class="d-flex justify-center">
@@ -108,7 +110,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Descrição:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ motivo.descricaoMotivo }}
                   </p>
                 </div>
@@ -119,7 +121,7 @@
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Categoria:
                   </p>
-                  <p class="text-success">
+                  <p>
                     {{ motivo.idCategoria }} - {{ motivo.descricaoCategoria }}
                   </p>
                 </div>
@@ -300,7 +302,6 @@ function toggleMotivo(id?: number) {
   if (id != null)
     expandedMotivoId.value = expandedMotivoId.value === id ? null : id
 }
-
 //#endregion
 
 </script>
