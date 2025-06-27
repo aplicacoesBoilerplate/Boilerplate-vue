@@ -33,12 +33,9 @@
     </div>
 
   </v-app-bar>
-  <DialogSearch v-model:exibir="showDialogSearch" />
 </template>
 
 <script setup lang=ts>
-// Componentes
-import DialogSearch from './dialog/DialogSearch.vue';
 // Store
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 import { useSnackbarStore } from '@/stores/SnackbarStore';

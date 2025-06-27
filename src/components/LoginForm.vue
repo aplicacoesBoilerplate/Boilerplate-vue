@@ -76,7 +76,7 @@ async function authLogin() {
       redirectRouter.push('/dashboard');
       const usuarioLogado = await authServices().getByToken()
       usuarioAutenticado().usuario = usuarioLogado
-      useSnackbarStore().showSnackbar(`Bem-vindo, ${usuarioLogado.nome}!`, 'success')
+      useSnackbarStore().showSnackbar(`Bem-vindo(a), ${usuarioLogado.nome}!`, 'success')
     } catch (err) {
       useSnackbarStore().showSnackbar(err, 'red')
       throw err
