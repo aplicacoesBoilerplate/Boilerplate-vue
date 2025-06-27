@@ -4,6 +4,8 @@ export interface NovoUsuario {
   email: string
   senha: string
   permissao?: string
+  celularUsuario?: string
+  receberNotificacoes?: boolean
   autorizaSaida?: boolean
 }
 
@@ -13,10 +15,12 @@ export interface AtualizarUsuario {
   nome: string
   email: string
   permissao?: string
+  celularUsuario?: string
+  receberNotificacoes?: boolean
   autorizaSaida?: boolean
   ativo?: boolean
   contaBloqueada?: boolean
-  contaExpiraEm?: Date
+  contaExpiraEm?: string
   senhaExpirada?: boolean
   tentativasFalhas?: number
 }
@@ -27,10 +31,12 @@ export interface UsuarioConsulta {
   nome: string
   email: string
   permissao?: string
+  celularUsuario?: string
+  receberNotificacoes?: boolean
   autorizaSaida?: boolean
   ativo?: boolean
   contaBloqueada?: boolean
-  contaExpiraEm?: Date
+  contaExpiraEm?: string
   senhaExpirada?: boolean
   tentativasFalhas?: number
 }

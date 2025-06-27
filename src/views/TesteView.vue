@@ -4,6 +4,7 @@ import DialogRegistroDP from '@/components/dialog/dialogSaidas/dialogRegistroDP/
 import { ref } from 'vue';
 
 const dialogRegistros = ref(new DialogRegistroDPClass())
+const telefone = ref('')
 
 function clonarObjetoDialogRegistrosDP(val: DialogRegistroDPClass) {
   Object.assign(dialogRegistros, val)
@@ -11,5 +12,10 @@ function clonarObjetoDialogRegistrosDP(val: DialogRegistroDPClass) {
 </script>
 
 <template>
-  <DialogRegistroDP :model-value="dialogRegistros" @update:modelValue="clonarObjetoDialogRegistrosDP(dialogRegistros)" />
+  <DialogRegistroDP :model-value="dialogRegistros"
+    @update:modelValue="clonarObjetoDialogRegistrosDP(dialogRegistros)" />
+
+  <v-text-field v-model="telefone" v-telefone-mask label="Telefone" placeholder="(00) 00000-0000" variant="outlined"
+    clearable />
+
 </template>

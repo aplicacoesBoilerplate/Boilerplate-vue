@@ -46,8 +46,7 @@
               <v-switch v-model="user.autorizaSaida" color="success" label="Autoriza saídas"></v-switch>
             </v-col>
             <v-col cols="6" class="d-flex justify-center">
-              <v-date-input clearable label="Data expiração da conta" prepend-icon="" prepend-inner-icon="$calendar"
-                variant="solo"></v-date-input>
+              <DateTimePicker v-model="user.contaExpiraEm" label="Data expiração da conta" variant="outlined" />
             </v-col>
           </v-row>
 
@@ -89,6 +88,7 @@
 
 <script setup lang="ts">
 // Componentes
+import DateTimePicker from '@/components/DateTimePicker.vue'; // Componente visual para data e hora
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual para o input upper case
 // Classes
 import type { DialogUsersClass } from './ClassDialogUsers'

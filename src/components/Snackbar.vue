@@ -1,5 +1,5 @@
 <template>
-  <v-snackbar absolute v-model="snackbar.visible" :color="snackbar.color" :timeout="snackbarTimeout"
+  <v-snackbar absolute v-model="snackbar.visible" :color="snackbar.color" :timeout="snackbarTimeout" class="py-15"
     location="top right" variant="elevated" rounded multi-line>
     {{ snackbar.message }}
 

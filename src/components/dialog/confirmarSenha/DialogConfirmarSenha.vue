@@ -127,7 +127,7 @@ async function submitForm() {
       await confirmarSenha.value.executeCallback()
 
     resetForm()
-    useSnackbarStore().showSnackbar('Operação realizada com sucesso!', 'success')
+    useSnackbarStore().showSnackbar('Senha confirmada!', 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
   }

@@ -1,51 +1,60 @@
 <template>
   <div class="pa-4 text-center">
-    <v-card prepend-icon="mdi-account" title="Perfil de usuário">
+    <v-card prepend-icon="mdi-account" title="Perfil de usuário" class="mx-auto" max-width="1000">
       <v-card-text>
         <v-row dense>
-          <v-col md="1" sm="2">
+          <v-col lg="2" md="2" sm="2" cols="3">
             <v-text-field clearable label="Registro" disabled v-model="model.idUsuario"></v-text-field>
           </v-col>
 
-          <v-col md="3" sm="4">
+          <v-col lg="4" md="4" sm="10" cols="9">
             <InputUpperCase v-model:="model.nome"
               :style="{ label: 'Nome', maxWidth: 1000, inputVariant: 'outlined' }" />
           </v-col>
 
-          <v-col md="8" sm="6">
+          <v-col lg="6" md="6" cols="12">
             <InputUpperCase v-model:="model.email"
               :style="{ label: 'Email', hint: 'Atualizar seu e-mail altera seu login no sistema!', maxWidth: 10000, inputVariant: 'outlined' }" />
           </v-col>
 
-          <v-col md="5" sm="4">
-            <v-autocomplete clearable v-model="model.permissao" label="Permissão*"
-              :disabled="permissao == 'PORTARIA' || permissao == 'EMITE_SAIDA' || permissao == 'EMITE_AUTORIZACAO'"
+          <v-col lg="5" md="6" cols="12">
+            <v-autocomplete clearable v-model="model.permissao" label="Permissão*" :disabled="!permissao"
               :items="permissoes" :item-title="'chave'" :item-value="'valor'" variant="outlined"
               :rules="[rules.required, rules.includes(PermissoesUsuarios)]" />
           </v-col>
 
-          <v-col md="2" sm="4" class="d-flex justify-center">
-            <v-switch v-model="model.autorizaSaida" color="success" label="Autoriza saídas" variant="outlined"
-              :disabled="permissao == 'PORTARIA' || permissao == 'EMITE_SAIDA' || permissao == 'EMITE_AUTORIZACAO'" />
+          <v-col lg="3" cols="6">
+            <InputUpperCase v-model:="model.celularUsuario" v-telefone-mask
+              :style="{ label: 'Telefone/Celular', hint: 'Contato para notificações via WhastsApp', maxWidth: 10000, inputVariant: 'outlined' }" />
           </v-col>
 
-          <v-col md="5" sm="4" class="d-flex justify-center">
-            <v-date-input clearable label="Data expiração da conta" prepend-icon="" prepend-inner-icon="$calendar"
-              variant="outlined" :disabled="permissao != 'ADMINISTRADOR' && permissao != 'ADMINISTRADOR_AUTORIZADO'" />
+          <v-col lg="4" md="4" cols="6" class="d-flex justify-center">
+            <v-switch v-model="model.receberNotificacoes" color="success" label="Receber notificações"
+              variant="outlined" />
+          </v-col>
+
+          <v-col lg="4" md="4" sm="4" cols="6" class="d-flex justify-center">
+            <v-switch v-model="model.autorizaSaida" color="success" label="Autoriza saídas" variant="outlined"
+              :disabled="!permissao" />
+          </v-col>
+
+          <v-col lg="4" sm="4" cols="6" class="d-flex justify-center">
+            <DateTimePicker v-model="model.contaExpiraEm" label="Data expiração da conta" variant="outlined"
+              :disabled="!permissao" />
+          </v-col>
+
+          <v-col lg="4" md="12" sm="4" cols="12" class="d-flex justify-center align-center">
+            <v-btn color="warning" variant="plain" rounded density="compact" text="Alterar senha"
+              @click="confirmarUsuario()"><v-icon>mdi-lock-reset</v-icon>Alterar senha</v-btn>
           </v-col>
         </v-row>
-
-        <div class="pb-5">
-          <v-btn color="warning" variant="plain" rounded density="compact" text="Alterar senha"
-            @click="confirmarUsuario()"><v-icon>mdi-lock-reset</v-icon> Alterar senha</v-btn>
-        </div>
 
         <v-form ref="formRef" v-model="formIsValid" @submit.prevent="alterarSenha()">
           <v-row class="d-flex justify-center" dense v-if="usuarioConfirmado">
 
             <v-col cols="4">
               <v-text-field clearable v-model="alterarSenhaUsuario.senhaUsuario" :rules="[rules.required]"
-                :type="showPassword1 ? 'text' : 'password'" hint="Insira novamente a sua senha" persistent-hint
+                :type="showPassword1 ? 'text' : 'password'" hint="Insira novamente a sua senha atual" persistent-hint
                 label="Senha atual*" variant="outlined" counter>
 
                 <template v-slot:append-inner>
@@ -107,6 +116,7 @@
 
 <script setup lang="ts">
 // Componentes
+import DateTimePicker from '@/components/DateTimePicker.vue'; // Componente visual para data e hora
 import InputUpperCase from '@/components/InputUpperCase.vue';
 import { ConfirmarSenhaClass } from '@/components/dialog/confirmarSenha/ClassConfirmarSenha';
 import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
@@ -127,11 +137,11 @@ import { authServices } from '@/services/authService';
 import { rules } from '@/utils/rules'
 
 // Vue
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed, onBeforeMount } from 'vue';
 
 const confirmarSenha = ref(new ConfirmarSenhaClass())
 const usuarioStore = usuarioAutenticado()
-const permissao = usuarioAutenticado().usuario.permissao
+const permissao = ref()
 const model = ref<UsuarioConsulta>({
   nome: '',
   email: '@SIERMOVEIS.COM.BR',
@@ -151,10 +161,14 @@ const alterarSenhaUsuario = ref<AlterarSenha>({
   confirmarNovaSenha: ''
 })
 
-onMounted(async () => {
-  usuarioStore.usuario = await authServices().getByToken()
-  model.value = clone<UsuarioConsulta>(usuarioStore.usuario)
-  usuarioOriginal.value = clone<UsuarioConsulta>(usuarioStore.usuario)
+onBeforeMount(async () => {
+  await authServices().getByToken()
+  const usuarioPerfil = usuarioAutenticado().usuario
+  model.value = clone<UsuarioConsulta>(usuarioPerfil)
+  usuarioOriginal.value = clone<UsuarioConsulta>(usuarioPerfil)
+
+  permissao.value = usuarioPerfil.permissao == 'ADMINISTRADOR' ||
+    usuarioPerfil.permissao == 'ADMINISTRADOR_AUTORIZADO'
 })
 
 function clone<T>(pObj: T): T {
@@ -201,6 +215,7 @@ async function modificarUsuario() {
     await usuariosServices.updateUser(model.value)
     usuarioStore.usuario = model.value
     useSnackbarStore().showSnackbar('Perfil atualizado com sucesso!', 'success')
+    usuarioOriginal.value = clone<UsuarioConsulta>(model.value)
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error

@@ -8,7 +8,6 @@ async function login(loginData: LoginModel): Promise<string> {
     const response = await http.post('/auth/login', loginData)
     const token = response.data.tokenJWT
     sessionStorage.setItem('token', token)
-
     return token
   } catch (error) {
     throw error
@@ -22,6 +21,7 @@ function logout() {
 async function getByToken(): Promise<UsuarioConsulta> {
   try {
     const { data } = await http.get('/auth/me')
+    usuarioAutenticado().usuario = data
     return data
   } catch (error) {
     throw error
@@ -49,27 +49,6 @@ async function alterarSenha(alter: AlterarSenha) {
   }
 }
 
-// async function controleBloqueios(usuario: UsuarioConsulta, operacao: string) {
-//   const params = { ...usuario }
-//   try {
-//     switch (operacao) {
-//       case 'ativo': {
-//         params.ativo = !usuario.ativo
-//         break
-//       }
-//       case 'bloqueio': {
-//         params.contaBloqueada = !usuario.contaBloqueada
-//         break
-//       }
-//       default:
-//         return
-//     }
-//     await http.put('/auth/controle', params)
-//   } catch (error) {
-//     throw error
-//   }
-// }
-
 async function resetarSenhaAoPadrao(emailUsuario: string) {
   try {
     await http.put(`/auth/resetar-senha?emailUsuario=${emailUsuario}`)
@@ -85,7 +64,6 @@ export function authServices() {
     confirmarSenha,
     alterarSenha,
     getByToken,
-    // controleBloqueios,
     resetarSenhaAoPadrao,
   }
 }
