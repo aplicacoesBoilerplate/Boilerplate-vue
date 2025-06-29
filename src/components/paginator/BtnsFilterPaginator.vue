@@ -7,14 +7,16 @@
       <v-list-item>
         <v-list-item-title>
           <div class="d-flex flex-row">
-            <!-- Filtro para ordenação dos registros -->
-            <v-btn icon size="x-small" color="primary" variant="tonal" title="Ordem" @click="aoMudarOrdem()">
-              <v-icon>{{ paginator.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
-              </v-icon>
-            </v-btn>
+            <div v-if="showFilter.exibirOrdem">
+              <!-- Filtro para ordenação dos registros -->
+              <v-btn icon size="x-small" color="primary" variant="tonal" title="Ordem" @click="aoMudarOrdem()">
+                <v-icon>{{ paginator.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
+                </v-icon>
+              </v-btn>
+              <span class="pr-2" />
+            </div>
 
             <div v-if="showFilter.exibirApenasHoje">
-              <span class="pr-2" />
               <!-- Filtro para considerar apenas os registros do dia -->
               <v-btn icon="mdi-calendar-today-outline" size="x-small" variant="tonal"
                 :color="paginator.apenasHoje ? 'success' : 'info'"
@@ -56,6 +58,7 @@ import { computed } from 'vue';
 
 interface Props {
   show: {
+    exibirOrdem?: boolean | true // Controle de visualização no componente para exibir ou não o filtro de ordenação, o valor padrão é true
     exibirApenasHoje?: boolean | false // Controle de visualização no componente da portaria para exibir ou não o filtro de apenas hoje, o valor padrão é false
     exibirAprovacao?: boolean | false // Controle de visualização no componente de consultar autorizações para exibir ou não o filtro de aprovações, o valor padrão é false
     exibirAlterarInput?: boolean | false // Controla a exibição do botão que emite o evento para trocar o campo de input
