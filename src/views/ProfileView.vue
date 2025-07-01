@@ -28,8 +28,6 @@
               :style="{ label: 'Telefone/Celular', hint: 'Contato para notificações via WhastsApp', maxWidth: 10000, inputVariant: 'outlined' }" />
           </v-col>
 
-          {{ model.celularUsuario }}
-
           <v-col lg="4" md="4" cols="6" class="d-flex justify-center">
             <v-switch v-model="model.receberNotificacoes" color="success" label="Receber notificações"
               variant="outlined" />
