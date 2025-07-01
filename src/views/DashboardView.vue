@@ -5,7 +5,7 @@
 
   <div class="d-flex justify-center mb-6">
     <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosDashboard" @alterado-apenas-hoje="aoMudarApenasHoje"
-      @alterado-aprovacao="aoMudarAprovacao" @alterar-input="alterarInputSearch" @limpar-filtros="limparFiltros" />
+      @alterado-aprovacao="aoMudarAprovacao" @limpar-filtros="limparFiltros" />
   </div>
 
   <v-container class="container-dashboard">
@@ -18,7 +18,6 @@
             {{ indicador.amount }}
           </template>
         </v-card>
-        <div class="text-center text-caption">{{ indicador.status }}</div>
       </v-col>
     </v-row>
   </v-container>
@@ -32,12 +31,11 @@ import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
 
 // Models
-import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
 import { relatoriosServices } from '@/services/relatoriosService';
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 
 // Vue
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 
 onBeforeMount(() => {
   getDashboard();
@@ -72,7 +70,7 @@ const filtrosDashboard = ref({
   exibirOrdem: false,
   exibirApenasHoje: true,
   exibirAprovacao: true,
-  exibirAlterarInput: true
+  exibirAlterarInput: false
 })
 
 async function aoMudarAprovacao() {
@@ -83,10 +81,6 @@ async function aoMudarAprovacao() {
 async function aoMudarApenasHoje() {
   paginadorClass.value.alterarFiltroApenasHoje()
   await getDashboard()
-}
-
-function alterarInputSearch() {
-  paginadorClass.value.alterarInput = !paginadorClass.value.alterarInput
 }
 
 async function limparFiltros() {
@@ -100,22 +94,22 @@ async function limparFiltros() {
 
 interface Indicador {
   id: number;
-  status: string;
-  title: string;
   amount: number;
-  about: string;
-  color: string;
   icon: string;
+  color: string;
+  title: string;
+  about: string;
   permission?: boolean | true;
 }
 
 const indicadores = ref<Indicador[]>([
-  // { id: 0, status: '', title: '', amount: '', about: '', color: '', icon: '' },
-  { id: 1, status: 'bad', title: 'Total de saidas', amount: 0, about: 'Número total de saídas registradas', color: 'info', icon: 'mdi-checkbox-marked-circle-minus-outline' },
-  { id: 2, status: 'good', title: 'Funcionários fora da empresa', amount: 0, about: 'Total de saídas em andamento (incluí saídas sem retorno)', color: 'warning', icon: 'mdi-checkbox-marked-circle-plus-outline' },
-  { id: 3, status: 'good', title: 'Retornos pendentes', amount: 0, about: 'Quantos funcionários fora da empresa vão retornar', color: 'success', icon: 'mdi-checkbox-marked-circle-auto-outline' },
-  { id: 4, status: 'undefined', title: 'Aguardando autorização', amount: 0, about: 'Total de saídas em aberto', color: '', icon: 'mdi-calendar-check-outline' }
+  // { id: 0, amount: '', icon: '', color: '', title: '', about: '' },
+  { id: 1, amount: 0, icon: 'mdi-tally-mark-1', color: 'info', title: 'Total de saidas', about: 'Número total de saídas registradas (respeita a alteração dos filtros de busca)' },
+  { id: 2, amount: 0, icon: 'mdi-tally-mark-2', color: 'warning', title: 'Funcionários fora da empresa', about: 'Total de saídas em andamento (incluí saídas sem retorno)' },
+  { id: 3, amount: 0, icon: 'mdi-tally-mark-3', color: 'success', title: 'Retornos pendentes', about: 'Quantos funcionários fora da empresa vão retornar' },
+  { id: 4, amount: 0, icon: 'mdi-tally-mark-4', color: '', title: 'Aguardando autorização', about: 'Total de saídas aguardando que as autorizações sejam emitidas' }
 ])
+
 // #endregion
 
 </script>
