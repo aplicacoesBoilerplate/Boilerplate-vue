@@ -52,7 +52,7 @@
     <v-virtual-scroll :items="apiCategorias?.registros" height="500" item-height="50" v-else>
       <template v-slot:default="{ item: categoria }">
         <v-list-item :title="`${categoria.idCategoria} - ${categoria.descricaoCategoria}`"
-          :subtitle="`#emergencial: ${categoria.emergencial}`">
+          :subtitle="`#emergencial: ${ categoria.emergencial ? 'SIM' : 'NÃO' }`">
 
           <!-- Ícone de cartão de categoria -->
           <template v-slot:prepend>
@@ -102,29 +102,25 @@
                   INFORMAÇÕES DA CATEGORIA
                 </v-chip>
               </v-col>
-              <br>
-              <br>
+            </v-row>
+            <br>
+            <br>
 
-              <v-col cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Descrição:
-                  </p>
-                  <p>
-                    {{ categoria.descricaoCategoria }}
-                  </p>
-                </div>
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Descrição:
               </v-col>
+              <v-col cols="6" class="mb-1">
+                {{ categoria.descricaoCategoria }}
+              </v-col>
+            </v-row>
 
-              <v-col cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Emergencial:
-                  </p>
-                  <p :class="!categoria.emergencial ? 'text-success' : 'text-red'">
-                    {{ categoria.emergencial ? 'SIM' : 'NÃO' }}
-                  </p>
-                </div>
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Emergencial:
+              </v-col>
+              <v-col cols="6" class="mb-1" :class="!categoria.emergencial ? 'text-success' : 'text-red'">
+                {{ categoria.emergencial ? 'SIM' : 'NÃO' }}
               </v-col>
             </v-row>
           </div>

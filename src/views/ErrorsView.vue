@@ -74,94 +74,121 @@
                   INFORMAÇÕES DO RESPONSÁVEL
                 </v-chip>
               </v-col>
-              <br>
-              <br>
-
-              <v-col cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Responsável:
-                  </p>
-                  {{ error.nomeResponsavel }}
-                </div>
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Email:
-                  </p>
-                  {{ error.emailResponsavel }}
-                </div>
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Permissao:
-                  </p>
-                  {{ error.permissaoResponsavel }}
-                </div>
-              </v-col>
-
-              <v-divider />
-
-              <!-- Informações do erro -->
-              <v-col cols="12" class="d-flex justify-center">
-                <v-chip color="warning">
-                  INFORMAÇÕES DO ERRO
-                </v-chip>
-              </v-col>
-              <br>
-              <br>
-
-              <v-col cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-warning" style="padding-right: 0.35rem;">
-                    Mensagem:
-                  </p>
-                  {{ error.erro }}
-                </div>
-                <div class="d-flex flex-row">
-                  <p class="text-warning" style="padding-right: 0.35rem;">
-                    Arquivo de origem:
-                  </p>
-                  {{ error.arquivoError }}
-                </div>
-                <div class="d-flex flex-row">
-                  <p class="text-warning" style="padding-right: 0.35rem;">
-                    Classe de origem:
-                  </p>
-                  {{ error.classeError }}
-                </div>
-                <div class="d-flex flex-row">
-                  <p class="text-warning" style="padding-right: 0.35rem;">
-                    Método de origem:
-                  </p>
-                  {{ error.metodoError }}
-                </div>
-                <div class="d-flex flex-row">
-                  <p class="text-warning" style="padding-right: 0.35rem;">
-                    Linha de origem:
-                  </p>
-                  {{ error.linhaError }}
-                </div>
-                <div class="d-flex flex-row">
-                  <p class="text-warning" style="padding-right: 0.35rem;">
-                    Http status code:
-                  </p>
-                  {{ error.statusCodeError }}
-                </div>
-              </v-col>
-
-              <v-divider v-if="error.idSaida > 0" />
-
-              <!-- Registro da saída relacionada -->
-              <v-col v-if="error.idSaida > 0" cols="12" class="d-flex justify-center">
-                <v-chip color="info">
-                  Referente a saída:
-                  {{ error.idSaida }}
-                  <span class="pr-2" />
-                  <BtnOpenDialog :callback="() => visualizarInformacoes(error.idSaida)" icon="mdi-eye-outline"
-                    size="x-small" variant="outlined" color="info" class="pt-2" />
-                </v-chip>
-              </v-col>
-
             </v-row>
+            <br>
+            <br>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-info mb-1">
+                Responsável:
+              </v-col>
+              <v-col cols="9" class="mb-1">
+                {{ error.nomeResponsavel }}
+              </v-col>
+            </v-row>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-info mb-1">
+                E-mail:
+              </v-col>
+              <v-col cols="9" class="mb-1">
+                {{ error.emailResponsavel }}
+              </v-col>
+            </v-row>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-info mb-1">
+                Permissao:
+              </v-col>
+              <v-col cols="9" class="mb-1">
+                {{ error.permissaoResponsavel }}
+              </v-col>
+            </v-row>
+
+            <!-- Informações do erro -->
+            <v-col cols="12" class="d-flex justify-center">
+              <v-chip color="warning">
+                INFORMAÇÕES DO ERRO
+              </v-chip>
+            </v-col>
+            <br>
+            <br>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-warning mb-1">
+                Mensagem:
+              </v-col>
+              <v-col cols="9" class="mb-1">
+                {{ error.erro }}
+              </v-col>
+            </v-row>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-warning mb-1">
+                Arquivo de origem:
+              </v-col>
+              <v-col cols="9" class="mb-1">
+                {{ error.arquivoError }}
+              </v-col>
+            </v-row>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-warning mb-1">
+                Classe de origem:
+              </v-col>
+              <v-col cols="9" class="mb-1">
+                {{ error.classeError }}
+              </v-col>
+            </v-row>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-warning mb-1">
+                Método de origem:
+              </v-col>
+              <v-col cols="9" class="mb-1">
+                {{ error.metodoError }}
+              </v-col>
+            </v-row>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-warning mb-1">
+                Linha de origem:
+              </v-col>
+              <v-col cols="9" class="mb-1">
+                {{ error.linhaError }}
+              </v-col>
+            </v-row>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-warning mb-1">
+                Http status code:
+              </v-col>
+              <v-col cols="9" class="mb-1">
+                {{ error.statusCodeError }}
+              </v-col>
+            </v-row>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-warning mb-1">
+                Mensagem:
+              </v-col>
+              <v-col cols="9" class="mb-1">
+                {{ error.erro }}
+              </v-col>
+            </v-row>
+
+            <v-divider v-if="error.idSaida > 0" />
+
+            <!-- Registro da saída relacionada -->
+            <v-col v-if="error.idSaida > 0" cols="12" class="d-flex justify-center">
+              <v-chip color="info">
+                Referente a saída:
+                {{ error.idSaida }}
+                <span class="pr-2" />
+                <BtnOpenDialog :callback="() => visualizarInformacoes(error.idSaida)" icon="mdi-eye-outline"
+                  size="x-small" variant="outlined" color="info" class="pt-2" />
+              </v-chip>
+            </v-col>
           </div>
         </v-expand-transition>
 

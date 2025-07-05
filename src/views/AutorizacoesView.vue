@@ -6,7 +6,7 @@
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
     <v-card-title class="d-flex justify-space-between align-center">
-      <span class="text-h6">Lista de autorizações</span>
+      <span class="text-h6">{{ tituloCard }}</span>
       <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosAutorizacoes" @alterado-ordem="aoMudarOrdem"
         @alterado-apenas-hoje="aoMudarApenasHoje" @alterado-aprovacao="aoMudarAprovacao"
         @alterar-input="alterarInputSearch" @limpar-filtros="limparFiltros" />
@@ -63,9 +63,9 @@
     <v-virtual-scroll :items="apiAutorizacoes?.registros" height="500" item-height="50" v-else>
       <template v-slot:default="{ item: autorizacao }">
         <v-list-item
-          :title="`${autorizacao.idAutorizacao} - Aprovação: ${autorizacao.aprovacaoSaida ? 'Autorizado' : 'Negado'}`"
+          :title="`${autorizacao.idAutorizacao}: ${autorizacao.nomeFuncionarioResponsavelSaida} - ${identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAprovacaoSaida).status}`"
           :subtitle="`#Data da autorização: ${autorizacao.dataAutorizacao ? `${autorizacao.dataAutorizacao}` : 'Não definido'}`"
-          :class="autorizacao.aprovacaoSaida ? 'bg-green-accent-2' : 'bg-red-darken-2'">
+          :class="identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAprovacaoSaida).cor">
 
           <!-- Ícone de cartão de autorização -->
           <template v-slot:prepend>
@@ -113,66 +113,59 @@
                   INFORMAÇÕES DA AUTORIZAÇÃO
                 </v-chip>
               </v-col>
-              <br>
+            </v-row>
+            <br>
 
-              <!-- Responsável pela autorização -->
-              <v-col cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Responsável pela autorização:
-                  </p>
-                  <p>
-                    {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
-                  </p>
-                </div>
+            <!-- Responsável pela autorização -->
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Responsável pela autorização:
               </v-col>
-              <!-- Status da autorização -->
-              <v-col cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Aprovação:
-                  </p>
-                  <p :class="autorizacao.aprovacaoSaida ? 'text-success' : 'text-red'">
-                    {{ autorizacao.aprovacaoSaida ? 'AUTORIZADA' : 'NEGADA' }}
-                  </p>
-                </div>
+              <v-col cols="6" class="mb-1">
+                {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
               </v-col>
-              <!-- Data da resposta da autorização -->
-              <v-col cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Data de emissão:
-                  </p>
-                  <p :class="autorizacao.dataAutorizacao ? 'text-success' : 'text-red'">
-                    {{ autorizacao.dataAutorizacao ? autorizacao.dataAutorizacao : 'Não definido' }}
-                  </p>
-                </div>
-              </v-col>
+            </v-row>
 
-              <!-- Registro da saída relacionada -->
-              <v-col cols="12" class="d-flex justify-center">
-                <v-chip color="info">
-                  Referente a saída:
-                  {{ autorizacao.idSaida }}
-                  <span class="pr-2" />
-                  <BtnOpenDialog :callback="() => visualizarInformacoes(autorizacao.idSaida)" icon="mdi-eye-outline"
-                    size="x-small" variant="outlined" color="info" class="pt-2" />
-                </v-chip>
+            <!-- Status da autorização -->
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Aprovação:
               </v-col>
-
-              <v-divider v-if="autorizacao.observacaoAutorizacao" />
-
-              <v-col v-if="autorizacao.observacaoAutorizacao" cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Observação:
-                  </p>
-                  <p>
-                    {{ autorizacao.observacaoAutorizacao }}
-                  </p>
-                </div>
+              <v-col cols="6" class="mb-1" :class="autorizacao.aprovacaoSaida ? 'text-success' : 'text-red'">
+                {{ autorizacao.aprovacaoSaida ? 'AUTORIZADA' : 'NEGADA' }}
               </v-col>
+            </v-row>
 
+            <!-- Data da resposta da autorização -->
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Data de emissão:
+              </v-col>
+              <v-col cols="6" class="mb-1" :class="autorizacao.dataAutorizacao ? 'text-success' : 'text-red'">
+                {{ autorizacao.dataAutorizacao ? autorizacao.dataAutorizacao : 'Não definido' }}
+              </v-col>
+            </v-row>
+
+            <!-- Registro da saída relacionada -->
+            <v-col cols="12" class="d-flex justify-center">
+              <v-chip color="info">
+                Referente a saída:
+                {{ autorizacao.idSaida }}
+                <span class="pr-2" />
+                <BtnOpenDialog :callback="() => visualizarInformacoes(autorizacao.idSaida)" icon="mdi-eye-outline"
+                  size="x-small" variant="outlined" color="info" class="pt-2" />
+              </v-chip>
+            </v-col>
+
+            <v-divider v-if="autorizacao.observacaoAutorizacao" />
+
+            <v-row dense v-if="autorizacao.observacaoAutorizacao" style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Observação:
+              </v-col>
+              <v-col cols="6" class="mb-1">
+                {{ autorizacao.observacaoAutorizacao }}
+              </v-col>
             </v-row>
           </div>
         </v-expand-transition>
@@ -222,7 +215,7 @@ import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
 import { autorizacoesServices } from '@/services/autorizacoesServices';
 
 // Vue
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 //#endregion
 
 //#region Variáveis
@@ -314,6 +307,8 @@ async function getAutorizacoes() {
       totalRegistros: response.totalRegistros,
     })
 
+    paginadorClass.value.alterarInput ? tituloCard.value = 'Lista de autorizações' : tituloCard.value = 'Suas autorizações'
+
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
@@ -335,6 +330,39 @@ async function getAutorizacoesNegadasPorSaida(autorizacao: AutorizacoesConsulta)
   } catch (error) {
     throw error
   }
+}
+
+//#endregion
+
+//#region identificadores para o template
+
+const tituloCard = ref('Suas autorizações');
+
+interface informacoesIdentificadas {
+  cor: string
+  status: string
+}
+
+function identificarInformacoes(aprovacao?: boolean, dataAprovacao?: string): informacoesIdentificadas {
+  const informacoes = ref<informacoesIdentificadas>({
+    cor: '',
+    status: ''
+  })
+
+  if (dataAprovacao) {
+    if (aprovacao) {
+      informacoes.value.cor = 'bg-green-accent-2'
+      informacoes.value.status = 'Autorização: Autorizado'
+    }
+    else {
+      informacoes.value.cor = 'bg-red-darken-2'
+      informacoes.value.status = 'Autorização: Negada'
+    }
+  } else {
+    informacoes.value.cor = 'bg-green-accent-2'
+    informacoes.value.status = 'Autorização: Pendente'
+  }
+  return informacoes.value
 }
 
 //#endregion

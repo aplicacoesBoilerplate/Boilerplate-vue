@@ -102,40 +102,34 @@
                   INFORMAÇÕES DO MOTIVO
                 </v-chip>
               </v-col>
-              <br>
-              <br>
+            </v-row>
+            <br>
+            <br>
 
-              <v-col cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Descrição:
-                  </p>
-                  <p>
-                    {{ motivo.descricaoMotivo }}
-                  </p>
-                </div>
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-info mb-1">
+                Descrição:
               </v-col>
-
-              <v-col cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Categoria:
-                  </p>
-                  <p>
-                    {{ motivo.idCategoria }} - {{ motivo.descricaoCategoria }}
-                  </p>
-                </div>
+              <v-col cols="9" class="mb-1">
+                {{ motivo.descricaoMotivo }}
               </v-col>
+            </v-row>
 
-              <v-col cols="12">
-                <div class="d-flex flex-row">
-                  <p class="text-info" style="padding-right: 0.35rem;">
-                    Emergencial:
-                  </p>
-                  <p :class="!motivo.emergencial ? 'text-success' : 'text-red'">
-                    {{ motivo.emergencial ? 'SIM' : 'NÃO' }}
-                  </p>
-                </div>
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-info mb-1">
+                Categoria:
+              </v-col>
+              <v-col cols="9" class="mb-1">
+                {{ motivo.idCategoria }} - {{ motivo.descricaoCategoria }}
+              </v-col>
+            </v-row>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="3" class="font-weight-medium text-info mb-1">
+                Emergencial:
+              </v-col>
+              <v-col cols="9" class="mb-1" :class="!motivo.emergencial ? 'text-success' : 'text-red'">
+                {{ motivo.emergencial ? 'SIM' : 'NÃO' }}
               </v-col>
             </v-row>
           </div>
