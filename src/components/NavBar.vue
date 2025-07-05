@@ -64,7 +64,7 @@ import { onMounted, ref } from 'vue';
 
 const redirectRouter = useRouter()
 const usuarioLogado = usuarioAutenticado() // Armazenar o usuário autenticado
-const statusWhatsApp = ref(true) // Controla o status do WhatsApp
+const statusWhatsApp = ref(false) // Controla o status do WhatsApp
 const loading = ref(false) // Controla o status do Loading
 
 // Se o usuário armazenado estiver vazio e o token ainda estiver no session store, consultar o usuário da sessão ao montar o componente
@@ -100,6 +100,7 @@ async function getStatusWppConnect(): Promise<boolean> {
     statusWhatsApp.value = data
     return data
   } catch (error) {
+    statusWhatsApp.value = false
     throw error
   } finally {
     loading.value = false
