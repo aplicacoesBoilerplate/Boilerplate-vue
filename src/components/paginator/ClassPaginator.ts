@@ -9,7 +9,9 @@ export class PaginatorClass {
   aprovacao?: boolean | null // Parâmetro de busca para autorizações de saídas por aprovação
   alterarInput?: boolean | null // Campo para controlar a exibição de input de busca que podem receber mais de um parâmetro (Autorizações e Saídas)
   funcionarioResponsavel?: string | null // (Autorizações e Saídas)
-  autocomplete?: boolean | null
+  autocomplete?: boolean | null // Utilizado quando precisamos buscar apenas as descrições de um registro para popular as options do select
+  exibirSintetico?: boolean | null // Utilizado para filtrar as opções de relatório no dashboard para exibir ou não modelos sintéticos
+  exibirAnaliticos?: boolean | null // Utilizado para filtrar as opções de relatório no dashboard para exibir ou não modelos analíticos
 
   constructor({ limite = 10, offset = 1 }: Partial<PaginatorClass> = {}) {
     this.limite = limite
@@ -43,6 +45,14 @@ export class PaginatorClass {
     this.offset = 1
   }
 
+  alterarExibicaoSinteticos() {
+    this.exibirSintetico = !this.exibirSintetico
+  }
+
+  alterarExibicaoAnaliticos() {
+    this.exibirAnaliticos = !this.exibirAnaliticos
+  }
+
   alterarBuscarParaAutocomplete() {
     this.autocomplete = !this.autocomplete
   }
@@ -56,6 +66,8 @@ export class PaginatorClass {
     this.orderBy = this.orderBy
     this.limite = this.limite
     this.offset = this.offset
+    this.exibirSintetico = this.exibirSintetico
+    this.exibirAnaliticos = this.exibirAnaliticos
   }
 
 }

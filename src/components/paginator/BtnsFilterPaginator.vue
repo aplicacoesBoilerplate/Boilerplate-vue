@@ -29,7 +29,7 @@
               <!-- Filtro para apenas aprovados -->
               <v-btn icon="mdi-bookmark-check-outline" size="x-small" variant="tonal"
                 :color="paginator.aprovacao ? 'success' : 'info'"
-                :title="paginator.aprovacao ? 'Clique para buscar apenas registros negados' : 'Clique para buscar apenas registros aprovados'"
+                :title="paginator.aprovacao ? 'Clique para incluir registros negados' : 'Clique para buscar apenas registros aprovados'"
                 @click="alterarFiltroAprovacao()" />
             </div>
 
@@ -39,6 +39,24 @@
               <v-btn icon="mdi-swap-horizontal-bold" size="x-small" variant="tonal"
                 :color="paginator.alterarInput ? 'success' : 'info'"
                 title="Clique para alterar os campos de busca no filtro" @click="alterarInputBusca()" />
+            </div>
+
+            <div v-if="showFilter.exibirSinteticos">
+              <span class="pr-2" />
+              <!-- Filtro para exibir modelos de relatórios sintéticos -->
+              <v-btn icon="mdi-crosshairs-gps" size="x-small" variant="tonal"
+                :color="paginator.exibirSintetico ? 'success' : 'red'"
+                :title="paginator.exibirSintetico ? 'Clique para ocultar os modelos sintéticos' : 'Clique para listar os modelos sintéticos'"
+                @click="alterarExibicaoSinteticos()" />
+            </div>
+
+            <div v-if="showFilter.exibirAnaliticos">
+              <span class="pr-2" />
+              <!-- Filtro para exibir modelos de relatórios sintéticos -->
+              <v-btn icon="mdi-chart-box-multiple-outline" size="x-small" variant="tonal"
+                :color="paginator.exibirAnaliticos ? 'success' : 'red'"
+                :title="paginator.exibirAnaliticos ? 'Clique para ocultar os modelos analíticos' : 'Clique para listar os modelos analíticos'"
+                @click="alterarExibicaoAnaliticos()" />
             </div>
 
             <span class="pr-2" />
@@ -62,6 +80,8 @@ interface Props {
     exibirApenasHoje?: boolean | false // Controle de visualização no componente da portaria para exibir ou não o filtro de apenas hoje, o valor padrão é false
     exibirAprovacao?: boolean | false // Controle de visualização no componente de consultar autorizações para exibir ou não o filtro de aprovações, o valor padrão é false
     exibirAlterarInput?: boolean | false // Controla a exibição do botão que emite o evento para trocar o campo de input
+    exibirSinteticos?: boolean | false // Controla a exibição do botão que emite o filtro para apresentar os relatórios no modelo sintético
+    exibirAnaliticos?: boolean | false // Controla a exibição do botão que emite o filtro para apresentar os relatórios no modelo analítico
   }
 }
 
@@ -74,6 +94,8 @@ const emit = defineEmits<{
   (e: 'alterado-apenasHoje'): void
   (e: 'alterado-aprovacao'): void
   (e: 'alterar-input'): void
+  (e: 'alterado-sinteticos'): void
+  (e: 'alterado-analiticos'): void
   (e: 'limpar-filtros'): void
 }>()
 const showFilter = computed(() => props.show)
@@ -92,6 +114,14 @@ function alterarFiltroAprovacao() {
 
 function alterarInputBusca() {
   emit('alterar-input')
+}
+
+function alterarExibicaoSinteticos() {
+  emit('alterado-sinteticos')
+}
+
+function alterarExibicaoAnaliticos() {
+  emit('alterado-analiticos')
 }
 
 function retornarFiltrosPadroes() {

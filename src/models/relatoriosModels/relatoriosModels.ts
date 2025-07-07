@@ -5,3 +5,9 @@ export interface Dashboard {
   retornosPendentes: number
   aguardandoAutorizacao: number
 }
+
+// Relatórios
+export interface Relatorios {
+  tipo: "SINTETICO" | "ANALITICO"
+  modelo: "GERAL" | "USUARIO" | "FUNCIONARIO" | "SAIDA" | "AUTORIZACAO" | "CATEGORIA" | "MOTIVO" | "ERROS"
+}
