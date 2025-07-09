@@ -1,18 +1,21 @@
 <template>
+  <DialogFiltrosRelatorios :model-value="dialogFiltrosRelatorio"
+                           @update:modelValue="clonarObjetoDialogFiltrosRelatorios(dialogFiltrosRelatorio)"/>
 
   <v-card class="mx-auto" max-width="2000">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de Relatórios</span>
 
       <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosDashboard"
-                           @alterado-sinteticos="aoMudarSinteticos" @alterado-analiticos="aoMudarAnaliticos" @limpar-filtros="limparFiltros" />
+                           @alterado-sinteticos="aoMudarSinteticos" @alterado-analiticos="aoMudarAnaliticos"
+                           @limpar-filtros="limparFiltros"/>
 
     </v-card-title>
-    <v-divider />
+    <v-divider/>
 
     <!-- Loading -->
     <div class="d-flex justify-center" v-if="loading">
-      <v-progress-circular color="primary" indeterminate />
+      <v-progress-circular color="primary" indeterminate/>
     </div>
 
     <!-- Alerta quando nenhuma categoria consultado foi encontrada -->
@@ -41,11 +44,13 @@
           <!-- Botões para emitir relatório -->
           <template v-slot:append>
             <div class="pe-2">
-              <v-btn size="small" variant="elevated" color="info" icon="mdi-check" title="Emitir relatório" />
+              <BtnOpenDialog :callback="openFiltrosRelatorio" :labelLeft="true"
+                             :label="`Gerar relatório ${relatorio.tipo} - ${relatorio.modelo}`" size="small"
+                             variant="elevated" color="info" icon="mdi-chart-donut-variant" title="Emitir relatório"/>
             </div>
           </template>
         </v-list-item>
-        <v-divider />
+        <v-divider/>
       </template>
     </v-virtual-scroll>
   </v-card>
@@ -54,18 +59,27 @@
 
 <script setup lang="ts">
 // Componentes
+import DialogFiltrosRelatorios from "@/components/dialog/dialogFiltrosRelatorios/DialogFiltrosRelatorios.vue"; // Componente visual para o dialog dos filtros para geração de raltório
 import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
+import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue"; // Botão para abrir o Dialog
+
 // Classes
+import {
+  DialogFiltrosRelatoriosClass
+} from "@/components/dialog/dialogFiltrosRelatorios/ClassDialogFiltrosRelatorios.ts";
 import {PaginatorClass} from '@/components/paginator/ClassPaginator';
+
+// Models
+import type {Relatorios} from "@/models/relatoriosModels/relatoriosModels.ts";
 
 // Vue
 import {onMounted, ref} from "vue";
-import type {Relatorios} from "@/models/relatoriosModels/relatoriosModels.ts";
 
 const loading = ref(false)
+const dialogFiltrosRelatorio = ref(new DialogFiltrosRelatoriosClass())
 var apiRelatorios = ref<Array<Relatorios>>() // Armazena os dados da resposta das req para exibição no front
 
-onMounted( () => {
+onMounted(() => {
   apiRelatorios.value = getModelos().value
 })
 
@@ -112,6 +126,20 @@ function getModelos() {
       modelo: "GERAL"
     }
   ])
+}
+
+// #endregion
+
+// #region dialog filtros
+function openFiltrosRelatorio() {
+  dialogFiltrosRelatorio.value.openDialog()
+}
+
+// #endregion
+
+// #region demais funções
+function clonarObjetoDialogFiltrosRelatorios(val: DialogFiltrosRelatoriosClass) {
+
 }
 
 // #endregion

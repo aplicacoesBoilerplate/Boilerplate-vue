@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto" max-width="2000">
     <v-card-title class="d-flex justify-space-between align-center">
-      <span class="text-h6">Dashboard Homepage - Indicadores</span>
+      <span class="text-h6">Indicadores</span>
 
       <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosDashboard" @alterado-apenas-hoje="aoMudarApenasHoje"
                            @alterado-aprovacao="aoMudarAprovacao" @limpar-filtros="limparFiltros" />
@@ -16,7 +16,7 @@
 
     <v-container class="container-dashboard">
       <v-row dense>
-        <v-col v-for="indicador in indicadores" :key="indicador.id" cols="3" :title="indicador.about">
+        <v-col v-for="indicador in indicadores" :key="indicador.id" cols="12" md="3" :title="indicador.about">
           <v-card variant="flat" class="mx-auto" :color="indicador.color" max-width="600"
                   :title="indicador.title">
             <template v-slot:actions>
