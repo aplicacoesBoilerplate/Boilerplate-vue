@@ -7,7 +7,7 @@
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <InputUpperCase v-model:="user.nome" :style="{
+              <InputUpperCase v-model="user.nome" :style="{
                 inputVariant: 'outlined',
                 label: 'Nome de usuário*',
                 maxWidth: 650,
@@ -16,7 +16,7 @@
             </v-col>
 
             <v-col cols="12" md="6">
-              <InputUpperCase v-model:="user.email" :style="{
+              <InputUpperCase v-model="user.email" :style="{
                 inputVariant: 'outlined',
                 label: 'E-mail*',
                 hint: 'E-mail de acesso',

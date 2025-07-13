@@ -1,31 +1,3 @@
-// Novo usuário
-export interface NovoUsuario {
-  nome: string
-  email: string
-  senha: string
-  permissao?: string
-  celularUsuario?: string
-  receberNotificacoes?: boolean
-  autorizaSaida?: boolean
-}
-
-// Atualizar usuário
-export interface AtualizarUsuario {
-  idUsuario: number
-  nome: string
-  email: string
-  permissao?: string
-  celularUsuario?: string
-  receberNotificacoes?: boolean
-  autorizaSaida?: boolean
-  ativo?: boolean
-  contaBloqueada?: boolean
-  contaExpiraEm?: string
-  senhaExpirada?: boolean
-  tentativasFalhas?: number
-}
-
-// Consulta de usuário
 export interface UsuarioConsulta {
   idUsuario?: number
   nome: string

@@ -11,7 +11,7 @@ export class PaginatorClass {
   funcionarioResponsavel?: string | null // (Autorizações e Saídas)
   autocomplete?: boolean | null // Utilizado quando precisamos buscar apenas as descrições de um registro para popular as options do select
   exibirSintetico?: boolean | null // Utilizado para filtrar as opções de relatório no dashboard para exibir ou não modelos sintéticos
-  exibirAnaliticos?: boolean | null // Utilizado para filtrar as opções de relatório no dashboard para exibir ou não modelos analíticos
+  exibirAnalitico?: boolean | null // Utilizado para filtrar as opções de relatório no dashboard para exibir ou não modelos analíticos
 
   constructor({ limite = 10, offset = 1 }: Partial<PaginatorClass> = {}) {
     this.limite = limite
@@ -21,10 +21,6 @@ export class PaginatorClass {
   atualizarDadosAPI(dados: Pick<PaginatorClass, 'totalPaginas' | 'totalRegistros'>) {
     this.totalPaginas = dados.totalPaginas
     this.totalRegistros = dados.totalRegistros
-  }
-
-  atualizarLimite(novoLimite: number) {
-    this.limite = novoLimite
   }
 
   atualizarPagina(novaPagina: number) {
@@ -50,11 +46,7 @@ export class PaginatorClass {
   }
 
   alterarExibicaoAnaliticos() {
-    this.exibirAnaliticos = !this.exibirAnaliticos
-  }
-
-  alterarBuscarParaAutocomplete() {
-    this.autocomplete = !this.autocomplete
+    this.exibirAnalitico = !this.exibirAnalitico
   }
 
   limparFiltros() {
@@ -67,7 +59,7 @@ export class PaginatorClass {
     this.limite = this.limite
     this.offset = this.offset
     this.exibirSintetico = this.exibirSintetico
-    this.exibirAnaliticos = this.exibirAnaliticos
+    this.exibirAnalitico = this.exibirAnalitico
   }
 
 }

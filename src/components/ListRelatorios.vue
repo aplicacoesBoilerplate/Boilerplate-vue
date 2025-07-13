@@ -20,7 +20,7 @@
 
     <!-- Alerta quando nenhuma categoria consultado foi encontrada -->
     <div v-if="apiRelatorios?.length == 0 && loading == false" class="pt-4">
-      <v-alert text="Nenhum modelo de relatório encontrado!" type="info" variant="tonal">
+      <v-alert text="Nenhum modelo de relatório encontrado! Verifique os filtros." type="info" variant="tonal">
         <template v-slot:append>
           <v-btn color="warning" variant="plain" @click="limparFiltros()">
             <v-icon class="pt-1">
@@ -32,10 +32,10 @@
       </v-alert>
     </div>
 
-    <!-- Exibição das categorias -->
-    <v-virtual-scroll :items="apiRelatorios" max-height="500" item-height="50" v-else>
+    <!-- Exibição dos relatórios disponíveis -->
+    <v-virtual-scroll :items="apiRelatorios" max-height="250" item-height="50" v-else>
       <template v-slot:default="{ item: relatorio }">
-        <v-list-item :title="`${relatorio.tipo} - ${relatorio.modelo}`">
+        <v-list-item :title="`${relatorio.tipoRelatorio} - ${relatorio.modeloRelatorio}`">
           <!-- Ícone de cartão de relatório -->
           <template v-slot:prepend>
             <v-icon>mdi-chart-bar</v-icon>
@@ -44,8 +44,8 @@
           <!-- Botões para emitir relatório -->
           <template v-slot:append>
             <div class="pe-2">
-              <BtnOpenDialog :callback="openFiltrosRelatorio" :labelLeft="true"
-                             :label="`Gerar relatório ${relatorio.tipo} - ${relatorio.modelo}`" size="small"
+              <BtnOpenDialog :callback="() => openFiltrosRelatorio(relatorio)" :labelLeft="true"
+                             :label="`Gerar relatório ${relatorio.tipoRelatorio} - ${relatorio.modeloRelatorio}`" size="small"
                              variant="elevated" color="info" icon="mdi-chart-donut-variant" title="Emitir relatório"/>
             </div>
           </template>
@@ -72,15 +72,25 @@ import {PaginatorClass} from '@/components/paginator/ClassPaginator';
 // Models
 import type {Relatorios} from "@/models/relatoriosModels/relatoriosModels.ts";
 
+// Store
+import {useSnackbarStore} from "@/stores/SnackbarStore.ts";
+
+// Services
+import {relatoriosServices} from "@/services/relatoriosService.ts";
+
 // Vue
-import {onMounted, ref} from "vue";
+import {onBeforeMount, onMounted, ref} from "vue";
 
 const loading = ref(false)
 const dialogFiltrosRelatorio = ref(new DialogFiltrosRelatoriosClass())
 var apiRelatorios = ref<Array<Relatorios>>() // Armazena os dados da resposta das req para exibição no front
 
-onMounted(() => {
-  apiRelatorios.value = getModelos().value
+onBeforeMount(() => {
+  paginadorClass.value.exibirSintetico = true
+})
+
+onMounted(async() => {
+  await getModelos()
 })
 
 //#region Paginação e filtros
@@ -91,7 +101,9 @@ const paginadorClass = ref(new PaginatorClass({
   totalPaginas: 0,
   totalRegistros: 0,
   orderBy: 'DESC',
-  search: ''
+  search: '',
+  exibirSintetico: false,
+  exibirAnalitico: false
 }))
 const filtrosDashboard = ref({
   exibirOrdem: false,
@@ -101,45 +113,47 @@ const filtrosDashboard = ref({
 
 async function aoMudarSinteticos() {
   paginadorClass.value.alterarExibicaoSinteticos()
+  await getModelos()
 }
 
 async function aoMudarAnaliticos() {
   paginadorClass.value.alterarExibicaoAnaliticos()
+  await getModelos()
 }
 
 async function limparFiltros() {
   paginadorClass.value.limparFiltros()
+  await getModelos()
 }
 
 //#endregion
 
 // #region consultar modelos
 
-function getModelos() {
-  return ref<Array<Relatorios>>([
-    {
-      tipo: "SINTETICO",
-      modelo: "GERAL"
-    },
-    {
-      tipo: "ANALITICO",
-      modelo: "GERAL"
-    }
-  ])
+async function getModelos() {
+  loading.value = true
+  try {
+    apiRelatorios.value = await relatoriosServices.getModelos(paginadorClass.value);
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+    throw error
+  } finally {
+    loading.value = false
+  }
 }
 
 // #endregion
 
 // #region dialog filtros
-function openFiltrosRelatorio() {
-  dialogFiltrosRelatorio.value.openDialog()
+function openFiltrosRelatorio(infoRelatorio: Relatorios) {
+  dialogFiltrosRelatorio.value.openDialog(infoRelatorio)
 }
 
 // #endregion
 
 // #region demais funções
 function clonarObjetoDialogFiltrosRelatorios(val: DialogFiltrosRelatoriosClass) {
-
+  Object.assign(dialogFiltrosRelatorio, val)
 }
 
 // #endregion

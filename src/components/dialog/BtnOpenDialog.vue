@@ -14,7 +14,7 @@ import { ref } from 'vue'
 
 // Props
 const props = defineProps<{
-  callback: () => void | Promise<void>,
+  callback: (() => void | Promise<void>) | ((...args: any[]) => void | Promise<void>),
   label?: string,
   labelLeft?: boolean,
   icon?: string,
@@ -24,9 +24,9 @@ const props = defineProps<{
 
 const hover = ref(false)
 
-async function executarCallback() {
+async function executarCallback(...args: any[]) {
   if (typeof props.callback === 'function') {
-    await props.callback()
+    await props.callback(...args)
   }
 }
 

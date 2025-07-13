@@ -1,48 +1,135 @@
 <template>
-  <v-dialog v-model="exibir" max-width="1000">
-    <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
-      <v-card prepend-icon="" title="Filtros para gerar relatório">
-        <v-tabs
+  <v-dialog v-model="exibir" max-width="1100">
 
-          bg-color="primary"
-        >
-          <!--      v-model="tab"-->
-          <v-tab value="one">Item One</v-tab>
-          <v-tab value="two">Item Two</v-tab>
-          <v-tab value="three">Item Three</v-tab>
-        </v-tabs>
+    <v-card prepend-icon=""
+            :title="dialogFiltrosRelatorios.show ? `Filtros para gerar relatório: ${modelValue.relatorio.tipoRelatorio} - ${modelValue.relatorio.modeloRelatorio}` : ''"
+    >
+      <v-tabs
+        v-model="tab"
+        bg-color="primary"
+      >
+        <v-tab value="gerais">Opções gerais</v-tab>
+        <v-tab v-for="aba in abasPorTabela" :key="aba.tabela" :value="aba.tabela"
+               @click="getCamposTabela(aba.tabela)">
+          {{ aba.tabela }}
+        </v-tab>
+        <v-tab value="filtros">Filtros aplicados</v-tab>
+      </v-tabs>
 
-        <v-card-text>
-          <v-tabs-window>
-            <!--        v-model="tab"-->
-            <v-tabs-window-item value="one">
-              One
+      <v-card-text>
+        <v-tabs-window v-model="tab">
+          <v-tabs-window-item value="gerais">
+            Gerais
+          </v-tabs-window-item>
+
+          <div v-for="aba in props.modelValue.filtros" :key="aba.tabela">
+            <v-tabs-window-item :value="aba.tabela">
+              {{ aba }}
+              {{ camposPorTabela }}
+              <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
+                <v-row dense class="mt-4">
+                  <v-col cols="12" md="4" class="d-flex justify-center">
+                    <v-autocomplete clearable v-model="aba.condicao" label="Condição*" :items="condicoesAutoComplete"
+                                    :item-title="'chave'" :item-value="'valor'"
+                                    :rules="[rules.required]" variant="outlined">
+
+                      <template #item="{ props, item }">
+                        <v-list-item v-bind="props">
+                          <template #prepend>
+                            <v-icon>{{ item.raw.icon }}</v-icon>
+                          </template>
+                        </v-list-item>
+                      </template>
+
+                      <template v-slot:selection="{ item }">
+                        <v-icon start>{{ item.raw.icon }}</v-icon>
+                        <span>{{ item.title }}</span>
+                      </template>
+
+                    </v-autocomplete>
+                  </v-col>
+
+                  <v-col cols="12" md="4" class="d-flex justify-center">
+                    <v-autocomplete clearable v-model="aba.campoTabela" label="Campo*" :items="[]"
+                                    :item-title="'chave'" :item-value="'valor'"
+                                    :rules="[rules.required]" variant="outlined">
+                    </v-autocomplete>
+                  </v-col>
+                </v-row>
+              </v-form>
             </v-tabs-window-item>
+          </div>
 
-            <v-tabs-window-item value="two">
-              Two
-            </v-tabs-window-item>
+          <v-tabs-window-item value="filtros">
+            <!-- Exibição dos filtros aplicados ao relatório -->
+            <v-virtual-scroll :items="props.modelValue.filtros" max-height="250" item-height="50">
+              <template v-slot:default="{ item: filtro }">
+                <v-list-item :title="`${filtro.tabela}`">
+                  <!-- Ícone de cartão de filtro -->
+                  <template v-slot:prepend>
+                    <v-icon>mdi-filter-outline</v-icon>
+                  </template>
 
-            <v-tabs-window-item value="three">
-              Three
-            </v-tabs-window-item>
-          </v-tabs-window>
-        </v-card-text>
-      </v-card>
-    </v-form>
+                  <!-- Botões para remover um filtro -->
+                  <template v-slot:append>
+                    <div class="pe-2">
+                      <BtnOpenDialog :callback="() => removerFiltro(filtro)"
+                                     :labelLeft="true"
+                                     label="Remover filtro" size="small"
+                                     variant="elevated" color="red" icon="mdi-window-close"
+                                     title="Remover filtro"/>
+                    </div>
+                  </template>
+                </v-list-item>
+                <v-divider/>
+              </template>
+            </v-virtual-scroll>
+          </v-tabs-window-item>
+
+        </v-tabs-window>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-btn color="warning" variant="plain" @click="clearFields()">
+          <v-icon class="pt-1">mdi-refresh</v-icon>
+          Limpar
+        </v-btn>
+        <v-spacer/>
+
+        <v-btn color="red" variant="plain" @click="resetForm()">
+          <v-icon class="pt-1">mdi-close</v-icon>
+          Fechar
+        </v-btn>
+        <v-btn color="success" variant="tonal" :disabled="!formIsValid" type="submit">
+          <v-icon class="pt-1">mdi-check</v-icon>
+          Gerar
+        </v-btn>
+      </v-card-actions>
+    </v-card>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
+// Componentes
+import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue";
 
 // Classes
 import type { DialogFiltrosRelatoriosClass } from "@/components/dialog/dialogFiltrosRelatorios/ClassDialogFiltrosRelatorios.ts";
+
+// Models
+import { CondicoesFiltrosAutoComplete, type FiltrosDoRelatorio } from "@/models/relatoriosModels/relatoriosModels.ts";
+
+// Services
+import {relatoriosServices} from "@/services/relatoriosService.ts";
+import {rules} from "@/utils/rules.ts";
 
 // Vue
 import {computed, ref} from "vue";
 
 const formRef = ref()
-const formIsValid = (false)
+const formIsValid = ref(false)
+const tab = ref()
+const condicoesAutoComplete = CondicoesFiltrosAutoComplete
 
 interface Props {
   modelValue: DialogFiltrosRelatoriosClass
@@ -54,16 +141,43 @@ const emit = defineEmits<{
   // (e: 'operacao-concluida'): void
 }>()
 
-const filtros = computed(() => props.modelValue)
 const dialogFiltrosRelatorios = computed(() => props.modelValue)
 const exibir = computed({
   get: () => dialogFiltrosRelatorios.value.show,
   set: (val) => dialogFiltrosRelatorios.value.show = val
 })
 
-
 function submitForm() {
 
+}
+
+function clearFields() {
+  dialogFiltrosRelatorios.value.clearFields()
+}
+
+function resetForm() {
+  dialogFiltrosRelatorios.value.clearFields()
+  dialogFiltrosRelatorios.value.closeDialog()
+  exibir.value = false // Exibir componente
+}
+
+const abasPorTabela = props.modelValue.filtros.filter((filtro, index, self) =>
+  index === self.findIndex(f => f.tabela === filtro.tabela)
+)
+
+function adicionarFiltro(filtro: FiltrosDoRelatorio) {
+  props.modelValue.filtros.push(filtro)
+}
+
+function removerFiltro(filtro: FiltrosDoRelatorio) {
+  props.modelValue.filtros.pop(filtro)
+}
+
+const camposPorTabela = ref<string[]>()
+async function getCamposTabela(tabela: string) {
+  console.log('Clicou em: ', tabela)
+  camposPorTabela.value = await relatoriosServices.getCamposTabela(tabela)
+  console.log('Campos por tabela: ', camposPorTabela.value)
 }
 
 </script>

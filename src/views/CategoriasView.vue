@@ -302,8 +302,4 @@ strong {
   padding-right: 0.5rem;
   text-decoration: none;
 }
-
-.v-progress-circular {
-  margin: 1rem;
-}
 </style>
