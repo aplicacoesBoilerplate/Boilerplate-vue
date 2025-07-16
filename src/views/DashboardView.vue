@@ -33,8 +33,6 @@
 
   <ListRelatorios v-if="permissao != 'EMITE_SAIDA' && permissao != 'PORTARIA'"/>
 
-  {{a}}
-
 </template>
 
 <script setup lang="ts">

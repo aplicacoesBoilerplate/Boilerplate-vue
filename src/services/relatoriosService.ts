@@ -35,9 +35,8 @@ export const relatoriosServices = {
   async getCamposTabela(tabela: string): Promise<string[]> {
     try {
       const { data } = await http.get('/relatorios/camposTabela', {
-        params: tabela,
+        params: { tabela },
       })
-      console.log('dados da req: ', data)
       return data
     } catch (error) {
       throw error

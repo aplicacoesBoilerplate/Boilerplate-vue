@@ -7,10 +7,10 @@
       <v-tabs
         v-model="tab"
         bg-color="primary"
+        @update:modelValue="getCamposTabela(tab)"
       >
         <v-tab value="gerais">Opções gerais</v-tab>
-        <v-tab v-for="aba in abasPorTabela" :key="aba.tabela" :value="aba.tabela"
-               @click="getCamposTabela(aba.tabela)">
+        <v-tab v-for="aba in abasPorTabela" :key="aba.tabela" :value="aba.tabela">
           {{ aba.tabela }}
         </v-tab>
         <v-tab value="filtros">Filtros aplicados</v-tab>
@@ -24,8 +24,6 @@
 
           <div v-for="aba in props.modelValue.filtros" :key="aba.tabela">
             <v-tabs-window-item :value="aba.tabela">
-              {{ aba }}
-              {{ camposPorTabela }}
               <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
                 <v-row dense class="mt-4">
                   <v-col cols="12" md="4" class="d-flex justify-center">
@@ -50,11 +48,21 @@
                   </v-col>
 
                   <v-col cols="12" md="4" class="d-flex justify-center">
-                    <v-autocomplete clearable v-model="aba.campoTabela" label="Campo*" :items="[]"
-                                    :item-title="'chave'" :item-value="'valor'"
+                    <v-autocomplete clearable v-model="aba.campoTabela" label="Campo*" :items="camposPorTabela"
                                     :rules="[rules.required]" variant="outlined">
                     </v-autocomplete>
                   </v-col>
+
+                  <v-col cols="12" md="4">
+                    <InputUpperCase v-model:="searchAuxiliar" :style="{
+                      inputVariant: 'outlined',
+                      label: 'Buscar por',
+                      maxWidth: 650,
+                      counter: 100,
+                      inputDisabled: aba.condicao == 'INTERVALO'
+                    }" :rules="[rules.requiredCondicionado(aba.condicao != 'SELECAO'), rules.max]" />
+                  </v-col>
+
                 </v-row>
               </v-form>
             </v-tabs-window-item>
@@ -73,7 +81,7 @@
                   <!-- Botões para remover um filtro -->
                   <template v-slot:append>
                     <div class="pe-2">
-                      <BtnOpenDialog :callback="() => removerFiltro(filtro)"
+                      <BtnOpenDialog :callback="() => removerFiltro()"
                                      :labelLeft="true"
                                      label="Remover filtro" size="small"
                                      variant="elevated" color="red" icon="mdi-window-close"
@@ -111,6 +119,7 @@
 
 <script setup lang="ts">
 // Componentes
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual para o input upper case
 import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue";
 
 // Classes
@@ -120,8 +129,9 @@ import type { DialogFiltrosRelatoriosClass } from "@/components/dialog/dialogFil
 import { CondicoesFiltrosAutoComplete, type FiltrosDoRelatorio } from "@/models/relatoriosModels/relatoriosModels.ts";
 
 // Services
-import {relatoriosServices} from "@/services/relatoriosService.ts";
-import {rules} from "@/utils/rules.ts";
+import { relatoriosServices } from "@/services/relatoriosService.ts";
+import { useSnackbarStore } from "@/stores/SnackbarStore";
+import { rules } from "@/utils/rules.ts";
 
 // Vue
 import {computed, ref} from "vue";
@@ -130,6 +140,7 @@ const formRef = ref()
 const formIsValid = ref(false)
 const tab = ref()
 const condicoesAutoComplete = CondicoesFiltrosAutoComplete
+const searchAuxiliar = ref()
 
 interface Props {
   modelValue: DialogFiltrosRelatoriosClass
@@ -169,15 +180,20 @@ function adicionarFiltro(filtro: FiltrosDoRelatorio) {
   props.modelValue.filtros.push(filtro)
 }
 
-function removerFiltro(filtro: FiltrosDoRelatorio) {
-  props.modelValue.filtros.pop(filtro)
+function removerFiltro() {
+  props.modelValue.filtros.pop()
 }
 
 const camposPorTabela = ref<string[]>()
 async function getCamposTabela(tabela: string) {
-  console.log('Clicou em: ', tabela)
-  camposPorTabela.value = await relatoriosServices.getCamposTabela(tabela)
-  console.log('Campos por tabela: ', camposPorTabela.value)
+  if (!tabela || tabela === 'gerais' || tabela === 'filtros') return;
+
+  try {
+    const response = await relatoriosServices.getCamposTabela(tabela);
+    camposPorTabela.value = response
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+  }
 }
 
 </script>

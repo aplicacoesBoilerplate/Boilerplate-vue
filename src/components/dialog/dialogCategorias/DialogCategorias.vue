@@ -22,10 +22,6 @@
                 label="Emergencial?"
                 hide-details
               />
-
-              <!-- <v-autocomplete clearable v-model="categoria.idCategoria" label="Categoria*" :items="ApiCategorias.registros"
-                :item-title="'descricaoCategoria'" :item-value="'idCategoria'"
-                :rules="[rules.required]" variant="outlined"/> -->
             </v-col>
           </v-row>
 
