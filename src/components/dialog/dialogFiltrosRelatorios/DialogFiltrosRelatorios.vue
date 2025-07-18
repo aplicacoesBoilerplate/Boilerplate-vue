@@ -10,8 +10,8 @@
         @update:modelValue="getCamposTabela(tab)"
       >
         <v-tab value="gerais">Opções gerais</v-tab>
-        <v-tab v-for="aba in abasPorTabela" :key="aba.tabela" :value="aba.tabela">
-          {{ aba.tabela }}
+        <v-tab v-for="aba in abasPorTabela" :key="aba" :value="aba">
+          {{ aba }}
         </v-tab>
         <v-tab value="filtros">Filtros aplicados</v-tab>
       </v-tabs>
@@ -26,6 +26,12 @@
             <v-tabs-window-item :value="aba.tabela">
               <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
                 <v-row dense class="mt-4">
+                  <v-col cols="12" md="4" class="d-flex justify-center">
+                    <v-autocomplete clearable v-model="aba.campoTabela" label="Campo*" :items="camposPorTabela"
+                                    :rules="[rules.required]" variant="outlined">
+                    </v-autocomplete>
+                  </v-col>
+
                   <v-col cols="12" md="4" class="d-flex justify-center">
                     <v-autocomplete clearable v-model="aba.condicao" label="Condição*" :items="condicoesAutoComplete"
                                     :item-title="'chave'" :item-value="'valor'"
@@ -44,12 +50,6 @@
                         <span>{{ item.title }}</span>
                       </template>
 
-                    </v-autocomplete>
-                  </v-col>
-
-                  <v-col cols="12" md="4" class="d-flex justify-center">
-                    <v-autocomplete clearable v-model="aba.campoTabela" label="Campo*" :items="camposPorTabela"
-                                    :rules="[rules.required]" variant="outlined">
                     </v-autocomplete>
                   </v-col>
 
@@ -134,7 +134,7 @@ import { useSnackbarStore } from "@/stores/SnackbarStore";
 import { rules } from "@/utils/rules.ts";
 
 // Vue
-import {computed, ref} from "vue";
+import {computed, onBeforeMount, ref, watch} from "vue";
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -142,11 +142,17 @@ const tab = ref()
 const condicoesAutoComplete = CondicoesFiltrosAutoComplete
 const searchAuxiliar = ref()
 
+onBeforeMount(async () => {
+  await getTabelasRelacionadas();
+})
+
 interface Props {
   modelValue: DialogFiltrosRelatoriosClass
 }
 
 const props = defineProps<Props>()
+defineExpose({getTabelasRelacionadas})
+
 const emit = defineEmits<{
   (e: 'update:modelValue', value: DialogFiltrosRelatoriosClass): void
   // (e: 'operacao-concluida'): void
@@ -172,9 +178,19 @@ function resetForm() {
   exibir.value = false // Exibir componente
 }
 
-const abasPorTabela = props.modelValue.filtros.filter((filtro, index, self) =>
-  index === self.findIndex(f => f.tabela === filtro.tabela)
-)
+const abasPorTabela = ref<string[]>()
+async function getTabelasRelacionadas() {
+  try {
+    const response = await relatoriosServices.getTabelasRelacionadas(props.modelValue.relatorio.modeloRelatorio);
+    abasPorTabela.value = response
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+  }
+}
+
+// props.modelValue.filtros.filter((filtro, index, self) =>
+//   index === self.findIndex(f => f.tabela === filtro.tabela)
+// )
 
 function adicionarFiltro(filtro: FiltrosDoRelatorio) {
   props.modelValue.filtros.push(filtro)
@@ -185,11 +201,11 @@ function removerFiltro() {
 }
 
 const camposPorTabela = ref<string[]>()
-async function getCamposTabela(tabela: string) {
+async function getCamposTabela(tabela: string, campo?: string) {
   if (!tabela || tabela === 'gerais' || tabela === 'filtros') return;
 
   try {
-    const response = await relatoriosServices.getCamposTabela(tabela);
+    const response = await relatoriosServices.getCamposTabela(tabela, campo);
     camposPorTabela.value = response
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')

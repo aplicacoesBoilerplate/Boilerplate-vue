@@ -32,10 +32,22 @@ export const relatoriosServices = {
   },
 
   // Consulta dos campos da tabela
-  async getCamposTabela(tabela: string): Promise<string[]> {
+  async getTabelasRelacionadas(modeloRelatorio: string): Promise<string[]> {
+    try {
+      const { data } = await http.get('/relatorios/tabelasRelacionadas', {
+        params: { modeloRelatorio },
+      })
+      return data
+    } catch (error) {
+      throw error
+    }
+  },
+
+  // Consulta dos campos da tabela
+  async getCamposTabela(tabela: string, campo?: string): Promise<string[]> {
     try {
       const { data } = await http.get('/relatorios/camposTabela', {
-        params: { tabela },
+        params: { tabela, campo },
       })
       return data
     } catch (error) {
