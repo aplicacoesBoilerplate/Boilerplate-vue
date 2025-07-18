@@ -1,21 +1,20 @@
 <template>
-  <DialogFiltrosRelatorios :model-value="dialogFiltrosRelatorio"
-                           @update:modelValue="clonarObjetoDialogFiltrosRelatorios(dialogFiltrosRelatorio)"/>
+  <DialogFiltrosRelatorios ref="dialogFiltrosRef" :model-value="dialogFiltrosRelatorio"
+    @update:modelValue="clonarObjetoDialogFiltrosRelatorios(dialogFiltrosRelatorio)" />
 
   <v-card class="mx-auto" max-width="2000">
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de Relatórios</span>
 
-      <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosDashboard"
-                           @alterado-sinteticos="aoMudarSinteticos" @alterado-analiticos="aoMudarAnaliticos"
-                           @limpar-filtros="limparFiltros"/>
+      <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosDashboard" @alterado-sinteticos="aoMudarSinteticos"
+        @alterado-analiticos="aoMudarAnaliticos" @limpar-filtros="limparFiltros" />
 
     </v-card-title>
-    <v-divider/>
+    <v-divider />
 
     <!-- Loading -->
     <div class="d-flex justify-center" v-if="loading">
-      <v-progress-circular color="primary" indeterminate/>
+      <v-progress-circular color="primary" indeterminate />
     </div>
 
     <!-- Alerta quando nenhuma categoria consultado foi encontrada -->
@@ -41,16 +40,16 @@
             <v-icon>mdi-chart-bar</v-icon>
           </template>
 
-          <!-- Botões para emitir relatório -->
+          <!-- Botões para abrir o dialog dos filtros para gerar relatório -->
           <template v-slot:append>
             <div class="pe-2">
               <BtnOpenDialog :callback="() => openFiltrosRelatorio(relatorio)" :labelLeft="true"
-                             :label="`Gerar relatório ${relatorio.tipoRelatorio} - ${relatorio.modeloRelatorio}`" size="small"
-                             variant="elevated" color="info" icon="mdi-chart-donut-variant" title="Emitir relatório"/>
+                :label="`Gerar relatório ${relatorio.tipoRelatorio} - ${relatorio.modeloRelatorio}`" size="small"
+                variant="elevated" color="info" icon="mdi-chart-donut-variant" title="Emitir relatório" />
             </div>
           </template>
         </v-list-item>
-        <v-divider/>
+        <v-divider />
       </template>
     </v-virtual-scroll>
   </v-card>
@@ -67,29 +66,30 @@ import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue"; // Botão par
 import {
   DialogFiltrosRelatoriosClass
 } from "@/components/dialog/dialogFiltrosRelatorios/ClassDialogFiltrosRelatorios.ts";
-import {PaginatorClass} from '@/components/paginator/ClassPaginator';
+import { PaginatorClass } from '@/components/paginator/ClassPaginator';
 
 // Models
-import type {Relatorios} from "@/models/relatoriosModels/relatoriosModels.ts";
+import type { Relatorios } from "@/models/relatoriosModels/relatoriosModels.ts";
 
 // Store
-import {useSnackbarStore} from "@/stores/SnackbarStore.ts";
+import { useSnackbarStore } from "@/stores/SnackbarStore.ts";
 
 // Services
-import {relatoriosServices} from "@/services/relatoriosService.ts";
+import { relatoriosServices } from "@/services/relatoriosService.ts";
 
 // Vue
-import {onBeforeMount, onMounted, ref} from "vue";
+import { nextTick, onBeforeMount, onMounted, ref } from "vue";
 
 const loading = ref(false)
 const dialogFiltrosRelatorio = ref(new DialogFiltrosRelatoriosClass())
+const dialogFiltrosRef = ref()
 var apiRelatorios = ref<Array<Relatorios>>() // Armazena os dados da resposta das req para exibição no front
 
 onBeforeMount(() => {
   paginadorClass.value.exibirSintetico = true
 })
 
-onMounted(async() => {
+onMounted(async () => {
   await getModelos()
 })
 
@@ -147,6 +147,10 @@ async function getModelos() {
 // #region dialog filtros
 function openFiltrosRelatorio(infoRelatorio: Relatorios) {
   dialogFiltrosRelatorio.value.openDialog(infoRelatorio)
+
+  nextTick(() => {
+    dialogFiltrosRef.value?.getTabelasRelacionadas()
+  })
 }
 
 // #endregion

@@ -1,4 +1,4 @@
-import type {FiltrosDoRelatorio, Relatorios} from "@/models/relatoriosModels/relatoriosModels.ts";
+import type { FiltrosDoRelatorio, Relatorios } from '@/models/relatoriosModels/relatoriosModels.ts'
 
 export class DialogFiltrosRelatoriosClass {
   show: boolean
@@ -9,7 +9,7 @@ export class DialogFiltrosRelatoriosClass {
     this.show = false
     this.relatorio = {
       tipoRelatorio: 'SINTETICO',
-      modeloRelatorio: 'GERAL'
+      modeloRelatorio: 'GERAL',
     }
     this.filtros = [
       {
@@ -18,80 +18,8 @@ export class DialogFiltrosRelatoriosClass {
         campoTabela: '',
         searchRegistro: [],
         intervaloRegistros: [],
-        condicao: "SEM_FILTRO",
+        condicao: 'SEM_FILTRO',
       },
-      {
-        showFiltro: true,
-        tabela: 'Saidas',
-        campoTabela: '',
-        searchRegistro: [],
-        intervaloRegistros: [],
-        condicao: "SEM_FILTRO",
-      },
-      {
-        showFiltro: true,
-        tabela: 'Saidas',
-        campoTabela: '',
-        searchRegistro: [],
-        intervaloRegistros: [],
-        condicao: "SEM_FILTRO",
-      },
-      {
-        showFiltro: true,
-        tabela: 'Saidas',
-        campoTabela: '',
-        searchRegistro: [],
-        intervaloRegistros: [],
-        condicao: "SEM_FILTRO",
-      },
-      {
-        showFiltro: true,
-        tabela: 'Saidas',
-        campoTabela: '',
-        searchRegistro: [],
-        intervaloRegistros: [],
-        condicao: "SEM_FILTRO",
-      },
-      {
-        showFiltro: true,
-        tabela: 'Saidas',
-        campoTabela: '',
-        searchRegistro: [],
-        intervaloRegistros: [],
-        condicao: "SEM_FILTRO",
-      },
-      {
-        showFiltro: true,
-        tabela: 'Saidas',
-        campoTabela: '',
-        searchRegistro: [],
-        intervaloRegistros: [],
-        condicao: "SEM_FILTRO",
-      },
-      {
-        showFiltro: true,
-        tabela: 'Saidas',
-        campoTabela: '',
-        searchRegistro: [],
-        intervaloRegistros: [],
-        condicao: "SEM_FILTRO",
-      },
-      {
-        showFiltro: true,
-        tabela: 'B',
-        campoTabela: '',
-        searchRegistro: [],
-        intervaloRegistros: [],
-        condicao: "SEM_FILTRO",
-      },
-      {
-        showFiltro: true,
-        tabela: 'Saidas',
-        campoTabela: '',
-        searchRegistro: [],
-        intervaloRegistros: [],
-        condicao: "SEM_FILTRO",
-      }
     ]
   }
 
@@ -106,6 +34,6 @@ export class DialogFiltrosRelatoriosClass {
   }
 
   clearFields() {
-
+    this.filtros = []
   }
 }
