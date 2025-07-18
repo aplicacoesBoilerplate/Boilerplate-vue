@@ -2,13 +2,8 @@
   <v-dialog v-model="exibir" max-width="1100">
 
     <v-card prepend-icon=""
-            :title="dialogFiltrosRelatorios.show ? `Filtros para gerar relatório: ${modelValue.relatorio.tipoRelatorio} - ${modelValue.relatorio.modeloRelatorio}` : ''"
-    >
-      <v-tabs
-        v-model="tab"
-        bg-color="primary"
-        @update:modelValue="getCamposTabela(tab)"
-      >
+      :title="dialogFiltrosRelatorios.show ? `Filtros para gerar relatório: ${modelValue.relatorio.tipoRelatorio} - ${modelValue.relatorio.modeloRelatorio}` : ''">
+      <v-tabs v-model="tab" bg-color="primary" @update:modelValue="getCamposTabela(tab)">
         <v-tab value="gerais">Opções gerais</v-tab>
         <v-tab v-for="aba in abasPorTabela" :key="aba" :value="aba">
           {{ aba }}
@@ -22,20 +17,20 @@
             Gerais
           </v-tabs-window-item>
 
-          <div v-for="aba in props.modelValue.filtros" :key="aba.tabela">
-            <v-tabs-window-item :value="aba.tabela">
+          <div v-for="aba in abasPorTabela" :key="aba">
+            <v-tabs-window-item :value="aba">
               <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
                 <v-row dense class="mt-4">
                   <v-col cols="12" md="4" class="d-flex justify-center">
-                    <v-autocomplete clearable v-model="aba.campoTabela" label="Campo*" :items="camposPorTabela"
-                                    :rules="[rules.required]" variant="outlined">
+                    <v-autocomplete clearable v-model="filtro.campoTabela" label="Campo*" :items="camposPorTabela"
+                      :item-title="'chave'" :item-value="'valor'" :rules="[rules.required]" variant="outlined">
                     </v-autocomplete>
                   </v-col>
 
                   <v-col cols="12" md="4" class="d-flex justify-center">
-                    <v-autocomplete clearable v-model="aba.condicao" label="Condição*" :items="condicoesAutoComplete"
-                                    :item-title="'chave'" :item-value="'valor'"
-                                    :rules="[rules.required]" variant="outlined">
+                    <v-autocomplete clearable v-model="filtro.condicao" label="Condição*" :items="condicoesAutoComplete"
+                      :item-title="'chave'" :item-value="'valor'" :rules="[rules.required]" variant="outlined"
+                      :disabled="filtro.campoTabela == null">
 
                       <template #item="{ props, item }">
                         <v-list-item v-bind="props">
@@ -54,13 +49,13 @@
                   </v-col>
 
                   <v-col cols="12" md="4">
-                    <InputUpperCase v-model:="searchAuxiliar" :style="{
+                    <InputUpperCase v-model:="filtro.searchRegistro" :style="{
                       inputVariant: 'outlined',
                       label: 'Buscar por',
                       maxWidth: 650,
                       counter: 100,
-                      inputDisabled: aba.condicao == 'INTERVALO'
-                    }" :rules="[rules.requiredCondicionado(aba.condicao != 'SELECAO'), rules.max]" />
+                      inputDisabled: filtro.condicao == null
+                    }" :rules="[rules.requiredCondicionado(filtro.condicao != 'SELECAO'), rules.max]" />
                   </v-col>
 
                 </v-row>
@@ -81,15 +76,12 @@
                   <!-- Botões para remover um filtro -->
                   <template v-slot:append>
                     <div class="pe-2">
-                      <BtnOpenDialog :callback="() => removerFiltro()"
-                                     :labelLeft="true"
-                                     label="Remover filtro" size="small"
-                                     variant="elevated" color="red" icon="mdi-window-close"
-                                     title="Remover filtro"/>
+                      <BtnOpenDialog :callback="() => removerFiltro()" :labelLeft="true" label="Remover filtro"
+                        size="small" variant="elevated" color="red" icon="mdi-window-close" title="Remover filtro" />
                     </div>
                   </template>
                 </v-list-item>
-                <v-divider/>
+                <v-divider />
               </template>
             </v-virtual-scroll>
           </v-tabs-window-item>
@@ -102,7 +94,7 @@
           <v-icon class="pt-1">mdi-refresh</v-icon>
           Limpar
         </v-btn>
-        <v-spacer/>
+        <v-spacer />
 
         <v-btn color="red" variant="plain" @click="resetForm()">
           <v-icon class="pt-1">mdi-close</v-icon>
@@ -134,13 +126,13 @@ import { useSnackbarStore } from "@/stores/SnackbarStore";
 import { rules } from "@/utils/rules.ts";
 
 // Vue
-import {computed, onBeforeMount, ref, watch} from "vue";
+import { computed, onBeforeMount, ref, watch } from "vue";
 
 const formRef = ref()
 const formIsValid = ref(false)
 const tab = ref()
 const condicoesAutoComplete = CondicoesFiltrosAutoComplete
-const searchAuxiliar = ref()
+const filtro = ref<FiltrosDoRelatorio>({} as FiltrosDoRelatorio)
 
 onBeforeMount(async () => {
   await getTabelasRelacionadas();
@@ -151,7 +143,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-defineExpose({getTabelasRelacionadas})
+defineExpose({ getTabelasRelacionadas })
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: DialogFiltrosRelatoriosClass): void
@@ -165,7 +157,7 @@ const exibir = computed({
 })
 
 function submitForm() {
-
+  adicionarFiltro(filtro.value)
 }
 
 function clearFields() {
@@ -188,12 +180,13 @@ async function getTabelasRelacionadas() {
   }
 }
 
-// props.modelValue.filtros.filter((filtro, index, self) =>
-//   index === self.findIndex(f => f.tabela === filtro.tabela)
-// )
+function adicionarFiltro(filtro?: FiltrosDoRelatorio) {
+  if (filtro)
+    props.modelValue.filtros.push(filtro)
+}
 
-function adicionarFiltro(filtro: FiltrosDoRelatorio) {
-  props.modelValue.filtros.push(filtro)
+function filtrarFiltrosAplicadosPorTabela(tabela: string) {
+  return props.modelValue.filtros.filter(filtro => filtro.tabela === tabela)
 }
 
 function removerFiltro() {
@@ -214,6 +207,4 @@ async function getCamposTabela(tabela: string, campo?: string) {
 
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

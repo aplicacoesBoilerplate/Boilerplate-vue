@@ -8,8 +8,16 @@ export interface Dashboard {
 
 // Relatórios
 export interface Relatorios {
-  tipoRelatorio: "SINTETICO" | "ANALITICO"
-  modeloRelatorio: "GERAL" | "USUARIO" | "FUNCIONARIO" | "SAIDA" | "AUTORIZACAO" | "CATEGORIA" | "MOTIVO" | "ERROS"
+  tipoRelatorio: 'SINTETICO' | 'ANALITICO'
+  modeloRelatorio:
+    | 'GERAL'
+    | 'USUARIO'
+    | 'FUNCIONARIO'
+    | 'SAIDA'
+    | 'AUTORIZACAO'
+    | 'CATEGORIA'
+    | 'MOTIVO'
+    | 'ERROS'
 }
 
 // Filtros aplicados
@@ -17,9 +25,21 @@ export interface FiltrosDoRelatorio {
   showFiltro: boolean
   tabela: string
   campoTabela: string
-  searchRegistro: string[]
+  searchRegistro: string
   intervaloRegistros: string[]
-  condicao: "SELECAO" | "INTERVALO" | "INICIADO_COM" | "TERMINADO_COM" | "CONTEM" | "IGUAL" | "DIFERENTE" | "MAIOR" | "MAIOR_IGUAL" | "MENOR" | "MENOR_IGUAL" | "SEM_FILTRO"
+  condicao:
+    | 'SELECAO'
+    | 'INTERVALO'
+    | 'INICIADO_COM'
+    | 'TERMINADO_COM'
+    | 'CONTEM'
+    | 'IGUAL'
+    | 'DIFERENTE'
+    | 'MAIOR'
+    | 'MAIOR_IGUAL'
+    | 'MENOR'
+    | 'MENOR_IGUAL'
+    | 'SEM_FILTRO'
 }
 
 // Tipagem da lista
