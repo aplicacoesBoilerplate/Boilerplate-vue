@@ -11,16 +11,7 @@ export class DialogFiltrosRelatoriosClass {
       tipoRelatorio: 'SINTETICO',
       modeloRelatorio: 'GERAL',
     }
-    this.filtros = [
-      {
-        showFiltro: true,
-        tabela: 'Saidas',
-        campoTabela: '',
-        searchRegistro: [],
-        intervaloRegistros: [],
-        condicao: 'SEM_FILTRO',
-      },
-    ]
+    this.filtros = []
   }
 
   openDialog(infoRelatorio: Relatorios) {
@@ -36,4 +27,5 @@ export class DialogFiltrosRelatoriosClass {
   clearFields() {
     this.filtros = []
   }
+
 }
