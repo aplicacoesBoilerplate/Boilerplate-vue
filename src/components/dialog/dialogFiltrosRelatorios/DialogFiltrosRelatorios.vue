@@ -118,7 +118,7 @@ import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue";
 import type { DialogFiltrosRelatoriosClass } from "@/components/dialog/dialogFiltrosRelatorios/ClassDialogFiltrosRelatorios.ts";
 
 // Models
-import { CondicoesFiltrosAutoComplete, type FiltrosDoRelatorio } from "@/models/relatoriosModels/relatoriosModels.ts";
+import { CondicoesFiltrosAutoComplete, type autoCompleteCondicoes, type FiltrosDoRelatorio, type PossiveisFiltrosDoCampo } from "@/models/relatoriosModels/relatoriosModels.ts";
 
 // Services
 import { relatoriosServices } from "@/services/relatoriosService.ts";
@@ -131,12 +131,26 @@ import { computed, onBeforeMount, ref, watch } from "vue";
 const formRef = ref()
 const formIsValid = ref(false)
 const tab = ref()
-const condicoesAutoComplete = CondicoesFiltrosAutoComplete
+const condicoesAutoComplete = ref<autoCompleteCondicoes[]>([]);
 const filtro = ref<FiltrosDoRelatorio>({} as FiltrosDoRelatorio)
 
 onBeforeMount(async () => {
   await getTabelasRelacionadas();
 })
+
+watch(() => filtro.value.campoTabela, async (val) => {
+  if (val) {
+    const camposDaTabela = await relatoriosServices.getCamposTabela(tab.value);
+    const campoSelecionado = camposDaTabela.find(c => c.valor === val);
+
+    if (campoSelecionado) {
+      const condicoesPermitidas = campoSelecionado.condicoes;
+      condicoesAutoComplete.value = CondicoesFiltrosAutoComplete.filter(item =>
+        condicoesPermitidas.includes(item.valor)
+      );
+    }
+  }
+});
 
 interface Props {
   modelValue: DialogFiltrosRelatoriosClass
@@ -144,11 +158,6 @@ interface Props {
 
 const props = defineProps<Props>()
 defineExpose({ getTabelasRelacionadas })
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: DialogFiltrosRelatoriosClass): void
-  // (e: 'operacao-concluida'): void
-}>()
 
 const dialogFiltrosRelatorios = computed(() => props.modelValue)
 const exibir = computed({
@@ -193,7 +202,7 @@ function removerFiltro() {
   props.modelValue.filtros.pop()
 }
 
-const camposPorTabela = ref<string[]>()
+const camposPorTabela = ref<PossiveisFiltrosDoCampo[]>()
 async function getCamposTabela(tabela: string, campo?: string) {
   if (!tabela || tabela === 'gerais' || tabela === 'filtros') return;
 

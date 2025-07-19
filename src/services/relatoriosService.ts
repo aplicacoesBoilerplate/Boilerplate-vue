@@ -1,7 +1,7 @@
 // Classes
 import type { PaginatorClass } from '@/components/paginator/ClassPaginator'
 // Models
-import type {Dashboard, Relatorios} from '@/models/relatoriosModels/relatoriosModels'
+import type {Dashboard, PossiveisFiltrosDoCampo, Relatorios} from '@/models/relatoriosModels/relatoriosModels'
 // Services
 import http from './axios'
 
@@ -44,7 +44,7 @@ export const relatoriosServices = {
   },
 
   // Consulta dos campos da tabela
-  async getCamposTabela(tabela: string, campo?: string): Promise<string[]> {
+  async getCamposTabela(tabela: string, campo?: string): Promise<PossiveisFiltrosDoCampo[]> {
     try {
       const { data } = await http.get('/relatorios/camposTabela', {
         params: { tabela, campo },

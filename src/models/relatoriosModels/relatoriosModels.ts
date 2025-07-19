@@ -42,14 +42,20 @@ export interface FiltrosDoRelatorio {
     | 'SEM_FILTRO'
 }
 
-// Tipagem da lista
-interface autoComplete {
+export interface PossiveisFiltrosDoCampo {
+  valor: string,
+  chave: string
+  tipo: string,
+  condicoes: string[]
+}
+
+export interface autoCompleteCondicoes {
   chave: string
   valor: string
   icon: string
 }
 
-export const CondicoesFiltrosAutoComplete: Array<autoComplete> = [
+export const CondicoesFiltrosAutoComplete: Array<autoCompleteCondicoes> = [
   { chave: 'SELECAO', valor: 'SELECAO', icon: 'mdi-selection-ellipse' },
   { chave: 'INTERVALO', valor: 'INTERVALO', icon: 'mdi-ray-start-end' },
   { chave: 'INICIADO COM', valor: 'INICIADO_COM', icon: 'mdi-contain-start' },
@@ -61,5 +67,7 @@ export const CondicoesFiltrosAutoComplete: Array<autoComplete> = [
   { chave: 'MAIOR OU IGUAL', valor: 'MAIOR_IGUAL', icon: 'mdi-greater-than-or-equal' },
   { chave: 'MENOR QUE', valor: 'MENOR', icon: 'mdi-less-than' },
   { chave: 'MENOR OU IGUAL', valor: 'MENOR_IGUAL', icon: 'mdi-less-than-or-equal' },
+  { chave: 'QUANDO VERDADEIRO', valor: 'VERDADEIRO', icon: 'mdi-check-circle-outline' },
+  { chave: 'QUANDO FALSO', valor: 'FALSO', icon: 'mdi-close-circle-outline' },
   { chave: 'NÃO FILTRAR', valor: 'SEM_FILTRO', icon: 'mdi-filter-off' },
 ]
