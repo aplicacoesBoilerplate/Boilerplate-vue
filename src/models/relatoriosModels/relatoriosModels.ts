@@ -39,7 +39,10 @@ export interface FiltrosDoRelatorio {
     | 'MAIOR_IGUAL'
     | 'MENOR'
     | 'MENOR_IGUAL'
+    | 'VERDADEIRO'
+    | 'FALSO'
     | 'SEM_FILTRO'
+    | null
 }
 
 export interface PossiveisFiltrosDoCampo {

@@ -28,4 +28,12 @@ export class DialogFiltrosRelatoriosClass {
     this.filtros = []
   }
 
+  getFiltrosAplicados() {
+    return this.filtros
+  }
+
+  setFiltro(filtro: FiltrosDoRelatorio) {
+    this.filtros.push(filtro)
+  }
+
 }

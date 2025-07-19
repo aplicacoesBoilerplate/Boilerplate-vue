@@ -54,8 +54,8 @@
               <span class="pr-2" />
               <!-- Filtro para exibir modelos de relatórios sintéticos -->
               <v-btn icon="mdi-chart-box-multiple-outline" size="x-small" variant="tonal"
-                :color="paginator.exibirAnaliticos ? 'success' : 'red'"
-                :title="paginator.exibirAnaliticos ? 'Clique para ocultar os modelos analíticos' : 'Clique para listar os modelos analíticos'"
+                :color="paginator.exibirAnalitico ? 'success' : 'red'"
+                :title="paginator.exibirAnalitico ? 'Clique para ocultar os modelos analíticos' : 'Clique para listar os modelos analíticos'"
                 @click="alterarExibicaoAnaliticos()" />
             </div>
 
