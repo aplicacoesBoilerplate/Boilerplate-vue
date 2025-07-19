@@ -56,7 +56,12 @@
                       maxWidth: 650,
                       counter: 100,
                       inputDisabled: filtro.condicao == null
-                    }" />
+                    }" :rules="[rules.requiredCondicionado(
+                                  tipoInputConsulta == 'STRING'
+                                  && filtro.searchRegistro == ''
+                                ), rules.max
+                              ]"
+                  />
                   </v-col>
 
                   <!-- Input para tipo INTEIRO ÚNICO -->
@@ -68,7 +73,11 @@
                         maxWidth: 650,
                         counter: 100,
                         inputDisabled: filtro.condicao == null
-                      }"
+                      }" :rules="[rules.requiredCondicionado(
+                                    tipoInputConsulta == 'INTEIRO'
+                                    && filtro.searchRegistro == ''
+                                  ), rules.max
+                                ]"
                     />
                   </v-col>
 
@@ -80,7 +89,13 @@
                       maxWidth: 650,
                       counter: 100,
                       inputDisabled: filtro.condicao == null
-                    }" />
+                    }" :rules="[rules.requiredCondicionado(
+                                  tipoInputConsulta == 'INTEIRO'
+                                  && filtro.condicao == 'INTERVALO'
+                                  && filtro.intervaloRegistros[0] == ''
+                                ), rules.max
+                              ]"
+                  />
                   </v-col>
 
                   <v-col cols="12" md="6" v-if="tipoInputConsulta == 'INTEIRO' && filtro.condicao == 'INTERVALO'">
@@ -90,7 +105,13 @@
                       maxWidth: 650,
                       counter: 100,
                       inputDisabled: filtro.condicao == null
-                    }" />
+                    }" :rules="[rules.requiredCondicionado(
+                                  tipoInputConsulta == 'INTEIRO'
+                                  && filtro.condicao == 'INTERVALO'
+                                  && filtro.intervaloRegistros[1] == ''
+                                ), rules.max
+                              ]"
+                  />
                   </v-col>
 
                   <!-- Input para tipo BOOLEAN não tem necessidade, a condição já é o suficiente -->
@@ -103,7 +124,13 @@
                       maxWidth: 650,
                       counter: 100,
                       inputDisabled: filtro.condicao == null
-                    }" />
+                    }" :rules="[rules.requiredCondicionado(
+                                  tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME'
+                                  && filtro.condicao != 'INTERVALO'
+                                  && filtro.searchRegistro == ''
+                                )
+                              ]"
+                  />
                   </v-col>
 
                   <!-- Input para tipo DATE INTERVALO -->
@@ -278,6 +305,8 @@ onBeforeMount(async () => {
 watch(() => filtro.value.campoTabela, async (val) => {
   if (val) {
     filtro.value.condicao = null
+    filtro.value.searchRegistro = ''
+    filtro.value.intervaloRegistros = []
     try {
       const camposDaTabela = await relatoriosServices.getCamposTabela(tab.value);
       const campoSelecionado = camposDaTabela.find(c => c.valor === val);
@@ -295,6 +324,8 @@ watch(() => filtro.value.campoTabela, async (val) => {
 });
 
 watch(() => filtro.value.condicao, async (val) => {
+  filtro.value.searchRegistro = ''
+  filtro.value.intervaloRegistros = []
   if (val) {
     try {
       const response = await relatoriosServices.getCamposTabela(tab.value, filtro.value.campoTabela);
@@ -387,6 +418,12 @@ async function getCamposTabela(tabela: string, campo?: string) {
     useSnackbarStore().showSnackbar(error, 'red')
   }
 }
+
+watch(() => filtro.value.searchRegistro, (val) => {
+    if (tipoInputConsulta.value === 'INTEIRO') {
+      filtro.value.searchRegistro = val.replace(/\D/g, '');
+    }
+})
 
 </script>
 
