@@ -122,8 +122,8 @@
 
                   <!-- Input para tipo BOOLEAN não tem necessidade, a condição já é o suficiente -->
 
-                  <!-- Input para tipo DATE ÚNICO -->
-                  <v-col cols="12" v-if="tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME' && (filtro.condicao != 'INTERVALO' && filtro.condicao != null)">
+                  <!-- Input para tipo DATA ÚNICO -->
+                  <v-col cols="12" v-if="tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME' && (filtro.condicao != 'INTERVALO' && filtro.condicao != null)">
                     <InputUpperCase v-model:="filtro.searchRegistro" v-data-mask
                       :style="{
                         inputVariant: 'outlined',
@@ -133,7 +133,7 @@
                         counter: 100,
                         inputDisabled: filtro.condicao == null
                       }" :rules="[rules.requiredCondicionado(
-                                    tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME'
+                                    (tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME')
                                     && filtro.condicao != 'INTERVALO'
                                     && (filtro.searchRegistro == null || filtro.searchRegistro == '')
                                   )
@@ -141,8 +141,8 @@
                   />
                   </v-col>
 
-                  <!-- Input para tipo DATE INTERVALO -->
-                  <v-col cols="12" md="6" v-if="tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME' && filtro.condicao == 'INTERVALO'">
+                  <!-- Input para tipo DATA INTERVALO -->
+                  <v-col cols="12" md="6" v-if="(tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME') && filtro.condicao == 'INTERVALO'">
                     <InputUpperCase v-model:="filtro.intervaloRegistros[0]" v-data-mask
                       :style="{
                         inputVariant: 'outlined',
@@ -152,14 +152,14 @@
                         counter: 100,
                         inputDisabled: filtro.condicao == null
                       }" :rules="[rules.requiredCondicionado(
-                                    tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME'
+                                    (tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME')
                                     && filtro.condicao == 'INTERVALO'
                                     && (filtro.intervaloRegistros[0] == null || filtro.intervaloRegistros[0] == '')
                                   )
                                 ]"
                   />
                   </v-col>
-                  <v-col cols="12" md="6" v-if="tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME' && filtro.condicao == 'INTERVALO'">
+                  <v-col cols="12" md="6" v-if="(tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME') && filtro.condicao == 'INTERVALO'">
                     <InputUpperCase v-model:="filtro.searchRegistro" v-data-mask
                       :style="{
                         inputVariant: 'outlined',
@@ -169,7 +169,7 @@
                         counter: 100,
                         inputDisabled: filtro.condicao == null
                       }" :rules="[rules.requiredCondicionado(
-                                    tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME'
+                                    (tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME')
                                     && filtro.condicao == 'INTERVALO'
                                     && (filtro.intervaloRegistros[1] == null || filtro.intervaloRegistros[1] == '')
                                   )
