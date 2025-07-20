@@ -30,7 +30,7 @@
                   <v-col cols="12" md="6" class="d-flex justify-center">
                     <v-autocomplete clearable v-model="filtro.condicao" label="Condição*" :items="condicoesAutoComplete"
                       :item-title="'chave'" :item-value="'valor'" :rules="[rules.required]" variant="outlined"
-                      :disabled="filtro.campoTabela == null">
+                      :disabled="filtro.campoTabela == null || filtro.campoTabela == ''">
 
                       <template #item="{ props, item }">
                         <v-list-item v-bind="props">
@@ -49,33 +49,35 @@
                   </v-col>
 
                   <!-- Input para tipo STRING -->
-                  <v-col cols="12" md="6" v-if="tipoInputConsulta == 'STRING'">
+                  <v-col cols="12" v-if="tipoInputConsulta == 'STRING' && filtro.condicao != null">
                     <InputUpperCase v-model:="filtro.searchRegistro" :style="{
                       inputVariant: 'outlined',
-                      label: 'Buscar por',
-                      maxWidth: 650,
+                      label: 'Valor',
+                      maxWidth: 1100,
+                      hint: 'Campo de texto para consulta',
                       counter: 100,
                       inputDisabled: filtro.condicao == null
                     }" :rules="[rules.requiredCondicionado(
                                   tipoInputConsulta == 'STRING'
-                                  && filtro.searchRegistro == ''
+                                  && (filtro.searchRegistro == null || filtro.searchRegistro == '')
                                 ), rules.max
                               ]"
                   />
                   </v-col>
 
                   <!-- Input para tipo INTEIRO ÚNICO -->
-                  <v-col cols="12" md="6" v-if="tipoInputConsulta == 'INTEIRO' && filtro.condicao != 'INTERVALO'">
-                    <InputUpperCase v-model:="filtro.searchRegistro"
+                  <v-col cols="12" v-if="tipoInputConsulta == 'INTEIRO' && (filtro.condicao != 'INTERVALO' && filtro.condicao != null)">
+                    <InputUpperCase v-model:="filtro.searchRegistro" v-numeric-mask
                       :style="{
                         inputVariant: 'outlined',
-                        label: 'Buscar por',
-                        maxWidth: 650,
+                        label: 'Valor',
+                        maxWidth: 1100,
+                        hint: 'Campo numérico para consulta',
                         counter: 100,
                         inputDisabled: filtro.condicao == null
                       }" :rules="[rules.requiredCondicionado(
                                     tipoInputConsulta == 'INTEIRO'
-                                    && filtro.searchRegistro == ''
+                                    && (filtro.searchRegistro == null || filtro.searchRegistro == '')
                                   ), rules.max
                                 ]"
                     />
@@ -83,74 +85,96 @@
 
                   <!-- Input para tipo INTEIRO INTERVALO -->
                   <v-col cols="12" md="6" v-if="tipoInputConsulta == 'INTEIRO' && filtro.condicao == 'INTERVALO'">
-                    <InputUpperCase v-model:="filtro.intervaloRegistros[0]" :style="{
-                      inputVariant: 'outlined',
-                      label: 'Início',
-                      maxWidth: 650,
-                      counter: 100,
-                      inputDisabled: filtro.condicao == null
-                    }" :rules="[rules.requiredCondicionado(
-                                  tipoInputConsulta == 'INTEIRO'
-                                  && filtro.condicao == 'INTERVALO'
-                                  && filtro.intervaloRegistros[0] == ''
-                                ), rules.max
-                              ]"
+                    <InputUpperCase v-model:="filtro.intervaloRegistros[0]" v-numeric-mask
+                      :style="{
+                        inputVariant: 'outlined',
+                        label: 'Valor início',
+                        maxWidth: 1100,
+                        hint: 'Campo numérico para consulta',
+                        counter: 100,
+                        inputDisabled: filtro.condicao == null
+                      }" :rules="[rules.requiredCondicionado(
+                                    tipoInputConsulta == 'INTEIRO'
+                                    && filtro.condicao == 'INTERVALO'
+                                    && (filtro.intervaloRegistros[0] == null || filtro.intervaloRegistros[0] == '')
+                                  ), rules.max
+                                ]"
                   />
                   </v-col>
 
                   <v-col cols="12" md="6" v-if="tipoInputConsulta == 'INTEIRO' && filtro.condicao == 'INTERVALO'">
-                    <InputUpperCase v-model:="filtro.intervaloRegistros[1]" :style="{
-                      inputVariant: 'outlined',
-                      label: 'Fim',
-                      maxWidth: 650,
-                      counter: 100,
-                      inputDisabled: filtro.condicao == null
-                    }" :rules="[rules.requiredCondicionado(
-                                  tipoInputConsulta == 'INTEIRO'
-                                  && filtro.condicao == 'INTERVALO'
-                                  && filtro.intervaloRegistros[1] == ''
-                                ), rules.max
-                              ]"
+                    <InputUpperCase v-model:="filtro.intervaloRegistros[1]" v-numeric-mask
+                      :style="{
+                        inputVariant: 'outlined',
+                        label: 'Valor fim',
+                        maxWidth: 1100,
+                        hint: 'Campo numérico para consulta',
+                        counter: 100,
+                        inputDisabled: filtro.condicao == null
+                      }" :rules="[rules.requiredCondicionado(
+                                    tipoInputConsulta == 'INTEIRO'
+                                    && filtro.condicao == 'INTERVALO'
+                                    && (filtro.intervaloRegistros[1] == null || filtro.intervaloRegistros[1] == '')
+                                  ), rules.max
+                                ]"
                   />
                   </v-col>
 
                   <!-- Input para tipo BOOLEAN não tem necessidade, a condição já é o suficiente -->
 
                   <!-- Input para tipo DATE ÚNICO -->
-                  <v-col cols="12" v-if="tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME' && filtro.condicao != 'INTERVALO'">
-                    <InputUpperCase v-model:="filtro.searchRegistro" :style="{
-                      inputVariant: 'outlined',
-                      label: 'Buscar por',
-                      maxWidth: 650,
-                      counter: 100,
-                      inputDisabled: filtro.condicao == null
-                    }" :rules="[rules.requiredCondicionado(
-                                  tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME'
-                                  && filtro.condicao != 'INTERVALO'
-                                  && filtro.searchRegistro == ''
-                                )
-                              ]"
+                  <v-col cols="12" v-if="tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME' && (filtro.condicao != 'INTERVALO' && filtro.condicao != null)">
+                    <InputUpperCase v-model:="filtro.searchRegistro" v-data-mask
+                      :style="{
+                        inputVariant: 'outlined',
+                        label: 'Valor',
+                        maxWidth: 1100,
+                        hint: 'Campo de data para consulta (DD/MM/YYYY)',
+                        counter: 100,
+                        inputDisabled: filtro.condicao == null
+                      }" :rules="[rules.requiredCondicionado(
+                                    tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME'
+                                    && filtro.condicao != 'INTERVALO'
+                                    && (filtro.searchRegistro == null || filtro.searchRegistro == '')
+                                  )
+                                ]"
                   />
                   </v-col>
 
                   <!-- Input para tipo DATE INTERVALO -->
                   <v-col cols="12" md="6" v-if="tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME' && filtro.condicao == 'INTERVALO'">
-                    <InputUpperCase v-model:="filtro.searchRegistro" :style="{
-                      inputVariant: 'outlined',
-                      label: 'Inicio',
-                      maxWidth: 650,
-                      counter: 100,
-                      inputDisabled: filtro.condicao == null
-                    }" />
+                    <InputUpperCase v-model:="filtro.intervaloRegistros[0]" v-data-mask
+                      :style="{
+                        inputVariant: 'outlined',
+                        label: 'Valor início',
+                        maxWidth: 1100,
+                        hint: 'Campo de data para consulta (DD/MM/YYYY)',
+                        counter: 100,
+                        inputDisabled: filtro.condicao == null
+                      }" :rules="[rules.requiredCondicionado(
+                                    tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME'
+                                    && filtro.condicao == 'INTERVALO'
+                                    && (filtro.intervaloRegistros[0] == null || filtro.intervaloRegistros[0] == '')
+                                  )
+                                ]"
+                  />
                   </v-col>
                   <v-col cols="12" md="6" v-if="tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME' && filtro.condicao == 'INTERVALO'">
-                    <InputUpperCase v-model:="filtro.searchRegistro" :style="{
-                      inputVariant: 'outlined',
-                      label: 'Fim',
-                      maxWidth: 650,
-                      counter: 100,
-                      inputDisabled: filtro.condicao == null
-                    }" />
+                    <InputUpperCase v-model:="filtro.searchRegistro" v-data-mask
+                      :style="{
+                        inputVariant: 'outlined',
+                        label: 'Valor fim',
+                        maxWidth: 1100,
+                        hint: 'Campo de data para consulta (DD/MM/YYYY)',
+                        counter: 100,
+                        inputDisabled: filtro.condicao == null
+                      }" :rules="[rules.requiredCondicionado(
+                                    tipoInputConsulta == 'DATE' || tipoInputConsulta == 'DATETIME'
+                                    && filtro.condicao == 'INTERVALO'
+                                    && (filtro.intervaloRegistros[1] == null || filtro.intervaloRegistros[1] == '')
+                                  )
+                                ]"
+                  />
                   </v-col>
 
                   <v-col cols="12">
@@ -373,8 +397,10 @@ function closeDialog() {
 }
 
 function cancelar() {
-  clearFields()
   closeDialog()
+  tab.value = 'gerais'
+  filtro.value.campoTabela = ''
+  condicoesAutoComplete.value = []
 }
 
 const abasPorTabela = ref<string[]>()
@@ -388,7 +414,41 @@ async function getTabelasRelacionadas() {
 }
 
 function submitFormFiltro() {
-  adicionarFiltro(filtro.value)
+  try {
+
+    if (tipoInputConsulta.value == 'INTEIRO' && filtro.value.condicao != 'INTERVALO') {
+      const isEmpty = !filtro.value.searchRegistro || filtro.value.searchRegistro.trim() === ''
+      const isNotNumeric = isNaN(Number(filtro.value.searchRegistro))
+
+      if (isEmpty || isNotNumeric) {
+        throw new Error('Informe um valor numérico válido para o filtro.')
+      }
+
+      if (filtro.value.searchRegistro)
+        filtro.value.searchRegistro = filtro.value.searchRegistro.replace(/\D/g, '')
+    }
+
+    if (tipoInputConsulta.value == 'INTEIRO' && filtro.value.condicao == 'INTERVALO') {
+      const isEmpty0 = !filtro.value.intervaloRegistros[0] || filtro.value.intervaloRegistros[0].trim() === ''
+      const isEmpty1 = !filtro.value.intervaloRegistros[1] || filtro.value.intervaloRegistros[1].trim() === ''
+      const isNotNumeric0 = isNaN(Number(filtro.value.intervaloRegistros[0]))
+      const isNotNumeric1 = isNaN(Number(filtro.value.intervaloRegistros[1]))
+
+      if (isEmpty0 || isEmpty1 || isNotNumeric0 || isNotNumeric1) {
+        throw new Error('Informe um valor numérico válido para o filtro.')
+      }
+
+      if (filtro.value.intervaloRegistros[0])
+        filtro.value.intervaloRegistros[0] = filtro.value.intervaloRegistros[0].replace(/\D/g, '')
+
+      if (filtro.value.intervaloRegistros[1])
+        filtro.value.intervaloRegistros[1] = filtro.value.intervaloRegistros[1].replace(/\D/g, '')
+    }
+
+    adicionarFiltro(filtro.value)
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+  }
 }
 
 function adicionarFiltro(filtro?: FiltrosDoRelatorio) {
@@ -418,12 +478,6 @@ async function getCamposTabela(tabela: string, campo?: string) {
     useSnackbarStore().showSnackbar(error, 'red')
   }
 }
-
-watch(() => filtro.value.searchRegistro, (val) => {
-    if (tipoInputConsulta.value === 'INTEIRO') {
-      filtro.value.searchRegistro = val.replace(/\D/g, '');
-    }
-})
 
 </script>
 
