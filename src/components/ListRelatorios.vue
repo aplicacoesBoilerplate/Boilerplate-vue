@@ -1,6 +1,5 @@
 <template>
-  <DialogFiltrosRelatorios ref="dialogFiltrosRef" :model-value="dialogFiltrosRelatorio"
-    @update:modelValue="clonarObjetoDialogFiltrosRelatorios(dialogFiltrosRelatorio)" />
+  <DialogFiltrosRelatorios ref="dialogFiltrosRef" v-model:montarFiltros="filtrosDialog"/>
 
   <v-card class="mx-auto" max-width="2000">
     <v-card-title class="d-flex justify-space-between align-center">
@@ -63,9 +62,7 @@ import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'
 import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue"; // Botão para abrir o Dialog
 
 // Classes
-import {
-  DialogFiltrosRelatoriosClass
-} from "@/components/dialog/dialogFiltrosRelatorios/ClassDialogFiltrosRelatorios.ts";
+import { DialogFiltrosRelatoriosClass } from "@/components/dialog/dialogFiltrosRelatorios/ClassDialogFiltrosRelatorios.ts";
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
 
 // Models
@@ -81,8 +78,8 @@ import { relatoriosServices } from "@/services/relatoriosService.ts";
 import { nextTick, onBeforeMount, onMounted, ref } from "vue";
 
 const loading = ref(false)
-const dialogFiltrosRelatorio = ref(new DialogFiltrosRelatoriosClass())
 const dialogFiltrosRef = ref()
+const filtrosDialog = ref(new DialogFiltrosRelatoriosClass()) // Instância da classe do componente para montar os filtros dos relatórios
 var apiRelatorios = ref<Array<Relatorios>>() // Armazena os dados da resposta das req para exibição no front
 
 onBeforeMount(() => {
@@ -146,18 +143,11 @@ async function getModelos() {
 
 // #region dialog filtros
 function openFiltrosRelatorio(infoRelatorio: Relatorios) {
-  dialogFiltrosRelatorio.value.openDialog(infoRelatorio)
+  filtrosDialog.value.openDialog(infoRelatorio)
 
   nextTick(() => {
     dialogFiltrosRef.value?.getTabelasRelacionadas()
   })
-}
-
-// #endregion
-
-// #region demais funções
-function clonarObjetoDialogFiltrosRelatorios(val: DialogFiltrosRelatoriosClass) {
-  Object.assign(dialogFiltrosRelatorio, val)
 }
 
 // #endregion

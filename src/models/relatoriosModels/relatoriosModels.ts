@@ -8,7 +8,7 @@ export interface Dashboard {
 
 // Relatórios
 export interface Relatorios {
-  tipoRelatorio: 'SINTETICO' | 'ANALITICO'
+  tipoRelatorio: 'SINTETICO' | 'ANALITICO' | undefined
   modeloRelatorio:
     | 'GERAL'
     | 'USUARIO'
@@ -18,11 +18,11 @@ export interface Relatorios {
     | 'CATEGORIA'
     | 'MOTIVO'
     | 'ERROS'
+    | undefined
 }
 
 // Filtros aplicados
 export interface FiltrosDoRelatorio {
-  showFiltro: boolean
   tabela: string
   campoTabela: string
   searchRegistro: string

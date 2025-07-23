@@ -32,26 +32,40 @@ export const relatoriosServices = {
   },
 
   // Consulta dos campos da tabela
-  async getTabelasRelacionadas(modeloRelatorio: string): Promise<string[]> {
-    try {
-      const { data } = await http.get('/relatorios/tabelasRelacionadas', {
-        params: { modeloRelatorio },
-      })
-      return data
-    } catch (error) {
-      throw error
-    }
+  async getTabelasRelacionadas(modeloRelatorio?: string): Promise<string[]> {
+    if (modeloRelatorio) {}
+      try {
+        const { data } = await http.get('/relatorios/tabelasRelacionadas', {
+          params: { modeloRelatorio },
+        })
+        return data
+      } catch (error) {
+        throw error
+      }
   },
 
   // Consulta dos campos da tabela
   async getCamposTabela(tabela: string, campo?: string): Promise<PossiveisFiltrosDoCampo[]> {
-    try {
-      const { data } = await http.get('/relatorios/camposTabela', {
-        params: { tabela, campo },
-      })
-      return data
-    } catch (error) {
-      throw error
+    if (campo) {
+      try {
+        const { data } = await http.get('/relatorios/camposTabela', {
+          params: { tabela, campo },
+        })
+        return data
+      } catch (error) {
+        throw error
+      }
+    }
+
+    else {
+      try {
+        const { data } = await http.get('/relatorios/camposTabela', {
+          params: { tabela },
+        })
+        return data
+      } catch (error) {
+        throw error
+      }
     }
   },
 }

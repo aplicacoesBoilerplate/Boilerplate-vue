@@ -1,10 +1,10 @@
 <template>
-  <v-dialog v-model="exibir" max-width="1100">
+  <v-dialog v-model="montarFiltros.show" max-width="1100">
 
     <v-card prepend-icon=""
-      :title="props.modelValue.show ? `Filtros para gerar relatório: ${modelValue.relatorio.tipoRelatorio} - ${modelValue.relatorio.modeloRelatorio}` : ''">
+      :title="montarFiltros.show ? `Filtros para gerar relatório: ${montarFiltros.relatorio.tipoRelatorio} - ${montarFiltros.relatorio.modeloRelatorio}` : ''">
       <v-tabs v-model="tab" bg-color="primary" @update:modelValue="getCamposTabela(tab)">
-        <v-tab value="gerais">Opções gerais</v-tab>
+        <v-tab value="instrucoes">Instruções</v-tab>
         <v-tab v-for="aba in abasPorTabela" :key="aba" :value="aba">
           {{ aba }}
         </v-tab>
@@ -13,8 +13,15 @@
 
       <v-card-text>
         <v-tabs-window v-model="tab">
-          <v-tabs-window-item value="gerais">
-            Gerais
+          <v-tabs-window-item value="instrucoes">
+            <p class="text-info">
+              Navegue entre as abas acima, selecione os filtros desejados para montar o seu relatório!
+            </p>
+            <p>
+              Os filtros são compostos por um campo, cada um dos campos tem possíveis condições,
+              a depender da condição, o valor consultado pode ser diferente, variando entre um valor único,
+              um intervalo ou até mesmo uma data.
+            </p>
           </v-tabs-window-item>
 
           <div v-for="aba in abasPorTabela" :key="aba">
@@ -123,7 +130,7 @@
                   <!-- Input para tipo BOOLEAN não tem necessidade, a condição já é o suficiente -->
 
                   <!-- Input para tipo DATA ÚNICO -->
-                  <v-col cols="12" v-if="tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME' && (filtro.condicao != 'INTERVALO' && filtro.condicao != null)">
+                  <v-col cols="12" v-if="(tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME') && (filtro.condicao != 'INTERVALO' && filtro.condicao != null)">
                     <InputUpperCase v-model:="filtro.searchRegistro" v-data-mask
                       :style="{
                         inputVariant: 'outlined',
@@ -134,7 +141,6 @@
                         inputDisabled: filtro.condicao == null
                       }" :rules="[rules.requiredCondicionado(
                                     (tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME')
-                                    && filtro.condicao != 'INTERVALO'
                                     && (filtro.searchRegistro == null || filtro.searchRegistro == '')
                                   )
                                 ]"
@@ -160,7 +166,7 @@
                   />
                   </v-col>
                   <v-col cols="12" md="6" v-if="(tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME') && filtro.condicao == 'INTERVALO'">
-                    <InputUpperCase v-model:="filtro.searchRegistro" v-data-mask
+                    <InputUpperCase v-model:="filtro.intervaloRegistros[1]" v-data-mask
                       :style="{
                         inputVariant: 'outlined',
                         label: 'Valor fim',
@@ -180,7 +186,7 @@
                   <v-col cols="12">
                     <!-- Botão para adiconar um filtro -->
                     <v-btn
-                      v-if="tab != 'gerais' && tab != 'filtros'"
+                      v-if="tab != 'instrucoes' && tab != 'filtros'"
                       :disabled="!formIsValid" type="submit"
                       title="Adicionar filtro" label="Adicionar filtro"
                       variant="tonal" color="success" class="w-100"
@@ -214,14 +220,6 @@
                           VALOR: <br> {{ filtro.searchRegistro }}
                         </v-col>
                       </v-row>
-
-                      <!-- Botões para remover um filtro -->
-                      <template v-slot:append>
-                        <div>
-                          <BtnOpenDialog :callback="() => removerFiltro()" :labelLeft="true"
-                            size="small" variant="elevated" color="red" icon="mdi-window-close" title="Remover filtro" />
-                        </div>
-                      </template>
                     </v-list-item>
                     <v-divider />
                   </template>
@@ -229,42 +227,44 @@
             </v-tabs-window-item>
           </div>
 
-          <v-tabs-window-item value="filtros">
-            <!-- Exibição dos filtros aplicados ao relatório -->
-            <v-virtual-scroll :items="filtrosAplicados" max-height="500" item-height="50">
-              <template v-slot:default="{ item: filtro }">
-                <v-list-item :title="`${filtro.tabela}`">
-                  <!-- Ícone de cartão de filtro -->
-                  <template v-slot:prepend>
+          <v-tabs-window-item eager value="filtros">
+            <v-card prepend-icon="" max-height="500" class="pa-2">
+              <v-card-text style="max-height: 450px; overflow-y: auto;">
+                <!-- Exibição dos filtros aplicados ao relatório -->
+                <v-row dense
+                  v-for="(filtro, index) in montarFiltros.getFiltrosAplicados()"
+                  :key="`${filtro.tabela}-${filtro.campoTabela}-${index}`"
+                >
+                  <v-col cols="1">
                     <v-icon>mdi-filter-outline</v-icon>
-                  </template>
-
-                  <v-row>
-                    <v-col cols="4">
-                      CAMPO: <br> {{ filtro.campoTabela }}
-                    </v-col>
-                    <v-col cols="4">
-                      CONDIÇÃO: <br> {{ filtro.condicao }}
-                    </v-col>
-                    <v-col cols="4" v-if="filtro.condicao == 'INTERVALO'">
-                      ENTRE: <br> {{ filtro.intervaloRegistros[0] }} - {{ filtro.intervaloRegistros[1] }}
-                    </v-col>
-                    <v-col cols="4" v-else>
-                      VALOR: <br> {{ filtro.searchRegistro }}
-                    </v-col>
-                  </v-row>
-
+                  </v-col>
+                  <v-col cols="2">
+                    TABELA: <br> {{ filtro.tabela }}
+                  </v-col>
+                  <v-col cols="3">
+                    CAMPO: <br> {{ filtro.campoTabela }}
+                  </v-col>
+                  <v-col cols="3">
+                    CONDIÇÃO: <br> {{ filtro.condicao }}
+                  </v-col>
+                  <v-col cols="2" v-if="filtro.condicao == 'INTERVALO'">
+                    ENTRE: <br> {{ filtro.intervaloRegistros[0] }} - {{ filtro.intervaloRegistros[1] }}
+                  </v-col>
+                  <v-col cols="2" v-else>
+                    VALOR: <br> {{ filtro.searchRegistro }}
+                  </v-col>
                   <!-- Botões para remover um filtro -->
-                  <template v-slot:append>
+                  <v-col cols="1">
                     <div>
-                      <BtnOpenDialog :callback="() => removerFiltro()" :labelLeft="true"
+                      <BtnOpenDialog :callback="() => removerFiltro(index)" :labelLeft="true"
                         size="small" variant="elevated" color="red" icon="mdi-window-close" title="Remover filtro" />
                     </div>
-                  </template>
-                </v-list-item>
-                <v-divider />
-              </template>
-            </v-virtual-scroll>
+                  </v-col>
+
+                    <v-divider />
+                  </v-row>
+              </v-card-text>
+            </v-card>
           </v-tabs-window-item>
 
         </v-tabs-window>
@@ -273,7 +273,7 @@
       <v-card-actions>
         <v-btn color="warning" variant="plain" @click="clearFields()">
           <v-icon class="pt-1">mdi-refresh</v-icon>
-          Limpar
+          Limpar todos os filtros
         </v-btn>
         <v-spacer />
 
@@ -300,7 +300,7 @@ import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visu
 import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue";
 
 // Classes
-import { DialogFiltrosRelatoriosClass } from "@/components/dialog/dialogFiltrosRelatorios/ClassDialogFiltrosRelatorios.ts";
+import type { DialogFiltrosRelatoriosClass } from "@/components/dialog/dialogFiltrosRelatorios/ClassDialogFiltrosRelatorios.ts";
 
 // Models
 import { CondicoesFiltrosAutoComplete, type autoCompleteCondicoes, type FiltrosDoRelatorio, type PossiveisFiltrosDoCampo } from "@/models/relatoriosModels/relatoriosModels.ts";
@@ -311,26 +311,35 @@ import { useSnackbarStore } from "@/stores/SnackbarStore";
 import { rules } from "@/utils/rules.ts";
 
 // Vue
-import { computed, onBeforeMount, ref, watch } from "vue";
+import { onBeforeMount, ref, watch } from "vue";
 
-const tab = ref()
-const formRef = ref()
-const formIsValid = ref(false)
-const tipoInputConsulta = ref('')
-const filtrosAplicados = ref<FiltrosDoRelatorio[]>([])
-const classFiltros = ref(new DialogFiltrosRelatoriosClass())
-const condicoesAutoComplete = ref<autoCompleteCondicoes[]>([])
-const filtro = ref<FiltrosDoRelatorio>({} as FiltrosDoRelatorio)
+const tab = ref() // Controle das tabs
+const formRef = ref() // Referência para o form
+const formIsValid = ref(false) // Validação do form
 
-onBeforeMount(async () => {
-  await getTabelasRelacionadas();
+const tipoInputConsulta = ref('') // Variável para armazenar o tipo do input que deve ser usado
+const condicoesAutoComplete = ref<autoCompleteCondicoes[]>([]) // Lista de possíveis condições para cada campo
+const filtro = ref<FiltrosDoRelatorio>({} as FiltrosDoRelatorio) // Objeto gerado pelo form
+const filtrosAplicados = ref<FiltrosDoRelatorio[]>()
+
+const montarFiltros = defineModel<DialogFiltrosRelatoriosClass>('montarFiltros', {
+  required: true
 })
 
-watch(() => filtro.value.campoTabela, async (val) => {
+//#region funcionalidades do vue
+
+onBeforeMount(async () => {
+  await getTabelasRelacionadas(); // Pegar todas as tabelas relacionadas com o relatório e exibir as mesmas para o usuário
+})
+
+watch(() => filtro.value.campoTabela, async (val) => { // Sempre que o campo for alterado a lista de condições também deve ser alterada
   if (val) {
+    // Limpa os dados atuais após a mudança
     filtro.value.condicao = null
     filtro.value.searchRegistro = ''
     filtro.value.intervaloRegistros = []
+
+    // Abaixo a funcionalidade extrai todas as opções compativeis com a resposta da API
     try {
       const camposDaTabela = await relatoriosServices.getCamposTabela(tab.value);
       const campoSelecionado = camposDaTabela.find(c => c.valor === val);
@@ -347,9 +356,11 @@ watch(() => filtro.value.campoTabela, async (val) => {
   }
 });
 
-watch(() => filtro.value.condicao, async (val) => {
+watch(() => filtro.value.condicao, async (val) => { // Se a condição for alterada, limpar os campos que antes estavam sendo usados para não resultar em conflito nas variáveis
   filtro.value.searchRegistro = ''
   filtro.value.intervaloRegistros = []
+
+  // Abaixo apenas iremos pegar qual é o tipo do input com base nos atributos selecionados
   if (val) {
     try {
       const response = await relatoriosServices.getCamposTabela(tab.value, filtro.value.campoTabela);
@@ -360,10 +371,9 @@ watch(() => filtro.value.condicao, async (val) => {
   }
 })
 
-watch(() => tab.value, (val) => {
+watch(() => tab.value, (val) => { // Sempre que a aba dos filtros for alterada, deve limpar o formulário
   if (val) {
     filtro.value = {
-      showFiltro: true,
       tabela: tab.value,
       campoTabela: '',
       searchRegistro: '',
@@ -373,47 +383,36 @@ watch(() => tab.value, (val) => {
   }
 
   if (tab.value == 'filtros')
-    filtrosAplicados.value = classFiltros.value.getFiltrosAplicados()
+    filtrosAplicados.value = montarFiltros.value.getFiltrosAplicados();
 })
 
-interface Props {
-  modelValue: DialogFiltrosRelatoriosClass
-}
+defineExpose({ getTabelasRelacionadas }) // Método que será exposto para o pai realizar a chamada, deve ser revisto e ajustado
 
-const props = defineProps<Props>()
-defineExpose({ getTabelasRelacionadas })
-
-const exibir = computed({
-  get: () => props.modelValue.show,
-  set: (val) => props.modelValue.show = val
-})
+//#endregion
 
 function clearFields() {
-  props.modelValue.clearFields()
+  filtro.value = {
+    tabela: tab.value,
+    campoTabela: '',
+    searchRegistro: '',
+    intervaloRegistros: [],
+    condicao: null
+  }
+  montarFiltros.value.clearFields()
 }
 
 function closeDialog() {
-  props.modelValue.closeDialog()
+  montarFiltros.value.closeDialog()
 }
 
-function cancelar() {
+function cancelar() { // Ajustar, acredito que tenha funções desnecessárias
   closeDialog()
-  tab.value = 'gerais'
+  tab.value = 'instrucoes'
   filtro.value.campoTabela = ''
   condicoesAutoComplete.value = []
 }
 
-const abasPorTabela = ref<string[]>()
-async function getTabelasRelacionadas() {
-  try {
-    const response = await relatoriosServices.getTabelasRelacionadas(props.modelValue.relatorio.modeloRelatorio);
-    abasPorTabela.value = response
-  } catch (error) {
-    useSnackbarStore().showSnackbar(error, 'red')
-  }
-}
-
-function submitFormFiltro() {
+function submitFormFiltro() { // Rever por completo
   try {
 
     if (tipoInputConsulta.value == 'INTEIRO' && filtro.value.condicao != 'INTERVALO') {
@@ -452,24 +451,33 @@ function submitFormFiltro() {
 }
 
 function adicionarFiltro(filtro?: FiltrosDoRelatorio) {
-  if (filtro) {
-    props.modelValue.filtros.push(filtro)
-    filtrosAplicados.value = classFiltros.value.getFiltrosAplicados()
-    classFiltros.value.setFiltro(filtro)
-  }
+  if (filtro)
+    montarFiltros.value.setFiltro(filtro)
 }
 
 function filtrarFiltrosAplicadosPorTabela() {
-  return props.modelValue.filtros.filter(filtro => filtro.tabela === tab.value)
+  return montarFiltros.value.filtrarFiltrosAplicadosPorTabela(tab.value)
 }
 
-function removerFiltro() {
-  props.modelValue.filtros.pop()
+function removerFiltro(index: number) {
+  montarFiltros.value.removeFiltro(index)
 }
 
-const camposPorTabela = ref<PossiveisFiltrosDoCampo[]>()
-async function getCamposTabela(tabela: string, campo?: string) {
-  if (!tabela || tabela === 'gerais' || tabela === 'filtros') return;
+//#region populando o componente
+
+const abasPorTabela = ref<string[]>() // Acredito que pode chamar a função no template
+async function getTabelasRelacionadas() { // Método chamado ao iniciar a exibição no template
+  try {
+    const response = await relatoriosServices.getTabelasRelacionadas(montarFiltros.value.relatorio.modeloRelatorio);
+    abasPorTabela.value = response
+  } catch (error) {
+    useSnackbarStore().showSnackbar(error, 'red')
+  }
+}
+
+const camposPorTabela = ref<PossiveisFiltrosDoCampo[]>() // Acredito que possa ser chamado pelo template
+async function getCamposTabela(tabela: string, campo?: string) { // Duas possibilidades de resposta, responsabilidade para a classe
+  if (!tabela || tabela === 'instrucoes' || tabela === 'filtros') return;
 
   try {
     const response = await relatoriosServices.getCamposTabela(tabela, campo);
@@ -478,6 +486,8 @@ async function getCamposTabela(tabela: string, campo?: string) {
     useSnackbarStore().showSnackbar(error, 'red')
   }
 }
+
+//#endregion
 
 </script>
 
