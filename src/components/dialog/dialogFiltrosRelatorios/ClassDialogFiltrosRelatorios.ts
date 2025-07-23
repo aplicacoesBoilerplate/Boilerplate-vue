@@ -3,7 +3,7 @@ import type { FiltrosDoRelatorio, Relatorios } from '@/models/relatoriosModels/r
 export class DialogFiltrosRelatoriosClass {
   show: boolean
   relatorio: Relatorios
-  filtros: FiltrosDoRelatorio[]
+  filtros: Array<FiltrosDoRelatorio>
 
   constructor() {
     this.show = false
@@ -27,5 +27,26 @@ export class DialogFiltrosRelatoriosClass {
   clearFields() {
     this.filtros = []
   }
+
+  getFiltrosAplicados() {
+    return this.filtros.filter(filtro => filtro.tabela != '')
+  }
+
+  setFiltro(filtro: FiltrosDoRelatorio) {
+    this.filtros.push(filtro)
+  }
+
+  removeFiltro(index: number) {
+    this.filtros.splice(index, 1);
+  }
+
+  //#region filtros
+  filtrarFiltrosAplicadosPorTabela(tabela: string) {
+    return this.filtros.filter(filtro => filtro.tabela === tabela)
+  }
+
+
+
+  //#endregion
 
 }
