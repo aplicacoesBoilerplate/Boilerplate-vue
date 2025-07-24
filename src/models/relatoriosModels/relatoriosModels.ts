@@ -1,3 +1,9 @@
+import type { ErrorsConsulta } from "../errorsModels/errorsModels"
+import type { UsuarioConsulta } from "../usersModels/UsuariosModels"
+import type { funcionarioRegistradoDP } from "../firebirdModels/firebirdModels"
+import type { CategoriasMotivos, MotivoConsulta } from "../motivosModels/MotivosModels"
+import type { AutorizacoesConsulta, SaidaConsulta, SaidasComAutorizacoes } from "../saidasModels/saidasModels"
+
 // Dashboard home page
 export interface Dashboard {
   totalSaidas: number
@@ -52,13 +58,13 @@ export interface PossiveisFiltrosDoCampo {
   condicoes: string[]
 }
 
-export interface autoCompleteCondicoes {
+export interface AautoCompleteCondicoes {
   chave: string
   valor: string
   icon: string
 }
 
-export const CondicoesFiltrosAutoComplete: Array<autoCompleteCondicoes> = [
+export const CondicoesFiltrosAutoComplete: Array<AautoCompleteCondicoes> = [
   { chave: 'SELECAO', valor: 'SELECAO', icon: 'mdi-selection-ellipse' },
   { chave: 'INTERVALO', valor: 'INTERVALO', icon: 'mdi-ray-start-end' },
   { chave: 'INICIADO COM', valor: 'INICIADO_COM', icon: 'mdi-contain-start' },
@@ -74,3 +80,28 @@ export const CondicoesFiltrosAutoComplete: Array<autoCompleteCondicoes> = [
   { chave: 'QUANDO FALSO', valor: 'FALSO', icon: 'mdi-close-circle-outline' },
   { chave: 'NÃO FILTRAR', valor: 'SEM_FILTRO', icon: 'mdi-filter-off' },
 ]
+
+export interface ParametrosGerarRelatorio {
+  modeloRelatorio: string,
+  tipoRelatorio: string,
+  filtrosPorCampo: FiltrosDoRelatorio[]
+}
+
+export interface RelatorioGerado {
+    modeloRelatorio: string,
+    tipoRelatorio: string,
+    responsaveis?: UsuarioConsulta,
+    funcionario?: funcionarioRegistradoDP,
+    saidas?: SaidaConsulta,
+    autorizacoes?: AutorizacoesConsulta,
+    saidasComAutorizacoes?: SaidasComAutorizacoes,
+    categorias?: CategoriasMotivos,
+    motivos?: MotivoConsulta,
+    errors?: ErrorsConsulta,
+    respostaSinteticaRelatorios?: [
+        {
+            descricao: string,
+            valor: string,
+        }
+    ]
+}

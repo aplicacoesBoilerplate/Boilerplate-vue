@@ -285,6 +285,7 @@
         <!-- Botão para gerar um relatório -->
         <v-btn
           color="success" variant="tonal"
+          @click="gerarRelatorio()"
         >
           <v-icon class="pt-1">mdi-check</v-icon>
           Gerar relatório
@@ -292,6 +293,8 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <DialogExibirRelatorioGerado ref="dialogExibirRelatorioGeradoRef" v-model:relatorio-gerado="relatorioGerado" />
 </template>
 
 <script setup lang="ts">
@@ -303,7 +306,7 @@ import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue";
 import type { DialogFiltrosRelatoriosClass } from "@/components/dialog/dialogFiltrosRelatorios/ClassDialogFiltrosRelatorios.ts";
 
 // Models
-import { CondicoesFiltrosAutoComplete, type autoCompleteCondicoes, type FiltrosDoRelatorio, type PossiveisFiltrosDoCampo } from "@/models/relatoriosModels/relatoriosModels.ts";
+import { CondicoesFiltrosAutoComplete, type AautoCompleteCondicoes, type FiltrosDoRelatorio, type ParametrosGerarRelatorio, type PossiveisFiltrosDoCampo, type RelatorioGerado } from "@/models/relatoriosModels/relatoriosModels.ts";
 
 // Services
 import { relatoriosServices } from "@/services/relatoriosService.ts";
@@ -311,14 +314,15 @@ import { useSnackbarStore } from "@/stores/SnackbarStore";
 import { rules } from "@/utils/rules.ts";
 
 // Vue
-import { onBeforeMount, ref, watch } from "vue";
+import { nextTick, onBeforeMount, ref, watch } from "vue";
+import DialogExibirRelatorioGerado from './dialogExibirRelatorioGerado/DialogExibirRelatorioGerado.vue';
 
 const tab = ref() // Controle das tabs
 const formRef = ref() // Referência para o form
 const formIsValid = ref(false) // Validação do form
 
 const tipoInputConsulta = ref('') // Variável para armazenar o tipo do input que deve ser usado
-const condicoesAutoComplete = ref<autoCompleteCondicoes[]>([]) // Lista de possíveis condições para cada campo
+const condicoesAutoComplete = ref<AautoCompleteCondicoes[]>([]) // Lista de possíveis condições para cada campo
 const filtro = ref<FiltrosDoRelatorio>({} as FiltrosDoRelatorio) // Objeto gerado pelo form
 const filtrosAplicados = ref<FiltrosDoRelatorio[]>()
 
@@ -489,6 +493,29 @@ async function getCamposTabela(tabela: string, campo?: string) { // Duas possibi
 
 //#endregion
 
-</script>
+const dialogExibirRelatorioGeradoRef = ref()
+const relatorioGerado = ref<RelatorioGerado>({
+  modeloRelatorio: '',
+  tipoRelatorio: ''
+})
 
-<style scoped></style>
+async function gerarRelatorio() {
+  montarFiltros.value
+  const parametros = ref<ParametrosGerarRelatorio>({
+    modeloRelatorio: '',
+    tipoRelatorio: '',
+    filtrosPorCampo: []
+  })
+
+  parametros.value.modeloRelatorio = montarFiltros.value.relatorio.modeloRelatorio ? montarFiltros.value.relatorio.modeloRelatorio : ''
+  parametros.value.tipoRelatorio = montarFiltros.value.relatorio.tipoRelatorio ? montarFiltros.value.relatorio.tipoRelatorio : ''
+  parametros.value.filtrosPorCampo = montarFiltros.value.filtros ? montarFiltros.value.filtros : []
+
+  relatorioGerado.value = await relatoriosServices.gerarRelatorio(parametros.value)
+
+  nextTick(() => {
+    dialogExibirRelatorioGeradoRef.value?.openDialog()
+  })
+}
+
+</script>
