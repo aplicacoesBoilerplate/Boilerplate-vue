@@ -1,5 +1,5 @@
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 
 export async function gerarPdfRelatorio(
   elementRef: string | HTMLElement,
@@ -9,51 +9,69 @@ export async function gerarPdfRelatorio(
   const element =
     typeof elementRef === 'string'
       ? document.getElementById(elementRef)
-      : elementRef;
+      : elementRef
 
   if (!element) {
-    console.error(`Elemento "${elementRef}" não encontrado.`);
-    return;
+    console.error(`Elemento "${elementRef}" não encontrado.`)
+    return
   }
 
-  await new Promise(resolve => setTimeout(resolve, 300));
+  await new Promise(resolve => setTimeout(resolve, 500))
 
-  const canvas = await html2canvas(element, {
+  // Renderiza diretamente o elemento já exibido (com estilos aplicados)
+  const canvas = await html2canvas(element as HTMLElement, {
     scale: 2,
     useCORS: true,
-  });
+    backgroundColor: '#2a2a2a',
+  })
 
-  const imgData = canvas.toDataURL('image/png');
-
-  if (!imgData.startsWith('data:image/png')) {
-    console.error('Erro ao gerar imagem: formato inválido.', imgData.slice(0, 30));
-    return;
-  }
-
+  const imgData = canvas.toDataURL('image/png')
   const pdf = new jsPDF({
     orientation: orientacao,
-    unit: 'mm',
+    unit: 'px',
     format: 'a4',
-  });
+  })
 
-  const pdfWidth = pdf.internal.pageSize.getWidth();
-  const pdfHeight = pdf.internal.pageSize.getHeight();
-  const imgWidth = pdfWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  const pageWidth = pdf.internal.pageSize.getWidth()
+  const pageHeight = pdf.internal.pageSize.getHeight()
+  const imgWidth = pageWidth
+  const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-  let position = 0;
-
-  if (imgHeight <= pdfHeight) {
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+  if (imgHeight <= pageHeight) {
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
   } else {
-    let remainingHeight = imgHeight;
-    while (remainingHeight > 0) {
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      remainingHeight -= pdfHeight;
-      position -= pdfHeight;
-      if (remainingHeight > 0) pdf.addPage();
+    const pageCanvas = document.createElement('canvas')
+    const pageHeightPx = (pageHeight * canvas.width) / pageWidth
+
+    let renderedHeight = 0
+
+    while (renderedHeight < canvas.height) {
+      const currentPageCanvas = document.createElement('canvas')
+      currentPageCanvas.width = canvas.width
+      currentPageCanvas.height = pageHeightPx
+
+      const ctx = currentPageCanvas.getContext('2d')!
+      ctx.fillStyle = '#2a2a2a'
+      ctx.fillRect(0, 0, canvas.width, pageHeightPx)
+      ctx.drawImage(
+        canvas,
+        0,
+        renderedHeight,
+        canvas.width,
+        pageHeightPx,
+        0,
+        0,
+        canvas.width,
+        pageHeightPx
+      )
+
+      const pageData = currentPageCanvas.toDataURL('image/png')
+      if (renderedHeight > 0) pdf.addPage()
+      pdf.addImage(pageData, 'PNG', 0, 0, imgWidth, pageHeight)
+
+      renderedHeight += pageHeightPx
     }
   }
 
-  pdf.save(`${nomeRelatorio}.pdf`);
+  pdf.save(`${nomeRelatorio}.pdf`)
 }
