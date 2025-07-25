@@ -1,7 +1,7 @@
 // Classes
 import type { PaginatorClass } from '@/components/paginator/ClassPaginator'
 // Models
-import type {Dashboard, PossiveisFiltrosDoCampo, Relatorios} from '@/models/relatoriosModels/relatoriosModels'
+import type { Dashboard, ParametrosGerarRelatorio, PossiveisFiltrosDoCampo, RelatorioGerado, Relatorios } from '@/models/relatoriosModels/relatoriosModels'
 // Services
 import http from './axios'
 
@@ -31,7 +31,7 @@ export const relatoriosServices = {
     }
   },
 
-  // Consulta dos campos da tabela
+  // Consulta das tabelas relacionadas ao relatório
   async getTabelasRelacionadas(modeloRelatorio?: string): Promise<string[]> {
     if (modeloRelatorio) {}
       try {
@@ -66,6 +66,16 @@ export const relatoriosServices = {
       } catch (error) {
         throw error
       }
+    }
+  },
+
+  // Funcionalidade que gera um relatório com os dados emitidos
+  async gerarRelatorio(filtros: ParametrosGerarRelatorio): Promise<RelatorioGerado> {
+    try {
+      const { data } = await http.post('/relatorios/gerar', filtros)
+      return data
+    } catch (error) {
+      throw error
     }
   },
 }

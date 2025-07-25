@@ -44,9 +44,6 @@ export class DialogFiltrosRelatoriosClass {
   filtrarFiltrosAplicadosPorTabela(tabela: string) {
     return this.filtros.filter(filtro => filtro.tabela === tabela)
   }
-
-
-
   //#endregion
 
 }
