@@ -36,7 +36,7 @@
           </template>
         </v-virtual-scroll>
 
-        <Blocoresponsaveis v-if="relatorioGerado.responsaveis" v-model:dados="relatorioGerado.responsaveis" />
+        <BlocoResponsaveis v-if="relatorioGerado.responsaveis" v-model:dados="relatorioGerado.responsaveis" />
         <BlocoFuncionario v-if="relatorioGerado.funcionario" v-model:dados="relatorioGerado.funcionario" />
         <BlocoSaidas v-if="relatorioGerado.saidas" v-model:dados="relatorioGerado.saidas" />
         <BlocoAutorizacoes v-if="relatorioGerado.autorizacoes" v-model:dados="relatorioGerado.autorizacoes" />
@@ -77,7 +77,7 @@
 <script setup lang="ts">
 // Componentes
 import BlocoSaidasComAutorizacoes from './blocosExibirRelatorioGerado/BlocoSaidasComAutorizacoes.vue';
-import Blocoresponsaveis from './blocosExibirRelatorioGerado/Blocoresponsaveis.vue';
+import BlocoResponsaveis from './blocosExibirRelatorioGerado/BlocoResponsaveis.vue';
 import BlocoAutorizacoes from './blocosExibirRelatorioGerado/BlocoAutorizacoes.vue';
 import BlocoFuncionario from './blocosExibirRelatorioGerado/BlocoFuncionario.vue';
 import BlocoCategorias from './blocosExibirRelatorioGerado/BlocoCategorias.vue';
