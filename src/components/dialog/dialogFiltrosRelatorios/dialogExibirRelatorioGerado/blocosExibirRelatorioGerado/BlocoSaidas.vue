@@ -23,7 +23,7 @@
 
       <v-col cols="4">
         <p>Motivo: #{{ saida.motivoSaida }} {{ saida.descricaoMotivo }}</p>
-        <p>Categoria: #{{ saida.categoriaMotivo }} {{ saida. }}</p>
+        <p>Categoria: #{{ saida.categoriaMotivo }}</p>
       </v-col>
 
       <v-col cols="12">

@@ -5,8 +5,22 @@
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de Relatórios</span>
 
+      <!-- Campo para consultar os relatório pelo search -->
+      <InputUpperCase v-model:="paginadorClass.search" :style="{
+          icon: 'mdi-magnify',
+          density: 'compact',
+          btnDisabled: !paginadorClass.search,
+          inputVariant: 'outlined',
+          btnVariant: 'text',
+          label: 'Consultar usuário',
+          showPrepend: true,
+          hint: 'Tipo ou modelo',
+          maxWidth: 300,
+        }" @on-prepend-click="getModelos"
+      />
+
       <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosDashboard" @alterado-sinteticos="aoMudarSinteticos"
-        @alterado-analiticos="aoMudarAnaliticos" @limpar-filtros="limparFiltros" />
+      @alterado-analiticos="aoMudarAnaliticos" @limpar-filtros="limparFiltros" />
 
     </v-card-title>
     <v-divider />
@@ -60,6 +74,7 @@
 import DialogFiltrosRelatorios from "@/components/dialog/dialogFiltrosRelatorios/DialogFiltrosRelatorios.vue"; // Componente visual para o dialog dos filtros para geração de raltório
 import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
 import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue"; // Botão para abrir o Dialog
+import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual para o input upper case
 
 // Classes
 import { DialogFiltrosRelatoriosClass } from "@/components/dialog/dialogFiltrosRelatorios/ClassDialogFiltrosRelatorios.ts";
