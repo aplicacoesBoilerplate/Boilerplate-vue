@@ -1,4 +1,3 @@
-import type { RelatorioGerado } from "@/models/relatoriosModels/relatoriosModels"
 import { formatarData } from "@/utils/dataNowFormat"
 
 export class DialogExibirRelatorioGeradoClass {
@@ -18,4 +17,5 @@ export class DialogExibirRelatorioGeradoClass {
   closeDialog() {
     this.show = false
   }
+
 }

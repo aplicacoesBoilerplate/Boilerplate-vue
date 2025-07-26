@@ -6,11 +6,20 @@
   >
     <div class="pdf-wrapper">
       <h2 class="d-flex justify-center">
-        RELATÓRIO {{ relatorio.tipoRelatorio }} - {{ relatorio.modeloRelatorio }}
+        RELATÓRIO {{ relatorioGerado.tipoRelatorio }} - {{ relatorioGerado.modeloRelatorio }}
       </h2>
       <p class="d-flex justify-center">{{ dataRelatorioGerado }}</p>
 
-      <div v-if="relatorio.respostaSinteticaRelatorios">
+      <BlocoResponsaveis v-if="relatorioGerado.responsaveis" v-model:dados="relatorioGerado.responsaveis" />
+      <BlocoFuncionario v-if="relatorioGerado.funcionario" v-model:dados="relatorioGerado.funcionario" />
+      <BlocoSaidas v-if="relatorioGerado.saidas" v-model:dados="relatorioGerado.saidas" />
+      <BlocoAutorizacoes v-if="relatorioGerado.autorizacoes" v-model:dados="relatorioGerado.autorizacoes" />
+      <BlocoSaidasComAutorizacoes v-if="relatorioGerado.saidasComAutorizacoes" v-model:dados="relatorioGerado.saidasComAutorizacoes" />
+      <BlocoCategorias v-if="relatorioGerado.categorias" v-model:dados="relatorioGerado.categorias" />
+      <BlocoMotivos v-if="relatorioGerado.motivos" v-model:dados="relatorioGerado.motivos" />
+      <BlocoErros v-if="relatorioGerado.errors" v-model:dados="relatorioGerado.errors" />
+
+      <div v-if="relatorioGerado.respostaSinteticaRelatorios">
         <h3 class="font-weight-bold pl-3 mb-3">
           <v-icon>mdi-chart-donut-variant</v-icon>
           Dados sintéticos
@@ -24,19 +33,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in relatorio.respostaSinteticaRelatorios" :key="index">
+            <tr v-for="(item, index) in relatorioGerado.respostaSinteticaRelatorios" :key="index">
               <td>{{ item.descricao }}</td>
               <td>{{ item.valor }}</td>
+
+              <v-divider />
             </tr>
           </tbody>
         </v-table>
       </div>
 
-      <div v-if="relatorio.responsaveis">
-        <h3>Responsáveis</h3>
-        <p>Nome: {{ relatorio.responsaveis.nome }}</p>
-        <p>Email: {{ relatorio.responsaveis.email }}</p>
-      </div>
     </div>
   </div>
 </template>
@@ -47,13 +53,13 @@ import type { RelatorioGerado } from '@/models/relatoriosModels/relatoriosModels
 import { gerarPdfRelatorio } from '@/utils/pdfRelatorioGerado';
 
 const props = defineProps<{
-  relatorio: RelatorioGerado,
+  relatorioGerado: RelatorioGerado,
   dataRelatorioGerado: string,
   nomeArquivo: string
 }>()
 
 watch(
-  () => props.relatorio,
+  () => props.relatorioGerado,
   async (novoRelatorio) => {
     if (!novoRelatorio) return;
 

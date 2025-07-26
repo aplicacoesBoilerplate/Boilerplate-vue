@@ -90,14 +90,14 @@ export interface ParametrosGerarRelatorio {
 export interface RelatorioGerado {
     modeloRelatorio: string,
     tipoRelatorio: string,
-    responsaveis?: UsuarioConsulta,
-    funcionario?: funcionarioRegistradoDP,
-    saidas?: SaidaConsulta,
-    autorizacoes?: AutorizacoesConsulta,
-    saidasComAutorizacoes?: SaidasComAutorizacoes,
-    categorias?: CategoriasMotivos,
-    motivos?: MotivoConsulta,
-    errors?: ErrorsConsulta,
+    responsaveis?: UsuarioConsulta[],
+    funcionario?: funcionarioRegistradoDP[],
+    saidas?: SaidaConsulta[],
+    autorizacoes?: AutorizacoesConsulta[],
+    saidasComAutorizacoes?: SaidasComAutorizacoes[],
+    categorias?: CategoriasMotivos[],
+    motivos?: MotivoConsulta[],
+    errors?: ErrorsConsulta[],
     respostaSinteticaRelatorios?: [
         {
             descricao: string,

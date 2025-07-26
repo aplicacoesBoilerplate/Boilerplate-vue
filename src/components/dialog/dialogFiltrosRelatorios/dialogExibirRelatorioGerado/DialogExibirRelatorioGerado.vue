@@ -6,11 +6,20 @@
     >
       <v-card-text>
 
-        <!-- Exibição do relatório gerado -->
+        <BlocoResponsaveis v-if="relatorioGerado.responsaveis" v-model:dados="relatorioGerado.responsaveis" />
+        <BlocoFuncionario v-if="relatorioGerado.funcionario" v-model:dados="relatorioGerado.funcionario" />
+        <BlocoSaidas v-if="relatorioGerado.saidas" v-model:dados="relatorioGerado.saidas" />
+        <BlocoAutorizacoes v-if="relatorioGerado.autorizacoes" v-model:dados="relatorioGerado.autorizacoes" />
+        <BlocoSaidasComAutorizacoes v-if="relatorioGerado.saidasComAutorizacoes" v-model:dados="relatorioGerado.saidasComAutorizacoes" />
+        <BlocoCategorias v-if="relatorioGerado.categorias" v-model:dados="relatorioGerado.categorias" />
+        <BlocoMotivos v-if="relatorioGerado.motivos" v-model:dados="relatorioGerado.motivos" />
+        <BlocoErros v-if="relatorioGerado.errors" v-model:dados="relatorioGerado.errors" />
+
+        <!-- Exibição geral das respostas sintéticas do relatório gerado -->
         <v-virtual-scroll
           :items="relatorioGerado.respostaSinteticaRelatorios"
           height="500" item-height="50"
-          v-if="relatorioGerado.tipoRelatorio === 'SINTETICO'"
+          v-if="relatorioGerado.respostaSinteticaRelatorios"
         >
           <template v-slot:default="{ item: relatorioSintetico }">
             <v-list-item>
@@ -36,15 +45,6 @@
           </template>
         </v-virtual-scroll>
 
-        <BlocoResponsaveis v-if="relatorioGerado.responsaveis" v-model:dados="relatorioGerado.responsaveis" />
-        <BlocoFuncionario v-if="relatorioGerado.funcionario" v-model:dados="relatorioGerado.funcionario" />
-        <BlocoSaidas v-if="relatorioGerado.saidas" v-model:dados="relatorioGerado.saidas" />
-        <BlocoAutorizacoes v-if="relatorioGerado.autorizacoes" v-model:dados="relatorioGerado.autorizacoes" />
-        <BlocoSaidasComAutorizacoes v-if="relatorioGerado.saidasComAutorizacoes" v-model:dados="relatorioGerado.saidasComAutorizacoes" />
-        <BlocoCategorias v-if="relatorioGerado.categorias" v-model:dados="relatorioGerado.categorias" />
-        <BlocoMotivos v-if="relatorioGerado.motivos" v-model:dados="relatorioGerado.motivos" />
-        <BlocoErros v-if="relatorioGerado.errors" v-model:dados="relatorioGerado.errors" />
-
       </v-card-text>
 
       <v-divider />
@@ -67,7 +67,7 @@
 
   <RelatorioPDFRenderer
     v-if="mostrarComponentePDF"
-    :relatorio="relatorioGerado"
+    :relatorioGerado="relatorioGerado"
     :dataRelatorioGerado="classRelatorioGerado.dataRelatorioGerado"
     :nomeArquivo="nomeArquivoPDF"
   />
