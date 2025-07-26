@@ -12,9 +12,9 @@
           btnDisabled: !paginadorClass.search,
           inputVariant: 'outlined',
           btnVariant: 'text',
-          label: 'Consultar usuário',
+          label: 'Consultar modelo',
           showPrepend: true,
-          hint: 'Tipo ou modelo',
+          hideDetails: true,
           maxWidth: 300,
         }" @on-prepend-click="getModelos"
       />
