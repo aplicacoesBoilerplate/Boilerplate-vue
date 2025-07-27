@@ -31,7 +31,7 @@
 
   <div class="mt-5"></div>
 
-  <ListRelatorios v-if="permissao != 'EMITE_SAIDA' && permissao != 'PORTARIA'"/>
+  <ListRelatorios v-if="permissao"/>
 
 </template>
 
@@ -53,12 +53,20 @@ import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 // Vue
 import { onBeforeMount, ref } from 'vue';
 
+const loading = ref(false)
+const permissao = ref(false)
+
 onBeforeMount(() => {
+  if (
+    usuarioAutenticado().usuario.permissao != 'EMITE_SAIDA' &&
+    usuarioAutenticado().usuario.permissao != 'EMITE_AUTORIZACAO' &&
+    usuarioAutenticado().usuario.permissao != 'PORTARIA'
+  )
+    permissao.value = false
+  else
+    permissao.value = true
   getDashboard();
 });
-
-const loading = ref(false)
-const permissao = ref()
 
 // #region API
 
@@ -66,7 +74,6 @@ async function getDashboard() {
   loading.value = true
   try {
     const response = await relatoriosServices.getDashboard(paginadorClass.value);
-    permissao.value = usuarioAutenticado().usuario.permissao
 
     indicadores.value[0].amount = response.totalSaidas;
     indicadores.value[1].amount = response.funcionariosAusentes;
@@ -92,6 +99,7 @@ const paginadorClass = ref(new PaginatorClass({
   orderBy: 'DESC',
   search: ''
 }))
+
 const filtrosDashboard = ref({
   exibirOrdem: false,
   exibirApenasHoje: true,
