@@ -1,11 +1,21 @@
 // Classes
 import type { PaginatorClass } from '@/components/paginator/ClassPaginator'
 // Models
-import type { Dashboard, ParametrosGerarRelatorio, PossiveisFiltrosDoCampo, RelatorioGerado, Relatorios } from '@/models/relatoriosModels/relatoriosModels'
+import type { Dashboard, ParametrosGerarRelatorio, PossiveisFiltrosDoCampo, RelatorioGerado, Relatorios, Version } from '@/models/relatoriosModels/relatoriosModels'
 // Services
 import http from './axios'
 
 export const relatoriosServices = {
+
+  // Consulta da versão do backend
+  async getVersion(): Promise<Version> {
+    try {
+      const { data } = await http.get('/relatorios/version')
+      return data
+    } catch (error) {
+      throw error
+    }
+  },
 
   // Consulta dos dados para os indicadores no dashboard, classe de paginacao usada apenas para envio dos parâmetros
   async getDashboard(paginador: PaginatorClass): Promise<Dashboard> {

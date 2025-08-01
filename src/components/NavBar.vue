@@ -16,6 +16,16 @@
       </v-app-bar-title>
     </RouterLink>
 
+    <!-- ícone do indicador para versão -->
+    <div class="d-flex justify-space-around"
+      v-if="usuarioLogado.usuario.permissao?.includes('ADMINISTRADOR') && loading === false">
+      <v-btn class="menu-btn" color="black" icon @click="openDialogVersion = true">
+        <v-icon class="mr-2"color="indigo-accent-2">
+          mdi-alpha-v-box-outline
+        </v-icon>
+      </v-btn>
+    </div>
+
     <!-- ícone do indicador para verificar se o WhatsApp está online -->
     <div class="d-flex justify-space-around"
       v-if="usuarioLogado.usuario.permissao?.includes('ADMINISTRADOR') && loading === false">
@@ -47,9 +57,14 @@
     </div>
 
   </v-app-bar>
+
+  <DialogVersao ref="dialogVersionRef" v-model:visualizar="openDialogVersion"/>
 </template>
 
 <script setup lang=ts>
+// Componentes
+import DialogVersao from './dialog/dialogVersao/DialogVersao.vue';
+
 // Store
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 import { useSnackbarStore } from '@/stores/SnackbarStore';
@@ -66,6 +81,8 @@ const redirectRouter = useRouter()
 const usuarioLogado = usuarioAutenticado() // Armazenar o usuário autenticado
 const statusWhatsApp = ref(false) // Controla o status do WhatsApp
 const loading = ref(false) // Controla o status do Loading
+const dialogVersionRef = ref()
+const openDialogVersion = ref(false)
 
 // Se o usuário armazenado estiver vazio e o token ainda estiver no session store, consultar o usuário da sessão ao montar o componente
 onMounted(async () => {

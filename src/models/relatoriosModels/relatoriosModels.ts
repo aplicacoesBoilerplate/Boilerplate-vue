@@ -4,6 +4,12 @@ import type { funcionarioRegistradoDP } from "../firebirdModels/firebirdModels"
 import type { CategoriasMotivos, MotivoConsulta } from "../motivosModels/MotivosModels"
 import type { AutorizacoesConsulta, SaidaConsulta, SaidasComAutorizacoes } from "../saidasModels/saidasModels"
 
+// Versão
+export interface Version {
+  version: string
+  updateIn: string
+}
+
 // Dashboard home page
 export interface Dashboard {
   totalSaidas: number

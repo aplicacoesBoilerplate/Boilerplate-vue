@@ -58,9 +58,9 @@ const permissao = ref(false)
 
 onBeforeMount(() => {
   if (
-    usuarioAutenticado().usuario.permissao != 'EMITE_SAIDA' &&
-    usuarioAutenticado().usuario.permissao != 'EMITE_AUTORIZACAO' &&
-    usuarioAutenticado().usuario.permissao != 'PORTARIA'
+    usuarioAutenticado().usuario.permissao === 'EMITE_SAIDA' ||
+    usuarioAutenticado().usuario.permissao === 'EMITE_AUTORIZACAO' ||
+    usuarioAutenticado().usuario.permissao === 'PORTARIA'
   )
     permissao.value = false
   else
