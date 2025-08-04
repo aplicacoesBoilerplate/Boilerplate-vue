@@ -168,15 +168,6 @@
               </v-col>
             </v-row>
 
-            <v-row dense style="border-bottom: 2px solid black;">
-              <v-col cols="3" class="font-weight-medium text-warning mb-1">
-                Mensagem:
-              </v-col>
-              <v-col cols="9" class="mb-1">
-                {{ error.erro }}
-              </v-col>
-            </v-row>
-
             <v-divider v-if="error.idSaida > 0" />
 
             <!-- Registro da saída relacionada -->
