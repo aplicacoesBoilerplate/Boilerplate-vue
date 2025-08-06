@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" max-width="400">
     <v-card>
-      <v-card-title>
+      <v-card-title class="mt-5">
         <v-icon>mdi-information-variant-circle-outline</v-icon>
         Informações da versão atual
       </v-card-title>
@@ -56,7 +56,7 @@ function toggleDialog() {
 }
 
 async function getVersion() {
-    try {
+  try {
     versao.value = await relatoriosServices.getVersion();
   } catch (error) {
     useSnackbarStore().showSnackbar('Erro ao consultar a versão atual: ' + error, 'red')
