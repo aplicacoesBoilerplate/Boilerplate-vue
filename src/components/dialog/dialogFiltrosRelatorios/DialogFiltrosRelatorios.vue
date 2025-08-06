@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="montarFiltros.show" max-width="1100">
+  <v-dialog v-model="montarFiltros.show" max-width="1100" max-height="800">
 
     <v-card prepend-icon=""
       :title="montarFiltros.show ? `Filtros para gerar relatório: ${montarFiltros.relatorio.tipoRelatorio} - ${montarFiltros.relatorio.modeloRelatorio}` : ''">
@@ -65,165 +65,175 @@
                       counter: 100,
                       inputDisabled: filtro.condicao == null
                     }" :rules="[rules.requiredCondicionado(
-                                  tipoInputConsulta == 'STRING'
-                                  && (filtro.searchRegistro == null || filtro.searchRegistro == '')
-                                ), rules.max
-                              ]"
-                  />
+                      tipoInputConsulta == 'STRING'
+                      && (filtro.searchRegistro == null || filtro.searchRegistro == '')
+                    ), rules.max
+                    ]" />
                   </v-col>
 
                   <!-- Input para tipo INTEIRO ÚNICO -->
-                  <v-col cols="12" v-if="tipoInputConsulta == 'INTEIRO' && (filtro.condicao != 'INTERVALO' && filtro.condicao != null)">
-                    <InputUpperCase v-model:="filtro.searchRegistro" v-numeric-mask
-                      :style="{
-                        inputVariant: 'outlined',
-                        label: 'Valor',
-                        maxWidth: 1100,
-                        hint: 'Campo numérico para consulta',
-                        counter: 100,
-                        inputDisabled: filtro.condicao == null
-                      }" :rules="[rules.requiredCondicionado(
-                                    tipoInputConsulta == 'INTEIRO'
-                                    && (filtro.searchRegistro == null || filtro.searchRegistro == '')
-                                  ), rules.max
-                                ]"
-                    />
+                  <v-col cols="12"
+                    v-if="tipoInputConsulta == 'INTEIRO' && (filtro.condicao != 'INTERVALO' && filtro.condicao != null)">
+                    <InputUpperCase v-model:="filtro.searchRegistro" v-numeric-mask :style="{
+                      inputVariant: 'outlined',
+                      label: 'Valor',
+                      maxWidth: 1100,
+                      hint: 'Campo numérico para consulta',
+                      counter: 100,
+                      inputDisabled: filtro.condicao == null
+                    }" :rules="[rules.requiredCondicionado(
+                        tipoInputConsulta == 'INTEIRO'
+                        && (filtro.searchRegistro == null || filtro.searchRegistro == '')
+                      ), rules.max
+                      ]" />
                   </v-col>
 
                   <!-- Input para tipo INTEIRO INTERVALO -->
                   <v-col cols="12" md="6" v-if="tipoInputConsulta == 'INTEIRO' && filtro.condicao == 'INTERVALO'">
-                    <InputUpperCase v-model:="filtro.intervaloRegistros[0]" v-numeric-mask
-                      :style="{
-                        inputVariant: 'outlined',
-                        label: 'Valor início',
-                        maxWidth: 1100,
-                        hint: 'Campo numérico para consulta',
-                        counter: 100,
-                        inputDisabled: filtro.condicao == null
-                      }" :rules="[rules.requiredCondicionado(
-                                    tipoInputConsulta == 'INTEIRO'
-                                    && filtro.condicao == 'INTERVALO'
-                                    && (filtro.intervaloRegistros[0] == null || filtro.intervaloRegistros[0] == '')
-                                  ), rules.max
-                                ]"
-                  />
+                    <InputUpperCase v-model:="filtro.intervaloRegistros[0]" v-numeric-mask :style="{
+                      inputVariant: 'outlined',
+                      label: 'Valor início',
+                      maxWidth: 1100,
+                      hint: 'Campo numérico para consulta',
+                      counter: 100,
+                      inputDisabled: filtro.condicao == null
+                    }" :rules="[rules.requiredCondicionado(
+                        tipoInputConsulta == 'INTEIRO'
+                        && filtro.condicao == 'INTERVALO'
+                        && (filtro.intervaloRegistros[0] == null || filtro.intervaloRegistros[0] == '')
+                      ), rules.max
+                      ]" />
                   </v-col>
 
                   <v-col cols="12" md="6" v-if="tipoInputConsulta == 'INTEIRO' && filtro.condicao == 'INTERVALO'">
-                    <InputUpperCase v-model:="filtro.intervaloRegistros[1]" v-numeric-mask
-                      :style="{
-                        inputVariant: 'outlined',
-                        label: 'Valor fim',
-                        maxWidth: 1100,
-                        hint: 'Campo numérico para consulta',
-                        counter: 100,
-                        inputDisabled: filtro.condicao == null
-                      }" :rules="[rules.requiredCondicionado(
-                                    tipoInputConsulta == 'INTEIRO'
-                                    && filtro.condicao == 'INTERVALO'
-                                    && (filtro.intervaloRegistros[1] == null || filtro.intervaloRegistros[1] == '')
-                                  ), rules.max
-                                ]"
-                  />
+                    <InputUpperCase v-model:="filtro.intervaloRegistros[1]" v-numeric-mask :style="{
+                      inputVariant: 'outlined',
+                      label: 'Valor fim',
+                      maxWidth: 1100,
+                      hint: 'Campo numérico para consulta',
+                      counter: 100,
+                      inputDisabled: filtro.condicao == null
+                    }" :rules="[rules.requiredCondicionado(
+                        tipoInputConsulta == 'INTEIRO'
+                        && filtro.condicao == 'INTERVALO'
+                        && (filtro.intervaloRegistros[1] == null || filtro.intervaloRegistros[1] == '')
+                      ), rules.max
+                      ]" />
                   </v-col>
 
                   <!-- Input para tipo BOOLEAN não tem necessidade, a condição já é o suficiente -->
 
                   <!-- Input para tipo DATA ÚNICO -->
-                  <v-col cols="12" v-if="(tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME') && (filtro.condicao != 'INTERVALO' && filtro.condicao != null)">
-                    <InputUpperCase v-model:="filtro.searchRegistro" v-data-mask
-                      :style="{
-                        inputVariant: 'outlined',
-                        label: 'Valor',
-                        maxWidth: 1100,
-                        hint: 'Campo de data para consulta (DD/MM/YYYY)',
-                        counter: 100,
-                        inputDisabled: filtro.condicao == null
-                      }" :rules="[rules.requiredCondicionado(
-                                    (tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME')
-                                    && (filtro.searchRegistro == null || filtro.searchRegistro == '')
-                                  )
-                                ]"
-                  />
+                  <v-col cols="12"
+                    v-if="(tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME') && (filtro.condicao != 'INTERVALO' && filtro.condicao != null)">
+                    <InputUpperCase v-model:="filtro.searchRegistro" v-data-mask :style="{
+                      inputVariant: 'outlined',
+                      label: 'Valor',
+                      maxWidth: 1100,
+                      hint: 'Campo de data para consulta (DD/MM/YYYY)',
+                      counter: 100,
+                      inputDisabled: filtro.condicao == null
+                    }" :rules="[rules.requiredCondicionado(
+                        (tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME')
+                        && (filtro.searchRegistro == null || filtro.searchRegistro == '')
+                      )
+                      ]" />
                   </v-col>
 
                   <!-- Input para tipo DATA INTERVALO -->
-                  <v-col cols="12" md="6" v-if="(tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME') && filtro.condicao == 'INTERVALO'">
-                    <InputUpperCase v-model:="filtro.intervaloRegistros[0]" v-data-mask
-                      :style="{
-                        inputVariant: 'outlined',
-                        label: 'Valor início',
-                        maxWidth: 1100,
-                        hint: 'Campo de data para consulta (DD/MM/YYYY)',
-                        counter: 100,
-                        inputDisabled: filtro.condicao == null
-                      }" :rules="[rules.requiredCondicionado(
-                                    (tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME')
-                                    && filtro.condicao == 'INTERVALO'
-                                    && (filtro.intervaloRegistros[0] == null || filtro.intervaloRegistros[0] == '')
-                                  )
-                                ]"
-                  />
+                  <v-col cols="12" md="6"
+                    v-if="(tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME') && filtro.condicao == 'INTERVALO'">
+                    <InputUpperCase v-model:="filtro.intervaloRegistros[0]" v-data-mask :style="{
+                      inputVariant: 'outlined',
+                      label: 'Valor início',
+                      maxWidth: 1100,
+                      hint: 'Campo de data para consulta (DD/MM/YYYY)',
+                      counter: 100,
+                      inputDisabled: filtro.condicao == null
+                    }" :rules="[rules.requiredCondicionado(
+                        (tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME')
+                        && filtro.condicao == 'INTERVALO'
+                        && (filtro.intervaloRegistros[0] == null || filtro.intervaloRegistros[0] == '')
+                      )
+                      ]" />
                   </v-col>
-                  <v-col cols="12" md="6" v-if="(tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME') && filtro.condicao == 'INTERVALO'">
-                    <InputUpperCase v-model:="filtro.intervaloRegistros[1]" v-data-mask
-                      :style="{
-                        inputVariant: 'outlined',
-                        label: 'Valor fim',
-                        maxWidth: 1100,
-                        hint: 'Campo de data para consulta (DD/MM/YYYY)',
-                        counter: 100,
-                        inputDisabled: filtro.condicao == null
-                      }" :rules="[rules.requiredCondicionado(
-                                    (tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME')
-                                    && filtro.condicao == 'INTERVALO'
-                                    && (filtro.intervaloRegistros[1] == null || filtro.intervaloRegistros[1] == '')
-                                  )
-                                ]"
-                  />
+                  <v-col cols="12" md="6"
+                    v-if="(tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME') && filtro.condicao == 'INTERVALO'">
+                    <InputUpperCase v-model:="filtro.intervaloRegistros[1]" v-data-mask :style="{
+                      inputVariant: 'outlined',
+                      label: 'Valor fim',
+                      maxWidth: 1100,
+                      hint: 'Campo de data para consulta (DD/MM/YYYY)',
+                      counter: 100,
+                      inputDisabled: filtro.condicao == null
+                    }" :rules="[rules.requiredCondicionado(
+                        (tipoInputConsulta == 'DATA' || tipoInputConsulta == 'DATETIME')
+                        && filtro.condicao == 'INTERVALO'
+                        && (filtro.intervaloRegistros[1] == null || filtro.intervaloRegistros[1] == '')
+                      )
+                      ]" />
                   </v-col>
 
                   <v-col cols="12">
+                    <!-- Botão para cancelar edição um filtro -->
+                    <v-btn v-if="tab != 'instrucoes' && tab != 'filtros' && isEditing" @click="cancelarEdicao()"
+                      title="Cancelar edição do filtro" label="Cancelar edição do filtro" variant="tonal"
+                      color="red-lighten-1" class="w-50">
+                      <v-icon>mdi-close</v-icon>
+                      Cancelar
+                    </v-btn>
+
                     <!-- Botão para adiconar um filtro -->
-                    <v-btn
-                      v-if="tab != 'instrucoes' && tab != 'filtros'"
-                      :disabled="!formIsValid" type="submit"
-                      title="Adicionar filtro" label="Adicionar filtro"
-                      variant="tonal" color="success" class="w-100"
-                    >
+                    <v-btn v-if="tab != 'instrucoes' && tab != 'filtros'" :disabled="!formIsValid" type="submit"
+                      title="Adicionar filtro" label="Adicionar filtro" variant="tonal" color="success"
+                      :class="isEditing ? 'w-50' : 'w-100'">
                       <v-icon>mdi-plus-circle-outline</v-icon>
                       Adicionar filtro
                     </v-btn>
                   </v-col>
-                  </v-row>
-                </v-form>
+                </v-row>
+              </v-form>
 
-                <v-virtual-scroll :items="filtrarFiltrosAplicadosPorTabela()" max-height="250" item-height="50">
-                  <template v-slot:default="{ item: filtro }">
-                    <v-list-item :title="`${filtro.tabela}`">
-                      <!-- Ícone de cartão de filtro -->
-                      <template v-slot:prepend>
-                        <v-icon>mdi-filter-outline</v-icon>
-                      </template>
+              <v-virtual-scroll :items="filtrarFiltrosAplicadosPorTabela()" max-height="250" item-height="50">
+                <template v-slot:default="{ item: filtro, index }">
+                  <v-list-item :title="`${filtro.tabela}`">
+                    <!-- Ícone de cartão de filtro -->
+                    <template v-slot:prepend>
+                      <v-icon>mdi-filter-outline</v-icon>
+                    </template>
 
-                      <v-row>
-                        <v-col cols="4">
-                          CAMPO: <br> {{ filtro.campoTabela }}
-                        </v-col>
-                        <v-col cols="4">
-                          CONDIÇÃO: <br> {{ filtro.condicao }}
-                        </v-col>
-                        <v-col cols="4" v-if="filtro.condicao == 'INTERVALO'">
-                          ENTRE: <br> {{ filtro.intervaloRegistros[0] }} - {{ filtro.intervaloRegistros[1] }}
-                        </v-col>
-                        <v-col cols="4" v-else>
-                          VALOR: <br> {{ filtro.searchRegistro }}
-                        </v-col>
-                      </v-row>
-                    </v-list-item>
-                    <v-divider />
-                  </template>
-                </v-virtual-scroll>
+                    <v-row>
+                      <v-col cols="4">
+                        CAMPO: <br> {{ filtro.campoTabela }}
+                      </v-col>
+                      <v-col cols="3">
+                        CONDIÇÃO: <br> {{ filtro.condicao }}
+                      </v-col>
+                      <v-col cols="3" v-if="filtro.condicao == 'INTERVALO'">
+                        ENTRE: <br> {{ filtro.intervaloRegistros[0] }} - {{ filtro.intervaloRegistros[1] }}
+                      </v-col>
+                      <v-col cols="3" v-else>
+                        VALOR: <br> {{ filtro.searchRegistro }}
+                      </v-col>
+                      <!-- Botão para editar um filtro -->
+                      <v-col cols="1">
+                        <div>
+                          <v-btn @click="editarFiltro(index)" size="small" color="info"
+                            variant="elevated" icon="mdi-pencil-outline" title="Editar filtro" />
+                        </div>
+                      </v-col>
+                      <!-- Botão para remover um filtro -->
+                      <v-col cols="1">
+                        <div>
+                          <BtnOpenDialog :callback="() => removerFiltro(index)" size="small"
+                            variant="elevated" color="red-lighten-1" icon="mdi-window-close" title="Remover filtro" />
+                        </div>
+                      </v-col>
+                    </v-row>
+                  </v-list-item>
+                  <v-divider />
+                </template>
+              </v-virtual-scroll>
             </v-tabs-window-item>
           </div>
 
@@ -231,10 +241,8 @@
             <v-card prepend-icon="" max-height="500" class="pa-2">
               <v-card-text style="max-height: 450px; overflow-y: auto;">
                 <!-- Exibição dos filtros aplicados ao relatório -->
-                <v-row dense
-                  v-for="(filtro, index) in montarFiltros.getFiltrosAplicados()"
-                  :key="`${filtro.tabela}-${filtro.campoTabela}-${index}`"
-                >
+                <v-row dense v-for="(filtro, index) in montarFiltros.getFiltrosAplicados()"
+                  :key="`${filtro.tabela}-${filtro.campoTabela}-${index}`">
                   <v-col cols="1">
                     <v-icon>mdi-filter-outline</v-icon>
                   </v-col>
@@ -253,16 +261,16 @@
                   <v-col cols="2" v-else>
                     VALOR: <br> {{ filtro.searchRegistro }}
                   </v-col>
-                  <!-- Botões para remover um filtro -->
+                  <!-- Botão para remover um filtro -->
                   <v-col cols="1">
                     <div>
-                      <BtnOpenDialog :callback="() => removerFiltro(index)" :labelLeft="true"
-                        size="small" variant="elevated" color="red" icon="mdi-window-close" title="Remover filtro" />
+                      <BtnOpenDialog :callback="() => removerFiltro(index)" size="small"
+                        variant="elevated" icon="mdi-window-close" title="Remover filtro" />
                     </div>
                   </v-col>
 
-                    <v-divider />
-                  </v-row>
+                  <v-divider />
+                </v-row>
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
@@ -283,10 +291,7 @@
         </v-btn>
 
         <!-- Botão para gerar um relatório -->
-        <v-btn
-          color="success" variant="tonal"
-          @click="gerarRelatorio()"
-        >
+        <v-btn color="success" variant="tonal" @click="gerarRelatorio()">
           <v-icon class="pt-1">mdi-check</v-icon>
           Gerar relatório
         </v-btn>
@@ -324,7 +329,9 @@ const formIsValid = ref(false) // Validação do form
 const tipoInputConsulta = ref('') // Variável para armazenar o tipo do input que deve ser usado
 const condicoesAutoComplete = ref<AautoCompleteCondicoes[]>([]) // Lista de possíveis condições para cada campo
 const filtro = ref<FiltrosDoRelatorio>({} as FiltrosDoRelatorio) // Objeto gerado pelo form
-const filtrosAplicados = ref<FiltrosDoRelatorio[]>()
+const filtrosAplicados = ref<FiltrosDoRelatorio[]>([{}] as FiltrosDoRelatorio[])
+const isEditing = ref(false) // Controla que o filtro está em edição
+const editingIndex = ref<number | null>(null) // Qual o indice da lista de filtros está em edição
 
 const montarFiltros = defineModel<DialogFiltrosRelatoriosClass>('montarFiltros', {
   required: true
@@ -377,13 +384,7 @@ watch(() => filtro.value.condicao, async (val) => { // Se a condição for alter
 
 watch(() => tab.value, (val) => { // Sempre que a aba dos filtros for alterada, deve limpar o formulário
   if (val) {
-    filtro.value = {
-      tabela: tab.value,
-      campoTabela: '',
-      searchRegistro: '',
-      intervaloRegistros: [],
-      condicao: null
-    }
+    filtro.value = {} as FiltrosDoRelatorio
   }
 
   if (tab.value == 'filtros')
@@ -395,13 +396,7 @@ defineExpose({ getTabelasRelacionadas }) // Método que será exposto para o pai
 //#endregion
 
 function clearFields() {
-  filtro.value = {
-    tabela: tab.value,
-    campoTabela: '',
-    searchRegistro: '',
-    intervaloRegistros: [],
-    condicao: null
-  }
+  filtro.value = {} as FiltrosDoRelatorio
   montarFiltros.value.clearFields()
 }
 
@@ -409,14 +404,14 @@ function closeDialog() {
   montarFiltros.value.closeDialog()
 }
 
-function cancelar() { // Ajustar, acredito que tenha funções desnecessárias
+function cancelar() {
   closeDialog()
   tab.value = 'instrucoes'
   filtro.value.campoTabela = ''
   condicoesAutoComplete.value = []
 }
 
-function submitFormFiltro() { // Rever por completo
+function submitFormFiltro() {
   try {
 
     if (tipoInputConsulta.value == 'INTEIRO' && filtro.value.condicao != 'INTERVALO') {
@@ -448,15 +443,70 @@ function submitFormFiltro() { // Rever por completo
         filtro.value.intervaloRegistros[1] = filtro.value.intervaloRegistros[1].replace(/\D/g, '')
     }
 
-    adicionarFiltro(filtro.value)
+    adicionarOuEditarFiltro(filtro.value);
   } catch (error) {
-    useSnackbarStore().showSnackbar(error, 'red')
+    useSnackbarStore().showSnackbar(error, 'red');
   }
 }
 
-function adicionarFiltro(filtro?: FiltrosDoRelatorio) {
-  if (filtro)
-    montarFiltros.value.setFiltro(filtro)
+// function adicionarFiltro(filtro?: FiltrosDoRelatorio) {
+//   if (filtro)
+//     montarFiltros.value.setOrEditingFiltro(filtro);
+// }
+
+function adicionarOuEditarFiltro(novoFiltro: FiltrosDoRelatorio) {
+  novoFiltro.tabela = tab.value;
+
+  const novaChave = gerarChaveFiltro(novoFiltro);
+
+  const isDuplicado = filtrosAplicados.value.some((f, index) => {
+    console.log('filtro para gerar chave: ', f)
+    const chave = gerarChaveFiltro(f)
+    console.log('Chave: ', chave)
+    return chave === novaChave && index !== editingIndex.value
+  });
+
+  if (isDuplicado) {
+    useSnackbarStore().showSnackbar('Esse filtro já foi adicionado!', 'red');
+    throw new Error('Filtro duplicado!');
+  }
+
+  if (isEditing.value && editingIndex.value !== null) {
+    montarFiltros.value.setOrEditingFiltro(novoFiltro, editingIndex.value);
+  } else {
+    montarFiltros.value.setOrEditingFiltro(novoFiltro);
+  }
+
+  console.log('Novo Filtro: ', novoFiltro)
+  console.log('Filtros aplicados: ', filtrosAplicados.value)
+  console.log('Nova chave: ', novaChave)
+  console.log('Duplicado? ', isDuplicado)
+
+  limparFiltro();
+}
+
+function editarFiltro(index: number) {
+  const filtroSelecionado = filtrosAplicados.value[index]
+  filtro.value = { ...filtroSelecionado }
+  isEditing.value = true
+  editingIndex.value = index
+}
+
+function gerarChaveFiltro(filtro: FiltrosDoRelatorio): string {
+  if (filtro.condicao == 'SELECAO')
+    return `${filtro.tabela}_${filtro.campoTabela}_${filtro.condicao}_${filtro.searchRegistro}`
+  else
+    return `${filtro.tabela}_${filtro.campoTabela}_${filtro.condicao}`
+}
+
+function limparFiltro() {
+  filtro.value = {} as FiltrosDoRelatorio
+  isEditing.value = false
+  editingIndex.value = null
+}
+
+function cancelarEdicao() {
+  limparFiltro()
 }
 
 function filtrarFiltrosAplicadosPorTabela() {
