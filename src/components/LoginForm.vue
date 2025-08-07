@@ -64,7 +64,7 @@ const formIsValid = ref(false)
 const showPassword = ref(false)
 const loginForm = ref<LoginModel>({ email_usuario: '@SIERMOVEIS.COM.BR', senha_usuario: '' })
 const redirectRouter = useRouter()
-const authService = authServices()
+const authService = authServices
 const loading = ref(false) // Carregamento
 
 async function authLogin() {
@@ -74,7 +74,7 @@ async function authLogin() {
       loading.value = true
       await authService.login(loginForm.value!)
       redirectRouter.push('/dashboard');
-      const usuarioLogado = await authServices().getByToken()
+      const usuarioLogado = await authServices.getByToken()
       usuarioAutenticado().usuario = usuarioLogado
       useSnackbarStore().showSnackbar(`Bem-vindo(a), ${usuarioLogado.nome}!`, 'success')
     } catch (err) {

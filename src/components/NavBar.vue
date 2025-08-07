@@ -59,6 +59,7 @@
   </v-app-bar>
 
   <DialogVersao ref="dialogVersionRef" v-model:visualizar="openDialogVersion"/>
+  <DialogQrcode ref="dialogQrcodeRef" v-model:qrcode="dialogQrcode"/>
 </template>
 
 <script setup lang=ts>
@@ -72,10 +73,11 @@ import { useSnackbarStore } from '@/stores/SnackbarStore';
 // Services
 import { authServices } from '@/services/authService';
 import { useRouter } from 'vue-router'
-import http from '@/services/axios'
 
 // Vue
 import { onMounted, ref } from 'vue';
+import { wppConnectionServices } from '@/services/wppConnectionServices';
+import DialogQrcode from './dialog/dialogQrcode/DialogQrcode.vue';
 
 const redirectRouter = useRouter()
 const usuarioLogado = usuarioAutenticado() // Armazenar o usuário autenticado
@@ -83,11 +85,13 @@ const statusWhatsApp = ref(false) // Controla o status do WhatsApp
 const loading = ref(false) // Controla o status do Loading
 const dialogVersionRef = ref()
 const openDialogVersion = ref(false)
+const dialogQrcodeRef = ref()
+const dialogQrcode = ref<{show: boolean, qrcode: string}>({show: false, qrcode: ''})
 
 // Se o usuário armazenado estiver vazio e o token ainda estiver no session store, consultar o usuário da sessão ao montar o componente
 onMounted(async () => {
   if (!!usuarioLogado.usuario && sessionStorage.getItem('token') !== '')
-    usuarioLogado.usuario = await authServices().getByToken()
+    usuarioLogado.usuario = await authServices.getByToken()
   else
     useSnackbarStore().showSnackbar('Usuário não identificado!', 'red')
   if (usuarioLogado.usuario.permissao === 'ADMINISTRADOR' || usuarioLogado.usuario.permissao === 'ADMINISTRADOR_AUTORIZADO')
@@ -95,7 +99,7 @@ onMounted(async () => {
 })
 
 function logout() {
-  authServices().logout()
+  authServices.logout()
   redirectRouter.push('/');
 }
 
@@ -110,18 +114,35 @@ const emit = defineEmits<{
 
 // #region Status WhatsApp
 
-async function getStatusWppConnect(): Promise<boolean> {
+async function getStatusWppConnect() {
   loading.value = true
   try {
-    const { data } = await http.get('/whatsapp/status')
+    const data = await wppConnectionServices.getStatusWppConnect();
     statusWhatsApp.value = data
-    return data
+    if (!data) {
+      await getQrcodeWppConnect()
+    }
   } catch (error) {
+    useSnackbarStore().showSnackbar('WhatsApp offline! Escaneie o qrcode para se conectar.', 'warning')
     statusWhatsApp.value = false
     throw error
   } finally {
     loading.value = false
   }
+}
+
+async function getQrcodeWppConnect() {
+  try {
+    const data = await wppConnectionServices.startSessionWppConnect();
+    await openQrCode(data.qrcode);
+  } catch (error) {
+    useSnackbarStore().showSnackbar('Não foi possível gerar o qrcode para se conectar ao WhatsApp!', 'red')
+  }
+}
+
+async function openQrCode(qrcode: string) {
+  dialogQrcode.value.qrcode = qrcode
+  dialogQrcode.value.show = true
 }
 
 // #endregion

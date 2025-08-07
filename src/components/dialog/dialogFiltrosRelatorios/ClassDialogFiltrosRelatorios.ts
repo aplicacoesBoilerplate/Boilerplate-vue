@@ -33,11 +33,8 @@ export class DialogFiltrosRelatoriosClass {
   }
 
   setOrEditingFiltro(filtro: FiltrosDoRelatorio, editingIndex?: number) {
-    if (editingIndex) {
-      this.filtros[editingIndex] = { ...filtro }
-    }
-    else
-      this.filtros.push(filtro);
+    if (editingIndex !== undefined && editingIndex !== null) this.filtros[editingIndex] = { ...filtro }
+    else this.filtros.push(filtro);
   }
 
   removeFiltro(index: number) {
@@ -49,5 +46,4 @@ export class DialogFiltrosRelatoriosClass {
     return this.filtros.filter(filtro => filtro.tabela === tabela)
   }
   //#endregion
-
 }

@@ -52,15 +52,17 @@ import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 
 // Vue
 import { onBeforeMount, ref } from 'vue';
+import { authServices } from '@/services/authService';
 
 const loading = ref(false)
 const permissao = ref(false)
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
+  const usuario = await authServices.getByToken();
   if (
-    usuarioAutenticado().usuario.permissao === 'EMITE_SAIDA' ||
-    usuarioAutenticado().usuario.permissao === 'EMITE_AUTORIZACAO' ||
-    usuarioAutenticado().usuario.permissao === 'PORTARIA'
+    usuario.permissao === 'EMITE_SAIDA' ||
+    usuario.permissao === 'EMITE_AUTORIZACAO' ||
+    usuario.permissao === 'PORTARIA'
   )
     permissao.value = false
   else

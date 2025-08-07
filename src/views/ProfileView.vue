@@ -162,7 +162,7 @@ const alterarSenhaUsuario = ref<AlterarSenha>({
 })
 
 onBeforeMount(async () => {
-  await authServices().getByToken()
+  await authServices.getByToken()
   const usuarioPerfil = usuarioAutenticado().usuario
   model.value = clone<UsuarioConsulta>(usuarioPerfil)
   usuarioOriginal.value = clone<UsuarioConsulta>(usuarioPerfil)
@@ -201,7 +201,7 @@ function confirmarUsuario() {
 async function alterarSenha() {
   try {
     alterarSenhaUsuario.value.emailUsuario = usuarioOriginal.value?.email!
-    await authServices().alterarSenha(alterarSenhaUsuario.value)
+    await authServices.alterarSenha(alterarSenhaUsuario.value)
     usuarioConfirmado.value = false
     useSnackbarStore().showSnackbar('Senha alterada com sucesso!', 'success')
   } catch (error) {
