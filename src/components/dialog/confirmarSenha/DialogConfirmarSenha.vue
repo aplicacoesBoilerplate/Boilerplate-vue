@@ -100,7 +100,7 @@ watch(exibir, async (val) => {
     resetForm()
   } else {
     try {
-      const usuarioToken = await authServices().getByToken()
+      const usuarioToken = await authServices.getByToken()
       confirmarSenha.value.email = usuarioToken.email
     } catch (error) {
       useSnackbarStore().showSnackbar(error, 'red')

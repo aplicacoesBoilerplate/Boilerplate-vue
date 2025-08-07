@@ -1,4 +1,18 @@
 <template>
+  <v-overlay
+    :model-value="loadingRelatorio"
+    class="d-flex align-center justify-center"
+    persistent
+    scrim
+    z-index="9999"
+  >
+    <v-progress-circular
+      indeterminate
+      color="primary"
+      size="64"
+    />
+  </v-overlay>
+
   <v-dialog v-model="montarFiltros.show" max-width="1100" max-height="800">
 
     <v-card prepend-icon=""
@@ -265,7 +279,7 @@
                   <v-col cols="1">
                     <div>
                       <BtnOpenDialog :callback="() => removerFiltro(index)" size="small"
-                        variant="elevated" icon="mdi-window-close" title="Remover filtro" />
+                        variant="elevated" color="red-lighten-1" icon="mdi-window-close" title="Remover filtro" />
                     </div>
                   </v-col>
 
@@ -319,7 +333,7 @@ import { useSnackbarStore } from "@/stores/SnackbarStore";
 import { rules } from "@/utils/rules.ts";
 
 // Vue
-import { nextTick, onBeforeMount, ref, watch } from "vue";
+import { nextTick, onBeforeMount, ref, toRaw, watch } from "vue";
 import DialogExibirRelatorioGerado from './dialogExibirRelatorioGerado/DialogExibirRelatorioGerado.vue';
 
 const tab = ref() // Controle das tabs
@@ -329,9 +343,10 @@ const formIsValid = ref(false) // Validação do form
 const tipoInputConsulta = ref('') // Variável para armazenar o tipo do input que deve ser usado
 const condicoesAutoComplete = ref<AautoCompleteCondicoes[]>([]) // Lista de possíveis condições para cada campo
 const filtro = ref<FiltrosDoRelatorio>({} as FiltrosDoRelatorio) // Objeto gerado pelo form
-const filtrosAplicados = ref<FiltrosDoRelatorio[]>([{}] as FiltrosDoRelatorio[])
+const filtrosAplicados = ref<FiltrosDoRelatorio[]>([])
 const isEditing = ref(false) // Controla que o filtro está em edição
 const editingIndex = ref<number | null>(null) // Qual o indice da lista de filtros está em edição
+const loadingRelatorio = ref(false) // Loading de geração de relatório
 
 const montarFiltros = defineModel<DialogFiltrosRelatoriosClass>('montarFiltros', {
   required: true
@@ -385,6 +400,7 @@ watch(() => filtro.value.condicao, async (val) => { // Se a condição for alter
 watch(() => tab.value, (val) => { // Sempre que a aba dos filtros for alterada, deve limpar o formulário
   if (val) {
     filtro.value = {} as FiltrosDoRelatorio
+    filtrosAplicados.value = filtrarFiltrosAplicadosPorTabela();
   }
 
   if (tab.value == 'filtros')
@@ -449,20 +465,13 @@ function submitFormFiltro() {
   }
 }
 
-// function adicionarFiltro(filtro?: FiltrosDoRelatorio) {
-//   if (filtro)
-//     montarFiltros.value.setOrEditingFiltro(filtro);
-// }
-
 function adicionarOuEditarFiltro(novoFiltro: FiltrosDoRelatorio) {
   novoFiltro.tabela = tab.value;
 
   const novaChave = gerarChaveFiltro(novoFiltro);
 
   const isDuplicado = filtrosAplicados.value.some((f, index) => {
-    console.log('filtro para gerar chave: ', f)
     const chave = gerarChaveFiltro(f)
-    console.log('Chave: ', chave)
     return chave === novaChave && index !== editingIndex.value
   });
 
@@ -477,22 +486,22 @@ function adicionarOuEditarFiltro(novoFiltro: FiltrosDoRelatorio) {
     montarFiltros.value.setOrEditingFiltro(novoFiltro);
   }
 
-  console.log('Novo Filtro: ', novoFiltro)
-  console.log('Filtros aplicados: ', filtrosAplicados.value)
-  console.log('Nova chave: ', novaChave)
-  console.log('Duplicado? ', isDuplicado)
+  filtrosAplicados.value = filtrarFiltrosAplicadosPorTabela();
 
   limparFiltro();
 }
 
 function editarFiltro(index: number) {
   const filtroSelecionado = filtrosAplicados.value[index]
-  filtro.value = { ...filtroSelecionado }
+  filtro.value = { ...toRaw(filtroSelecionado) }
   isEditing.value = true
   editingIndex.value = index
 }
 
 function gerarChaveFiltro(filtro: FiltrosDoRelatorio): string {
+  if (!filtro || !filtro.tabela || !filtro.campoTabela || !filtro.condicao)
+    return 'INVALIDO';
+
   if (filtro.condicao == 'SELECAO')
     return `${filtro.tabela}_${filtro.campoTabela}_${filtro.condicao}_${filtro.searchRegistro}`
   else
@@ -550,22 +559,29 @@ const relatorioGerado = ref<RelatorioGerado>({
 })
 
 async function gerarRelatorio() {
-  montarFiltros.value
-  const parametros = ref<ParametrosGerarRelatorio>({
-    modeloRelatorio: '',
-    tipoRelatorio: '',
-    filtrosPorCampo: []
-  })
+  try {
+    loadingRelatorio.value = true;
 
-  parametros.value.modeloRelatorio = montarFiltros.value.relatorio.modeloRelatorio ? montarFiltros.value.relatorio.modeloRelatorio : ''
-  parametros.value.tipoRelatorio = montarFiltros.value.relatorio.tipoRelatorio ? montarFiltros.value.relatorio.tipoRelatorio : ''
-  parametros.value.filtrosPorCampo = montarFiltros.value.filtros ? montarFiltros.value.filtros : []
+    const parametros = ref<ParametrosGerarRelatorio>({
+      modeloRelatorio: '',
+      tipoRelatorio: '',
+      filtrosPorCampo: []
+    })
 
-  relatorioGerado.value = await relatoriosServices.gerarRelatorio(parametros.value)
+    parametros.value.modeloRelatorio = montarFiltros.value.relatorio.modeloRelatorio ?? ''
+    parametros.value.tipoRelatorio = montarFiltros.value.relatorio.tipoRelatorio ?? ''
+    parametros.value.filtrosPorCampo = montarFiltros.value.filtros ?? []
 
-  nextTick(() => {
-    dialogExibirRelatorioGeradoRef.value?.openDialog()
-  })
+    relatorioGerado.value = await relatoriosServices.gerarRelatorio(parametros.value)
+
+    nextTick(() => {
+      dialogExibirRelatorioGeradoRef.value?.openDialog()
+    })
+  } catch (error) {
+    useSnackbarStore().showSnackbar("Erro ao gerar relatório! " + error, "red");
+  } finally {
+    loadingRelatorio.value = false;
+  }
 }
 
 </script>

@@ -91,7 +91,7 @@ const dialogQrcode = ref<{show: boolean, qrcode: string}>({show: false, qrcode: 
 // Se o usuário armazenado estiver vazio e o token ainda estiver no session store, consultar o usuário da sessão ao montar o componente
 onMounted(async () => {
   if (!!usuarioLogado.usuario && sessionStorage.getItem('token') !== '')
-    usuarioLogado.usuario = await authServices().getByToken()
+    usuarioLogado.usuario = await authServices.getByToken()
   else
     useSnackbarStore().showSnackbar('Usuário não identificado!', 'red')
   if (usuarioLogado.usuario.permissao === 'ADMINISTRADOR' || usuarioLogado.usuario.permissao === 'ADMINISTRADOR_AUTORIZADO')
@@ -99,7 +99,7 @@ onMounted(async () => {
 })
 
 function logout() {
-  authServices().logout()
+  authServices.logout()
   redirectRouter.push('/');
 }
 

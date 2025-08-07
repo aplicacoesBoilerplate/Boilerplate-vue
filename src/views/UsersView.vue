@@ -326,7 +326,7 @@ async function toggleUsuarioAtivo(user: UsuarioConsulta) {
 async function resetarSenhaAoPadrao(emailUsuario: string) {
   abrirDialogConfirmacao(async () => {
     try {
-      await authServices().resetarSenhaAoPadrao(emailUsuario)
+      await authServices.resetarSenhaAoPadrao(emailUsuario)
       useSnackbarStore().showSnackbar(`Senha resetada com sucesso para o usuário: ${emailUsuario}`, 'success')
     } catch (error) {
       useSnackbarStore().showSnackbar(error, 'red')
