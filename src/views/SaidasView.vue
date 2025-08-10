@@ -53,8 +53,8 @@
     <!-- Exibição das saídas -->
     <v-virtual-scroll :items="apiSaidas?.registros" height="500" item-height="50" v-else>
       <template v-slot:default="{ item: saida }">
-        <v-list-item :title="`${saida.idSaida} - ${saida.nomeFuncionario}: ${saida.numeroRegistroFuncionario}`"
-          :subtitle="identificarSubtitulo(saida)" :class="identificarStylePeloStatus(saida.statusSaida)">
+        <v-list-item :title="`${saida.idSaida} - ${saida.nomeFuncionario}: ${saida.numeroRegistroFuncionario} - ${saida.statusSaida}`"
+          :subtitle="identificarSubtitulo(saida)" :class="identificarStyleStatusSaida(saida.statusSaida).cor">
 
           <!-- Ícone de cartão de saída -->
           <template v-slot:prepend>
@@ -113,6 +113,16 @@
               </v-col>
               <v-col cols="6" class="mb-1">
                 {{ saida.dataSolicitacaoSaida }}
+              </v-col>
+            </v-row>
+
+            <!-- Status saída -->
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Status da saída:
+              </v-col>
+              <v-col cols="6" class="mb-1" :class="identificarStyleStatusSaida(saida.statusSaida).texto">
+                {{ saida.statusSaida }}
               </v-col>
             </v-row>
 
@@ -206,22 +216,22 @@
               </v-col>
             </v-row>
 
-            <!-- Observações da saída -->
-            <v-row dense style="border-bottom: 2px solid black;">
-              <v-col cols="6" class="font-weight-medium text-info mb-1">
-                Observação da saída:
-              </v-col>
-              <v-col cols="6" class="mb-1">
-                {{ saida.observacaoSaida }}
-              </v-col>
-            </v-row>
-
             <v-row dense style="border-bottom: 2px solid black;">
               <v-col cols="6" class="font-weight-medium text-info mb-1">
                 Saída para o Funcionário:
               </v-col>
               <v-col cols="6" class="mb-1">
                 {{ saida.nomeFuncionario }}
+              </v-col>
+            </v-row>
+
+            <!-- Observações da saída -->
+            <v-row dense v-if="saida.observacaoSaida" style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Observação da saída:
+              </v-col>
+              <v-col cols="6" class="mb-1">
+                {{ saida.observacaoSaida }}
               </v-col>
             </v-row>
           </div>
@@ -335,25 +345,6 @@ async function getAllSaidas() {
     loading.value = false
   }
 }
-// Consulta com parâmetro de saídas, também pagina os resultados
-async function searchSaidas() {
-  loading.value = true
-  try {
-    const response = await saidasServices.getSaidaByFuncionario(paginadorClass.value)
-    apiSaidas.value = response
-
-    paginadorClass.value.atualizarDadosAPI({
-      totalPaginas: response.totalPaginas,
-      totalRegistros: response.totalRegistros,
-    })
-
-  } catch (error) {
-    useSnackbarStore().showSnackbar(error, 'red')
-    throw error
-  } finally {
-    loading.value = false
-  }
-}
 
 //#region Funções sensíveis
 // Função para deletar saída
@@ -362,7 +353,7 @@ function deleteSaida(idSaida?: number) {
     if (idSaida != null) {
       try {
         await saidasServices.deleteSaida(idSaida)
-        useSnackbarStore().showSnackbar('Saídas removida!', 'success')
+        useSnackbarStore().showSnackbar('Saída removida!', 'success')
       } catch (error) {
         useSnackbarStore().showSnackbar(error, 'red')
       } finally {
@@ -413,7 +404,6 @@ function toggleSaida(id?: number) {
     expandedSaidaId.value = expandedSaidaId.value === id ? null : id
 }
 
-
 function identificarSubtitulo(saida: SaidaConsulta): string {
   const definindoSubtitulo = ref('')
 
@@ -438,21 +428,39 @@ function identificarSubtitulo(saida: SaidaConsulta): string {
   return definindoSubtitulo.value
 }
 
-function identificarStylePeloStatus(statusSaida?: string): string {
-  const corDaSaidaPeloStatus = ref('')
+interface informacoesIdentificadas {
+  cor: string
+  texto: string
+  status: string
+}
+
+function identificarStyleStatusSaida(statusSaida?: string): informacoesIdentificadas {
+  const informacoes = ref<informacoesIdentificadas>({
+    cor: '',
+    texto: '',
+    status: ''
+  })
 
   if (statusSaida) {
-    if (statusSaida == 'PENDENTE')
-      corDaSaidaPeloStatus.value = 'bg-blue-grey-lighten-3'
-    if (statusSaida == 'NEGADA')
-      corDaSaidaPeloStatus.value = 'bg-red-darken-2'
-    if (statusSaida == 'AUTORIZADA')
-      corDaSaidaPeloStatus.value = 'bg-green-accent-2'
-    if (statusSaida == 'AUTORIZAÇÕES PENDENTES')
-      corDaSaidaPeloStatus.value = 'bg-orange-darken-1'
+    if (statusSaida == 'PENDENTE') {
+      informacoes.value.cor = 'bg-blue-grey-lighten-3'
+      informacoes.value.texto = 'text-blue-grey-lighten-3'
+    }
+    if (statusSaida == 'NEGADA') {
+      informacoes.value.cor = 'bg-red-darken-2'
+      informacoes.value.texto = 'text-red-darken-2'
+    }
+    if (statusSaida == 'AUTORIZADA') {
+      informacoes.value.cor = 'bg-green-accent-2'
+      informacoes.value.texto = 'text-green-accent-2'
+    }
+    if (statusSaida == 'AUTORIZAÇÕES PENDENTES') {
+      informacoes.value.cor = 'bg-orange-darken-1'
+      informacoes.value.texto = 'text-orange-darken-1'
+    }
   }
 
-  return corDaSaidaPeloStatus.value
+  return informacoes.value
 }
 
 function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {

@@ -64,7 +64,7 @@ export const saidasServices = {
   // Remover saída
   async deleteSaida(idSaida: number): Promise<Saida> {
     try {
-      const { data } = await http.delete(`/saidas${idSaida}`)
+      const { data } = await http.delete(`/saidas/${idSaida}`)
       return data
     } catch (error) {
       throw error

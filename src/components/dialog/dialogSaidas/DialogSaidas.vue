@@ -91,7 +91,16 @@
             </v-col>
 
             <!-- Usuário responsável por emitir a saída -->
-            <v-col cols="12" class="d-flex justify-center" v-if="dialogSaidas.visualizando">
+            <v-col cols="6" class="d-flex justify-center" v-if="dialogSaidas.visualizando">
+              <InputUpperCase v-model:="saida.statusSaida" :style="{
+                inputDisabled: true,
+                inputVariant: 'outlined',
+                label: 'Status saída:',
+                maxWidth: 650,
+              }" />
+            </v-col>
+
+            <v-col cols="6" class="d-flex justify-center" v-if="dialogSaidas.visualizando">
               <InputUpperCase v-model:="saida.nomeFuncionarioResponsavelSaida" :style="{
                 inputDisabled: true,
                 inputVariant: 'outlined',

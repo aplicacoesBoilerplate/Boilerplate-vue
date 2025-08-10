@@ -63,9 +63,9 @@
     <v-virtual-scroll :items="apiAutorizacoes?.registros" height="500" item-height="50" v-else>
       <template v-slot:default="{ item: autorizacao }">
         <v-list-item
-          :title="`${autorizacao.idAutorizacao}: ${autorizacao.nomeFuncionarioResponsavelSaida} - ${identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAprovacaoSaida).status}`"
-          :subtitle="`#Data da autorização: ${autorizacao.dataAutorizacao ? `${autorizacao.dataAutorizacao}` : 'Não definido'}`"
-          :class="identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAprovacaoSaida).cor">
+          :title="`${autorizacao.idAutorizacao}: ${autorizacao.nomeResponsavel} - ${identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAutorizacao).status}`"
+          :subtitle="`#Data da autorização: ${autorizacao.dataAutorizacao ?? 'Não definido'}`"
+          :class="identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAutorizacao).cor">
 
           <!-- Ícone de cartão de autorização -->
           <template v-slot:prepend>
@@ -131,8 +131,17 @@
               <v-col cols="6" class="font-weight-medium text-info mb-1">
                 Aprovação:
               </v-col>
-              <v-col cols="6" class="mb-1" :class="autorizacao.aprovacaoSaida ? 'text-success' : 'text-red'">
-                {{ autorizacao.aprovacaoSaida ? 'AUTORIZADA' : 'NEGADA' }}
+              <v-col cols="6" class="mb-1" :class="identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAutorizacao).texto">
+                {{ identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAutorizacao).status }}
+              </v-col>
+            </v-row>
+
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Status da saída:
+              </v-col>
+              <v-col cols="6" class="mb-1" :class="identificarStyleStatusSaida(autorizacao.statusSaida).texto">
+                {{ autorizacao.statusSaida }}
               </v-col>
             </v-row>
 
@@ -146,6 +155,15 @@
               </v-col>
             </v-row>
 
+            <v-row dense v-if="autorizacao.observacaoAutorizacao" style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Observação:
+              </v-col>
+              <v-col cols="6" class="mb-1">
+                {{ autorizacao.observacaoAutorizacao }}
+              </v-col>
+            </v-row>
+
             <!-- Registro da saída relacionada -->
             <v-col cols="12" class="d-flex justify-center">
               <v-chip color="info">
@@ -156,17 +174,6 @@
                   size="x-small" variant="outlined" color="info" class="pt-2" />
               </v-chip>
             </v-col>
-
-            <v-divider v-if="autorizacao.observacaoAutorizacao" />
-
-            <v-row dense v-if="autorizacao.observacaoAutorizacao" style="border-bottom: 2px solid black;">
-              <v-col cols="6" class="font-weight-medium text-info mb-1">
-                Observação:
-              </v-col>
-              <v-col cols="6" class="mb-1">
-                {{ autorizacao.observacaoAutorizacao }}
-              </v-col>
-            </v-row>
           </div>
         </v-expand-transition>
         <v-divider />
@@ -286,6 +293,8 @@ async function emitirAutorizacao(autorizacao: AutorizacoesConsulta) {
     } catch (error) {
       useSnackbarStore().showSnackbar(error, 'red')
       throw error
+    } finally {
+      await getAutorizacoes()
     }
   }
 }
@@ -340,28 +349,55 @@ const tituloCard = ref('Suas autorizações');
 
 interface informacoesIdentificadas {
   cor: string
+  texto: string
   status: string
 }
 
-function identificarInformacoes(aprovacao?: boolean, dataAprovacao?: string): informacoesIdentificadas {
+function identificarInformacoes(aprovacao?: boolean, dataAprovacao?: string | null): informacoesIdentificadas {
   const informacoes = ref<informacoesIdentificadas>({
     cor: '',
+    texto: '',
     status: ''
   })
 
   if (dataAprovacao) {
     if (aprovacao) {
       informacoes.value.cor = 'bg-green-accent-2'
-      informacoes.value.status = 'Autorização: Autorizado'
+      informacoes.value.texto = 'text-success'
+      informacoes.value.status = 'AUTORIZAÇÃO: AUTORIZADO'
     }
     else {
       informacoes.value.cor = 'bg-red-darken-2'
-      informacoes.value.status = 'Autorização: Negada'
+      informacoes.value.texto = 'text-red'
+      informacoes.value.status = 'AUTORIZAÇÃO: NEGADA'
     }
   } else {
-    informacoes.value.cor = 'bg-green-accent-2'
-    informacoes.value.status = 'Autorização: Pendente'
+    informacoes.value.cor = 'bg-blue-grey-lighten-3'
+    informacoes.value.texto = 'text-grey'
+    informacoes.value.status = 'AUTORIZAÇÃO: PENDENTE'
   }
+
+  return informacoes.value
+}
+
+function identificarStyleStatusSaida(statusSaida?: string): informacoesIdentificadas {
+  const informacoes = ref<informacoesIdentificadas>({
+    cor: '',
+    texto: '',
+    status: ''
+  })
+
+  if (statusSaida) {
+    if (statusSaida == 'PENDENTE') {}
+      informacoes.value.texto = 'text-blue-grey-lighten-3'
+    if (statusSaida == 'NEGADA')
+      informacoes.value.texto = 'text-red-darken-2'
+    if (statusSaida == 'AUTORIZADA')
+      informacoes.value.texto = 'text-green-accent-2'
+    if (statusSaida == 'AUTORIZAÇÕES PENDENTES')
+      informacoes.value.texto = 'text-orange-darken-1'
+  }
+
   return informacoes.value
 }
 

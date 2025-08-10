@@ -14,7 +14,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn text color="red-lighten-1" @click="toggleDialog">Cancelar</v-btn>
+        <v-btn text color="red-lighten-1" @click="toggleDialog">Fechar</v-btn>
         <v-spacer />
       </v-card-actions>
     </v-card>
