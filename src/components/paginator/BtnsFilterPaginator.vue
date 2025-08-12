@@ -22,44 +22,44 @@
                 :color="paginator.apenasHoje ? 'success' : 'info'"
                 :title="paginator.apenasHoje ? 'Clique para buscar registros de todos os dias' : 'Clique para buscar registros apenas de hoje'"
                 @click="alterarFiltroApenasHoje()" />
+                <span class="pr-2" />
             </div>
 
             <div v-if="showFilter.exibirAprovacao">
-              <span class="pr-2" />
               <!-- Filtro para apenas aprovados -->
               <v-btn icon="mdi-bookmark-check-outline" size="x-small" variant="tonal"
                 :color="paginator.aprovacao ? 'success' : 'info'"
-                :title="paginator.aprovacao ? 'Clique para incluir registros negados' : 'Clique para buscar apenas registros aprovados'"
+                :title="paginator.aprovacao ? 'Clique para incluir registros negativos' : 'Clique para buscar apenas registros positivos'"
                 @click="alterarFiltroAprovacao()" />
+                <span class="pr-2" />
             </div>
 
             <div v-if="showFilter.exibirAlterarInput">
-              <span class="pr-2" />
               <!-- Filtro para apenas aprovados -->
               <v-btn icon="mdi-swap-horizontal-bold" size="x-small" variant="tonal"
                 :color="paginator.alterarInput ? 'success' : 'info'"
                 title="Clique para alterar os campos de busca no filtro" @click="alterarInputBusca()" />
+                <span class="pr-2" />
             </div>
 
             <div v-if="showFilter.exibirSinteticos">
-              <span class="pr-2" />
               <!-- Filtro para exibir modelos de relatórios sintéticos -->
               <v-btn icon="mdi-crosshairs-gps" size="x-small" variant="tonal"
                 :color="paginator.exibirSintetico ? 'success' : 'red'"
                 :title="paginator.exibirSintetico ? 'Clique para ocultar os modelos sintéticos' : 'Clique para listar os modelos sintéticos'"
                 @click="alterarExibicaoSinteticos()" />
+                <span class="pr-2" />
             </div>
 
             <div v-if="showFilter.exibirAnaliticos">
-              <span class="pr-2" />
               <!-- Filtro para exibir modelos de relatórios sintéticos -->
               <v-btn icon="mdi-chart-box-multiple-outline" size="x-small" variant="tonal"
                 :color="paginator.exibirAnalitico ? 'success' : 'red'"
                 :title="paginator.exibirAnalitico ? 'Clique para ocultar os modelos analíticos' : 'Clique para listar os modelos analíticos'"
                 @click="alterarExibicaoAnaliticos()" />
+                <span class="pr-2" />
             </div>
 
-            <span class="pr-2" />
             <!-- Filtro para limpar todos os filtros -->
             <v-btn icon="mdi-refresh" size="x-small" variant="tonal" color="warning" title="Limpar todos os filtros"
               @click="retornarFiltrosPadroes()" />

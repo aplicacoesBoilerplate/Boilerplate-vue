@@ -295,7 +295,6 @@ async function getPortaria() {
   loading.value = true
   try {
     const response = await portariaServices.getAllSaidas(paginadorClass.value)
-
     apiPortaria.value = response
 
     paginadorClass.value.atualizarDadosAPI({
@@ -312,11 +311,6 @@ async function getPortaria() {
 
 async function lancamentoSaidaFuncionario(idSaida?: number) {
   if (idSaida) {
-    // const saida = await saidasServices.getSaidaById(idSaida)
-    // if (saida.dataAprovacaoSaida == null) {
-    //   confirmarSenha.value.openDialog()
-    // }
-
     try {
       await portariaServices.LancarHoraSaida(idSaida)
       useSnackbarStore().showSnackbar('Hora de saída lançada atualizada!', 'success')
@@ -420,8 +414,12 @@ function identificarStylePeloStatus(statusSaida?: string): string {
       corDaSaidaPeloStatus.value = 'bg-red-darken-2'
     if (statusSaida == 'AUTORIZADA')
       corDaSaidaPeloStatus.value = 'bg-green-accent-2'
-    if (statusSaida == 'AUTORIZAÇÕES PENDENTES')
+    if (statusSaida == 'AUTORIZACOES_PENDENTES')
       corDaSaidaPeloStatus.value = 'bg-orange-darken-1'
+    if (statusSaida == 'EXECUTANDO')
+      corDaSaidaPeloStatus.value = 'bg-deep-orange-lighten-1'
+    if (statusSaida == 'REALIZADA')
+      corDaSaidaPeloStatus.value = 'bg-green-darken-4'
   }
 
   return corDaSaidaPeloStatus.value
