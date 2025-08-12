@@ -63,8 +63,8 @@
     <v-virtual-scroll :items="apiAutorizacoes?.registros" height="500" item-height="50" v-else>
       <template v-slot:default="{ item: autorizacao }">
         <v-list-item
-          :title="`${autorizacao.idAutorizacao}: ${autorizacao.nomeResponsavel} - ${identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAutorizacao).status}`"
-          :subtitle="`#Data da autorização: ${autorizacao.dataAutorizacao ?? 'Não definido'}`"
+          :title="`${autorizacao.idAutorizacao}: ${autorizacao.nomeFuncionario} - ${identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAutorizacao).status}`"
+          :subtitle="`#Responsável: ${autorizacao.nomeResponsavel}`"
           :class="identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAutorizacao).cor">
 
           <!-- Ícone de cartão de autorização -->
@@ -123,6 +123,16 @@
               </v-col>
               <v-col cols="6" class="mb-1">
                 {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
+              </v-col>
+            </v-row>
+
+            <!-- Data da autorização -->
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Data da autorização:
+              </v-col>
+              <v-col cols="6" class="mb-1">
+                {{ autorizacao.dataAutorizacao ?? 'Não definido' }}
               </v-col>
             </v-row>
 
@@ -240,7 +250,8 @@ const paginadorClass = ref(new PaginatorClass({
   totalPaginas: 0,
   totalRegistros: 0,
   orderBy: 'DESC',
-  search: ''
+  search: '',
+  apenasHoje: true
 }))
 const filtrosAutorizacoes = ref({
   exibirApenasHoje: true,

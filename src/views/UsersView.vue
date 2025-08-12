@@ -11,10 +11,8 @@
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de usuários</span>
 
-      <v-btn icon size="x-small" color="primary" variant="outlined" title="Ordem" @click="aoMudarOrdem()">
-        <v-icon>{{ paginadorClass.orderBy == 'ASC' ? "mdi-arrow-down" : "mdi-arrow-up" }}
-        </v-icon>
-      </v-btn>
+      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirOrdem: true }" @alterado-ordem="aoMudarOrdem"
+        @limpar-filtros="limparFiltros" />
 
       <!-- Campo para consultar os usuários pelo search -->
       <InputUpperCase v-model:="paginadorClass.search" :style="{
@@ -203,6 +201,7 @@ import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visu
 import Paginator from '@/components/paginator/Paginator.vue'; // Componente visual para a paginação de registros
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'; // Botão para abrir o Dialog
 import DialogUsers from '@/components/dialog/dialogUser/DialogUsers.vue'; // Componente visual para o dialog de usuários
+import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
 import DialogConfirmarSenha from '@/components/dialog/confirmarSenha/DialogConfirmarSenha.vue'; // Componente visual para confirmação de senha
 
 // Classes
@@ -222,7 +221,7 @@ import { usuariosServices } from '@/services/usuariosService';
 import { authServices } from "@/services/authService.ts";
 
 // Vue
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 //#endregion
 
 //#region Variáveis

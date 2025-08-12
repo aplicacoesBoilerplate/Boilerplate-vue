@@ -11,7 +11,7 @@
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de categorias</span>
 
-      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirApenasHoje: true, exibirAprovacao: true }"
+      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirOrdem: true, exibirAprovacao: true }"
         @alterado-ordem="aoMudarOrdem" @alterado-aprovacao="aoMudarAprovacao" @limpar-filtros="limparFiltros" />
 
       <!-- Campo para consultar as categorias pelo search -->

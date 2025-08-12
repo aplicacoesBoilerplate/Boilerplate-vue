@@ -38,7 +38,7 @@
 
     <!-- Alerta quando nenhum usuário consultado foi encontrado -->
     <div v-if="apiSaidas?.totalRegistros == 0 && loading == false" class="pt-4">
-      <v-alert text="Nenhum usuário encontrado!" type="info" variant="tonal">
+      <v-alert text="Nenhuma saída encontrada!" type="info" variant="tonal">
         <template v-slot:append>
           <v-btn color="warning" variant="plain" @click="limparFiltros()">
             <v-icon class="pt-1">
@@ -226,7 +226,7 @@
             </v-row>
 
             <!-- Observações da saída -->
-            <v-row dense v-if="saida.observacaoSaida" style="border-bottom: 2px solid black;">
+            <v-row dense v-if="saida.observacaoSaida != ''" style="border-bottom: 2px solid black;">
               <v-col cols="6" class="font-weight-medium text-info mb-1">
                 Observação da saída:
               </v-col>
@@ -454,9 +454,17 @@ function identificarStyleStatusSaida(statusSaida?: string): informacoesIdentific
       informacoes.value.cor = 'bg-green-accent-2'
       informacoes.value.texto = 'text-green-accent-2'
     }
-    if (statusSaida == 'AUTORIZAÇÕES PENDENTES') {
+    if (statusSaida == 'AUTORIZACOES_PENDENTES') {
       informacoes.value.cor = 'bg-orange-darken-1'
       informacoes.value.texto = 'text-orange-darken-1'
+    }
+    if (statusSaida == 'EXECUTANDO') {
+      informacoes.value.cor = 'bg-deep-orange-lighten-1'
+      informacoes.value.texto = 'text-deep-orange-lighten-1'
+    }
+    if (statusSaida == 'REALIZADA') {
+      informacoes.value.cor = 'bg-green-darken-4'
+      informacoes.value.texto = 'text-green-darken-4'
     }
   }
 
