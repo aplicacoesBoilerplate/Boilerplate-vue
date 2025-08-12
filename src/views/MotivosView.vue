@@ -11,7 +11,7 @@
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de motivos</span>
 
-      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirApenasHoje: true }" @alterado-ordem="aoMudarOrdem"
+      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirOrdem: true }" @alterado-ordem="aoMudarOrdem"
         @alterado-aprovacao="aoMudarAprovacao" @limpar-filtros="limparFiltros" />
 
       <!-- Campo para consultar os motivos pelo search -->

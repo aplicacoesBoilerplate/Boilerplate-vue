@@ -5,7 +5,7 @@
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Lista de errors</span>
 
-      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirApenasHoje: true }" @alterado-ordem="aoMudarOrdem"
+      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirOrdem: true, exibirApenasHoje: true }" @alterado-ordem="aoMudarOrdem"
         @alterado-apenas-hoje="aoMudarApenasHoje" @alterado-aprovacao="aoMudarAprovacao"
         @limpar-filtros="limparFiltros" />
 

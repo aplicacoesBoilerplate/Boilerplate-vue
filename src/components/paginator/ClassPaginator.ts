@@ -5,7 +5,7 @@ export class PaginatorClass {
   totalRegistros?: number
   orderBy?: string // Ordenação da exibição da lista
   search?: string | null // Parâmetro de busca
-  apenasHoje?: boolean | null // Filtro para a portaria consutar apenas os registros do dia ou todos
+  apenasHoje?: boolean | true // Filtro para a portaria consutar apenas os registros do dia ou todos
   aprovacao?: boolean | null // Parâmetro de busca para autorizações de saídas por aprovação
   alterarInput?: boolean | null // Campo para controlar a exibição de input de busca que podem receber mais de um parâmetro (Autorizações e Saídas)
   funcionarioResponsavel?: string | null // (Autorizações e Saídas)
@@ -16,6 +16,7 @@ export class PaginatorClass {
   constructor({ limite = 10, offset = 1 }: Partial<PaginatorClass> = {}) {
     this.limite = limite
     this.offset = offset
+    this.apenasHoje = true
   }
 
   atualizarDadosAPI(dados: Pick<PaginatorClass, 'totalPaginas' | 'totalRegistros'>) {
@@ -50,7 +51,7 @@ export class PaginatorClass {
   }
 
   limparFiltros() {
-    this.apenasHoje = false
+    this.apenasHoje = true
     this.aprovacao = false
     this.funcionarioResponsavel = null
     this.search = null
@@ -61,5 +62,4 @@ export class PaginatorClass {
     this.exibirSintetico = this.exibirSintetico
     this.exibirAnalitico = this.exibirAnalitico
   }
-
 }
