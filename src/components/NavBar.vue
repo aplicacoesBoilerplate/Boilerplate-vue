@@ -136,7 +136,7 @@ async function getQrcodeWppConnect() {
     const data = await wppConnectionServices.startSessionWppConnect();
     await openQrCode(data.qrcode);
   } catch (error) {
-    useSnackbarStore().showSnackbar('Não foi possível gerar o qrcode para se conectar ao WhatsApp!', 'red')
+    useSnackbarStore().showSnackbar('Não foi possível gerar o qrcode para se conectar ao WhatsApp! Aguarde alguns minutos enquanto o sistema prepara uma nova sessão...', 'red')
   }
 }
 
