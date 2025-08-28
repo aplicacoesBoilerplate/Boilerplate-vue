@@ -73,9 +73,28 @@ async function authLogin() {
     try {
       loading.value = true
       await authService.login(loginForm.value!)
-      redirectRouter.push('/dashboard');
       const usuarioLogado = await authServices.getByToken()
       usuarioAutenticado().usuario = usuarioLogado
+
+      switch (usuarioLogado.permissao) {
+        case "EMITE_SAIDA": {
+          redirectRouter.push('/saidas');
+          break;
+        };
+        case "EMITE_AUTORIZACAO": {
+          redirectRouter.push('/autorizacoes');
+          break;
+        };
+        case "PORTARIA": {
+          redirectRouter.push('/portaria');
+          break;
+        };
+        default: {
+          redirectRouter.push('/dashboard');
+          break;
+        };
+      }
+
       useSnackbarStore().showSnackbar(`Bem-vindo(a), ${usuarioLogado.nome}!`, 'success')
     } catch (err) {
       useSnackbarStore().showSnackbar(err, 'red')
