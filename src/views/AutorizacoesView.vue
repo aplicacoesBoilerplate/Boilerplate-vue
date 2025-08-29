@@ -232,7 +232,10 @@ import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
 import { autorizacoesServices } from '@/services/autorizacoesServices';
 
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
+
+// Outros
+import { gerenciamentoInatividade } from "@/utils/gerenciamentoInatividade";
 //#endregion
 
 //#region Variáveis
@@ -262,15 +265,22 @@ const filtrosAutorizacoes = ref({
 // Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
 var apiAutorizacoes = ref<HeaderPaginatorModel<AutorizacoesSaidaConsulta>>() // Armazena os dados da resposta das req para exibição no front
+let watcherinatividade: gerenciamentoInatividade | null = null;
 
 //#endregion
 
 //#region Funcionalidades do Vue
-
 onMounted(async () => {
-  await getAutorizacoes()
-})
+  watcherinatividade = new gerenciamentoInatividade(async () => {
+    await getAutorizacoes();
+  }, 600000);
 
+  watcherinatividade.start();
+});
+
+onUnmounted(() => {
+  watcherinatividade?.stop();
+});
 //#endregion
 
 //#region para as autorizações facilitadas
