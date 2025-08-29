@@ -51,12 +51,17 @@ import { relatoriosServices } from '@/services/relatoriosService';
 import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 
 // Vue
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
 import { authServices } from '@/services/authService';
+
+// Outros
+import { gerenciamentoInatividade } from '@/utils/gerenciamentoInatividade';
 
 const loading = ref(false)
 const permissao = ref(false)
+let watcherinatividade: gerenciamentoInatividade | null = null;
 
+//#region Funcionalidades do Vue
 onBeforeMount(async () => {
   const usuario = await authServices.getByToken();
   if (
@@ -69,6 +74,19 @@ onBeforeMount(async () => {
     permissao.value = true
   getDashboard();
 });
+
+onMounted(async () => {
+  watcherinatividade = new gerenciamentoInatividade(async () => {
+    await getDashboard();
+  }, 600000);
+
+  watcherinatividade.start();
+});
+
+onUnmounted(() => {
+  watcherinatividade?.stop();
+});
+//#endregion
 
 // #region API
 

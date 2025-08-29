@@ -262,7 +262,8 @@ import type { SaidasComAutorizacoes } from '@/models/saidasModels/saidasModels';
 import { portariaServices } from '@/services/portariaServices';
 
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { gerenciamentoInatividade } from '@/utils/gerenciamentoInatividade';
 //#endregion
 
 //#region Variáveis
@@ -278,15 +279,21 @@ const filtrosPortaria = ref({
 // Outros
 const expandedSaidaId = ref<number | null>(null) // Painel de informações da saída
 var apiPortaria = ref<HeaderPaginatorModel<SaidasComAutorizacoes>>() // Armazena os dados da resposta das req para exibição no front
-
+let watcherinatividade: gerenciamentoInatividade | null = null;
 //#endregion
 
 //#region Funcionalidades do Vue
-
 onMounted(async () => {
-  await getPortaria()
-})
+  watcherinatividade = new gerenciamentoInatividade(async () => {
+    await getPortaria();
+  }, 600000);
 
+  watcherinatividade.start();
+});
+
+onUnmounted(() => {
+  watcherinatividade?.stop();
+});
 //#endregion
 
 //#region funções de consulta, controle e manipulação de motivos
