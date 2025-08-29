@@ -8,7 +8,6 @@ import MotivosView from '@/views/MotivosView.vue'
 import SaidasView from '@/views/SaidasView.vue'
 import AutorizacoesView from '@/views/AutorizacoesView.vue'
 import PortariaView from '@/views/PortariaView.vue'
-import TesteView from '@/views/TesteView.vue'
 import ErrorsView from '@/views/ErrorsView.vue'
 import CategoriasView from '@/views/CategoriasView.vue'
 
@@ -69,11 +68,6 @@ const router = createRouter({
       path: '/errors',
       name: 'errors',
       component: ErrorsView,
-    },
-    {
-      path: '/testes',
-      name: 'testes',
-      component: TesteView,
     },
   ],
 })
