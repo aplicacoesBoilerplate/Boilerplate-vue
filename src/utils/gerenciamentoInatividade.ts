@@ -16,6 +16,7 @@ export class gerenciamentoInatividade {
     window.addEventListener("click", this.resetTimer);
 
     this.resetTimer();
+    this.callback();
   }
 
   stop(): void {
