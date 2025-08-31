@@ -74,10 +74,11 @@ const formRef = ref()
 const formIsValid = ref(false)
 const showPassword1 = ref(false)
 const showPassword2 = ref(false)
+const emailDefalt = window.env?.VITE_DOMAIN_EMAIL || import.meta.env.VITE_DOMAIN_EMAIL;
 const newUser = ref(
   {
     nome: '',
-    email: '@SIERMOVEIS.COM.BR',
+    email: emailDefalt,
     senha: '',
     confirmarSenha: ''
   }
@@ -92,7 +93,7 @@ async function solicitarAcesso() {
     useSnackbarStore().showSnackbar('Conta registrada, aguarde a liberação de um administrador', 'success')
     newUser.value = {
       nome: '',
-      email: '@SIERMOVEIS.COM.BR',
+      email: emailDefalt,
       senha: '',
       confirmarSenha: ''
     }

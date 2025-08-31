@@ -62,7 +62,8 @@ import { ref, type Ref } from 'vue'
 const formRef: Ref<VForm | null> = ref(null)
 const formIsValid = ref(false)
 const showPassword = ref(false)
-const loginForm = ref<LoginModel>({ email_usuario: '@SIERMOVEIS.COM.BR', senha_usuario: '' })
+const emailDefalt = window.env?.VITE_DOMAIN_EMAIL || import.meta.env.VITE_DOMAIN_EMAIL;
+const loginForm = ref<LoginModel>({ email_usuario: emailDefalt, senha_usuario: '' })
 const redirectRouter = useRouter()
 const authService = authServices
 const loading = ref(false) // Carregamento

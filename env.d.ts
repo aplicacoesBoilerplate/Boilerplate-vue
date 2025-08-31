@@ -2,6 +2,6 @@
 interface Window {
   env: {
     VITE_API_URL: string
-    VITE_APP_VERSION: string
+    VITE_DOMAIN_EMAIL: any
   }
 }
