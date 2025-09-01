@@ -66,11 +66,12 @@ const routerOption = ref([
 function disabledRouterOption(path: string): boolean {
 
   const showRouter = ref(false) // Começa bloqueado para não correr o risco de expor todos os componentes se caso perder o usuário autenticado
+  const usuario = usuarioAutenticado().usuario
   const permissao = usuarioAutenticado().usuario.permissao
 
   switch (path) {
     case '/saidas': { // Apenas a portaria não pode acessar as rotas de saída
-      if (permissao == 'PORTARIA') {
+      if (usuario.permissao == 'PORTARIA') {
         showRouter.value = false
       }
       else
@@ -78,35 +79,35 @@ function disabledRouterOption(path: string): boolean {
       break
     }
     case '/autorizacoes': { // Além dos admins, quem emite autorização também pode acessar este recurso
-      if (permissao == 'ADMINISTRADOR' || permissao == 'ADMINISTRADOR_AUTORIZADO' || permissao == 'EMITE_AUTORIZACAO') {
+      if (usuario.permissao == 'ADMINISTRADOR' || usuario.permissao == 'ADMINISTRADOR_AUTORIZADO' || usuario.permissao == 'EMITE_AUTORIZACAO' || usuario.autorizaSaida) {
         showRouter.value = true
       } else
         showRouter.value = false
       break
     }
     case '/motivos': { // Qualquer autenticado pode acessar os motivos, mas bloqueia para portaria apenas por ser conveniente
-      if (permissao == 'PORTARIA')
+      if (usuario.permissao == 'PORTARIA')
         showRouter.value = false
       else
         showRouter.value = true
       break
     }
     case '/categorias': { // Apenas quem emite saída, todos, exceto a portaria
-      if (permissao == 'PORTARIA')
+      if (usuario.permissao == 'PORTARIA')
         showRouter.value = false
       else
         showRouter.value = true
       break
     }
     case '/users': { // Apenas admins podem acessar os usuários
-      if (permissao == 'ADMINISTRADOR' || permissao == 'ADMINISTRADOR_AUTORIZADO') {
+      if (usuario.permissao == 'ADMINISTRADOR' || usuario.permissao == 'ADMINISTRADOR_AUTORIZADO') {
         showRouter.value = true
       } else
         showRouter.value = false
       break
     }
     case '/portaria': { // Apenas a portaria pode acessar as rotas de portaria
-      if (permissao == 'PORTARIA') {
+      if (usuario.permissao == 'PORTARIA') {
         showRouter.value = true
       }
       else
@@ -114,7 +115,7 @@ function disabledRouterOption(path: string): boolean {
       break
     }
     case '/errors': { // Apenas admins podem acessar o histórico de erros
-      if (permissao == 'ADMINISTRADOR' || permissao == 'ADMINISTRADOR_AUTORIZADO') {
+      if (usuario.permissao == 'ADMINISTRADOR' || usuario.permissao == 'ADMINISTRADOR_AUTORIZADO') {
         showRouter.value = true
       } else
         showRouter.value = false
