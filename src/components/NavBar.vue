@@ -7,14 +7,20 @@
     </template>
 
     <RouterLink to="/dashboard" custom v-slot="{ navigate }">
-      <v-app-bar-title @click="navigate" class="cursor-pointer d-flex justify-center">
-        {{
-          usuarioLogado.usuario.nome != ''
-            ? `CONTROLE DE SAÍDAS - ${usuarioLogado.usuario.nome}`
-            : 'CONTROLE DE SAÍDAS'
-        }}
+      <v-app-bar-title @click="navigate" class="d-flex justify-center text-center">
+        CONTROLE DE SAÍDAS <br></br>
+        {{ usuarioLogado.usuario.nome != '' ? `${usuarioLogado.usuario.nome}` : '' }}
       </v-app-bar-title>
     </RouterLink>
+
+    <!-- ícone do indicador de inatividade -->
+    <div class="d-flex justify-space-around timer"
+      v-if="tempoRestante !== null && tempoRestante > 0 && loading === false">
+      <v-icon class="mr-2"color="indigo-accent-2">
+        mdi-timer-sand-complete
+      </v-icon>
+      {{ Math.floor(tempoRestante / 60) }}:{{ (tempoRestante % 60).toString().padStart(2, '0') }}
+    </div>
 
     <!-- ícone do indicador para versão -->
     <div class="d-flex justify-space-around"
@@ -75,9 +81,10 @@ import { authServices } from '@/services/authService';
 import { useRouter } from 'vue-router'
 
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { wppConnectionServices } from '@/services/wppConnectionServices';
 import DialogQrcode from './dialog/dialogQrcode/DialogQrcode.vue';
+import { gerenciamentoInatividade } from '@/utils/gerenciamentoInatividade';
 
 const redirectRouter = useRouter()
 const usuarioLogado = usuarioAutenticado() // Armazenar o usuário autenticado
@@ -87,6 +94,9 @@ const dialogVersionRef = ref()
 const openDialogVersion = ref(false)
 const dialogQrcodeRef = ref()
 const dialogQrcode = ref<{show: boolean, qrcode: string}>({show: false, qrcode: ''})
+const tempoRestante = ref<number | null>(null);
+let interval: ReturnType<typeof setInterval> | null = null;
+let watcherinatividade: gerenciamentoInatividade;
 
 // Se o usuário armazenado estiver vazio e o token ainda estiver no session store, consultar o usuário da sessão ao montar o componente
 onMounted(async () => {
@@ -96,7 +106,31 @@ onMounted(async () => {
     useSnackbarStore().showSnackbar('Usuário não identificado!', 'red')
   if (usuarioLogado.usuario.permissao === 'ADMINISTRADOR' || usuarioLogado.usuario.permissao === 'ADMINISTRADOR_AUTORIZADO')
     await getStatusWppConnect();
+
+  watcherinatividade = new gerenciamentoInatividade(async () => {}, 600000);
+
+  // Aviso de 5 min restantes
+  watcherinatividade.onWarning((remaining) => {
+    tempoRestante.value = remaining;
+
+    if (interval) clearInterval(interval);
+
+    interval = setInterval(() => {
+      if (tempoRestante.value !== null && tempoRestante.value > 0) {
+        tempoRestante.value--;
+      } else {
+        if (interval) clearInterval(interval);
+      }
+    }, 1000);
+  });
+
+  watcherinatividade.start();
 })
+
+onUnmounted(() => {
+  watcherinatividade?.stop();
+  if (interval) clearInterval(interval);
+});
 
 function logout() {
   authServices.logout()
@@ -148,3 +182,12 @@ async function openQrCode(qrcode: string) {
 // #endregion
 
 </script>
+
+<style scoped>
+.timer {
+  color: red;
+  font-size: xx-small;
+  padding: 0;
+  margin: 0;
+}
+</style>
