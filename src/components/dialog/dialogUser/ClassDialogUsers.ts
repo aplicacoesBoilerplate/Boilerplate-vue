@@ -1,6 +1,8 @@
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
 import { usuariosServices } from '@/services/usuariosService'
 
+const emailDefalt = window.env?.VITE_DOMAIN_EMAIL || import.meta.env.VITE_DOMAIN_EMAIL;
+
 export class DialogUsersClass {
   show: boolean
   isEditing: boolean
@@ -11,7 +13,7 @@ export class DialogUsersClass {
     this.isEditing = false
     this.usuario = {
       nome: '',
-      email: '@GMAIL.COM.BR',
+      email: emailDefalt,
       permissao: 'EMITE_SAIDA',
     }
   }
@@ -31,7 +33,7 @@ export class DialogUsersClass {
     } else {
       this.usuario = {
         nome: '',
-        email: '@GMAIL.COM.BR',
+        email: emailDefalt,
         permissao: 'EMITE_SAIDA',
       }
     }
