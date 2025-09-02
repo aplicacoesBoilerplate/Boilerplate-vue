@@ -2,6 +2,7 @@ export interface CategoriasMotivos {
   idCategoria: number
   descricaoCategoria: string
   emergencial: boolean
+  abaterHoraExtra: boolean
 }
 
 export interface OperacoesMotivos extends CategoriasMotivos {

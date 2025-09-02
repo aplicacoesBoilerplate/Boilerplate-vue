@@ -12,7 +12,8 @@ export class DialogCategoriasClass {
     this.categoria = {
       idCategoria: 0,
       descricaoCategoria: '',
-      emergencial: false
+      emergencial: false,
+      abaterHoraExtra: false
     }
   }
 
@@ -31,7 +32,8 @@ export class DialogCategoriasClass {
       this.categoria = {
         idCategoria: 0,
         descricaoCategoria: '',
-        emergencial: false
+        emergencial: false,
+        abaterHoraExtra: false
       }
     }
   }
