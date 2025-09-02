@@ -262,7 +262,7 @@ import type { SaidasComAutorizacoes } from '@/models/saidasModels/saidasModels';
 import { portariaServices } from '@/services/portariaServices';
 
 // Vue
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
 import { gerenciamentoInatividade } from '@/utils/gerenciamentoInatividade';
 //#endregion
 
@@ -283,6 +283,10 @@ let watcherinatividade: gerenciamentoInatividade | null = null;
 //#endregion
 
 //#region Funcionalidades do Vue
+onBeforeMount(async () => {
+  await getPortaria();
+});
+
 onMounted(async () => {
   watcherinatividade = new gerenciamentoInatividade(async () => {
     await getPortaria();

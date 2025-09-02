@@ -3,8 +3,9 @@
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h6">Indicadores</span>
 
-      <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosDashboard" @alterado-apenas-hoje="aoMudarApenasHoje"
-                           @alterado-aprovacao="aoMudarAprovacao" @limpar-filtros="limparFiltros" />
+      <BtnsFilterPaginator :paginator="paginadorClass" :show="filtrosDashboard"
+        @alterado-apenas-hoje="aoMudarApenasHoje" @alterado-aprovacao="aoMudarAprovacao"
+        @limpar-filtros="limparFiltros" />
 
     </v-card-title>
     <v-divider />
@@ -17,8 +18,7 @@
     <v-container class="container-dashboard">
       <v-row dense>
         <v-col v-for="indicador in indicadores" :key="indicador.id" cols="12" md="3" :title="indicador.about">
-          <v-card variant="flat" class="mx-auto" :color="indicador.color" max-width="600"
-                  :title="indicador.title">
+          <v-card variant="flat" class="mx-auto" :color="indicador.color" max-width="600" :title="indicador.title">
             <template v-slot:actions>
               <v-icon>{{ indicador.icon }}</v-icon>
               {{ indicador.amount }}
@@ -31,7 +31,7 @@
 
   <div class="mt-5"></div>
 
-  <ListRelatorios v-if="permissao"/>
+  <ListRelatorios v-if="permissao" />
 
 </template>
 
@@ -44,11 +44,10 @@ import ListRelatorios from "@/components/ListRelatorios.vue"; // Listagem das op
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
 
 // Stores
-import {useSnackbarStore} from "@/stores/SnackbarStore.ts";
+import { useSnackbarStore } from "@/stores/SnackbarStore.ts";
 
 // Models
 import { relatoriosServices } from '@/services/relatoriosService';
-import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 
 // Vue
 import { onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
@@ -72,7 +71,7 @@ onBeforeMount(async () => {
     permissao.value = false
   else
     permissao.value = true
-  getDashboard();
+  await getDashboard();
 });
 
 onMounted(async () => {

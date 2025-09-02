@@ -273,7 +273,7 @@ import type { SaidaConsulta } from '@/models/saidasModels/saidasModels';
 import { saidasServices } from '@/services/saidasServices';
 
 // Vue
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onBeforeMount, onMounted, onUnmounted, ref, watch } from 'vue';
 import { gerenciamentoInatividade } from '@/utils/gerenciamentoInatividade';
 //#endregion
 
@@ -299,6 +299,10 @@ let watcherinatividade: gerenciamentoInatividade | null = null;
 //#endregion
 
 //#region Funcionalidades do Vue
+onBeforeMount(async () => {
+  await getAllSaidas();
+});
+
 onMounted(async () => {
   watcherinatividade = new gerenciamentoInatividade(async () => {
     await getAllSaidas();

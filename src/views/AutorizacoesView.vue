@@ -232,7 +232,7 @@ import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
 import { autorizacoesServices } from '@/services/autorizacoesServices';
 
 // Vue
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
 
 // Outros
 import { gerenciamentoInatividade } from "@/utils/gerenciamentoInatividade";
@@ -270,6 +270,10 @@ let watcherinatividade: gerenciamentoInatividade | null = null;
 //#endregion
 
 //#region Funcionalidades do Vue
+onBeforeMount(async () => {
+  await getAutorizacoes();
+});
+
 onMounted(async () => {
   watcherinatividade = new gerenciamentoInatividade(async () => {
     await getAutorizacoes();

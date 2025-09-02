@@ -124,6 +124,14 @@ onMounted(async () => {
     }, 1000);
   });
 
+  watcherinatividade.onReset(() => {
+    tempoRestante.value = null;
+    if (interval) {
+      clearInterval(interval);
+      interval = null;
+    }
+  });
+
   watcherinatividade.start();
 })
 
