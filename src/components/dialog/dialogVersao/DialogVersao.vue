@@ -10,12 +10,24 @@
           <v-list-item>
             <template v-slot:prepend>
               <v-list-item-icon>
-                <v-icon size="x-large" color="green" class="mr-3">mdi-monitor</v-icon>
+                <v-icon size="x-large" color="info" class="mr-3">mdi-code-block-tags</v-icon>
               </v-list-item-icon>
             </template>
             <v-list-item-content>
-              <v-list-item-title>Versão: {{ versao.version }}</v-list-item-title>
+              <v-list-item-title>Versão Backend: {{ versao.version }}</v-list-item-title>
               <v-list-item-subtitle>Atualizado em: {{ versao.updateIn }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+
+          <v-list-item>
+            <template v-slot:prepend>
+              <v-list-item-icon>
+                <v-icon size="x-large" color="green" class="mr-3">mdi-view-quilt-outline</v-icon>
+              </v-list-item-icon>
+            </template>
+            <v-list-item-content>
+              <v-list-item-title>Versão Frontend: 5.10.24</v-list-item-title>
+              <v-list-item-subtitle>Atualizado em: 02/09/2025 às 14:30</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
