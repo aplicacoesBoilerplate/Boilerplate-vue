@@ -14,7 +14,8 @@ export class DialogMotivosClass {
       idCategoria: 0,
       descricaoMotivo: '',
       descricaoCategoria: '',
-      emergencial: false
+      emergencial: false,
+      abaterHoraExtra: false
     }
   }
 
@@ -35,7 +36,8 @@ export class DialogMotivosClass {
         idCategoria: 0,
         descricaoMotivo: '',
         descricaoCategoria: '',
-        emergencial: false
+        emergencial: false,
+        abaterHoraExtra: false
       }
     }
   }
