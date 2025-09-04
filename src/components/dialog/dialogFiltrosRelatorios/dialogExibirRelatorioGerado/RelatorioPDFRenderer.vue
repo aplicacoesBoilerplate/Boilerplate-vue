@@ -66,7 +66,7 @@ const relatorioGerado = defineModel<RenderPDF>('relatorioGerado', {
 })
 
 watch(
-  () => relatorioGerado.value.dados,
+  () => relatorioGerado.value.mostrarComponentePDF,
   async (novoRelatorio) => {
     if (!novoRelatorio) return;
 

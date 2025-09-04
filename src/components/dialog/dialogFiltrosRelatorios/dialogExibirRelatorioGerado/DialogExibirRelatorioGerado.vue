@@ -89,6 +89,8 @@ const renderPDF = ref<RenderPDF>({
 
 function salvarRelatorioEmPDF() {
   renderPDF.value.nomeArquivo = `${relatorioGerado.value.tipoRelatorio}_${relatorioGerado.value.modeloRelatorio}_gerado-em-${classRelatorioGerado.value.dataRelatorioGerado}`
+  renderPDF.value.dados = { ...relatorioGerado.value }
+  renderPDF.value.data = classRelatorioGerado.value.dataRelatorioGerado
   renderPDF.value.mostrarComponentePDF = false
 
   nextTick(() => {
