@@ -62,6 +62,7 @@ const routerOption = ref([
   { id: '6', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
   { id: '7', icon: 'mdi-door-sliding', path: '/portaria', title: 'Portaria' },
   { id: '8', icon: 'mdi-alert-circle-outline', path: '/errors', title: 'Errors' },
+  { id: '9', icon: 'mdi-database-eye-outline', path: '/sgbd', title: 'SGBD' },
 ])
 
 function disabledRouterOption(path: string): boolean {
@@ -116,6 +117,13 @@ function disabledRouterOption(path: string): boolean {
       break
     }
     case '/errors': { // Apenas admins podem acessar o histórico de erros
+      if (usuario.permissao == 'ADMINISTRADOR' || usuario.permissao == 'ADMINISTRADOR_AUTORIZADO') {
+        showRouter.value = true
+      } else
+        showRouter.value = false
+      break
+    }
+    case '/sgbd': { // Apenas admins podem acessar o SGBD
       if (usuario.permissao == 'ADMINISTRADOR' || usuario.permissao == 'ADMINISTRADOR_AUTORIZADO') {
         showRouter.value = true
       } else
