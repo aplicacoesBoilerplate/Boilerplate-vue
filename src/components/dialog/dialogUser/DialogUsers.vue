@@ -116,11 +116,11 @@ const emit = defineEmits<{
   (e: 'operacao-concluida'): void
 }>()
 
-watch(dialogUsuarios.value, (val) => {
-  if (!val) {
+watch(() => dialogUsuarios.value.show, (isOpen) => {
+  if (!isOpen) {
     resetForm()
   }
-  if (val && !dialogUsuarios.value.isEditing) {
+  if (isOpen && !dialogUsuarios.value.isEditing) {
     clearFields();
   }
 });

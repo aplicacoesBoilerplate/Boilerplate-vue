@@ -198,11 +198,11 @@ onMounted(async () => {
   await getAllMotivos()
 })
 
-watch(dialogSaidas.value, (val) => {
-  if (!val) {
+watch(() => dialogSaidas.value.show, (isOpen) => {
+  if (!isOpen) {
     resetForm()
   }
-  if (val && !dialogSaidas.value.isEditing) {
+  if (isOpen && !dialogSaidas.value.isEditing) {
     clearFields();
   }
 });

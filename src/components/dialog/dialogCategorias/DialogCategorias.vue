@@ -88,14 +88,13 @@ onMounted(async () => {
   ApiCategorias.value = await categoriasServices.getCategorias(paginadorClass.value)
 })
 
-watch(dialogCategorias.value, (val) => {
-  if (!val) {
+watch(() => dialogCategorias.value.show, (isOpen) => {
+  if (!isOpen) {
     resetForm()
+  } else if (!dialogCategorias.value.isEditing) {
+    clearFields()
   }
-  if (val && !dialogCategorias.value.isEditing) {
-    clearFields();
-  }
-});
+})
 
 function clearFields() {
   dialogCategorias.value.clearFields()
