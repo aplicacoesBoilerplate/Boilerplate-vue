@@ -3,6 +3,7 @@ import type { UsuarioConsulta } from "../usersModels/UsuariosModels"
 import type { funcionarioRegistradoDP } from "../firebirdModels/firebirdModels"
 import type { CategoriasMotivos, MotivoConsulta } from "../motivosModels/MotivosModels"
 import type { AutorizacoesConsulta, SaidaConsulta, SaidasComAutorizacoes } from "../saidasModels/saidasModels"
+import type { AnaliticoGeral } from "./respostasEspecificasModels"
 
 // Versão
 export interface Version {
@@ -109,5 +110,6 @@ export interface RelatorioGerado {
             descricao: string,
             valor: string,
         }
-    ]
+    ],
+    analiticoGeral?: AnaliticoGeral
 }

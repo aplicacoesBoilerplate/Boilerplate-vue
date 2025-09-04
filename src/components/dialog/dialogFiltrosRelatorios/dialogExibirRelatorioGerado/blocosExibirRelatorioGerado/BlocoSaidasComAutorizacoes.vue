@@ -96,6 +96,6 @@
 <script setup lang="ts">
 import type { SaidasComAutorizacoes } from '@/models/saidasModels/saidasModels';
 
-const relatorioGerado = defineModel<SaidasComAutorizacoes[]>('blocoresponsaveis')
+const relatorioGerado = defineModel<SaidasComAutorizacoes[]>('dados')
 
 </script>

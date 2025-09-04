@@ -14,6 +14,7 @@
         <BlocoCategorias v-if="relatorioGerado.categorias" v-model:dados="relatorioGerado.categorias" />
         <BlocoMotivos v-if="relatorioGerado.motivos" v-model:dados="relatorioGerado.motivos" />
         <BlocoErros v-if="relatorioGerado.errors" v-model:dados="relatorioGerado.errors" />
+        <BlocoAnaliticoGeral v-if="relatorioGerado.analiticoGeral" v-model:dados="relatorioGerado.analiticoGeral" />
 
         <!-- Exibição geral das respostas sintéticas do relatório gerado -->
         <v-virtual-scroll
@@ -65,12 +66,7 @@
 
   </v-dialog>
 
-  <RelatorioPDFRenderer
-    v-if="mostrarComponentePDF"
-    :relatorioGerado="relatorioGerado"
-    :dataRelatorioGerado="classRelatorioGerado.dataRelatorioGerado"
-    :nomeArquivo="nomeArquivoPDF"
-  />
+  <RelatorioPDFRenderer v-if="renderPDF.mostrarComponentePDF" v-model:relatorioGerado="renderPDF" />
 
 </template>
 
@@ -96,6 +92,7 @@ import type { RelatorioGerado } from '@/models/relatoriosModels/relatoriosModels
 
 // Vue
 import { nextTick, ref } from 'vue';
+import BlocoAnaliticoGeral from './blocosExibirRelatorioGerado/BlocoAnaliticoGeral.vue';
 
 const classRelatorioGerado = ref(new DialogExibirRelatorioGeradoClass())
 const relatorioGerado = defineModel<RelatorioGerado>('relatorioGerado', {
@@ -110,15 +107,26 @@ function closeDialog() {
   classRelatorioGerado.value.closeDialog()
 }
 
-const mostrarComponentePDF = ref(false)
-const nomeArquivoPDF = ref('')
+type RenderPDF = {
+  mostrarComponentePDF: boolean
+  nomeArquivo: string
+  data: string
+  dados: RelatorioGerado
+}
+
+const renderPDF = ref<RenderPDF>({
+  mostrarComponentePDF: false,
+  nomeArquivo: '',
+  data: '',
+  dados: relatorioGerado.value
+})
 
 function salvarRelatorioEmPDF() {
-  nomeArquivoPDF.value = `${relatorioGerado.value.tipoRelatorio}_${relatorioGerado.value.modeloRelatorio}_gerado-em-${classRelatorioGerado.value.dataRelatorioGerado}`
-  mostrarComponentePDF.value = false
+  renderPDF.value.nomeArquivo = `${relatorioGerado.value.tipoRelatorio}_${relatorioGerado.value.modeloRelatorio}_gerado-em-${classRelatorioGerado.value.dataRelatorioGerado}`
+  renderPDF.value.mostrarComponentePDF = false
 
   nextTick(() => {
-    mostrarComponentePDF.value = true
+    renderPDF.value.mostrarComponentePDF = true
   })
 }
 
