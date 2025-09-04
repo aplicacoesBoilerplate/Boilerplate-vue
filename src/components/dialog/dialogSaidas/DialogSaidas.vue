@@ -147,8 +147,7 @@
     </v-form>
   </v-dialog>
 
-  <DialogRegistroDP :model-value="dialogRegistros" @update:modelValue="clonarObjetoDialogRegistrosDP(dialogRegistros)"
-    @selecionado="getValuesRegistroDP()" />
+  <DialogRegistroDP v-model:dialog-registros="dialogRegistros" @selecionado="getValuesRegistroDP()" />
 
 </template>
 
