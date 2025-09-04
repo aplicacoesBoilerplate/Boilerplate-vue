@@ -6,20 +6,21 @@
   >
     <div class="pdf-wrapper">
       <h2 class="d-flex justify-center">
-        RELATÓRIO {{ relatorioGerado.tipoRelatorio }} - {{ relatorioGerado.modeloRelatorio }}
+        RELATÓRIO {{ relatorioGerado.dados.tipoRelatorio }} - {{ relatorioGerado.dados.modeloRelatorio }}
       </h2>
-      <p class="d-flex justify-center">{{ dataRelatorioGerado }}</p>
+      <p class="d-flex justify-center">{{ relatorioGerado.data }}</p>
 
-      <BlocoResponsaveis v-if="relatorioGerado.responsaveis" v-model:dados="relatorioGerado.responsaveis" />
-      <BlocoFuncionario v-if="relatorioGerado.funcionario" v-model:dados="relatorioGerado.funcionario" />
-      <BlocoSaidas v-if="relatorioGerado.saidas" v-model:dados="relatorioGerado.saidas" />
-      <BlocoAutorizacoes v-if="relatorioGerado.autorizacoes" v-model:dados="relatorioGerado.autorizacoes" />
-      <BlocoSaidasComAutorizacoes v-if="relatorioGerado.saidasComAutorizacoes" v-model:dados="relatorioGerado.saidasComAutorizacoes" />
-      <BlocoCategorias v-if="relatorioGerado.categorias" v-model:dados="relatorioGerado.categorias" />
-      <BlocoMotivos v-if="relatorioGerado.motivos" v-model:dados="relatorioGerado.motivos" />
-      <BlocoErros v-if="relatorioGerado.errors" v-model:dados="relatorioGerado.errors" />
+      <BlocoResponsaveis v-if="relatorioGerado.dados.responsaveis" v-model:dados="relatorioGerado.dados.responsaveis" />
+      <BlocoFuncionario v-if="relatorioGerado.dados.funcionario" v-model:dados="relatorioGerado.dados.funcionario" />
+      <BlocoSaidas v-if="relatorioGerado.dados.saidas" v-model:dados="relatorioGerado.dados.saidas" />
+      <BlocoAutorizacoes v-if="relatorioGerado.dados.autorizacoes" v-model:dados="relatorioGerado.dados.autorizacoes" />
+      <BlocoSaidasComAutorizacoes v-if="relatorioGerado.dados.saidasComAutorizacoes" v-model:dados="relatorioGerado.dados.saidasComAutorizacoes" />
+      <BlocoCategorias v-if="relatorioGerado.dados.categorias" v-model:dados="relatorioGerado.dados.categorias" />
+      <BlocoMotivos v-if="relatorioGerado.dados.motivos" v-model:dados="relatorioGerado.dados.motivos" />
+      <BlocoErros v-if="relatorioGerado.dados.errors" v-model:dados="relatorioGerado.dados.errors" />
+      <BlocoAnaliticoGeral v-if="relatorioGerado.dados.analiticoGeral" v-model:dados="relatorioGerado.dados.analiticoGeral" />
 
-      <div v-if="relatorioGerado.respostaSinteticaRelatorios">
+      <div v-if="relatorioGerado.dados.respostaSinteticaRelatorios">
         <h3 class="font-weight-bold pl-3 mb-3">
           <v-icon>mdi-chart-donut-variant</v-icon>
           Dados sintéticos
@@ -33,7 +34,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in relatorioGerado.respostaSinteticaRelatorios" :key="index">
+            <tr v-for="(item, index) in relatorioGerado.dados.respostaSinteticaRelatorios" :key="index">
               <td>{{ item.descricao }}</td>
               <td>{{ item.valor }}</td>
 
@@ -51,15 +52,21 @@
 import { nextTick, watch } from 'vue'
 import type { RelatorioGerado } from '@/models/relatoriosModels/relatoriosModels'
 import { gerarPdfRelatorio } from '@/utils/pdfRelatorioGerado';
+import BlocoAnaliticoGeral from './blocosExibirRelatorioGerado/BlocoAnaliticoGeral.vue';
 
-const props = defineProps<{
-  relatorioGerado: RelatorioGerado,
-  dataRelatorioGerado: string,
+type RenderPDF = {
+  mostrarComponentePDF: boolean
   nomeArquivo: string
-}>()
+  data: string
+  dados: RelatorioGerado
+}
+
+const relatorioGerado = defineModel<RenderPDF>('relatorioGerado', {
+  required: true
+})
 
 watch(
-  () => props.relatorioGerado,
+  () => relatorioGerado.value.mostrarComponentePDF,
   async (novoRelatorio) => {
     if (!novoRelatorio) return;
 
@@ -67,7 +74,7 @@ watch(
     setTimeout(() => {
       const element = document.getElementById('pdf-content')
       if (element) {
-        gerarPdfRelatorio(element, props.nomeArquivo, 'portrait')
+        gerarPdfRelatorio(element, relatorioGerado.value.nomeArquivo, 'portrait')
       }
     }, 500)
   },

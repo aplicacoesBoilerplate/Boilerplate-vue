@@ -193,7 +193,7 @@
     v-show="apiErrors?.totalRegistros! > 0 && !loading" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogSaidas :model-value="dialogSaidas" @update:modelValue="clonarObjetoDialogSaidas(dialogSaidas)" />
+  <DialogSaidas v-model:dialog-saidas="dialogSaidas" />
 
 </template>
 
@@ -307,10 +307,6 @@ async function limparFiltros() {
 function toggleError(id?: number) {
   if (id != null)
     expandedErrorId.value = expandedErrorId.value === id ? null : id
-}
-
-function clonarObjetoDialogSaidas(val: DialogSaidasClass) {
-  Object.assign(dialogSaidas, val)
 }
 //#endregion
 

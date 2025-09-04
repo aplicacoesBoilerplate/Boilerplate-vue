@@ -23,7 +23,7 @@
       <v-card-actions>
         <v-btn color="red" variant="plain" @click="eventoRejeicao(dialogAutorizacoesNegadas.idAutorizacaoOrigem)">
           <v-icon class="pt-1">mdi-close</v-icon>
-          Rejeitar
+          Negar
         </v-btn>
 
         <v-spacer />

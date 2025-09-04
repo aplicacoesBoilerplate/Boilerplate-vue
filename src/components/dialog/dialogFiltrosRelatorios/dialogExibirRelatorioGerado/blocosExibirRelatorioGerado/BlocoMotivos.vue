@@ -26,6 +26,6 @@
 <script setup lang="ts">
 import type { MotivoConsulta } from '@/models/motivosModels/MotivosModels';
 
-const relatorioGerado = defineModel<MotivoConsulta[]>('blocoresponsaveis')
+const relatorioGerado = defineModel<MotivoConsulta[]>('dados')
 
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="exibir" max-width="650">
+  <v-dialog v-model="dialogRegistros.show" max-width="650">
     <v-card>
       <v-card-title class="d-flex justify-space-between align-center mt-3">
         <span class="text-h6">
@@ -75,7 +75,7 @@ import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Services
 
 // Vue
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { firebirdServices } from '@/services/firebirdService';
 import type { funcionarioRegistradoDP } from '@/models/firebirdModels/firebirdModels';
 
@@ -89,31 +89,25 @@ const paginadorClass = ref(new PaginatorClass({
   search: ''
 })) // Classe para a paginação
 
-interface Props {
-  modelValue: DialogRegistroDPClass
-}
+const dialogRegistros = defineModel<DialogRegistroDPClass>('dialogRegistros',{
+  required: true
+})
 
-const props = defineProps<Props>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: DialogRegistroDPClass): void
   (e: 'selecionado'): void
 }>()
-const exibir = computed({
-  get: () => props.modelValue.show,
-  set: (val) => props.modelValue.show = val
-})
 
 onMounted(async () => {
   await getRegistrosDP()
 })
 
-watch(exibir, (val) => {
+watch(() => dialogRegistros.value.show, (val) => {
   if (!val)
     closeDialog()
 });
 
 function closeDialog() {
-  exibir.value = false
+  dialogRegistros.value.show = false
   apiRegistrosDP.value = undefined
   paginadorClass.value.search = ''
 }
@@ -138,7 +132,7 @@ async function getRegistrosDP() {
 
 function definirRegistroPorBusca(setRegistroDP: funcionarioRegistradoDP) {
   try {
-    props.modelValue.setValues(setRegistroDP)
+    dialogRegistros.value.setValues(setRegistroDP)
     emit('selecionado')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')

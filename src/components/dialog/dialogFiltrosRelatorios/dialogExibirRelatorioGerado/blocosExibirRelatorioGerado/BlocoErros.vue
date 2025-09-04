@@ -58,6 +58,6 @@
 <script setup lang="ts">
 import type { ErrorsConsulta } from '@/models/errorsModels/errorsModels';
 
-const relatorioGerado = defineModel<ErrorsConsulta[]>('blocoresponsaveis')
+const relatorioGerado = defineModel<ErrorsConsulta[]>('dados')
 
 </script>

@@ -3,8 +3,7 @@
   <BtnOpenDialog :callback="openNewSaida" :label="'Solicitar nova saída'" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogSaidas :model-value="dialogSaidas" @update:modelValue="clonarObjetoDialogSaidas(dialogSaidas)"
-    @operacao-concluida="getAllSaidas" />
+  <DialogSaidas v-model:dialogSaidas="dialogSaidas" @operacao-concluida="getAllSaidas" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
@@ -243,7 +242,7 @@
   <!-- Componente de paginação -->
   <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
     v-show="apiSaidas?.totalRegistros! > 0 && !loading" />
-  <DialogConfirmarSenha :model-value="confirmarSenha" @update:modelValue="clonarObjetoConfirmarSenha(confirmarSenha)" />
+  <DialogConfirmarSenha v-model:dialog-confirmar-senha="confirmarSenha" />
 
 </template>
 
@@ -482,14 +481,6 @@ function identificarStyleStatusSaida(statusSaida?: string): informacoesIdentific
   }
 
   return informacoes.value
-}
-
-function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
-  Object.assign(confirmarSenha, val)
-}
-
-function clonarObjetoDialogSaidas(val: DialogSaidasClass) {
-  Object.assign(dialogSaidas, val)
 }
 
 //#endregion

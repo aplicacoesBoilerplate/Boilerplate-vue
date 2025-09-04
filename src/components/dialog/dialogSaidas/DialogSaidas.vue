@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="exibir" max-width="650">
+  <v-dialog v-model="dialogSaidas.show" max-width="650">
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
       <v-card>
@@ -7,8 +7,8 @@
           <span class="text-h6" v-if="!dialogSaidas.visualizando">
             <v-icon>{{
               dialogSaidas.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'
-            }}</v-icon>
-            {{ dialogSaidas.isEditing ? `Editar saída: ${saida.idSaida}` : 'Solicitar nova saída' }}
+              }}</v-icon>
+            {{ dialogSaidas.isEditing ? `Editar saída: ${dialogSaidas.saida.idSaida}` : 'Solicitar nova saída' }}
           </span>
 
           <span v-else>
@@ -22,13 +22,13 @@
           <v-row dense>
             <!-- Parâmetro que será usado para consultar as informações do funcionário que irá sair -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-number-input clearable v-model="saida.numeroRegistroFuncionario" :reverse="false"
+              <v-number-input clearable v-model="dialogSaidas.saida.numeroRegistroFuncionario" :reverse="false"
                 :rules="[rules.required]" controlVariant="stacked" label="N° de Registro do Funcionário*"
                 :hideInput="false" inset :disabled="dialogSaidas.visualizando" variant="outlined">
                 <template #prepend-inner>
                   <div>
                     <v-btn icon variant="text" size="small" title="Buscar funcionario"
-                      @click="consultarRegistroDP(saida.numeroRegistroFuncionario)">
+                      @click="consultarRegistroDP(dialogSaidas.saida.numeroRegistroFuncionario)">
                       <v-icon>mdi-magnify</v-icon>
                     </v-btn>
                   </div>
@@ -38,14 +38,14 @@
 
             <!-- Código do motivo -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-autocomplete clearable v-model="saida.motivoSaida" label="Motivo*" :items="apiMotivos?.registros"
+              <v-autocomplete clearable v-model="dialogSaidas.saida.motivoSaida" label="Motivo*" :items="apiMotivos?.registros"
                 :item-title="'descricaoMotivo'" :item-value="'idMotivo'" :rules="[rules.required]"
                 :disabled="dialogSaidas.visualizando" variant="outlined" />
             </v-col>
 
             <!-- Informação retornada pela consulta -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <InputUpperCase v-model:="saida.nomeFuncionario" :style="{
+              <InputUpperCase v-model:="dialogSaidas.saida.nomeFuncionario" :style="{
                 inputDisabled: true,
                 inputVariant: 'outlined',
                 label: 'Nome do funcionário',
@@ -56,7 +56,7 @@
 
             <!-- Informação retornada pela consulta -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <InputUpperCase v-model:="saida.setorFuncionario" :style="{
+              <InputUpperCase v-model:="dialogSaidas.saida.setorFuncionario" :style="{
                 inputDisabled: true,
                 inputVariant: 'outlined',
                 label: 'Setor do funcionário',
@@ -67,19 +67,19 @@
 
             <!-- Data e hora de previsão de saída do funcionário -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <DateTimePicker v-model="saida.dataPrevisaoSaidaFuncionario" label="Previsão da saída"
+              <DateTimePicker v-model="dialogSaidas.saida.dataPrevisaoSaidaFuncionario" label="Previsão da saída"
                 :disabled="dialogSaidas.visualizando" variant="outlined" />
             </v-col>
 
             <!-- Data e hora de previsão de retorno do funcionário -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <DateTimePicker v-model="saida.dataPrevisaoChegadaFuncionario" label="Previsão de retorno"
+              <DateTimePicker v-model="dialogSaidas.saida.dataPrevisaoChegadaFuncionario" label="Previsão de retorno"
                 :disabled="dialogSaidas.visualizando" variant="outlined" />
             </v-col>
 
             <!-- Campo de observação da saída -->
             <v-col cols="12">
-              <InputTextUpperCase v-model:="saida.observacaoSaida" :style="{
+              <InputTextUpperCase v-model:="dialogSaidas.saida.observacaoSaida" :style="{
                 density: 'compact',
                 inputDisabled: dialogSaidas.visualizando,
                 inputVariant: 'outlined',
@@ -92,7 +92,7 @@
 
             <!-- Usuário responsável por emitir a saída -->
             <v-col cols="6" class="d-flex justify-center" v-if="dialogSaidas.visualizando">
-              <InputUpperCase v-model:="saida.statusSaida" :style="{
+              <InputUpperCase v-model:="dialogSaidas.saida.statusSaida" :style="{
                 inputDisabled: true,
                 inputVariant: 'outlined',
                 label: 'Status saída:',
@@ -101,7 +101,7 @@
             </v-col>
 
             <v-col cols="6" class="d-flex justify-center" v-if="dialogSaidas.visualizando">
-              <InputUpperCase v-model:="saida.nomeFuncionarioResponsavelSaida" :style="{
+              <InputUpperCase v-model:="dialogSaidas.saida.nomeFuncionarioResponsavelSaida" :style="{
                 inputDisabled: true,
                 inputVariant: 'outlined',
                 label: 'Emitida por:',
@@ -147,8 +147,7 @@
     </v-form>
   </v-dialog>
 
-  <DialogRegistroDP :model-value="dialogRegistros" @update:modelValue="clonarObjetoDialogRegistrosDP(dialogRegistros)"
-    @selecionado="getValuesRegistroDP()" />
+  <DialogRegistroDP v-model:dialog-registros="dialogRegistros" @selecionado="getValuesRegistroDP()" />
 
 </template>
 
@@ -161,7 +160,7 @@ import DialogRegistroDP from '@/components/dialog/dialogSaidas/dialogRegistroDP/
 // Classes
 import { DialogRegistroDPClass } from './dialogRegistroDP/ClassDialogRegistroDP';
 import { PaginatorClass } from '@/components/paginator/ClassPaginator'
-import type { DialogSaidasClass } from './ClassDialogSaidas'
+import { DialogSaidasClass } from './ClassDialogSaidas'
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Models
@@ -173,7 +172,7 @@ import { motivosServices } from '@/services/motivosServices'
 import { saidasServices } from '@/services/saidasServices'
 import { rules } from '@/utils/rules'
 // Vue
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -189,32 +188,21 @@ const paginadorClass = ref(new PaginatorClass({
   search: ''
 })) // Classe para a paginação
 
-interface Props {
-  modelValue: DialogSaidasClass
-}
+const dialogSaidas = defineModel<DialogSaidasClass>('dialogSaidas', { required: true })
 
-const props = defineProps<Props>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: DialogSaidasClass): void
   (e: 'operacao-concluida'): void
 }>()
-
-const saida = computed(() => props.modelValue.saida)
-const dialogSaidas = computed(() => props.modelValue)
-const exibir = computed({
-  get: () => dialogSaidas.value.show,
-  set: (val) => dialogSaidas.value.show = val
-})
 
 onMounted(async () => {
   await getAllMotivos()
 })
 
-watch(exibir, (val) => {
-  if (!val) {
+watch(() => dialogSaidas.value.show, (isOpen) => {
+  if (!isOpen) {
     resetForm()
   }
-  if (val && !dialogSaidas.value.isEditing) {
+  if (isOpen && !dialogSaidas.value.isEditing) {
     clearFields();
   }
 });
@@ -227,7 +215,7 @@ function resetForm() {
   dialogSaidas.value.clearFields()
   dialogSaidas.value.closeDialog()
   showPassword.value = false // Exibir senha
-  exibir.value = false // Exibir componente
+  dialogSaidas.value.show = false // Exibir componente
 }
 
 async function cadastrarNovaSaida() {
@@ -235,7 +223,7 @@ async function cadastrarNovaSaida() {
   if (!valid) return
 
   try {
-    await saidasServices.novaSaida(saida.value);
+    await saidasServices.novaSaida(dialogSaidas.value.saida);
     useSnackbarStore().showSnackbar('Saída solicitada com sucesso!', 'success')
     emit('operacao-concluida')
   } catch (error) {
@@ -250,7 +238,7 @@ async function updateSaida() {
   if (!valid) return
 
   try {
-    await saidasServices.atualizarSaida(saida.value, saida.value.idSaida)
+    await saidasServices.atualizarSaida(dialogSaidas.value.saida, dialogSaidas.value.saida.idSaida)
     useSnackbarStore().showSnackbar('Saída modificada com sucesso!', 'success')
     emit('operacao-concluida')
   } catch (error) {
@@ -287,9 +275,9 @@ async function consultarRegistroDP(codRegistro?: number) {
       const response = await firebirdServices.getRegistroDP(search)
       console.log("response", response);
       if (response) {
-        saida.value.numeroRegistroFuncionario = response[0].registroDP
-        saida.value.nomeFuncionario = response[0].nome
-        saida.value.setorFuncionario = response[0].descricaoSetor
+        dialogSaidas.value.saida.numeroRegistroFuncionario = response[0].registroDP
+        dialogSaidas.value.saida.nomeFuncionario = response[0].nome
+        dialogSaidas.value.saida.setorFuncionario = response[0].descricaoSetor
       }
     } else {
       dialogRegistros.value.openDialog()
@@ -298,7 +286,7 @@ async function consultarRegistroDP(codRegistro?: number) {
     useSnackbarStore().showSnackbar(error, 'red')
   } finally {
     showLoadingRegistro.value = false
-    console.log("saída", saida.value);
+    console.log("saída", dialogSaidas.value.saida);
   }
 }
 
@@ -306,14 +294,10 @@ function getValuesRegistroDP() {
   const valuesRegistro = dialogRegistros.value.getValues()
 
   if (valuesRegistro.registroDP > 0) {
-    saida.value.numeroRegistroFuncionario = valuesRegistro.registroDP
-    saida.value.nomeFuncionario = valuesRegistro.nome
-    saida.value.setorFuncionario = valuesRegistro.descricaoSetor
+    dialogSaidas.value.saida.numeroRegistroFuncionario = valuesRegistro.registroDP
+    dialogSaidas.value.saida.nomeFuncionario = valuesRegistro.nome
+    dialogSaidas.value.saida.setorFuncionario = valuesRegistro.descricaoSetor
   }
-}
-
-function clonarObjetoDialogRegistrosDP(val: DialogRegistroDPClass) {
-  Object.assign(dialogRegistros, val)
 }
 
 </script>
