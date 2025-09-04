@@ -7,7 +7,7 @@
           <span class="text-h6" v-if="!dialogSaidas.visualizando">
             <v-icon>{{
               dialogSaidas.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'
-              }}</v-icon>
+            }}</v-icon>
             {{ dialogSaidas.isEditing ? `Editar saída: ${saida.idSaida}` : 'Solicitar nova saída' }}
           </span>
 
@@ -27,8 +27,8 @@
                 :hideInput="false" inset :disabled="dialogSaidas.visualizando" variant="outlined">
                 <template #prepend-inner>
                   <div>
-                    <v-btn icon variant="text" size="small"
-                      title="Buscar funcionario" @click="consultarRegistroDP(saida.numeroRegistroFuncionario)">
+                    <v-btn icon variant="text" size="small" title="Buscar funcionario"
+                      @click="consultarRegistroDP(saida.numeroRegistroFuncionario)">
                       <v-icon>mdi-magnify</v-icon>
                     </v-btn>
                   </div>
@@ -147,7 +147,8 @@
     </v-form>
   </v-dialog>
 
-  <DialogRegistroDP :model-value="dialogRegistros" @update:modelValue="clonarObjetoDialogRegistrosDP(dialogRegistros)" @selecionado="getValuesRegistroDP()" />
+  <DialogRegistroDP :model-value="dialogRegistros" @update:modelValue="clonarObjetoDialogRegistrosDP(dialogRegistros)"
+    @selecionado="getValuesRegistroDP()" />
 
 </template>
 
@@ -282,8 +283,9 @@ async function consultarRegistroDP(codRegistro?: number) {
   try {
     showLoadingRegistro.value = true
     if (codRegistro) {
-      const codRegistroConvertido = codRegistro.toString()
-      const response = await firebirdServices.getRegistroDP(codRegistroConvertido)
+      const search = codRegistro.toString()
+      const response = await firebirdServices.getRegistroDP(search)
+      console.log("response", response);
       if (response) {
         saida.value.numeroRegistroFuncionario = response[0].registroDP
         saida.value.nomeFuncionario = response[0].nome
@@ -296,6 +298,7 @@ async function consultarRegistroDP(codRegistro?: number) {
     useSnackbarStore().showSnackbar(error, 'red')
   } finally {
     showLoadingRegistro.value = false
+    console.log("saída", saida.value);
   }
 }
 
