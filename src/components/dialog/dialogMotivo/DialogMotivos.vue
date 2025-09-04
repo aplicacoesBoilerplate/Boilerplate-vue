@@ -1,13 +1,13 @@
 <template>
-  <v-dialog v-model="exibir" max-width="650">
+  <v-dialog v-model="dialogMotivos.show" max-width="650">
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
       <v-card :prepend-icon="dialogMotivos.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
-        :title="dialogMotivos.isEditing ? `Editar motivo: ${motivo.idMotivo}` : 'Criar novo motivo'">
+        :title="dialogMotivos.isEditing ? `Editar motivo: ${dialogMotivos.motivo.idMotivo}` : 'Criar novo motivo'">
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <InputUpperCase v-model:="motivo.descricaoMotivo" :style="{
+              <InputUpperCase v-model:="dialogMotivos.motivo.descricaoMotivo" :style="{
                 inputVariant: 'outlined',
                 label: 'Descrição motivo',
                 maxWidth: 650,
@@ -16,9 +16,9 @@
             </v-col>
 
             <v-col cols="12" md="6" class="d-flex justify-center">
-              <v-autocomplete clearable v-model="motivo.idCategoria" label="Categoria*" :items="ApiCategorias.registros"
-                :item-title="'descricaoCategoria'" :item-value="'idCategoria'"
-                :rules="[rules.required]" variant="outlined"/>
+              <v-autocomplete clearable v-model="dialogMotivos.motivo.idCategoria" label="Categoria*" :items="ApiCategorias.registros"
+                :item-title="'descricaoCategoria'" :item-value="'idCategoria'" :rules="[rules.required]"
+                variant="outlined" />
             </v-col>
           </v-row>
 
@@ -58,7 +58,7 @@
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual para o input upper case
 // Classes
 import { PaginatorClass } from '@/components/paginator/ClassPaginator';
-import type { DialogMotivosClass } from './ClassDialogMotivos'
+import { DialogMotivosClass } from './ClassDialogMotivos'
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Models
@@ -67,7 +67,7 @@ import { categoriasServices } from '@/services/categoriasServices';
 import { motivosServices } from '@/services/motivosServices'
 import { rules } from '@/utils/rules'
 // Vue
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -75,30 +75,19 @@ const showPassword = ref(false)
 const paginadorClass = ref(new PaginatorClass())
 const ApiCategorias = ref()
 
-interface Props {
-  modelValue: DialogMotivosClass
-}
+const dialogMotivos = defineModel<DialogMotivosClass>('dialogMotivos', { required: true })
 
-const props = defineProps<Props>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: DialogMotivosClass): void
   (e: 'operacao-concluida'): void
 }>()
 
-const motivo = computed(() => props.modelValue.motivo)
-const dialogMotivos = computed(() => props.modelValue)
-const exibir = computed({
-  get: () => dialogMotivos.value.show,
-  set: (val) => dialogMotivos.value.show = val
-})
-
 // Alimentar os dados para as categorias
-onMounted(async() => {
+onMounted(async () => {
   paginadorClass.value.autocomplete = true
-  ApiCategorias.value = await  categoriasServices.getCategorias(paginadorClass.value)
+  ApiCategorias.value = await categoriasServices.getCategorias(paginadorClass.value)
 })
 
-watch(exibir, (val) => {
+watch(dialogMotivos.value, (val) => {
   if (!val) {
     resetForm()
   }
@@ -115,7 +104,7 @@ function resetForm() {
   dialogMotivos.value.clearFields()
   dialogMotivos.value.closeDialog()
   showPassword.value = false // Exibir senha
-  exibir.value = false // Exibir componente
+  dialogMotivos.value.show = false // Exibir componente
 }
 
 async function cadastrarNovoMotivo() {
@@ -123,7 +112,7 @@ async function cadastrarNovoMotivo() {
   if (!valid) return
 
   try {
-    await motivosServices.createMotivo(motivo.value);
+    await motivosServices.createMotivo(dialogMotivos.value.motivo);
     useSnackbarStore().showSnackbar('Motivo criado com sucesso!', 'success')
     emit('operacao-concluida')
   } catch (error) {
@@ -138,7 +127,7 @@ async function updateMotivo() {
   if (!valid) return
 
   try {
-    await motivosServices.updateMotivo(motivo.value, motivo.value.idMotivo)
+    await motivosServices.updateMotivo(dialogMotivos.value.motivo, dialogMotivos.value.motivo.idMotivo)
     useSnackbarStore().showSnackbar('Motivo modificado com sucesso!', 'success')
     emit('operacao-concluida')
   } catch (error) {

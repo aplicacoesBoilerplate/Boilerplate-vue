@@ -75,7 +75,7 @@ import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Services
 
 // Vue
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { firebirdServices } from '@/services/firebirdService';
 import type { funcionarioRegistradoDP } from '@/models/firebirdModels/firebirdModels';
 
@@ -92,10 +92,6 @@ const paginadorClass = ref(new PaginatorClass({
 const dialogRegistros = defineModel<DialogRegistroDPClass>('dialogRegistros',{
   required: true
 })
-
-interface Props {
-  modelValue: DialogRegistroDPClass
-}
 
 const emit = defineEmits<{
   (e: 'selecionado'): void

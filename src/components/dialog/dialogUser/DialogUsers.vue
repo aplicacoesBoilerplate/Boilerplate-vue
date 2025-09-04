@@ -1,13 +1,13 @@
 <template>
-  <v-dialog v-model="exibir" max-width="650">
+  <v-dialog v-model="dialogUsuarios.show" max-width="650">
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
-      <v-card :prepend-icon="dialogUsers.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
-        :title="dialogUsers.isEditing ? `Editar usuário: ${user.idUsuario}` : 'Criar novo usuário'">
+      <v-card :prepend-icon="dialogUsuarios.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
+        :title="dialogUsuarios.isEditing ? `Editar usuário: ${dialogUsuarios.usuario.idUsuario}` : 'Criar novo usuário'">
         <v-card-text>
           <v-row dense>
             <v-col cols="12" md="6">
-              <InputUpperCase v-model="user.nome" :style="{
+              <InputUpperCase v-model="dialogUsuarios.usuario.nome" :style="{
                 inputVariant: 'outlined',
                 label: 'Nome de usuário*',
                 maxWidth: 650,
@@ -16,7 +16,7 @@
             </v-col>
 
             <v-col cols="12" md="6">
-              <InputUpperCase v-model="user.email" :style="{
+              <InputUpperCase v-model="dialogUsuarios.usuario.email" :style="{
                 inputVariant: 'outlined',
                 label: 'E-mail*',
                 hint: 'E-mail de acesso',
@@ -26,27 +26,27 @@
             </v-col>
 
             <v-col cols="12" class="d-flex justify-center">
-              <v-autocomplete clearable v-model="user.permissao" label="Permissão*" :items="permissoesAutoComplete"
+              <v-autocomplete clearable v-model="dialogUsuarios.usuario.permissao" label="Permissão*" :items="permissoesAutoComplete"
                 :item-title="'chave'" :item-value="'valor'" variant="outlined"
                 :rules="[rules.required, rules.includes(permissoesRules)]" />
             </v-col>
           </v-row>
 
-          <v-row dense v-if="dialogUsers.isEditing">
+          <v-row dense v-if="dialogUsuarios.isEditing">
             <v-col cols="6" class="d-flex justify-center">
-              <v-switch v-model="user.contaBloqueada" color="red" label="Status bloqueio" />
+              <v-switch v-model="dialogUsuarios.usuario.contaBloqueada" color="red" label="Status bloqueio" />
             </v-col>
             <v-col cols="6" class="d-flex justify-center">
-              <v-switch v-model="user.ativo" color="success" label="Status conta ativa" />
+              <v-switch v-model="dialogUsuarios.usuario.ativo" color="success" label="Status conta ativa" />
             </v-col>
           </v-row>
 
-          <v-row dense v-if="dialogUsers.isEditing">
+          <v-row dense v-if="dialogUsuarios.isEditing">
             <v-col cols="6" class="d-flex justify-center">
-              <v-switch v-model="user.autorizaSaida" color="success" label="Autoriza saídas"></v-switch>
+              <v-switch v-model="dialogUsuarios.usuario.autorizaSaida" color="success" label="Autoriza saídas"></v-switch>
             </v-col>
             <v-col cols="6" class="d-flex justify-center">
-              <DateTimePicker v-model="user.contaExpiraEm" label="Data expiração da conta" variant="outlined" />
+              <DateTimePicker v-model="dialogUsuarios.usuario.contaExpiraEm" label="Data expiração da conta" variant="outlined" />
             </v-col>
           </v-row>
 
@@ -68,7 +68,7 @@
         <v-card-actions>
           <v-btn color="warning" variant="plain" @click="clearFields()">
             <v-icon class="pt-1">mdi-refresh</v-icon>
-            {{ dialogUsers.isEditing ? 'Desfazer' : 'Limpar' }}
+            {{ dialogUsuarios.isEditing ? 'Desfazer' : 'Limpar' }}
           </v-btn>
           <v-spacer />
 
@@ -91,7 +91,7 @@
 import DateTimePicker from '@/components/DateTimePicker.vue'; // Componente visual para data e hora
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual para o input upper case
 // Classes
-import type { DialogUsersClass } from './ClassDialogUsers'
+import { DialogUsersClass } from './ClassDialogUsers'
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Models
@@ -100,7 +100,7 @@ import { PermissoesUsuarios, PermissoesUsuariosAutoComplete } from '@/models/use
 import { usuariosServices } from '@/services/usuariosService'
 import { rules } from '@/utils/rules'
 // Vue
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -108,41 +108,32 @@ const showPassword = ref(false)
 const permissoesRules = PermissoesUsuarios
 const permissoesAutoComplete = PermissoesUsuariosAutoComplete
 
-interface Props {
-  modelValue: DialogUsersClass
-}
+const dialogUsuarios = defineModel<DialogUsersClass>('dialogUsuarios', {
+  required: true
+})
 
-const props = defineProps<Props>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: DialogUsersClass): void
   (e: 'operacao-concluida'): void
 }>()
 
-const user = computed(() => props.modelValue.usuario)
-const dialogUsers = computed(() => props.modelValue)
-const exibir = computed({
-  get: () => dialogUsers.value.show,
-  set: (val) => dialogUsers.value.show = val
-})
-
-watch(exibir, (val) => {
+watch(dialogUsuarios.value, (val) => {
   if (!val) {
     resetForm()
   }
-  if (val && !dialogUsers.value.isEditing) {
+  if (val && !dialogUsuarios.value.isEditing) {
     clearFields();
   }
 });
 
 function clearFields() {
-  dialogUsers.value.clearFields()
+  dialogUsuarios.value.clearFields()
 }
 
 function resetForm() {
-  dialogUsers.value.clearFields()
-  dialogUsers.value.closeDialog()
+  dialogUsuarios.value.clearFields()
+  dialogUsuarios.value.closeDialog()
   showPassword.value = false // Exibir senha
-  exibir.value = false // Exibir componente
+  dialogUsuarios.value.show = false // Exibir componente
 }
 
 async function createNewUser() {
@@ -150,7 +141,7 @@ async function createNewUser() {
   if (!valid) return
 
   try {
-    await usuariosServices.createUser(user.value);
+    await usuariosServices.createUser(dialogUsuarios.value.usuario);
     useSnackbarStore().showSnackbar('Usuário criado com sucesso!', 'success')
     emit('operacao-concluida')
   } catch (error) {
@@ -163,8 +154,9 @@ async function createNewUser() {
 async function updateUser() {
   const valid = await formRef.value.validate()
   if (!valid) return
+
   try {
-    await usuariosServices.updateUser(user.value)
+    await usuariosServices.updateUser(dialogUsuarios.value.usuario)
     useSnackbarStore().showSnackbar('Usuário modificado com sucesso!', 'success')
     emit('operacao-concluida')
   } catch (error) {
@@ -177,7 +169,7 @@ async function updateUser() {
 async function submitForm() {
   const { valid } = await formRef.value.validate()
   if (!valid) return
-  dialogUsers.value.isEditing ? await updateUser() : await createNewUser()
+  dialogUsuarios.value.isEditing ? await updateUser() : await createNewUser()
 }
 
 </script>

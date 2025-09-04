@@ -27,7 +27,7 @@
             </template>
             <v-list-item-content>
               <v-list-item-title>Versão Frontend: 5.10.24</v-list-item-title>
-              <v-list-item-subtitle>Atualizado em: 02/09/2025 às 14:30</v-list-item-subtitle>
+              <v-list-item-subtitle>Atualizado em: 04/09/2025 às 09:41</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>

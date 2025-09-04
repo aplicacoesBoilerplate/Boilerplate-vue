@@ -3,8 +3,7 @@
   <BtnOpenDialog :callback="openNovaCategoria" :label="'Criar nova categoria'" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogCategorias :model-value="dialogCategorias" @update:modelValue="clonarObjetoDialogCategorias(dialogCategorias)"
-    @operacao-concluida="getAllCategorias" />
+  <DialogCategorias v-model:dialog-categorias="dialogCategorias" @operacao-concluida="getAllCategorias" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
@@ -142,7 +141,7 @@
   <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
     v-show="apiCategorias?.totalRegistros! > 0 && !loading" />
 
-  <DialogConfirmarSenha :model-value="confirmarSenha" @update:modelValue="clonarObjetoConfirmarSenha(confirmarSenha)" />
+  <DialogConfirmarSenha v-model:dialog-confirmar-senha="confirmarSenha" />
 </template>
 
 <script setup lang="ts">
@@ -283,14 +282,6 @@ async function limparFiltros() {
 //#endregion
 
 //#region demais funções
-function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
-  Object.assign(confirmarSenha, val)
-}
-
-function clonarObjetoDialogCategorias(val: DialogCategoriasClass) {
-  Object.assign(dialogCategorias, val)
-}
-
 // Função para controlar o v-expand-transition dos detalhes de cada erro
 function toggleCategoria(id?: number) {
   if (id != null)

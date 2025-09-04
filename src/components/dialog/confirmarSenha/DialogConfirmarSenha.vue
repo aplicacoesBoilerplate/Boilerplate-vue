@@ -1,17 +1,17 @@
 <template>
-  <v-dialog v-model="exibir" max-width="650">
+  <v-dialog v-model="dialogConfirmarSenha.show" max-width="650">
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
       <v-card prepend-icon="mdi-delete-outline" title="Confirme a sua senha antes de completar essa operação">
         <v-card-text>
           <v-row dense>
             <v-col cols="12">
-              <v-text-field clearable v-model="confirmarSenha.email" :rules="[rules.required, rules.emailFormat]"
+              <v-text-field clearable v-model="dialogConfirmarSenha.email" :rules="[rules.required, rules.emailFormat]"
                 label="email*" variant="outlined" disabled counter>
               </v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="confirmarSenha.senha" :rules="[rules.required, rules.max]"
+              <v-text-field clearable v-model="dialogConfirmarSenha.senha" :rules="[rules.required, rules.max]"
                 :type="showPassword1 ? 'text' : 'password'" hint="Insira a sua senha de login" label="Senha*"
                 variant="outlined" counter>
 
@@ -23,8 +23,8 @@
               </v-text-field>
             </v-col>
             <v-col cols="12" md="6">
-              <v-text-field clearable v-model="confirmarSenha.confirmarSenha"
-                :rules="[rules.required, rules.equals(() => confirmarSenha.senha)]"
+              <v-text-field clearable v-model="dialogConfirmarSenha.confirmarSenha"
+                :rules="[rules.required, rules.equals(() => dialogConfirmarSenha.senha)]"
                 :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*"
                 hint="As senhas devem coincidir" variant="outlined" counter>
 
@@ -71,7 +71,7 @@ import { rules } from '@/utils/rules'
 import { authServices } from '@/services/authService'
 
 // Vue
-import { ref, computed, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -80,28 +80,17 @@ const formIsValid = ref(false)
 const showPassword1 = ref(false)
 const showPassword2 = ref(false)
 
-interface Props {
-  modelValue: ConfirmarSenhaClass
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: ConfirmarSenhaClass): void
-}>()
-
-const confirmarSenha = computed(() => props.modelValue)
-const exibir = computed({
-  get: () => confirmarSenha.value.show,
-  set: (val) => confirmarSenha.value.show = val
+const dialogConfirmarSenha = defineModel<ConfirmarSenhaClass>('dialogConfirmarSenha', {
+  required: true
 })
 
-watch(exibir, async (val) => {
+watch(dialogConfirmarSenha.value, async (val) => {
   if (!val) {
     resetForm()
   } else {
     try {
       const usuarioToken = await authServices.getByToken()
-      confirmarSenha.value.email = usuarioToken.email
+      dialogConfirmarSenha.value.email = usuarioToken.email
     } catch (error) {
       useSnackbarStore().showSnackbar(error, 'red')
       throw error
@@ -110,21 +99,20 @@ watch(exibir, async (val) => {
 });
 
 function clearFields() {
-  confirmarSenha.value.clearFields()
+  dialogConfirmarSenha.value.clearFields()
   showPassword1.value = false
   showPassword2.value = false
-  emit('update:modelValue', confirmarSenha.value)
 }
 
 function resetForm() {
   clearFields()
-  confirmarSenha.value.closeDialog()
+  dialogConfirmarSenha.value.closeDialog()
 }
 
 async function submitForm() {
   try {
-    if (confirmarSenha.value.callback)
-      await confirmarSenha.value.executeCallback()
+    if (dialogConfirmarSenha.value.callback)
+      await dialogConfirmarSenha.value.executeCallback()
 
     resetForm()
     useSnackbarStore().showSnackbar('Senha confirmada!', 'success')

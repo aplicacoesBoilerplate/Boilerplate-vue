@@ -1,7 +1,6 @@
 <template>
   <!-- Dialog aberto pela edição -->
-  <DialogAutorizacoes :model-value="dialogAutorizacoes"
-    @update:modelValue="clonarObjetoDialogAutorizacoes(dialogAutorizacoes)" @atualizar-autorizacoes="getAutorizacoes" />
+  <DialogAutorizacoes v-model:dialog-autorizacaoes="dialogAutorizacoes" @atualizar-autorizacoes="getAutorizacoes" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
@@ -200,7 +199,7 @@
     v-show="apiAutorizacoes?.totalRegistros! > 0 && !loading" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogSaidas :model-value="dialogSaidas" @update:modelValue="clonarObjetoDialogSaidas(dialogSaidas)" />
+  <DialogSaidas v-model:dialog-saidas="dialogSaidas" />
 
 </template>
 
@@ -462,7 +461,6 @@ async function limparFiltros() {
   paginadorClass.value.limparFiltros()
   await getAutorizacoes()
 }
-
 //#endregion
 
 //#region DialogSaida
@@ -477,14 +475,6 @@ function visualizarInformacoes(idSaida: number) {
 function toggleAutorizacao(id?: number) {
   if (id != null)
     expandedUserId.value = expandedUserId.value === id ? null : id
-}
-
-function clonarObjetoDialogAutorizacoes(val: DialogAutorizacoesClass) {
-  Object.assign(dialogAutorizacoes, val)
-}
-
-function clonarObjetoDialogSaidas(val: DialogSaidasClass) {
-  Object.assign(dialogSaidas, val)
 }
 //#endregion
 
