@@ -68,13 +68,13 @@ const formRef = ref()
 const formIsValid = ref(false)
 const showPassword = ref(false)
 
-const dialogAutorizacoes = defineModel<DialogAutorizacoesClass>('dialogAutorizacaoes', { required: true })
+const dialogAutorizacoes = defineModel<DialogAutorizacoesClass>('dialogAutorizacoes', { required: true })
 
 const emit = defineEmits<{
   (e: 'atualizar-autorizacoes'): void // Evento utilizado para chamar uma nova requisição get no componente pai
 }>()
 
-watch(dialogAutorizacoes.value, (val) => {
+watch(() => dialogAutorizacoes.value.show, (val) => {
   if (!val) {
     resetForm()
   }

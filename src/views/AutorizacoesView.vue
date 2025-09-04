@@ -1,6 +1,6 @@
 <template>
   <!-- Dialog aberto pela edição -->
-  <DialogAutorizacoes v-model:dialog-autorizacaoes="dialogAutorizacoes" @atualizar-autorizacoes="getAutorizacoes" />
+  <DialogAutorizacoes v-model:dialogAutorizacoes="dialogAutorizacoes" @atualizar-autorizacoes="getAutorizacoes" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
@@ -88,7 +88,7 @@
                     <v-list-item-title>
                       <!-- Rejeitar autorização -->
                       <v-btn icon="mdi-lock" size="x-small" variant="tonal" color="red"
-                        @click="negarAutorizacaoSaida(autorizacao)" title="Rejeitar" />
+                        @click="negarAutorizacaoSaida(autorizacao)" title="Negar" />
                       <span class="pr-2" />
 
                       <!-- Autorizar -->
@@ -140,7 +140,8 @@
               <v-col cols="6" class="font-weight-medium text-info mb-1">
                 Aprovação:
               </v-col>
-              <v-col cols="6" class="mb-1" :class="identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAutorizacao).texto">
+              <v-col cols="6" class="mb-1"
+                :class="identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAutorizacao).texto">
                 {{ identificarInformacoes(autorizacao.aprovacaoSaida, autorizacao.dataAutorizacao).status }}
               </v-col>
             </v-row>
@@ -244,8 +245,8 @@ const showDialog = ref(false) // Dialog de autorizações
 
 // Classes
 const dialogSaidas = ref(new DialogSaidasClass())
-const dialogAutorizacoes = ref(new DialogAutorizacoesClass())
-const dialogAutorizacoesNegadas = ref(new DialogAutorizacoesNegadasClass())
+const dialogAutorizacoes = ref<DialogAutorizacoesClass>(new DialogAutorizacoesClass())
+const dialogAutorizacoesNegadas = ref<DialogAutorizacoesNegadasClass>(new DialogAutorizacoesNegadasClass())
 const paginadorClass = ref(new PaginatorClass({
   limite: 10,
   offset: 1,
@@ -412,8 +413,8 @@ function identificarStyleStatusSaida(statusSaida?: string): informacoesIdentific
   })
 
   if (statusSaida) {
-    if (statusSaida == 'PENDENTE') {}
-      informacoes.value.texto = 'text-blue-grey-lighten-3'
+    if (statusSaida == 'PENDENTE') { }
+    informacoes.value.texto = 'text-blue-grey-lighten-3'
     if (statusSaida == 'NEGADA')
       informacoes.value.texto = 'text-red-darken-2'
     if (statusSaida == 'AUTORIZADA')
