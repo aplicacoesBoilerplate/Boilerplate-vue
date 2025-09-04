@@ -3,7 +3,6 @@ import type { UsuarioConsulta } from "../usersModels/UsuariosModels"
 import type { funcionarioRegistradoDP } from "../firebirdModels/firebirdModels"
 import type { CategoriasMotivos, MotivoConsulta } from "../motivosModels/MotivosModels"
 import type { AutorizacoesConsulta, SaidaConsulta, SaidasComAutorizacoes } from "../saidasModels/saidasModels"
-import type { AnaliticoGeral } from "./respostasEspecificasModels"
 
 // Versão
 export interface Version {
@@ -94,6 +93,15 @@ export interface ParametrosGerarRelatorio {
   filtrosPorCampo: FiltrosDoRelatorio[]
 }
 
+export interface AnaliticoGeral {
+  informacoesSaidasComAutorizacoes: SaidasComAutorizacoes[]
+}
+
+export interface RelatorioSintetico {
+  descricao: string,
+  valor: string,
+}
+
 export interface RelatorioGerado {
     modeloRelatorio: string,
     tipoRelatorio: string,
@@ -105,11 +113,6 @@ export interface RelatorioGerado {
     categorias?: CategoriasMotivos[],
     motivos?: MotivoConsulta[],
     errors?: ErrorsConsulta[],
-    respostaSinteticaRelatorios?: [
-        {
-            descricao: string,
-            valor: string,
-        }
-    ],
+    respostaSinteticaRelatorios?: RelatorioSintetico[],
     analiticoGeral?: AnaliticoGeral
 }
