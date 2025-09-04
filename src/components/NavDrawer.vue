@@ -54,22 +54,24 @@ const modelValue = computed({
 
 const routerOption = ref([
   // { id: '0', icon: 'mdi-', path: '/', title: '' },
-  { id: '1', icon: 'mdi-camera-front-variant', path: '/saidas', title: 'Saídas' },
-  { id: '2', icon: 'mdi-lock-check', path: '/autorizacoes', title: 'Autorizações' },
-  { id: '3', icon: 'mdi-list-box-outline', path: '/motivos', title: 'Motivos' },
-  { id: '4', icon: 'mdi-bookmark-multiple-outline', path: '/categorias', title: 'Categorias' },
-  { id: '5', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
-  { id: '6', icon: 'mdi-door-sliding', path: '/portaria', title: 'Portaria' },
-  { id: '7', icon: 'mdi-alert-circle-outline', path: '/errors', title: 'Errors' },
+  { id: '1', icon: 'mdi-home-circle', path: '/dashboard', title: 'Início' },
+  { id: '2', icon: 'mdi-camera-front-variant', path: '/saidas', title: 'Saídas' },
+  { id: '3', icon: 'mdi-lock-check', path: '/autorizacoes', title: 'Autorizações' },
+  { id: '4', icon: 'mdi-list-box-outline', path: '/motivos', title: 'Motivos' },
+  { id: '5', icon: 'mdi-bookmark-multiple-outline', path: '/categorias', title: 'Categorias' },
+  { id: '6', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
+  { id: '7', icon: 'mdi-door-sliding', path: '/portaria', title: 'Portaria' },
+  { id: '8', icon: 'mdi-alert-circle-outline', path: '/errors', title: 'Errors' },
+  { id: '9', icon: 'mdi-database-eye-outline', path: '/sgbd', title: 'SGBD' },
 ])
 
 function disabledRouterOption(path: string): boolean {
 
   const showRouter = ref(false) // Começa bloqueado para não correr o risco de expor todos os componentes se caso perder o usuário autenticado
   const usuario = usuarioAutenticado().usuario
-  const permissao = usuarioAutenticado().usuario.permissao
 
   switch (path) {
+    case '/dashboard': showRouter.value = true
     case '/saidas': { // Apenas a portaria não pode acessar as rotas de saída
       if (usuario.permissao == 'PORTARIA') {
         showRouter.value = false
@@ -115,6 +117,13 @@ function disabledRouterOption(path: string): boolean {
       break
     }
     case '/errors': { // Apenas admins podem acessar o histórico de erros
+      if (usuario.permissao == 'ADMINISTRADOR' || usuario.permissao == 'ADMINISTRADOR_AUTORIZADO') {
+        showRouter.value = true
+      } else
+        showRouter.value = false
+      break
+    }
+    case '/sgbd': { // Apenas admins podem acessar o SGBD
       if (usuario.permissao == 'ADMINISTRADOR' || usuario.permissao == 'ADMINISTRADOR_AUTORIZADO') {
         showRouter.value = true
       } else

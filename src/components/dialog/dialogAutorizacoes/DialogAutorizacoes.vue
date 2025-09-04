@@ -1,13 +1,13 @@
 <template>
-  <v-dialog v-model="exibir" max-width="650">
+  <v-dialog v-model="dialogAutorizacoes.show" max-width="650">
 
     <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
       <v-card :prepend-icon="dialogAutorizacoes.isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline'"
-        :title="`Editar autorização: ${autorizacao.idAutorizacao}`">
+        :title="`Editar autorização: ${dialogAutorizacoes.autorizacao.idAutorizacao}`">
         <v-card-text>
           <v-row dense>
             <v-col cols="12">
-              <InputTextUpperCase v-model:="autorizacao.observacaoAutorizacao" :style="{
+              <InputTextUpperCase v-model:="dialogAutorizacoes.autorizacao.observacaoAutorizacao" :style="{
                 density: 'compact',
                 inputVariant: 'outlined',
                 label: 'Observação',
@@ -15,7 +15,7 @@
                 counter: true,
                 maxWidth: 650,
               }"
-                :rules="[rules.requiredCondicionado(() => !autorizacao.aprovacaoSaida, 'Obrigatório se a saída não for autorizada')]" />
+                :rules="[rules.requiredCondicionado(() => !dialogAutorizacoes.autorizacao.aprovacaoSaida, 'Obrigatório se a saída não for autorizada')]" />
             </v-col>
           </v-row>
 
@@ -55,38 +55,26 @@
 import InputTextUpperCase from '@/components/InputTextUpperCase.vue'; // Componente visual para o input upper case
 
 // Classes
-import type { DialogAutorizacoesClass } from './ClassDialogAutorizacoes'
+import { DialogAutorizacoesClass } from './ClassDialogAutorizacoes'
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 // Services
 import { autorizacoesServices } from '@/services/autorizacoesServices'
 import { rules } from '@/utils/rules'
 // Vue
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const formRef = ref()
 const formIsValid = ref(false)
 const showPassword = ref(false)
 
-interface Props {
-  modelValue: DialogAutorizacoesClass
-}
+const dialogAutorizacoes = defineModel<DialogAutorizacoesClass>('dialogAutorizacoes', { required: true })
 
-const props = defineProps<Props>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: DialogAutorizacoesClass): void,
   (e: 'atualizar-autorizacoes'): void // Evento utilizado para chamar uma nova requisição get no componente pai
 }>()
 
-
-const autorizacao = computed(() => props.modelValue.autorizacao)
-const dialogAutorizacoes = computed(() => props.modelValue)
-const exibir = computed({
-  get: () => dialogAutorizacoes.value.show,
-  set: (val) => dialogAutorizacoes.value.show = val
-})
-
-watch(exibir, (val) => {
+watch(() => dialogAutorizacoes.value.show, (val) => {
   if (!val) {
     resetForm()
   }
@@ -103,16 +91,17 @@ function resetForm() {
   dialogAutorizacoes.value.clearFields()
   dialogAutorizacoes.value.closeDialog()
   showPassword.value = false // Exibir senha
-  exibir.value = false // Exibir componente
+  dialogAutorizacoes.value.show = false // Exibir componente
 }
 
 async function atualizarAutorizacaoSaida() {
   const valid = await formRef.value.validate()
   if (!valid) return
-  const atualizarAutorizacao = { ...autorizacao.value }
+
+  const atualizarAutorizacao = { ...dialogAutorizacoes.value.autorizacao }
   try {
-    await autorizacoesServices.atualizarAutorizacao(atualizarAutorizacao, autorizacao.value.idAutorizacao)
-    useSnackbarStore().showSnackbar(`Autorização ${autorizacao.value.idAutorizacao} ${autorizacao.value.aprovacaoSaida ? 'concedida' : 'negada'} para a saída ${autorizacao.value.idSaida}`, 'success')
+    await autorizacoesServices.atualizarAutorizacao(atualizarAutorizacao, dialogAutorizacoes.value.autorizacao.idAutorizacao)
+    useSnackbarStore().showSnackbar(`Autorização ${dialogAutorizacoes.value.autorizacao.idAutorizacao} ${dialogAutorizacoes.value.autorizacao.aprovacaoSaida ? 'concedida' : 'negada'} para a saída ${dialogAutorizacoes.value.autorizacao.idSaida}`, 'success')
   } catch (error) {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error

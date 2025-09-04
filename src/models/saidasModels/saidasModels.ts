@@ -17,6 +17,9 @@ export interface SaidaConsulta {
   motivoSaida: number
   descricaoMotivo: string
   categoriaMotivo: string
+  idCategoria?: number
+  descricaoCategoria?: string
+  emergencial?: boolean
 }
 
 // Corpo padrão das autorizações

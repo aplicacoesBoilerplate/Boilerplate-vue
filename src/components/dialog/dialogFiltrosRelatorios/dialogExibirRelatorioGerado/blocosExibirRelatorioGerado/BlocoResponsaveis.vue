@@ -26,6 +26,6 @@
 <script setup lang="ts">
 import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
 
-const relatorioGerado = defineModel<UsuarioConsulta[]>('blocoresponsaveis')
+const relatorioGerado = defineModel<UsuarioConsulta[]>('dados')
 
 </script>

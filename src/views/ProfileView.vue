@@ -111,7 +111,7 @@
       </v-card-actions>
     </v-card>
   </div>
-  <DialogConfirmarSenha :model-value="confirmarSenha" @update:modelValue="clonarObjetoConfirmarSenha(confirmarSenha)" />
+  <DialogConfirmarSenha v-model:dialog-confirmar-senha="confirmarSenha" />
 </template>
 
 <script setup lang="ts">
@@ -220,10 +220,6 @@ async function modificarUsuario() {
     useSnackbarStore().showSnackbar(error, 'red')
     throw error
   }
-}
-
-function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
-  Object.assign(confirmarSenha, val)
 }
 
 </script>

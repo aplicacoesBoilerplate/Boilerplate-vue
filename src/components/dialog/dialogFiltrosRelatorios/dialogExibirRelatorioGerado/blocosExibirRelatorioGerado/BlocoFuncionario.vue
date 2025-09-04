@@ -26,6 +26,6 @@
 <script setup lang="ts">
 import type { funcionarioRegistradoDP } from '@/models/firebirdModels/firebirdModels';
 
-const relatorioGerado = defineModel<funcionarioRegistradoDP[]>('blocoresponsaveis')
+const relatorioGerado = defineModel<funcionarioRegistradoDP[]>('dados')
 
 </script>

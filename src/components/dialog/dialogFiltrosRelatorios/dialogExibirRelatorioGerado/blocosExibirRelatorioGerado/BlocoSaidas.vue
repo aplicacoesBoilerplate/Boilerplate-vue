@@ -72,6 +72,6 @@
 <script setup lang="ts">
 import type { SaidaConsulta } from '@/models/saidasModels/saidasModels';
 
-const relatorioGerado = defineModel<SaidaConsulta[]>('blocoresponsaveis')
+const relatorioGerado = defineModel<SaidaConsulta[]>('dados')
 
 </script>

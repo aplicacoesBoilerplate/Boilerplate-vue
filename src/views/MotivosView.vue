@@ -3,8 +3,7 @@
   <BtnOpenDialog :callback="openNovoMotivo" :label="'Criar novo motivo'" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogMotivos :model-value="dialogMotivos" @update:modelValue="clonarObjetoDialogMotivos(dialogMotivos)"
-    @operacao-concluida="getAllMotivos" />
+  <DialogMotivos v-model:dialog-motivos="dialogMotivos" @operacao-concluida="getAllMotivos" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
@@ -151,7 +150,7 @@
   <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
     v-show="apiMotivos?.totalRegistros! > 0 && !loading" />
 
-  <DialogConfirmarSenha :model-value="confirmarSenha" @update:modelValue="clonarObjetoConfirmarSenha(confirmarSenha)" />
+  <DialogConfirmarSenha v-model:dialog-confirmar-senha="confirmarSenha" />
 </template>
 
 <script setup lang="ts">
@@ -292,14 +291,6 @@ async function limparFiltros() {
 //#endregion
 
 //#region demais funções
-function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
-  Object.assign(confirmarSenha, val)
-}
-
-function clonarObjetoDialogMotivos(val: DialogMotivosClass) {
-  Object.assign(dialogMotivos, val)
-}
-
 // Função para controlar o v-expand-transition dos detalhes de cada erro
 function toggleMotivo(id?: number) {
   if (id != null)

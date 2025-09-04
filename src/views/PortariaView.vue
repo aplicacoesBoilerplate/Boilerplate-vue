@@ -154,7 +154,7 @@
               </v-col>
 
               <!-- Observação da saída -->
-              <v-col v-if="portaria.observacaoSaida != null" cols="12">
+              <v-col v-if="portaria.observacaoSaida != null && portaria.observacaoSaida != ''" cols="12">
                 <div class="d-flex flex-row">
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Observações da saída:
@@ -216,7 +216,7 @@
               </v-col>
 
               <!-- Observações da autorização -->
-              <v-col v-if="autorizacao.observacaoAutorizacao != null" cols="12">
+              <v-col v-if="autorizacao.observacaoAutorizacao != null && autorizacao.observacaoAutorizacao != ''" cols="12">
                 <div class="d-flex flex-row">
                   <p class="text-info" style="padding-right: 0.35rem;">
                     Observações desta autorização:

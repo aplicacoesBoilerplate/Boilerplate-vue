@@ -3,8 +3,7 @@
   <BtnOpenDialog :callback="openNewUser" :label="'Criar novo usuário'" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogUsers :model-value="dialogUsers" @update:modelValue="clonarObjetoDialogUsers(dialogUsers)"
-    @operacao-concluida="getAllUsers" />
+  <DialogUsers v-model:dialog-usuarios="dialogUsers" @operacao-concluida="getAllUsers" />
 
   <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
   <v-card class="mx-auto" max-width="700">
@@ -190,7 +189,7 @@
   <!-- Componente de paginação -->
   <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
     v-show="apiUsers?.totalRegistros! > 0 && !loading" />
-  <DialogConfirmarSenha :model-value="confirmarSenha" @update:modelValue="clonarObjetoConfirmarSenha(confirmarSenha)" />
+  <DialogConfirmarSenha v-model:dialog-confirmar-senha="confirmarSenha" />
 
 </template>
 
@@ -376,14 +375,6 @@ async function limparFiltros() {
 // Função para controlar o v-expand-transition dos detalhes de cada usuario
 function toggleUser(id: number) {
   expandedUserId.value = expandedUserId.value === id ? null : id
-}
-
-function clonarObjetoConfirmarSenha(val: ConfirmarSenhaClass) {
-  Object.assign(confirmarSenha, val)
-}
-
-function clonarObjetoDialogUsers(val: DialogUsersClass) {
-  Object.assign(dialogUsers, val)
 }
 //#endregion
 

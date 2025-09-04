@@ -36,6 +36,6 @@
 <script setup lang="ts">
 import type { AutorizacoesConsulta } from '@/models/saidasModels/saidasModels';
 
-const relatorioGerado = defineModel<AutorizacoesConsulta[]>('blocoresponsaveis')
+const relatorioGerado = defineModel<AutorizacoesConsulta[]>('dados')
 
 </script>
