@@ -14,6 +14,7 @@ export interface SaidaConsulta {
   confirmaRetorno: boolean
   dataPrevisaoChegadaFuncionario: string
   dataChegadaFuncionario: string
+  tempoTotalAusente: string
   motivoSaida: number
   descricaoMotivo: string
   categoriaMotivo: string

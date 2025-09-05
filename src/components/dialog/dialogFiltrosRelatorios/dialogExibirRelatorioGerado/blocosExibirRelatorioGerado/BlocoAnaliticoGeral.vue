@@ -32,17 +32,23 @@
 
       <v-col cols="12" class="font-weight-bold text-teal-lighten-3">
         <v-row dense>
-          <v-col cols="6">
+          <v-col cols="4">
             <h4>
               {{ saida.dataSaidaFuncionario != null ? `Data da saída: ${saida.dataSaidaFuncionario}` : `Data da previsão
               de saída: ${saida.dataPrevisaoSaidaFuncionario}` }}
             </h4>
           </v-col>
 
-          <v-col cols="6" class="d-flex flex-row-reverse pr-5">
+          <v-col cols="4" class="d-flex flex-row-reverse pr-5">
             <h4>
               {{ saida.dataChegadaFuncionario != null ? `Data do retorno: ${saida.dataChegadaFuncionario}` : `Data da
               previsão de retorno: ${saida.dataPrevisaoChegadaFuncionario}` }}
+            </h4>
+          </v-col>
+
+          <v-col cols="4" class="d-flex flex-row-reverse pr-5">
+            <h4>
+              Tempo total ausente: {{ saida.tempoTotalAusente }}
             </h4>
           </v-col>
         </v-row>
