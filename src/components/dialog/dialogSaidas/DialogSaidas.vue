@@ -273,7 +273,6 @@ async function consultarRegistroDP(codRegistro?: number) {
     if (codRegistro) {
       const search = codRegistro.toString()
       const response = await firebirdServices.getRegistroDP(search)
-      console.log("response", response);
       if (response) {
         dialogSaidas.value.saida.numeroRegistroFuncionario = response[0].registroDP
         dialogSaidas.value.saida.nomeFuncionario = response[0].nome
@@ -286,7 +285,6 @@ async function consultarRegistroDP(codRegistro?: number) {
     useSnackbarStore().showSnackbar(error, 'red')
   } finally {
     showLoadingRegistro.value = false
-    console.log("saída", dialogSaidas.value.saida);
   }
 }
 
