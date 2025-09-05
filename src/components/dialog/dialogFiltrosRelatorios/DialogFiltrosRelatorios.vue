@@ -292,7 +292,7 @@
         </v-tabs-window>
       </v-card-text>
 
-      <v-card-actions>
+      <v-card-actions class="sticky-actions">
         <v-btn color="warning" variant="plain" @click="clearFields()">
           <v-icon class="pt-1">mdi-refresh</v-icon>
           Limpar todos os filtros

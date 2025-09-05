@@ -53,7 +53,7 @@
 
       <v-divider />
 
-      <v-card-actions>
+      <v-card-actions class="sticky-actions">
         <v-btn color="red" variant="plain" @click="closeDialog()">
           <v-icon class="pt-1">mdi-close</v-icon>
           Fechar
@@ -89,7 +89,7 @@ const paginadorClass = ref(new PaginatorClass({
   search: ''
 })) // Classe para a paginação
 
-const dialogRegistros = defineModel<DialogRegistroDPClass>('dialogRegistros',{
+const dialogRegistros = defineModel<DialogRegistroDPClass>('dialogRegistros', {
   required: true
 })
 

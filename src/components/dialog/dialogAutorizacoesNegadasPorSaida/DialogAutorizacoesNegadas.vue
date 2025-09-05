@@ -20,7 +20,7 @@
       </v-virtual-scroll>
       <v-divider />
 
-      <v-card-actions>
+      <v-card-actions class="sticky-actions">
         <v-btn color="red" variant="plain" @click="eventoRejeicao(dialogAutorizacoesNegadas.idAutorizacaoOrigem)">
           <v-icon class="pt-1">mdi-close</v-icon>
           Negar
