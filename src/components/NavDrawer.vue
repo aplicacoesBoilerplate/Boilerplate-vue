@@ -62,7 +62,6 @@ const routerOption = ref([
   { id: '6', icon: 'mdi-account-group', path: '/users', title: 'Usuários' },
   { id: '7', icon: 'mdi-door-sliding', path: '/portaria', title: 'Portaria' },
   { id: '8', icon: 'mdi-alert-circle-outline', path: '/errors', title: 'Errors' },
-  { id: '9', icon: 'mdi-database-eye-outline', path: '/sgbd', title: 'SGBD' },
 ])
 
 function disabledRouterOption(path: string): boolean {
@@ -137,5 +136,4 @@ function disabledRouterOption(path: string): boolean {
 
   return showRouter.value
 }
-
 </script>

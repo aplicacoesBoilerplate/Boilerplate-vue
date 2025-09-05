@@ -120,7 +120,7 @@
         </v-card-text>
         <v-divider />
 
-        <v-card-actions v-if="!dialogSaidas.visualizando">
+        <v-card-actions class="sticky-actions" v-if="!dialogSaidas.visualizando">
           <v-btn color="warning" variant="plain" @click="clearFields()">
             <v-icon class="pt-1">mdi-refresh</v-icon>
             {{ dialogSaidas.isEditing ? 'Desfazer' : 'Limpar' }}
@@ -137,7 +137,7 @@
           </v-btn>
         </v-card-actions>
 
-        <v-card-actions v-else>
+        <v-card-actions class="sticky-actions" v-else>
           <v-btn color="info" variant="tonal" block @click="dialogSaidas.show = false">
             <v-icon class="pt-1">mdi-close</v-icon>
             Fechar informações

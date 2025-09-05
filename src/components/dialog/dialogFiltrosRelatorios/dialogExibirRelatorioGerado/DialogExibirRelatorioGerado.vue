@@ -101,11 +101,3 @@ function salvarRelatorioEmPDF() {
 defineExpose({ openDialog })
 
 </script>
-
-<style scoped>
-.sticky-actions {
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
-}
-</style>

@@ -125,3 +125,9 @@ body {
   opacity: 1;
   transform: translateX(0);
 }
+
+.sticky-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
