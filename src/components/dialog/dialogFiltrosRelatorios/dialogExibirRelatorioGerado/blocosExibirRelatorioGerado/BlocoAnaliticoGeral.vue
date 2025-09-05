@@ -34,15 +34,15 @@
         <v-row dense>
           <v-col cols="4">
             <h4>
-              {{ saida.dataSaidaFuncionario != null ? `Data da saída: ${saida.dataSaidaFuncionario}` : `Data da previsão
-              de saída: ${saida.dataPrevisaoSaidaFuncionario}` }}
+              {{ saida.dataSaidaFuncionario != null ? `Data da saída: ${saida.dataSaidaFuncionario}` : `Data da prev.
+              saída: ${saida.dataPrevisaoSaidaFuncionario}` }}
             </h4>
           </v-col>
 
           <v-col cols="4" class="d-flex flex-row-reverse pr-5">
             <h4>
               {{ saida.dataChegadaFuncionario != null ? `Data do retorno: ${saida.dataChegadaFuncionario}` : `Data da
-              previsão de retorno: ${saida.dataPrevisaoChegadaFuncionario}` }}
+              prev. retorno: ${saida.dataPrevisaoChegadaFuncionario}` }}
             </h4>
           </v-col>
 
