@@ -84,7 +84,7 @@ const dialogConfirmarSenha = defineModel<ConfirmarSenhaClass>('dialogConfirmarSe
   required: true
 })
 
-watch(dialogConfirmarSenha.value, async (val) => {
+watch(() => dialogConfirmarSenha.value.show, async (val) => {
   if (!val) {
     resetForm()
   } else {
