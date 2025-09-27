@@ -253,6 +253,7 @@ import { PaginatorClass } from '@/components/paginator/ClassPaginator';
 
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore';
+import { useInatividadeStore } from '@/stores/inatividade';
 
 // Models
 import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
@@ -262,8 +263,7 @@ import type { SaidasComAutorizacoes } from '@/models/saidasModels/saidasModels';
 import { portariaServices } from '@/services/portariaServices';
 
 // Vue
-import { onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
-import { gerenciamentoInatividade } from '@/utils/gerenciamentoInatividade';
+import { onBeforeMount, onUnmounted, ref } from 'vue';
 //#endregion
 
 //#region Variáveis
@@ -278,25 +278,18 @@ const filtrosPortaria = ref({
 
 // Outros
 const expandedSaidaId = ref<number | null>(null) // Painel de informações da saída
+const inatividadeStore = useInatividadeStore();
 var apiPortaria = ref<HeaderPaginatorModel<SaidasComAutorizacoes>>() // Armazena os dados da resposta das req para exibição no front
-let watcherinatividade: gerenciamentoInatividade | null = null;
 //#endregion
 
 //#region Funcionalidades do Vue
 onBeforeMount(async () => {
   await getPortaria();
-});
-
-onMounted(async () => {
-  watcherinatividade = new gerenciamentoInatividade(async () => {
-    await getPortaria();
-  }, 600000);
-
-  watcherinatividade.start();
+  inatividadeStore.setAcaoAtualizar(getPortaria);
 });
 
 onUnmounted(() => {
-  watcherinatividade?.stop();
+    inatividadeStore.setAcaoAtualizar(null);
 });
 //#endregion
 

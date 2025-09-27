@@ -1,34 +1,46 @@
 <template>
-  <v-dialog v-model="dialog.show" max-width="400" max-height="1000">
-    <v-card>
-      <v-card-title class="d-flex justify-center mt-5">
-        <v-icon>mdi-cellphone-wireless</v-icon>
-        Conectar ao WhatsApp
-      </v-card-title>
-      <v-card-text class="d-flex justify-center">
-        <v-list dense>
-          <v-list-item>
-            <img :src="dialog.qrcode" />
-          </v-list-item>
-        </v-list>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn text color="red-lighten-1" @click="toggleDialog">Fechar</v-btn>
-        <v-spacer />
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <BaseDialog v-model:atributos="dialogState">
+        <template #titulo>
+            <v-icon>mdi-cellphone-wireless</v-icon>
+            Conectar ao WhatsApp
+        </template>
+
+        <template #default v-if="statusConnectModel">
+            <v-list dense>
+                <v-list-item class="d-flex justify-center">
+                    <img :src="qrCodeModel.qrcode" />
+                </v-list-item>
+            </v-list>
+        </template>
+
+        <template #default v-else>
+            <v-list dense>
+                <v-list-item class="d-flex justify-center">
+
+                </v-list-item>
+            </v-list>
+        </template>
+    </BaseDialog>
 </template>
 
 <script setup lang="ts">
+// Components
+import BaseDialog from '../BaseDialog.vue';
 
-const dialog = defineModel<{show: boolean, qrcode: string}>('qrcode', {
-  required: true
-})
+// Vue
+import { computed } from 'vue';
 
-function toggleDialog() {
-  dialog.value.show = !dialog.value.show
-}
+const statusConnectModel = defineModel<boolean>('status', { required: true });
+const qrCodeModel = defineModel<{ visualizar: boolean, qrcode: string }>('qrcode', { required: true });
+const dialogState = computed({
+    get: () => ({
+        visualizar: qrCodeModel.value.visualizar,
+        maxWidth: 400,
+        maxHeight: 1000
+    }),
+    set: (newValue) => {
+        qrCodeModel.value.visualizar = newValue.visualizar;
+    }
+});
 
 </script>

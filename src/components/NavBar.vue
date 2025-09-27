@@ -9,7 +9,7 @@
     <RouterLink to="/dashboard" custom v-slot="{ navigate }">
       <v-app-bar-title @click="navigate" class="d-flex justify-center text-center">
         CONTROLE DE SAÍDAS <br></br>
-        {{ usuarioLogado.usuario.nome != '' ? `${usuarioLogado.usuario.nome}` : '' }}
+        {{ usuarioLogado?.nome ?? '' }}
       </v-app-bar-title>
     </RouterLink>
 
@@ -24,7 +24,7 @@
 
     <!-- ícone do indicador para versão -->
     <div class="d-flex justify-space-around"
-      v-if="usuarioLogado.usuario.permissao?.includes('ADMINISTRADOR') && loading === false">
+      v-if="usuarioLogado?.permissao?.includes('ADMINISTRADOR') && loading === false">
       <v-btn class="menu-btn" color="black" icon @click="openDialogVersion = true">
         <v-icon class="mr-2"color="indigo-accent-2">
           mdi-alpha-v-box-outline
@@ -34,7 +34,7 @@
 
     <!-- ícone do indicador para verificar se o WhatsApp está online -->
     <div class="d-flex justify-space-around"
-      v-if="usuarioLogado.usuario.permissao?.includes('ADMINISTRADOR') && loading === false">
+      v-if="usuarioLogado?.permissao?.includes('ADMINISTRADOR') && loading === false">
       <v-btn class="menu-btn" color="black" icon @click="getStatusWppConnect()"
         :title="`Status WhatsApp: ${statusWhatsApp ? 'Online' : 'Offline'}`">
         <v-icon class="mr-2" :color="statusWhatsApp ? 'success' : 'red'">mdi-whatsapp</v-icon>
@@ -64,98 +64,64 @@
 
   </v-app-bar>
 
-  <DialogVersao ref="dialogVersionRef" v-model:visualizar="openDialogVersion"/>
-  <DialogQrcode ref="dialogQrcodeRef" v-model:qrcode="dialogQrcode"/>
+  <DialogVersao v-model:visualizar="openDialogVersion"/>
+  <DialogQrcode v-model:qrcode="dialogQrcode" v-model:status="statusWhatsApp"/>
 </template>
 
 <script setup lang=ts>
 // Componentes
+import DialogQrcode from './dialog/dialogQrcode/DialogQrcode.vue';
 import DialogVersao from './dialog/dialogVersao/DialogVersao.vue';
 
+// Models
+import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
+
 // Store
-import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 import { useSnackbarStore } from '@/stores/SnackbarStore';
 
 // Services
+import { wppConnectionServices } from '@/services/wppConnectionServices';
 import { authServices } from '@/services/authService';
 import { useRouter } from 'vue-router'
 
 // Vue
-import { onMounted, onUnmounted, ref } from 'vue';
-import { wppConnectionServices } from '@/services/wppConnectionServices';
-import DialogQrcode from './dialog/dialogQrcode/DialogQrcode.vue';
-import { gerenciamentoInatividade } from '@/utils/gerenciamentoInatividade';
+import { onMounted, ref } from 'vue';
+import { useInatividadeStore } from '@/stores/inatividade';
+import { storeToRefs } from 'pinia';
 
 const redirectRouter = useRouter()
-const usuarioLogado = usuarioAutenticado() // Armazenar o usuário autenticado
-const statusWhatsApp = ref(false) // Controla o status do WhatsApp
+const usuarioLogado = ref<UsuarioConsulta>() // Armazenar o usuário autenticado
+const statusWhatsApp = ref<boolean>(false) // Controla o status do WhatsApp
 const loading = ref(false) // Controla o status do Loading
-const dialogVersionRef = ref()
 const openDialogVersion = ref(false)
-const dialogQrcodeRef = ref()
-const dialogQrcode = ref<{show: boolean, qrcode: string}>({show: false, qrcode: ''})
-const tempoRestante = ref<number | null>(null);
-let interval: ReturnType<typeof setInterval> | null = null;
-let watcherinatividade: gerenciamentoInatividade;
+const dialogQrcode = ref<{ visualizar: boolean, qrcode: string }>({visualizar: false, qrcode: ''})
+
+const inatividadeStore = useInatividadeStore();
+const { tempoRestante } = storeToRefs(inatividadeStore);
+
 
 // Se o usuário armazenado estiver vazio e o token ainda estiver no session store, consultar o usuário da sessão ao montar o componente
 onMounted(async () => {
-  if (!!usuarioLogado.usuario && sessionStorage.getItem('token') !== '')
-    usuarioLogado.usuario = await authServices.getByToken()
-  else
-    useSnackbarStore().showSnackbar('Usuário não identificado!', 'red')
-  if (usuarioLogado.usuario.permissao === 'ADMINISTRADOR' || usuarioLogado.usuario.permissao === 'ADMINISTRADOR_AUTORIZADO')
-    await getStatusWppConnect();
+  try {
+        usuarioLogado.value = await authServices.getByToken();
 
-  watcherinatividade = new gerenciamentoInatividade(async () => {}, 600000);
+        if (usuarioLogado.value.permissao === 'ADMINISTRADOR' || usuarioLogado.value.permissao === 'ADMINISTRADOR_AUTORIZADO')
+            await getStatusWppConnect();
 
-  // Aviso de 5 min restantes
-  watcherinatividade.onWarning((remaining) => {
-    tempoRestante.value = remaining;
-
-    if (interval) clearInterval(interval);
-
-    interval = setInterval(() => {
-      if (tempoRestante.value !== null && tempoRestante.value > 0) {
-        tempoRestante.value--;
-      } else {
-        if (interval) clearInterval(interval);
-      }
-    }, 1000);
-  });
-
-  watcherinatividade.onReset(() => {
-    tempoRestante.value = null;
-    if (interval) {
-      clearInterval(interval);
-      interval = null;
+    } catch (error) {
+        useSnackbarStore().showSnackbar('Erro ao identificar o usuário! Redirecionando para a tela de login...', 'red')
+        setTimeout(() => {
+            redirectRouter.push('/')
+        }, 3000);
     }
-  });
-
-  watcherinatividade.start();
 })
-
-onUnmounted(() => {
-  watcherinatividade?.stop();
-  if (interval) clearInterval(interval);
-});
 
 function logout() {
   authServices.logout()
   redirectRouter.push('/');
 }
 
-// Propriedade da barra de navegação que controla a exibição da side bar
-const props = defineProps<{
-  collapse: boolean
-}>()
-// Evento da barra de navegação que abre\fecha a side bar
-const emit = defineEmits<{
-  (e: 'toggle'): void
-}>()
-
 // #region Status WhatsApp
-
 async function getStatusWppConnect() {
   loading.value = true
   try {
@@ -184,7 +150,7 @@ async function getQrcodeWppConnect() {
 
 async function openQrCode(qrcode: string) {
   dialogQrcode.value.qrcode = qrcode
-  dialogQrcode.value.show = true
+  dialogQrcode.value.visualizar = true
 }
 
 // #endregion

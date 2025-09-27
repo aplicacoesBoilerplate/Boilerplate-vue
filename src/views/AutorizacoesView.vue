@@ -189,7 +189,7 @@
         <v-divider />
 
         <!-- Dialog para exibição de observações de autorizações negadas de uma saída -->
-        <DialogAutorizacoesNegadas :model-value="dialogAutorizacoesNegadas" @emitir-rejeicao="negarAutorizacaoSaida"
+        <DialogAutorizacoesNegadas v-model:negadas="dialogAutorizacoesNegadas" @emitir-rejeicao="negarAutorizacaoSaida"
           @emitir-liberacao="emitirAutorizacao" />
 
       </template>
@@ -200,7 +200,7 @@
     v-show="apiAutorizacoes?.totalRegistros! > 0 && !loading" />
 
   <!-- Dialog aberto pelo botão acima -->
-  <DialogSaidas v-model:dialog-saidas="dialogSaidas" />
+  <DialogSaidas v-model:dialog-saidas="dialogSaidas" :visualizando="true"/>
 
 </template>
 
@@ -223,6 +223,7 @@ import { PaginatorClass } from '@/components/paginator/ClassPaginator';
 
 // Store
 import { useSnackbarStore } from '@/stores/SnackbarStore';
+import { useInatividadeStore } from "@/stores/inatividade";
 
 // Models
 import type { AutorizacoesConsulta, AutorizacoesSaidaConsulta } from '@/models/saidasModels/saidasModels';
@@ -232,10 +233,7 @@ import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
 import { autorizacoesServices } from '@/services/autorizacoesServices';
 
 // Vue
-import { onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
-
-// Outros
-import { gerenciamentoInatividade } from "@/utils/gerenciamentoInatividade";
+import { onBeforeMount, onUnmounted, ref } from 'vue';
 //#endregion
 
 //#region Variáveis
@@ -264,26 +262,19 @@ const filtrosAutorizacoes = ref({
 
 // Outros
 const expandedUserId = ref<number | null>(null) // Painel de informações do usuário
+const inatividadeStore = useInatividadeStore();
 var apiAutorizacoes = ref<HeaderPaginatorModel<AutorizacoesSaidaConsulta>>() // Armazena os dados da resposta das req para exibição no front
-let watcherinatividade: gerenciamentoInatividade | null = null;
 
 //#endregion
 
 //#region Funcionalidades do Vue
 onBeforeMount(async () => {
   await getAutorizacoes();
-});
-
-onMounted(async () => {
-  watcherinatividade = new gerenciamentoInatividade(async () => {
-    await getAutorizacoes();
-  }, 600000);
-
-  watcherinatividade.start();
+  inatividadeStore.setAcaoAtualizar(getAutorizacoes);
 });
 
 onUnmounted(() => {
-  watcherinatividade?.stop();
+    inatividadeStore.setAcaoAtualizar(null);
 });
 //#endregion
 
@@ -369,7 +360,6 @@ async function getAutorizacoesNegadasPorSaida(autorizacao: AutorizacoesConsulta)
 //#endregion
 
 //#region identificadores para o template
-
 const tituloCard = ref('Suas autorizações');
 
 interface informacoesIdentificadas {
