@@ -5,7 +5,7 @@
             Conectar ao WhatsApp
         </template>
 
-        <template #default v-if="statusConnectModel">
+        <template #default v-if="!statusConnectModel">
             <v-list dense>
                 <v-list-item class="d-flex justify-center">
                     <img :src="qrCodeModel.qrcode" />
@@ -16,16 +16,27 @@
         <template #default v-else>
             <v-list dense>
                 <v-list-item class="d-flex justify-center">
-
+                    Encerrar sessão?
                 </v-list-item>
             </v-list>
         </template>
+
+        <template #outrasAcoes v-if="statusConnectModel">
+            <v-btn color="yellow-lighten-1" variant="plain" @click="logoutSessioWpp()">
+                <v-icon class="pt-1">mdi-logout</v-icon>
+                Encerrar sessão
+            </v-btn>
+        </template>
+
     </BaseDialog>
 </template>
 
 <script setup lang="ts">
 // Components
 import BaseDialog from '../BaseDialog.vue';
+
+// Services
+import { wppConnectionServices } from '@/services/wppConnectionServices';
 
 // Vue
 import { computed } from 'vue';
@@ -42,5 +53,9 @@ const dialogState = computed({
         qrCodeModel.value.visualizar = newValue.visualizar;
     }
 });
+
+async function logoutSessioWpp() {
+    await wppConnectionServices.logoutSession();
+}
 
 </script>
