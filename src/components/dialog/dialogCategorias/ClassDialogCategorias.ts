@@ -1,53 +1,52 @@
-import type { CategoriasMotivos } from '@/models/motivosModels/MotivosModels'
-import { categoriasServices } from '@/services/categoriasServices'
+import type { CategoriasMotivos } from "@/models/motivosModels/MotivosModels";
+import { categoriasServices } from "@/services/categoriasServices";
 
 export class DialogCategoriasClass {
-  show: boolean
-  isEditing: boolean
-  categoria: CategoriasMotivos
+    show: boolean;
+    isEditing: boolean;
+    categoria: CategoriasMotivos;
 
-  constructor() {
-    this.show = false
-    this.isEditing = false
-    this.categoria = {
-      idCategoria: 0,
-      descricaoCategoria: '',
-      emergencial: false,
-      abaterHoraExtra: false
+    constructor() {
+        this.show = false;
+        this.isEditing = false;
+        this.categoria = {
+            idCategoria: 0,
+            descricaoCategoria: "",
+            emergencial: false,
+            abaterHoraExtra: false,
+        };
     }
-  }
 
-  openDialog() {
-    this.show = true
-  }
-
-  async getCategoriaById(idCategoria?: number) {
-    if (idCategoria) this.categoria = await categoriasServices.getCategoriaById(idCategoria)
-  }
-
-  clearFields() {
-    if (this.isEditing) {
-      this.getCategoriaById(this.categoria.idCategoria)
-    } else {
-      this.categoria = {
-        idCategoria: 0,
-        descricaoCategoria: '',
-        emergencial: false,
-        abaterHoraExtra: false
-      }
+    openDialog() {
+        this.show = true;
     }
-  }
 
-  closeDialog() {
-    this.show = false
-    this.isEditing = false
-    this.clearFields()
-  }
+    async getCategoriaById(idCategoria?: number) {
+        if (idCategoria) this.categoria = await categoriasServices.getCategoriaById(idCategoria);
+    }
 
-  async completeForm(idCategoria: number) {
-    this.show = true
-    this.isEditing = true
-    await this.getCategoriaById(idCategoria)
-  }
+    clearFields() {
+        if (this.isEditing) {
+            this.getCategoriaById(this.categoria.idCategoria);
+        } else {
+            this.categoria = {
+                idCategoria: 0,
+                descricaoCategoria: "",
+                emergencial: false,
+                abaterHoraExtra: false,
+            };
+        }
+    }
 
+    closeDialog() {
+        this.clearFields();
+        this.show = false;
+        this.isEditing = false;
+    }
+
+    async completeForm(idCategoria: number) {
+        this.show = true;
+        this.isEditing = true;
+        await this.getCategoriaById(idCategoria);
+    }
 }

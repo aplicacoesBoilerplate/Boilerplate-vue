@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="modelValue" app>
+  <v-navigation-drawer v-model="collapse" app>
     <div class="d-flex flex-column fill-height">
       <div>
         <v-card class="mx-auto" max-width="300">
@@ -34,20 +34,15 @@
 
 <script setup lang="ts">
 //#region hidden
-import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
-import { computed, ref } from 'vue'
+import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
+import { authServices } from '@/services/authService';
+import { onBeforeMount, ref } from 'vue'
 
-const props = defineProps<{
-  collapse: boolean
-}>()
+const collapse = defineModel('collapse', { type: Boolean, required: true })
+const usuario = ref<UsuarioConsulta>()
 
-const emit = defineEmits<{
-  (e: 'update:collapse', value: boolean): void
-}>()
-
-const modelValue = computed({
-  get: () => props.collapse,
-  set: value => emit('update:collapse', value)
+onBeforeMount(async () => {
+  usuario.value = await authServices.getByToken();
 })
 
 //#endregion
@@ -67,12 +62,11 @@ const routerOption = ref([
 function disabledRouterOption(path: string): boolean {
 
   const showRouter = ref(false) // Começa bloqueado para não correr o risco de expor todos os componentes se caso perder o usuário autenticado
-  const usuario = usuarioAutenticado().usuario
 
   switch (path) {
     case '/dashboard': showRouter.value = true
     case '/saidas': { // Apenas a portaria não pode acessar as rotas de saída
-      if (usuario.permissao == 'PORTARIA') {
+      if (usuario.value?.permissao == 'PORTARIA') {
         showRouter.value = false
       }
       else
@@ -80,35 +74,35 @@ function disabledRouterOption(path: string): boolean {
       break
     }
     case '/autorizacoes': { // Além dos admins, quem emite autorização também pode acessar este recurso
-      if (usuario.permissao == 'ADMINISTRADOR' || usuario.permissao == 'ADMINISTRADOR_AUTORIZADO' || usuario.permissao == 'EMITE_AUTORIZACAO' || usuario.autorizaSaida) {
+      if (usuario.value?.permissao == 'ADMINISTRADOR' || usuario.value?.permissao == 'ADMINISTRADOR_AUTORIZADO' || usuario.value?.permissao == 'EMITE_AUTORIZACAO' || usuario.value?.autorizaSaida) {
         showRouter.value = true
       } else
         showRouter.value = false
       break
     }
     case '/motivos': { // Qualquer autenticado pode acessar os motivos, mas bloqueia para portaria apenas por ser conveniente
-      if (usuario.permissao == 'PORTARIA')
+      if (usuario.value?.permissao == 'PORTARIA')
         showRouter.value = false
       else
         showRouter.value = true
       break
     }
     case '/categorias': { // Apenas quem emite saída, todos, exceto a portaria
-      if (usuario.permissao == 'PORTARIA')
+      if (usuario.value?.permissao == 'PORTARIA')
         showRouter.value = false
       else
         showRouter.value = true
       break
     }
     case '/users': { // Apenas admins podem acessar os usuários
-      if (usuario.permissao == 'ADMINISTRADOR' || usuario.permissao == 'ADMINISTRADOR_AUTORIZADO') {
+      if (usuario.value?.permissao == 'ADMINISTRADOR' || usuario.value?.permissao == 'ADMINISTRADOR_AUTORIZADO') {
         showRouter.value = true
       } else
         showRouter.value = false
       break
     }
     case '/portaria': { // Apenas a portaria pode acessar as rotas de portaria
-      if (usuario.permissao == 'PORTARIA') {
+      if (usuario.value?.permissao == 'PORTARIA') {
         showRouter.value = true
       }
       else
@@ -116,14 +110,14 @@ function disabledRouterOption(path: string): boolean {
       break
     }
     case '/errors': { // Apenas admins podem acessar o histórico de erros
-      if (usuario.permissao == 'ADMINISTRADOR' || usuario.permissao == 'ADMINISTRADOR_AUTORIZADO') {
+      if (usuario.value?.permissao == 'ADMINISTRADOR' || usuario.value?.permissao == 'ADMINISTRADOR_AUTORIZADO') {
         showRouter.value = true
       } else
         showRouter.value = false
       break
     }
     case '/sgbd': { // Apenas admins podem acessar o SGBD
-      if (usuario.permissao == 'ADMINISTRADOR' || usuario.permissao == 'ADMINISTRADOR_AUTORIZADO') {
+      if (usuario.value?.permissao == 'ADMINISTRADOR' || usuario.value?.permissao == 'ADMINISTRADOR_AUTORIZADO') {
         showRouter.value = true
       } else
         showRouter.value = false

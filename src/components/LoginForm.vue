@@ -45,7 +45,6 @@ import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visu
 
 // Stores
 import { useSnackbarStore } from '@/stores/SnackbarStore'
-import { usuarioAutenticado } from '@/stores/usuarioAutenticado'
 
 // Models
 import { type LoginModel } from '@/models/authModels/LoginModel'
@@ -75,7 +74,6 @@ async function authLogin() {
       loading.value = true
       await authService.login(loginForm.value!)
       const usuarioLogado = await authServices.getByToken()
-      usuarioAutenticado().usuario = usuarioLogado
 
       switch (usuarioLogado.permissao) {
         case "EMITE_SAIDA": {

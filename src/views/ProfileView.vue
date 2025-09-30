@@ -126,7 +126,6 @@ import type { AlterarSenha } from '@/models/authModels/LoginModel';
 
 // Stores
 import { useSnackbarStore } from '@/stores/SnackbarStore';
-import { usuarioAutenticado } from '@/stores/usuarioAutenticado';
 
 // Models
 import { PermissoesUsuarios, PermissoesUsuariosAutoComplete, type UsuarioConsulta } from '@/models/usersModels/UsuariosModels';
@@ -140,12 +139,14 @@ import { rules } from '@/utils/rules'
 import { ref, computed, onBeforeMount } from 'vue';
 
 const confirmarSenha = ref(new ConfirmarSenhaClass())
-const usuarioStore = usuarioAutenticado()
 const permissao = ref()
+const emailDefalt = window.env?.VITE_DOMAIN_EMAIL || import.meta.env.VITE_DOMAIN_EMAIL;
+
 const model = ref<UsuarioConsulta>({
-  nome: '',
-  email: '@SIERMOVEIS.COM.BR',
+    nome: '',
+    email: emailDefalt,
 })
+
 const usuarioOriginal = ref<UsuarioConsulta>()
 const usuarioConfirmado = ref(false)
 const permissoes = PermissoesUsuariosAutoComplete
@@ -155,71 +156,71 @@ const showPassword1 = ref(false)
 const showPassword2 = ref(false)
 const showPassword3 = ref(false)
 const alterarSenhaUsuario = ref<AlterarSenha>({
-  emailUsuario: '',
-  senhaUsuario: '',
-  novaSenha: '',
-  confirmarNovaSenha: ''
+    emailUsuario: '',
+    senhaUsuario: '',
+    novaSenha: '',
+    confirmarNovaSenha: ''
 })
 
 onBeforeMount(async () => {
-  await authServices.getByToken()
-  const usuarioPerfil = usuarioAutenticado().usuario
-  model.value = clone<UsuarioConsulta>(usuarioPerfil)
-  usuarioOriginal.value = clone<UsuarioConsulta>(usuarioPerfil)
+    usuarioOriginal.value = await authServices.getByToken();
+    model.value = clone<UsuarioConsulta>(usuarioOriginal.value)
 
-  permissao.value = usuarioPerfil.permissao == 'ADMINISTRADOR' ||
-    usuarioPerfil.permissao == 'ADMINISTRADOR_AUTORIZADO'
+    permissao.value = usuarioOriginal.value.permissao == 'ADMINISTRADOR' ||
+        usuarioOriginal.value.permissao == 'ADMINISTRADOR_AUTORIZADO'
 })
 
 function clone<T>(pObj: T): T {
-  return JSON.parse(JSON.stringify(pObj))
+    return JSON.parse(JSON.stringify(pObj))
 }
 
 const alteracao = computed(() => {
-  return JSON.stringify(model.value) !== JSON.stringify(usuarioOriginal.value)
+    return JSON.stringify(model.value) !== JSON.stringify(usuarioOriginal.value)
 })
 
 function resetModel() {
-  model.value = clone<UsuarioConsulta>(usuarioStore.usuario)
+    model.value = usuarioOriginal.value ? clone<UsuarioConsulta>(usuarioOriginal.value) : {
+        nome: '',
+        email: emailDefalt,
+    }
 }
 
 function abrirDialogConfirmacao(callback: () => Promise<void>) {
-  confirmarSenha.value.setCallback(callback)
-  confirmarSenha.value.openDialog()
+    confirmarSenha.value.setCallback(callback)
+    confirmarSenha.value.openDialog()
 }
 
 function confirmarUsuario() {
-  abrirDialogConfirmacao(async () => {
-    try {
-      usuarioConfirmado.value = true
-    } catch (error) {
-      useSnackbarStore().showSnackbar(error, 'red')
-    }
-  })
+    abrirDialogConfirmacao(async () => {
+        try {
+            usuarioConfirmado.value = true
+        } catch (error) {
+            useSnackbarStore().showSnackbar(error, 'red')
+        }
+    })
 }
 
 async function alterarSenha() {
-  try {
-    alterarSenhaUsuario.value.emailUsuario = usuarioOriginal.value?.email!
-    await authServices.alterarSenha(alterarSenhaUsuario.value)
-    usuarioConfirmado.value = false
-    useSnackbarStore().showSnackbar('Senha alterada com sucesso!', 'success')
-  } catch (error) {
-    useSnackbarStore().showSnackbar(error, 'red')
-    throw error
-  }
+    try {
+        alterarSenhaUsuario.value.emailUsuario = usuarioOriginal.value?.email!
+        await authServices.alterarSenha(alterarSenhaUsuario.value)
+        usuarioConfirmado.value = false
+        useSnackbarStore().showSnackbar('Senha alterada com sucesso!', 'success')
+    } catch (error) {
+        useSnackbarStore().showSnackbar(error, 'red')
+        throw error
+    }
 }
 
 async function modificarUsuario() {
-  try {
-    await usuariosServices.updateUser(model.value)
-    usuarioStore.usuario = model.value
-    useSnackbarStore().showSnackbar('Perfil atualizado com sucesso!', 'success')
-    usuarioOriginal.value = clone<UsuarioConsulta>(model.value)
-  } catch (error) {
-    useSnackbarStore().showSnackbar(error, 'red')
-    throw error
-  }
+    try {
+        await usuariosServices.updateUser(model.value)
+        useSnackbarStore().showSnackbar('Perfil atualizado com sucesso!', 'success')
+        usuarioOriginal.value = clone<UsuarioConsulta>(model.value)
+    } catch (error) {
+        useSnackbarStore().showSnackbar(error, 'red')
+        throw error
+    }
 }
 
 </script>
