@@ -1,21 +1,20 @@
-import { formatarData } from "@/utils/dataNowFormat"
+import { formatarData } from "@/utils/dataNowFormat";
 
 export class DialogExibirRelatorioGeradoClass {
-  show: boolean
-  dataRelatorioGerado: string
+    show: boolean;
+    dataRelatorioGerado: string;
 
-  constructor() {
-    this.show = false
-    this.dataRelatorioGerado = ''
-  }
+    constructor() {
+        this.show = false;
+        this.dataRelatorioGerado = "";
+    }
 
-  openDialog() {
-    this.show = true
-    this.dataRelatorioGerado = formatarData(new Date())
-  }
+    openDialog() {
+        this.show = true;
+        this.dataRelatorioGerado = formatarData(new Date());
+    }
 
-  closeDialog() {
-    this.show = false
-  }
-
+    closeDialog() {
+        this.show = false;
+    }
 }

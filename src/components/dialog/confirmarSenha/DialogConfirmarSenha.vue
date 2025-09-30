@@ -1,124 +1,105 @@
 <template>
-  <v-dialog v-model="dialogConfirmarSenha.show" max-width="650">
+    <BaseDialog v-model:atributos="dialogState">
+        <template #titulo>
+            <v-icon>mdi-ticket-confirmation-outline</v-icon>
+            Confirme a sua senha antes de completar essa operação
+        </template>
 
-    <v-form ref="formRef" v-model="formIsValid" @submit.prevent="submitForm()">
-      <v-card prepend-icon="mdi-delete-outline" title="Confirme a sua senha antes de completar essa operação">
-        <v-card-text>
-          <v-row dense>
-            <v-col cols="12">
-              <v-text-field clearable v-model="dialogConfirmarSenha.email" :rules="[rules.required, rules.emailFormat]"
-                label="email*" variant="outlined" disabled counter>
-              </v-text-field>
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-text-field clearable v-model="dialogConfirmarSenha.senha" :rules="[rules.required, rules.max]"
-                :type="showPassword1 ? 'text' : 'password'" hint="Insira a sua senha de login" label="Senha*"
-                variant="outlined" counter>
+        <template #default>
+            <FormConfirmarSenha ref="formComponentRef" v-model:confirmar="dialogConfirmarSenha.confirmarSenha" />
 
-                <template v-slot:append-inner>
-                  <v-btn :icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword1 = !showPassword1"
-                    variant="text" />
-                </template>
+            <v-row dense class="p-0 m-0">
+                <v-col cols="12">
+                    <small class="d-flex justify-center text-caption text-medium-emphasis pt-3">
+                        * indica campos obrigatórios
+                    </small>
+                </v-col>
+            </v-row>
+        </template>
 
-              </v-text-field>
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-text-field clearable v-model="dialogConfirmarSenha.confirmarSenha"
-                :rules="[rules.required, rules.equals(() => dialogConfirmarSenha.senha)]"
-                :type="showPassword2 ? 'text' : 'password'" label="Confirmar sua senha*"
-                hint="As senhas devem coincidir" variant="outlined" counter>
+        <template #acoes>
+            <v-btn color="warning" variant="plain" @click="clearFields()">
+                <v-icon class="pt-1">mdi-refresh</v-icon>
+                Limpar
+            </v-btn>
 
-                <template v-slot:append-inner>
-                  <v-btn :icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword2 = !showPassword2"
-                    variant="text" />
-                </template>
+            <v-spacer />
 
-              </v-text-field>
-            </v-col>
-          </v-row>
-          <small class="d-flex justify-center text-caption text-medium-emphasis pt-5">* indica campos obrigatórios
-          </small>
-        </v-card-text>
+            <v-btn color="red" variant="plain" @click="resetForm()">
+                <v-icon class="pt-1">mdi-close</v-icon>
+                Fechar
+            </v-btn>
 
-        <v-divider />
-
-        <v-card-actions class="sticky-actions">
-          <v-btn color="warning" variant="plain" @click="clearFields()"><v-icon class="pt-1">mdi-refresh</v-icon>
-            Limpar</v-btn>
-          <v-spacer></v-spacer>
-
-          <v-btn color="red" variant="plain" @click="resetForm()"><v-icon class="pt-1">mdi-close</v-icon>Fechar</v-btn>
-
-          <v-btn color="success" variant="tonal" :disabled="!formIsValid" type="submit"><v-icon
-              class="pt-1">mdi-check</v-icon>Confirmar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-form>
-  </v-dialog>
+            <v-btn color="success" variant="tonal" :disabled="!formComponentRef?.formIsValid" @click="submitForm()">
+                <v-icon class="pt-1">mdi-check</v-icon>
+                Confirmar
+            </v-btn>
+        </template>
+    </BaseDialog>
 </template>
 
 <script setup lang="ts">
-// Stores
-import { useSnackbarStore } from '@/stores/SnackbarStore'
+// Components
+import BaseDialog from '../BaseDialog.vue'
+import FormConfirmarSenha from './FormConfirmarSenha.vue'
 
 // Classes
 import { ConfirmarSenhaClass } from './ClassConfirmarSenha'
 
-// Models
+// Stores
+import { useSnackbarStore } from '@/stores/SnackbarStore'
 
 // Services
-import { rules } from '@/utils/rules'
 import { authServices } from '@/services/authService'
 
 // Vue
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-const formRef = ref()
-const formIsValid = ref(false)
+const formComponentRef = ref<InstanceType<typeof FormConfirmarSenha> | null>(null);
 
-// Visualizar a senha inserida
-const showPassword1 = ref(false)
-const showPassword2 = ref(false)
-
-const dialogConfirmarSenha = defineModel<ConfirmarSenhaClass>('dialogConfirmarSenha', {
-  required: true
-})
-
-watch(() => dialogConfirmarSenha.value.show, async (val) => {
-  if (!val) {
-    resetForm()
-  } else {
-    try {
-      const usuarioToken = await authServices.getByToken()
-      dialogConfirmarSenha.value.email = usuarioToken.email
-    } catch (error) {
-      useSnackbarStore().showSnackbar(error, 'red')
-      throw error
+const dialogConfirmarSenha = defineModel<ConfirmarSenhaClass>('dialogConfirmarSenha', { required: true });
+const dialogState = computed({
+    get: () => ({
+        visualizar: dialogConfirmarSenha.value.show,
+        maxWidth: 700,
+    }),
+    set: (newValue) => {
+        dialogConfirmarSenha.value.show = newValue.visualizar;
     }
-  }
+});
+
+watch(() => dialogConfirmarSenha.value.show, async (isOpen) => {
+    if (!isOpen) {
+        resetForm()
+    } else {
+        try {
+            const usuarioToken = await authServices.getByToken()
+            dialogConfirmarSenha.value.confirmarSenha.email_usuario = usuarioToken.email
+        } catch (error) {
+            useSnackbarStore().showSnackbar(error, 'red')
+            throw error
+        }
+    }
 });
 
 function clearFields() {
-  dialogConfirmarSenha.value.clearFields()
-  showPassword1.value = false
-  showPassword2.value = false
+    dialogConfirmarSenha.value.clearFields()
 }
 
 function resetForm() {
-  clearFields()
-  dialogConfirmarSenha.value.closeDialog()
+    dialogConfirmarSenha.value.closeDialog()
 }
 
 async function submitForm() {
-  try {
-    if (dialogConfirmarSenha.value.callback)
-      await dialogConfirmarSenha.value.executeCallback()
-
-    resetForm()
-    useSnackbarStore().showSnackbar('Senha confirmada!', 'success')
-  } catch (error) {
-    useSnackbarStore().showSnackbar(error, 'red')
-  }
+    const isValid = await formComponentRef.value?.validate();
+    if (!isValid) return;
+    try {
+        if (dialogConfirmarSenha.value.callback)
+            await dialogConfirmarSenha.value.executeCallback()
+        resetForm()
+    } catch (error) {
+        useSnackbarStore().showSnackbar(error, 'red')
+    }
 }
 
 </script>

@@ -1,24 +1,23 @@
 # Stage 1 - Build com Node
-FROM node:22.12 AS build-stage
+FROM node:22.12 AS build-stage 
+LABEL maintainer="Gerson f. Ribeiro"
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 RUN npm run build
 
 # Stage 2 - Nginx com suporte a env.js
 FROM nginx:stable-alpine AS production-stage
 
-# Copia arquivos estáticos gerados
+# 1. Crie o grupo e o usuário primeiro
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# 2. Copie os arquivos da aplicação e o entrypoint
 COPY --from=build-stage /app/dist /usr/share/nginx/html
-
-# Copia config customizada do nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copia entrypoint para injetar env.js
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
 # Executa entrypoint antes de iniciar nginx
 ENTRYPOINT ["/entrypoint.sh"]

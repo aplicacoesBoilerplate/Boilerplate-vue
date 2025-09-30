@@ -1,15 +1,15 @@
 export interface LoginModel {
-  email_usuario: string
-  senha_usuario: string
+    email_usuario: string;
+    senha_usuario: string;
 }
 
 export interface ConfirmarSenha extends LoginModel {
-  confirmar_senha: string
+    confirmar_senha: string;
 }
 
 export interface AlterarSenha {
-  emailUsuario: string
-  senhaUsuario: string
-  novaSenha: string
-  confirmarNovaSenha: string
+    emailUsuario: string;
+    senhaUsuario: string;
+    novaSenha: string;
+    confirmarNovaSenha: string;
 }

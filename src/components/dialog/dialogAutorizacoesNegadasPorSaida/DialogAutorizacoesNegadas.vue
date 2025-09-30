@@ -1,79 +1,86 @@
 <template>
-  <v-dialog v-model="exibir" max-width="650">
-
-    <v-card prepend-icon="mdi-information-outline" title="Autorizações negadas para essa saída"
-      subtitle="Verifique as observações antes de continuar">
-      <v-divider />
-      <v-virtual-scroll :items="autorizacoes?.registros" height="500" item-height="50">
-        <template v-slot:default="{ item: autorizacao }">
-          <v-list-item
-            :title="`${autorizacao.idAutorizacao} - Aprovação: ${autorizacao.aprovacaoSaida ? 'Autorizado' : 'Negado'}`"
-            :subtitle="`#Data da autorização: ${autorizacao.dataAutorizacao ? `${autorizacao.dataAutorizacao}` : 'Não definido'}`">
-            <p>
-              Negado por: {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
-              <br>
-              {{ autorizacao.observacaoAutorizacao }}
-            </p>
-          </v-list-item>
-          <v-divider />
+    <BaseDialog v-model:atributos="dialogState">
+        <template #titulo>
+            <v-icon>mdi-information-outline</v-icon>
+            <h4>Autorizações negadas para essa saída</h4>
+            <h5>Verifique as observações antes de continuar</h5>
         </template>
-      </v-virtual-scroll>
-      <v-divider />
 
-      <v-card-actions class="sticky-actions">
-        <v-btn color="red" variant="plain" @click="eventoRejeicao(dialogAutorizacoesNegadas.idAutorizacaoOrigem)">
-          <v-icon class="pt-1">mdi-close</v-icon>
-          Negar
-        </v-btn>
+        <template #default>
+            <v-virtual-scroll :items="negadas.autorizacoesNegadas?.registros" height="500" item-height="50">
+                <template v-slot:default="{ item: autorizacao }">
+                    <v-list-item
+                        :title="`${autorizacao.idAutorizacao} - Aprovação: ${autorizacao.aprovacaoSaida ? 'Autorizado' : 'Negado'}`"
+                        :subtitle="`#Data da autorização: ${autorizacao.dataAutorizacao ? `${autorizacao.dataAutorizacao}` : 'Não definido'}`">
+                        <p>
+                            Negado por: {{ autorizacao.idFuncionarioAutorizacao }} - {{ autorizacao.nomeResponsavel }}
+                            <br>
+                            {{ autorizacao.observacaoAutorizacao }}
+                        </p>
+                    </v-list-item>
+                    <v-divider />
+                </template>
+            </v-virtual-scroll>
+        </template>
 
-        <v-spacer />
-        <v-btn color="success" variant="tonal" @click="eventoLiberacao(dialogAutorizacoesNegadas.idAutorizacaoOrigem)">
-          <v-icon class="pt-1">mdi-check</v-icon>
-          Liberar
-        </v-btn>
-      </v-card-actions>
+        <template #acoes>
+            <v-btn color="red" variant="plain" @click="eventoRejeicao(negadas.idAutorizacaoOrigem)">
+                <v-icon class="pt-1">mdi-close</v-icon>
+                Negar
+            </v-btn>
 
-    </v-card>
-  </v-dialog>
+            <v-spacer />
+
+            <v-btn color="success" variant="tonal" @click="eventoLiberacao(negadas.idAutorizacaoOrigem)">
+                <v-icon class="pt-1">mdi-check</v-icon>
+                Liberar
+            </v-btn>
+        </template>
+    </BaseDialog>
 </template>
 
 <script setup lang="ts">
+// Components
+import BaseDialog from "../BaseDialog.vue";
+
 // Classes
-import type { DialogAutorizacoesNegadasClass } from "@/components/dialog/dialogAutorizacoesNegadasPorSaida/ClassDialogAutorizacoesNegadas.ts";
+import { DialogAutorizacoesNegadasClass } from "@/components/dialog/dialogAutorizacoesNegadasPorSaida/ClassDialogAutorizacoesNegadas.ts";
+
+// Models
 import type { AutorizacoesConsulta } from "@/models/saidasModels/saidasModels";
+
+// Service
 import { autorizacoesServices } from "@/services/autorizacoesServices";
 
 // Vue
-import { computed } from 'vue'
+import { computed } from "vue";
 
-interface Props {
-  modelValue: DialogAutorizacoesNegadasClass
-}
+const negadas = defineModel<DialogAutorizacoesNegadasClass>('negadas', { required: true })
+const dialogState = computed({
+    get: () => ({
+        visualizar: negadas.value.show,
+        maxWidth: 650,
+    }),
+    set: (newValue) => {
+        negadas.value.show = newValue.visualizar;
+    }
+});
 
-const props = defineProps<Props>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: DialogAutorizacoesNegadasClass): void,
-  (e: 'emitir-rejeicao', autorizacao: AutorizacoesConsulta): void, // Se o modal for fechado com o botão de negar autorização
-  (e: 'emitir-liberacao', autorizacao: AutorizacoesConsulta): void // Se o modal for fechado com o botão de confirmar autorização
+    (e: 'emitir-rejeicao', autorizacao: AutorizacoesConsulta): void, // Se o modal for fechado com o botão de negar autorização
+    (e: 'emitir-liberacao', autorizacao: AutorizacoesConsulta): void // Se o modal for fechado com o botão de confirmar autorização
 }>()
 
-const autorizacoes = computed(() => props.modelValue.autorizacoesNegadas)
-const dialogAutorizacoesNegadas = computed(() => props.modelValue)
-const exibir = computed({
-  get: () => dialogAutorizacoesNegadas.value.show,
-  set: (val) => dialogAutorizacoesNegadas.value.show = val
-})
-
 async function eventoRejeicao(idAutorizacao: number) {
-  const response = await autorizacoesServices.getAutorizacaoById(idAutorizacao)
-  emit('emitir-rejeicao', response)
-  dialogAutorizacoesNegadas.value.closeDialog()
+    const response = await autorizacoesServices.getAutorizacaoById(idAutorizacao)
+    emit('emitir-rejeicao', response)
+    negadas.value.closeDialog()
 }
 
 async function eventoLiberacao(idAutorizacao: number) {
-  const response = await autorizacoesServices.getAutorizacaoById(idAutorizacao)
-  emit('emitir-liberacao', response)
-  dialogAutorizacoesNegadas.value.closeDialog()
+    const response = await autorizacoesServices.getAutorizacaoById(idAutorizacao)
+    emit('emitir-liberacao', response)
+    negadas.value.closeDialog()
 }
 
 </script>
