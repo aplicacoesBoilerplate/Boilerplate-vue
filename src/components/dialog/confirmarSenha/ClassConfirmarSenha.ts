@@ -1,20 +1,20 @@
+import type { ConfirmarSenha } from "@/models/authModels/LoginModel";
+import { authServices } from "@/services/authService";
+import { useSnackbarStore } from "@/stores/SnackbarStore";
+
 export class ConfirmarSenhaClass {
     show: boolean;
-    email: string;
-    senha: string;
-    confirmarSenha: string;
-    novaSenha?: string;
-    confirmarNovaSenha?: string;
+    confirmarSenha: ConfirmarSenha;
     callback?: () => Promise<void> | null;
 
     constructor() {
         this.show = false;
-        this.email = "";
-        this.senha = "";
-        this.confirmarSenha = "";
+        this.confirmarSenha = {
+            email_usuario: "",
+            senha_usuario: "",
+            confirmar_senha: ""
+        }
         this.callback = undefined;
-        this.novaSenha = "";
-        this.confirmarNovaSenha = "";
     }
 
     openDialog() {
@@ -22,8 +22,11 @@ export class ConfirmarSenhaClass {
     }
 
     clearFields() {
-        this.senha = "";
-        this.confirmarSenha = "";
+        this.confirmarSenha = {
+            email_usuario: "",
+            senha_usuario: "",
+            confirmar_senha: ""
+        }
     }
 
     closeDialog() {
@@ -37,8 +40,14 @@ export class ConfirmarSenhaClass {
     }
 
     async executeCallback() {
-        if (this.callback) {
-            await this.callback();
+        const senhaConfirmada = await authServices.confirmarSenha(this.confirmarSenha)
+        if (senhaConfirmada) {
+            if (this.callback) {
+                await this.callback();
+            }
+            useSnackbarStore().showSnackbar('Senha confirmada!');
+        } else {
+            useSnackbarStore().showSnackbar('Senha inválida!', 'red');
         }
     }
 }

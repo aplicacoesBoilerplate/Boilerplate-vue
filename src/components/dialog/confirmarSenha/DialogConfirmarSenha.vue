@@ -6,7 +6,7 @@
         </template>
 
         <template #default>
-            <FormConfirmarSenha ref="formComponentRef" v-model:confirmar="dialogConfirmarSenha" />
+            <FormConfirmarSenha ref="formComponentRef" v-model:confirmar="dialogConfirmarSenha.confirmarSenha" />
 
             <v-row dense class="p-0 m-0">
                 <v-col cols="12">
@@ -74,7 +74,7 @@ watch(() => dialogConfirmarSenha.value.show, async (isOpen) => {
     } else {
         try {
             const usuarioToken = await authServices.getByToken()
-            dialogConfirmarSenha.value.email = usuarioToken.email
+            dialogConfirmarSenha.value.confirmarSenha.email_usuario = usuarioToken.email
         } catch (error) {
             useSnackbarStore().showSnackbar(error, 'red')
             throw error
@@ -94,11 +94,9 @@ async function submitForm() {
     const isValid = await formComponentRef.value?.validate();
     if (!isValid) return;
     try {
-        
         if (dialogConfirmarSenha.value.callback)
             await dialogConfirmarSenha.value.executeCallback()
         resetForm()
-        useSnackbarStore().showSnackbar('Senha confirmada!', 'success')
     } catch (error) {
         useSnackbarStore().showSnackbar(error, 'red')
     }

@@ -15,12 +15,13 @@
 
             <v-card-actions class="sticky-actions">
                 <slot name="acoes">
-                    <v-spacer></v-spacer>
+                    <v-spacer />
                     <v-btn color="red-lighten-1" variant="plain" @click="toggleDialog()">
                         <v-icon class="pt-1">mdi-close</v-icon>
                         Fechar
                     </v-btn>
-                    <v-spacer></v-spacer>
+                    <v-spacer />
+                    <slot name="outrasAcoes" />
                 </slot>
             </v-card-actions>
         </v-card>
