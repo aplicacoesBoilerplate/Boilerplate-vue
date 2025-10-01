@@ -30,6 +30,7 @@ export class DialogSaidasClass {
             nomeFuncionarioResponsavelSaida: "",
             descricaoMotivo: "",
             categoriaMotivo: "",
+            abaterHoraExtra: false
         };
     }
 
@@ -64,6 +65,7 @@ export class DialogSaidasClass {
                 nomeFuncionarioResponsavelSaida: "",
                 descricaoMotivo: "",
                 categoriaMotivo: "",
+                abaterHoraExtra: false
             };
         }
     }

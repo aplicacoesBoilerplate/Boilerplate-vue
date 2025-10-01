@@ -19,9 +19,9 @@
 
             <!-- Código do motivo -->
             <v-col cols="12" md="6" class="d-flex justify-center">
-                <v-autocomplete clearable v-model="saida.motivoSaida" label="Motivo*"
-                    :items="apiMotivos?.registros" :item-title="'descricaoMotivo'" :item-value="'idMotivo'"
-                    :rules="[rules.required]" :disabled="visualizando" variant="outlined" />
+                <v-autocomplete clearable v-model="saida.motivoSaida" label="Motivo*" :items="apiMotivos?.registros"
+                    :item-title="'descricaoMotivo'" :item-value="'idMotivo'" :rules="[rules.required]"
+                    :disabled="visualizando" variant="outlined" />
             </v-col>
 
             <!-- Informação retornada pela consulta -->
@@ -123,12 +123,14 @@ import type { MotivoConsulta } from '@/models/motivosModels/MotivosModels'
 // Services
 import { motivosServices } from '@/services/motivosServices'
 import { firebirdServices } from '@/services/firebirdService';
+import { categoriasServices } from '@/services/categoriasServices';
 
 // Utils
 import { rules } from '@/utils/rules'
 
 // Vue
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { saidasServices } from '@/services/saidasServices';
 
 const formRef = ref()
 const formIsValid = ref(false)
@@ -150,8 +152,20 @@ defineProps<{
 
 const saida = defineModel<SaidaConsulta>('saida', { required: true });
 
+async function setAbaterHoraExtra() {
+    if (saida.value.idSaida) {
+        const saidaDomain = await saidasServices.getSaidaById(saida.value.idSaida);
+        saida.value.abaterHoraExtra = saidaDomain.abaterHoraExtra
+    } else {
+        const motivoDomain = await motivosServices.getMotivoById(saida.value.motivoSaida)
+        const categoriaDomain = await categoriasServices.getCategoriaById(motivoDomain.idCategoria)
+        saida.value.abaterHoraExtra = categoriaDomain.abaterHoraExtra
+    }
+}
+
 onMounted(async () => {
     await getAllMotivos()
+    await setAbaterHoraExtra()
 })
 
 // Consulta todos os motivos para alimentar o autocomplete
@@ -197,6 +211,13 @@ function getValuesRegistroDP() {
         saida.value.setorFuncionario = valuesRegistro.descricaoSetor
     }
 }
+
+// Alterar o valor do campo de abater hora extra de acordo com a categoria do motivo selecionado
+watch(() => saida.value.motivoSaida, async () => {
+    const motivoDomain = await motivosServices.getMotivoById(saida.value.motivoSaida)
+    const categoriaDomain = await categoriasServices.getCategoriaById(motivoDomain.idCategoria)
+    saida.value.abaterHoraExtra = categoriaDomain.abaterHoraExtra
+})
 
 const validate = async (): Promise<boolean> => {
     const { valid } = await formRef.value?.validate();

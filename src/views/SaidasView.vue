@@ -233,6 +233,16 @@
                 {{ saida.observacaoSaida }}
               </v-col>
             </v-row>
+
+            <!-- Saída abate hora extra -->
+            <v-row dense style="border-bottom: 2px solid black;">
+              <v-col cols="6" class="font-weight-medium text-info mb-1">
+                Abater Hora Extra:
+              </v-col>
+              <v-col cols="6" class="mb-1" :class="!saida.abaterHoraExtra ? 'text-success' : 'text-red'">
+                {{ saida.abaterHoraExtra ? 'SIM' : 'NÃO' }}
+              </v-col>
+            </v-row>
           </div>
         </v-expand-transition>
         <v-divider />
