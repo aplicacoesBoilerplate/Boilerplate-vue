@@ -58,6 +58,12 @@
                     :disabled="visualizando" variant="outlined" />
             </v-col>
 
+            <!-- Campo para decidir se a saída vai abater hora extra, herda da categoria mas difere no registro sem alterar o pai -->
+            <v-col cols="12" class="d-flex justify-center">
+                <v-checkbox v-model="saida.abaterHoraExtra" color="warning" label="Abater hora extra?"
+                    :disabled="visualizando" hide-details />
+            </v-col>
+
             <!-- Campo de observação da saída -->
             <v-col cols="12">
                 <InputTextUpperCase v-model:="saida.observacaoSaida" :style="{

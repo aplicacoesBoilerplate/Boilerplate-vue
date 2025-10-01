@@ -21,6 +21,7 @@ export interface SaidaConsulta {
   idCategoria?: number
   descricaoCategoria?: string
   emergencial?: boolean
+  abaterHoraExtra?: boolean
 }
 
 // Corpo padrão das autorizações
