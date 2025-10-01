@@ -26,8 +26,8 @@
                         </v-list-item-icon>
                     </template>
                     <v-list-item-content>
-                        <v-list-item-title>Versão Frontend: 6.2.10</v-list-item-title>
-                        <v-list-item-subtitle>Atualizado em: 30/09/2025 às 15:52</v-list-item-subtitle>
+                        <v-list-item-title>Versão Frontend: 6.2.12</v-list-item-title>
+                        <v-list-item-subtitle>Atualizado em: 01/10/2025 às 14:35</v-list-item-subtitle>
                     </v-list-item-content>
                 </v-list-item>
             </v-list>
