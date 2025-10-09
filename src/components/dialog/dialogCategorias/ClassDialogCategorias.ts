@@ -39,9 +39,9 @@ export class DialogCategoriasClass {
     }
 
     closeDialog() {
-        this.clearFields();
-        this.show = false;
         this.isEditing = false;
+        this.show = false;
+        this.clearFields();
     }
 
     async completeForm(idCategoria: number) {
