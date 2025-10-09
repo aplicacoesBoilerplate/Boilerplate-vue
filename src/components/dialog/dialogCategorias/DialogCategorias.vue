@@ -121,8 +121,8 @@ async function updateCategoria() {
 }
 
 async function submitForm() {
-    const { valid } = await formComponentRef.value?.validate()
-    if (!valid) return
+    const isValid = await formComponentRef.value?.validate()
+    if (!isValid) return
 
     dialogCategorias.value.isEditing ? await updateCategoria() : await cadastrarNovaCategoria()
 }
