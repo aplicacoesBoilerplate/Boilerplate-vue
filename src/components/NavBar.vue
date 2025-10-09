@@ -99,14 +99,20 @@ const dialogQrcode = ref<{ visualizar: boolean, qrcode: string }>({visualizar: f
 const inatividadeStore = useInatividadeStore();
 const { tempoRestante } = storeToRefs(inatividadeStore);
 
-
 // Se o usuário armazenado estiver vazio e o token ainda estiver no session store, consultar o usuário da sessão ao montar o componente
 onMounted(async () => {
   try {
-        usuarioLogado.value = await authServices.getByToken();
+        const responseByToken = await authServices.getByToken();
+        usuarioLogado.value = responseByToken;
 
-        if (usuarioLogado.value.permissao === 'ADMINISTRADOR' || usuarioLogado.value.permissao === 'ADMINISTRADOR_AUTORIZADO')
-            await getStatusWppConnect();
+        if (responseByToken) {
+            if (usuarioLogado.value.permissao === 'ADMINISTRADOR' || usuarioLogado.value.permissao === 'ADMINISTRADOR_AUTORIZADO')
+            try {
+                await getStatusWppConnect();
+            } catch (error) {
+                useSnackbarStore().showSnackbar(error, 'red');
+            }
+        }
 
     } catch (error) {
         useSnackbarStore().showSnackbar('Erro ao identificar o usuário! Redirecionando para a tela de login...', 'red')
@@ -129,6 +135,8 @@ async function getStatusWppConnect() {
     statusWhatsApp.value = data
     if (!data) {
       await getQrcodeWppConnect()
+    } else {
+        dialogQrcode.value.visualizar = true
     }
   } catch (error) {
     useSnackbarStore().showSnackbar('WhatsApp offline! Escaneie o qrcode para se conectar.', 'warning')
