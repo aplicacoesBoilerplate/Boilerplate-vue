@@ -6,11 +6,13 @@ import { VDateInput } from 'vuetify/labs/VDateInput'
 import { pt } from 'vuetify/locale'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import '@mdi/font/css/materialdesignicons.css'
+import { VHotkey } from 'vuetify/labs/VHotkey'
 
 export default createVuetify({
   components: {
     ...components,
     VDateInput,
+    VHotkey
   },
   directives,
   icons: {

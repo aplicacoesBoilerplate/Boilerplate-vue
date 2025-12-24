@@ -12,6 +12,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       title: 'Home',
       icon: 'mdi-home',
+      hotkey: 'cmd+shift+h',
     },
   },
   {
@@ -20,6 +21,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/LoginView.vue'),
     meta: {
       hidden: true,
+      title: 'Login'
     },
   },
   {
@@ -29,6 +31,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       title: 'Dashboard',
       icon: 'mdi-view-dashboard',
+      hotkey: 'cmd+shift+d',
       requiresAuth: true,
     },
   },
@@ -40,6 +43,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       title: 'Administração',
       icon: 'mdi-shield-crown',
+      hotkey: 'cmd+shift+a',
       requiresAuth: true,
       authorize: ['admin'],
     },
@@ -51,6 +55,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: 'Gerenciar Usuários',
           icon: 'mdi-account-group',
+          hotkey: 'cmd+shift+u',
           requiresAuth: true,
           authorize: ['admin'],
         },
@@ -62,6 +67,7 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: 'Configurações',
           icon: 'mdi-cog',
+          hotkey: 'cmd+shift+c',
           requiresAuth: true,
         },
       },
@@ -82,7 +88,10 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ServerError',
     component: ErrorsView,
     props: { type: '500' },
-    meta: { hidden: true }
+    meta: {
+      hidden: true,
+      title: 'Erro interno do servidor'
+    }
   },
   {
     path: '/:pathMatch(.*)*',

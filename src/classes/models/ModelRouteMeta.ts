@@ -3,7 +3,7 @@ export interface IRouteMeta {
   name?: string;
   title?: string;
   icon?: string;
-  hotKey?: string;
+  hotkey?: string;
   hidden?: boolean;
   requiresAuth?: boolean;
   authorize?: string[];

@@ -23,6 +23,7 @@ export function useNavigation() {
       path: route.path,
       title: route.meta?.title as string | undefined,
       icon: route.meta?.icon as string | undefined,
+      hotkey: route.meta?.hotkey as string | undefined,
       hidden: route.meta?.hidden as boolean | undefined,
       requiresAuth: route.meta?.requiresAuth as boolean | undefined,
       authorize: route.meta?.authorize as string[] | undefined,
