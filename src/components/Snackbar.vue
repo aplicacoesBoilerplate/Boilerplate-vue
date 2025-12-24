@@ -1,15 +1,29 @@
 <template>
-  <v-snackbar absolute v-model="snackbar.visible" :color="snackbar.color" :timeout="snackbarTimeout" class="py-15"
-    location="top right" variant="elevated" rounded multi-line>
-    {{ snackbar.message }}
+  <v-snackbar
+    v-model="store.visible"
+    :color="store.color"
+    :timeout="snackbarTimeout"
+    class="py-15"
+    location="top right"
+    variant="elevated"
+    rounded
+    multi-line
+  >
+    {{ store.message }}
 
     <template #actions>
-      <v-btn color="white" variant="text" @click="snackbar.hideSnackbar()">
+      <v-btn color="white" variant="text" @click="store.hideSnackbar()">
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </template>
 
-    <v-progress-linear :model-value="progress" height="4" color="white" absolute bottom />
+    <v-progress-linear
+      :model-value="progress"
+      height="4"
+      color="white"
+      absolute
+      bottom
+    />
   </v-snackbar>
 </template>
 
@@ -17,10 +31,10 @@
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 import { ref, watch, onBeforeUnmount } from 'vue'
 
-const snackbar = useSnackbarStore()
+const store = useSnackbarStore()
 const snackbarTimeout = 4000
 const progress = ref(100)
-const intervalStep = 50 // intervalo entre atualizações
+const intervalStep = 50
 let intervalId: number | null = null
 
 function clearProgress() {
@@ -45,9 +59,8 @@ function startProgress() {
   }, intervalStep)
 }
 
-// Observa apenas a propriedade `visible` da snackbar
-watch(() => snackbar.visible, (visible) => {
-  if (visible) {
+watch(() => store.visible, (isVisible) => {
+  if (isVisible) {
     startProgress()
   } else {
     clearProgress()
@@ -58,4 +71,5 @@ watch(() => snackbar.visible, (visible) => {
 onBeforeUnmount(() => {
   clearProgress()
 })
+
 </script>

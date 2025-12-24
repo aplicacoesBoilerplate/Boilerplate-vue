@@ -1,26 +1,26 @@
+import type { SnackbarColor } from '@/classes/models/modelComponents/ModelSnackbar'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useSnackbarStore = defineStore('snackbar', () => {
   const visible = ref(false)
   const message = ref('')
-  const color = ref('success')
+  const color = ref<SnackbarColor>('success')
 
-  function showSnackbar(msg: any, colorType: string = 'success') {
+  function showSnackbar(msg: string, colorType: SnackbarColor = 'success') {
     visible.value = false
 
     setTimeout(() => {
-      message.value = String(msg)
+      message.value = msg
       color.value = colorType
       visible.value = true
-    }, 50)
+    }, 100)
   }
 
   function hideSnackbar() {
     visible.value = false
   }
 
-  // Disponibiliza as funções
   return {
     visible,
     message,

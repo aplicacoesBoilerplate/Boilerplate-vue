@@ -1,329 +1,121 @@
-<template>
-
-  <!-- Card para definir tamanho de exibição e acoplar os demais elementos -->
-  <v-card class="mx-auto" max-width="1000">
-    <v-card-title class="d-flex justify-space-between align-center">
-      <span class="text-h6">Lista de errors</span>
-
-      <BtnsFilterPaginator :paginator="paginadorClass" :show="{ exibirOrdem: true, exibirApenasHoje: true }" @alterado-ordem="aoMudarOrdem"
-        @alterado-apenas-hoje="aoMudarApenasHoje" @alterado-aprovacao="aoMudarAprovacao"
-        @limpar-filtros="limparFiltros" />
-
-      <!-- Campo para consultar os errors pelo search -->
-      <InputUpperCase v-model:="paginadorClass.search" :style="{
-        icon: 'mdi-magnify',
-        density: 'compact',
-        btnDisabled: !paginadorClass.search,
-        inputVariant: 'outlined',
-        btnVariant: 'text',
-        label: 'Consultar errors',
-        showPrepend: true,
-        hint: 'Responsável ou erro (arquivo, classe, método, linha ou status)',
-        maxWidth: 400,
-      }" @on-prepend-click="getAllErrors" />
-    </v-card-title>
-    <v-divider />
-
-    <!-- Loading -->
-    <div class="d-flex justify-center" v-if="loading">
-      <v-progress-circular color="primary" indeterminate />
-    </div>
-
-    <!-- Alerta quando nenhum erro consultado foi encontrado -->
-    <div v-if="apiErrors?.totalRegistros == 0 && loading == false" class="pt-4">
-      <v-alert text="Nenhum erro encontrado!" type="info" variant="tonal">
-        <template v-slot:append>
-          <v-btn color="warning" variant="plain" @click="limparFiltros()">
-            <v-icon class="pt-1">
-              mdi-refresh
-            </v-icon>
-            Refresh
-          </v-btn>
-        </template>
-      </v-alert>
-    </div>
-
-    <!-- Exibição dos errors -->
-    <v-virtual-scroll :items="apiErrors?.registros" height="500" item-height="50" v-else>
-      <template v-slot:default="{ item: error }">
-        <v-list-item :title="`${error.idError} - ${error.horaError}`" :subtitle="`#método: ${error.metodoError}`">
-
-          <!-- Ícone de cartão de erro -->
-          <template v-slot:prepend>
-            <v-icon>mdi-alert-circle-outline</v-icon>
-          </template>
-
-          <!-- Botões de funcionalidades de mais informações e menu -->
-          <template v-slot:append>
-            <div class="pe-2">
-              <v-btn size="small" variant="elevated" color="white" icon="mdi-information-outline"
-                @click="toggleError(error.idError)" title="Informações">
-              </v-btn>
-            </div>
-          </template>
-
-        </v-list-item>
-        <!-- Card de detalhes para cada erro, expanção controlada por uma variável -->
-        <v-expand-transition>
-          <div v-if="expandedErrorId === error.idError" class="custom-expansion-panel">
-            <v-divider />
-            <v-row dense>
-              <!-- Informações do responsável pelo erro -->
-              <v-col cols="12" class="d-flex justify-center">
-                <v-chip color="info">
-                  INFORMAÇÕES DO RESPONSÁVEL
-                </v-chip>
-              </v-col>
-            </v-row>
-            <br>
-            <br>
-
-            <v-row dense style="border-bottom: 2px solid black;">
-              <v-col cols="3" class="font-weight-medium text-info mb-1">
-                Responsável:
-              </v-col>
-              <v-col cols="9" class="mb-1">
-                {{ error.nomeResponsavel }}
-              </v-col>
-            </v-row>
-
-            <v-row dense style="border-bottom: 2px solid black;">
-              <v-col cols="3" class="font-weight-medium text-info mb-1">
-                E-mail:
-              </v-col>
-              <v-col cols="9" class="mb-1">
-                {{ error.emailResponsavel }}
-              </v-col>
-            </v-row>
-
-            <v-row dense style="border-bottom: 2px solid black;">
-              <v-col cols="3" class="font-weight-medium text-info mb-1">
-                Permissao:
-              </v-col>
-              <v-col cols="9" class="mb-1">
-                {{ error.permissaoResponsavel }}
-              </v-col>
-            </v-row>
-
-            <!-- Informações do erro -->
-            <v-col cols="12" class="d-flex justify-center">
-              <v-chip color="warning">
-                INFORMAÇÕES DO ERRO
-              </v-chip>
-            </v-col>
-            <br>
-            <br>
-
-            <v-row dense style="border-bottom: 2px solid black;">
-              <v-col cols="3" class="font-weight-medium text-warning mb-1">
-                Mensagem:
-              </v-col>
-              <v-col cols="9" class="mb-1">
-                {{ error.erro }}
-              </v-col>
-            </v-row>
-
-            <v-row dense style="border-bottom: 2px solid black;">
-              <v-col cols="3" class="font-weight-medium text-warning mb-1">
-                Arquivo de origem:
-              </v-col>
-              <v-col cols="9" class="mb-1">
-                {{ error.arquivoError }}
-              </v-col>
-            </v-row>
-
-            <v-row dense style="border-bottom: 2px solid black;">
-              <v-col cols="3" class="font-weight-medium text-warning mb-1">
-                Classe de origem:
-              </v-col>
-              <v-col cols="9" class="mb-1">
-                {{ error.classeError }}
-              </v-col>
-            </v-row>
-
-            <v-row dense style="border-bottom: 2px solid black;">
-              <v-col cols="3" class="font-weight-medium text-warning mb-1">
-                Método de origem:
-              </v-col>
-              <v-col cols="9" class="mb-1">
-                {{ error.metodoError }}
-              </v-col>
-            </v-row>
-
-            <v-row dense style="border-bottom: 2px solid black;">
-              <v-col cols="3" class="font-weight-medium text-warning mb-1">
-                Linha de origem:
-              </v-col>
-              <v-col cols="9" class="mb-1">
-                {{ error.linhaError }}
-              </v-col>
-            </v-row>
-
-            <v-row dense style="border-bottom: 2px solid black;">
-              <v-col cols="3" class="font-weight-medium text-warning mb-1">
-                Http status code:
-              </v-col>
-              <v-col cols="9" class="mb-1">
-                {{ error.statusCodeError }}
-              </v-col>
-            </v-row>
-
-            <v-divider v-if="error.idSaida > 0" />
-
-            <!-- Registro da saída relacionada -->
-            <v-col v-if="error.idSaida > 0" cols="12" class="d-flex justify-center">
-              <v-chip color="info">
-                Referente a saída:
-                {{ error.idSaida }}
-                <span class="pr-2" />
-                <BtnOpenDialog :callback="() => visualizarInformacoes(error.idSaida)" icon="mdi-eye-outline"
-                  size="x-small" variant="outlined" color="info" class="pt-2" />
-              </v-chip>
-            </v-col>
-          </div>
-        </v-expand-transition>
-
-        <v-divider />
-      </template>
-    </v-virtual-scroll>
-  </v-card>
-
-  <!-- Componente de paginação -->
-  <Paginator v-model:paginator="paginadorClass" @mudouPagina="aoMudarPagina" @onBuscar="onBuscar"
-    v-show="apiErrors?.totalRegistros! > 0 && !loading" />
-
-  <!-- Dialog aberto pelo botão acima -->
-  <DialogSaidas v-model:dialog-saidas="dialogSaidas" />
-
-</template>
-
 <script setup lang="ts">
-//#region Imports
-// Componentes
-import Paginator from '@/components/paginator/Paginator.vue'; // Componente visual para a paginação de registros
-import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
-import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue"; // Botão padrão para se comunicar com os dialogs enviando a função de callback
-import DialogSaidas from "@/components/dialog/dialogSaidas/DialogSaidas.vue"; // Componente visual para o dialog das saídas, utilizado para exibição das informações
-import BtnsFilterPaginator from '@/components/paginator/BtnsFilterPaginator.vue'; // Componente visual que controla os filtros para consulta de registros
+import { computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 
-// Classes
-import { PaginatorClass } from '@/components/paginator/ClassPaginator';
-import { DialogSaidasClass } from "@/components/dialog/dialogSaidas/ClassDialogSaidas";
+const props = defineProps<{
+  type?: '403' | '404' | '500';
+}>();
 
-// Store
-import { useSnackbarStore } from '@/stores/SnackbarStore';
+const router = useRouter();
+const route = useRoute();
 
-// Models
-import type { ErrorsConsulta } from '@/models/errorsModels/errorsModels';
-import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel';
+const errorType = computed(() => props.type || (route.name === 'AcessoNegado' ? '403' : '404'));
 
-// Services
-import { errorsServices } from '@/services/errorsService';
-
-// Vue
-import { onMounted, ref } from 'vue';
-//#endregion
-
-//#region Variáveis
-// Booleanos
-const loading = ref(false) // Carregamento
-const showDialog = ref(false) // Dialog de saída
-// Classes
-const paginadorClass = ref(new PaginatorClass({ limite: 10, offset: 1, totalPaginas: 0, totalRegistros: 0, orderBy: 'DESC', search: '' })) // Classe para a paginação
-const dialogSaidas = ref(new DialogSaidasClass())
-// Outros
-var apiErrors = ref<HeaderPaginatorModel<ErrorsConsulta>>() // Armazena os dados da resposta das req para exibição no front
-const expandedErrorId = ref<number | null>(null) // Painel de informações do erro
-//#endregion
-
-//#region Funcionalidades do Vue
-onMounted(async () => {
-  await getAllErrors()
-})
-//#endregion
-
-//#region funções de consulta de errors
-// Consulta paginada de todos os errors, aceita diversos parâmetros, inclusive o search
-async function getAllErrors() {
-  loading.value = true
-  try {
-    const response = await errorsServices.getErrorsConsulta(paginadorClass.value)
-
-    apiErrors.value = response
-
-    paginadorClass.value.atualizarDadosAPI({
-      totalPaginas: response.totalPaginas,
-      totalRegistros: response.totalRegistros,
-    })
-  } catch (error) {
-    useSnackbarStore().showSnackbar(error, 'red')
-    throw error
-  } finally {
-    loading.value = false
+const errorContent = computed(() => {
+  switch (errorType.value) {
+    case '403':
+      return {
+        code: '403',
+        title: 'Acesso Negado',
+        message: 'Você não tem permissão para acessar esta área. Se acredita que isso é um erro, contate o administrador.',
+        icon: 'mdi-shield-lock-outline',
+        color: 'error'
+      };
+    case '500':
+      return {
+        code: '500',
+        title: 'Erro Interno',
+        message: 'Algo deu errado nos nossos servidores. Tente novamente mais tarde.',
+        icon: 'mdi-server-network-off',
+        color: 'warning'
+      };
+    case '404':
+    default:
+      return {
+        code: '404',
+        title: 'Página não encontrada',
+        message: 'Não encontramos a página que você está procurando.',
+        icon: 'mdi-map-marker-question-outline',
+        color: 'info'
+      };
   }
-}
-//#endregion
+});
 
-//#region DialogSaida
-function visualizarInformacoes(idSaida: number) {
-  dialogSaidas.value.visualizarInformacoes(idSaida)
-  showDialog.value = true
-}
-//#endregion
-
-//#region Paginação
-async function onBuscar() {
-  await getAllErrors()
+function goHome() {
+  router.push('/');
 }
 
-async function aoMudarPagina(novaPagina: number) {
-  paginadorClass.value.atualizarPagina(novaPagina)
-  await getAllErrors()
+function goBack() {
+  router.go(-1);
 }
-
-async function aoMudarOrdem() {
-  paginadorClass.value.alterarOrdenacao()
-  await getAllErrors()
-}
-
-async function aoMudarAprovacao() {
-  paginadorClass.value.alterarFiltroAprovacao()
-  await getAllErrors()
-}
-
-async function aoMudarApenasHoje() {
-  paginadorClass.value.alterarFiltroApenasHoje()
-  await getAllErrors()
-}
-
-async function limparFiltros() {
-  paginadorClass.value.limparFiltros()
-  await getAllErrors()
-}
-//#endregion
-
-//#region Demais funções
-// Função para controlar o v-expand-transition dos detalhes de cada erro
-function toggleError(id?: number) {
-  if (id != null)
-    expandedErrorId.value = expandedErrorId.value === id ? null : id
-}
-//#endregion
-
 </script>
 
+<template>
+  <v-container class="fill-height d-flex align-center justify-center text-center">
+    <v-sheet
+      elevation="0"
+      max-width="600"
+      class="bg-transparent"
+    >
+      <v-icon
+        :icon="errorContent.icon"
+        :color="errorContent.color"
+        size="120"
+        class="mb-6 animate-bounce"
+      ></v-icon>
+
+      <h1 class="text-h2 font-weight-bold mb-2 text-high-emphasis">
+        {{ errorContent.code }}
+      </h1>
+      <h2 class="text-h4 font-weight-medium mb-4 text-medium-emphasis">
+        {{ errorContent.title }}
+      </h2>
+
+      <p class="text-body-1 text-medium-emphasis mb-8">
+        {{ errorContent.message }}
+      </p>
+
+      <div class="d-flex justify-center gap-4">
+        <v-btn
+          variant="outlined"
+          color="primary"
+          size="large"
+          prepend-icon="mdi-arrow-left"
+          @click="goBack"
+          class="mr-4"
+        >
+          Voltar
+        </v-btn>
+
+        <v-btn
+          variant="flat"
+          color="primary"
+          size="large"
+          prepend-icon="mdi-home"
+          @click="goHome"
+        >
+          Ir para o Início
+        </v-btn>
+      </div>
+    </v-sheet>
+  </v-container>
+</template>
+
 <style scoped>
-.custom-expansion-panel {
-  margin: 0.8rem;
+.animate-bounce {
+  animation: bounce 2s infinite;
 }
 
-.custom-expansion-panel,
-strong {
-  padding-right: 0.5rem;
-  text-decoration: none;
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
 }
 
-.v-progress-circular {
-  margin: 1rem;
-}
 </style>

@@ -1,71 +1,37 @@
 <script setup lang="ts">
-// Componentes
-import SnackbarNotifications from '@/components/Snackbar.vue';
-import Navigation from './components/Navigation.vue';
-
-// Vue e Router
-import { RouterView, useRoute } from 'vue-router'
-import { onUnmounted, watch } from 'vue';
-
-// Lógica de Inatividade
-import { gerenciamentoInatividade } from '@/utils/gerenciamentoInatividade';
-import { useInatividadeStore } from '@/stores/inatividade';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import Snackbar from '@/components/Snackbar.vue';
+import Breadcrumbs from '@/components/Breadcrumbs.vue';
+import Navigation from '@/components/Navigation.vue';
 
 const route = useRoute();
-const inatividadeStore = useInatividadeStore();
 
-let watcherinatividade: gerenciamentoInatividade | null = null;
-
-function startInactivityWatcher() {
-    watcherinatividade = new gerenciamentoInatividade(() => {
-        if (inatividadeStore.acaoAtualizar) {
-            inatividadeStore.acaoAtualizar();
-        }
-    }, 600000); // 10 minutos
-
-    watcherinatividade.onWarning((remaining) => {
-        inatividadeStore.setTempoRestante(remaining);
-    });
-
-    watcherinatividade.onReset(() => {
-        inatividadeStore.setTempoRestante(null);
-    });
-
-    watcherinatividade.start();
-}
-
-watch(() => route.path, (newPath) => {
-    watcherinatividade?.stop();
-    if (newPath !== '/' && newPath !== '/register') {
-        startInactivityWatcher();
-    }
-}, { immediate: true });
-
-onUnmounted(() => {
-    watcherinatividade?.stop();
-})
-
+const isLayoutVisible = computed(() => {
+  return route.name !== 'Login' && route.meta.hidden !== true;
+});
 </script>
 
 <template>
-    <v-app theme="dark">
-        <SnackbarNotifications />
-        <Navigation v-if="route.path !== '/' && route.path !== '/register'" />
+  <v-app theme="dark">
+    <Navigation v-if="isLayoutVisible" />
 
-        <v-main>
-            <v-container>
-                <RouterView v-if="route.path == '/' || route.path == '/register'" />
-                <!-- v-if acima evita duplicidade na exibição dos componentes -->
-            </v-container>
-        </v-main>
-    </v-app>
+    <Snackbar />
+
+    <v-main>
+      <v-container>
+        <Breadcrumbs v-if="isLayoutVisible" />
+        <RouterView />
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <style global>
 html,
 v-main {
-    height: 100vh;
-    margin: 0;
-    padding: 0;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 </style>

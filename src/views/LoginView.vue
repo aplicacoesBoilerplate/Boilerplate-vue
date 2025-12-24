@@ -1,12 +1,4 @@
 <template>
-  <div class="custom-button-wrapper" @mouseenter="hover = true" @mouseleave="hover = false">
-    <RouterLink to="/register" custom v-slot="{ navigate }">
-      <v-btn icon @click="navigate" class="animated-btn">
-        <v-icon color="white">mdi-account-plus-outline</v-icon>
-      </v-btn>
-      <span class="button-label" :class="{ visible: hover }">Solicitar acesso</span>
-    </RouterLink>
-  </div>
   <v-container class="d-flex justify-center align-center"
     style="margin: 0; padding: 0; height: 90vh; overflow: hidden;">
     <LoginForm />
@@ -16,10 +8,8 @@
 
 <script lang="ts" setup>
 // Componentes
-import LoginForm from '@/components/LoginForm.vue';
+import LoginForm from '@/components/forms/LoginForm.vue';
 
 // Vue
 import { ref } from 'vue';
-
-const hover = ref(false)
 </script>

@@ -2,14 +2,14 @@
 import type { PaginatorClass } from '@/components/paginator/ClassPaginator'
 // Store
 // Models
-import type { HeaderPaginatorModel } from '@/models/HeaderPaginatorModel'
-import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
+import type { IHeaderPaginatorModel } from '@/classes/models/ModelHeaderPaginator'
+import type { IUser } from '@/classes/models/ModelUser'
 // Services
 import http from './axios'
 
 export const usuariosServices = {
   // Serviço para consumir o endpoint da API de consulta paginada dos usuários
-  async getAllUsers(paginador: PaginatorClass): Promise<HeaderPaginatorModel<UsuarioConsulta>> {
+  async getAllUsers(paginador: PaginatorClass): Promise<IHeaderPaginatorModel<IUser>> {
     try {
       const { data } = await http.get('/usuarios/consulta', {
         params: paginador,
@@ -33,7 +33,7 @@ export const usuariosServices = {
   },
 
   // Serviço para consumir o endpoint da API de consulta de um usuário pelo Id
-  async getUserById(idUsuario?: number): Promise<UsuarioConsulta> {
+  async getUserById(idUsuario?: number): Promise<IUser> {
     if (idUsuario) {
     }
     try {
@@ -45,7 +45,7 @@ export const usuariosServices = {
   },
 
   // Serviço para consumir o endpoint da API de cadastrar um usuário com senha padrão, sem bloqueio de conta e permissão, usado por adm's
-  async createUser(newUser: UsuarioConsulta): Promise<UsuarioConsulta> {
+  async createUser(newUser: IUser): Promise<IUser> {
     try {
       const { data } = await http.post('/usuarios', newUser)
       return data
@@ -55,7 +55,7 @@ export const usuariosServices = {
   },
 
   // Serviço para consumir o endpoint da API de cadastrar um usuário com senha definida no cadastro, com bloqueio de conta e permissão nula, usado por usuários comuns
-  async solicitarAcesso(newUser: UsuarioConsulta): Promise<UsuarioConsulta> {
+  async solicitarAcesso(newUser: IUser): Promise<IUser> {
     try {
       const { data } = await http.post('/usuarios/registrar', newUser)
       return data
@@ -65,10 +65,10 @@ export const usuariosServices = {
   },
 
   // Serviço para consumir o endpoint da API de atualizar um usuário, usado no perfil e por adm's
-  async updateUser(user: UsuarioConsulta): Promise<UsuarioConsulta> {
-    await this.getUserById(user.idUsuario!)
+  async updateUser(user: IUser): Promise<IUser> {
+    await this.getUserById(user.idUser!)
     try {
-      const { data } = await http.put(`/usuarios/${user.idUsuario}`, user)
+      const { data } = await http.put(`/usuarios/${user.idUser}`, user)
       return data
     } catch (error) {
       throw error

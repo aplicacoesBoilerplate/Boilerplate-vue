@@ -1,6 +1,7 @@
 import router from '@/router'
 import axios, { AxiosError } from 'axios'
-import type { UsuarioConsulta } from '@/models/usersModels/UsuariosModels'
+import { ClassErrorAPI } from '@/classes/ClassErrorAPI'
+import type { IErrorAPI } from '@/classes/models/ModelErrorAPI'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 
 const http = axios.create({
@@ -10,55 +11,39 @@ const http = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
-})
+});
 
-// Interceptador para adicionar o token a cada requisição
 http.interceptors.request.use((config) => {
   const token = sessionStorage.getItem('token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config
 })
 
 http.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (!error) Promise.reject('Erro inesperado!')
-
-    if ((error.response && error.response.status === 401) || !sessionStorage.getItem('token')) {
-      useSnackbarStore().showSnackbar('Login expirado!', 'red')
-      sessionStorage.removeItem('token')
-      router.push('/')
+    const snackbar = useSnackbarStore();
+    if (!error) {
+      Promise.reject(new Error('Erro desconhecido!'));
     }
 
-    const objetoError = new ErrorAPI(error.response?.data)
+    const errorResponse = error?.response;
 
-    return Promise.reject(objetoError.erro)
+    if (errorResponse?.status === 401) {
+      snackbar.showSnackbar('Sessão expirada! faça login novamente.', 'error');
+      sessionStorage.removeItem('token');
+      router.push({ name: 'Login' });
+      return Promise.reject(error);
+    }
+
+    const objetoError = new ClassErrorAPI(error.response?.data as IErrorAPI)
+
+    snackbar.showSnackbar(objetoError.getErrorAPI.errorMessage || 'Ocorreu um erro na requisição.', 'error');
+
+    return Promise.reject(objetoError.getErrorAPI)
   },
 )
-
-class ErrorAPI {
-  erro: string = ''
-  usuario: UsuarioConsulta | null = null
-  saida: number = 0
-  trace:
-    | {
-        lineNumber: number
-        fileName: string
-        className: string
-        methodName: string
-      }
-    | undefined
-  horaErro: Date | undefined
-  statusCode: number = 500
-
-  constructor(pObj: any) {
-    // this.erro = pObj.erro ?? this.erro
-    if (pObj) {
-      this.erro = pObj.erro ?? this.erro
-    } else {
-      this.erro = 'Erro inesperado ao processar a requisição.'
-    }
-  }
-}
 
 export default http
