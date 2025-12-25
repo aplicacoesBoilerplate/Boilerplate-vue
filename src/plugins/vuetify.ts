@@ -9,6 +9,23 @@ import '@mdi/font/css/materialdesignicons.css'
 import { VHotkey } from 'vuetify/labs/VHotkey'
 
 export default createVuetify({
+  theme: {
+    defaultTheme: 'dark',
+    themes: {
+      light: {
+        colors: {
+          primary: '#1867C0',
+          secondary: '#5CBBF6',
+        },
+      },
+      dark: {
+        colors: {
+          primary: '#2196F3',
+          secondary: '#424242',
+        },
+      },
+    },
+  },
   components: {
     ...components,
     VDateInput,

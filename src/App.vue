@@ -2,8 +2,9 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import Snackbar from '@/components/Snackbar.vue';
-import Breadcrumbs from '@/components/Breadcrumbs.vue';
-import Navigation from '@/components/Navigation.vue';
+import AppBar from './components/layouts/base/AppBar.vue';
+import Navigation from './components/layouts/base/Navigation.vue';
+import Breadcrumbs from './components/layouts/base/Breadcrumbs.vue';
 
 const route = useRoute();
 
@@ -13,13 +14,12 @@ const isLayoutVisible = computed(() => {
 </script>
 
 <template>
-  <v-app theme="dark">
-    <Navigation v-if="isLayoutVisible" />
-
-    <Snackbar />
-
+  <v-app>
     <v-main>
-      <v-container>
+      <v-container fluid>
+        <Snackbar />
+        <Navigation v-if="isLayoutVisible" />
+        <AppBar v-if="isLayoutVisible"/>
         <Breadcrumbs v-if="isLayoutVisible" />
         <RouterView />
       </v-container>

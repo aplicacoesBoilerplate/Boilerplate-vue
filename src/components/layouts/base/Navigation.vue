@@ -36,7 +36,7 @@ function handleLogout() {
 </script>
 
 <template>
-  <v-navigation-drawer expand-on-hover rail>
+  <v-navigation-drawer app expand-on-hover rail>
     <v-list>
       <v-list-item
         prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
