@@ -3,10 +3,11 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { VDateInput } from 'vuetify/labs/VDateInput'
+import { VHotkey } from 'vuetify/labs/VHotkey'
+import { VIconBtn } from 'vuetify/labs/VIconBtn'
 import { pt } from 'vuetify/locale'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import '@mdi/font/css/materialdesignicons.css'
-import { VHotkey } from 'vuetify/labs/VHotkey'
 
 export default createVuetify({
   theme: {
@@ -29,7 +30,8 @@ export default createVuetify({
   components: {
     ...components,
     VDateInput,
-    VHotkey
+    VHotkey,
+    VIconBtn
   },
   directives,
   icons: {
