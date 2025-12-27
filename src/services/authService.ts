@@ -1,7 +1,7 @@
 import type { IAlterPassword, IConfirmPassword, ILogin } from '@/classes/models/ModelLogin'
 import http from './axios'
 import type { IUser } from '@/classes/models/ModelUser'
-import { usuariosServices } from './usuariosService'
+import { usersServices } from './usuariosService'
 
 export const authServices = {
   async login(loginData: ILogin): Promise<string> {
@@ -22,7 +22,7 @@ export const authServices = {
   async getByToken(): Promise<IUser> {
     try {
       const { data } = await http.get('/auth/me') // Consulta os dados do usuário autenticado
-      const usuario = await usuariosServices.getUserById(data.idUsuario) // Pega o id que não muda e consulta o estado atual no banco
+      const usuario = await usersServices.getUserById(data.idUsuario) // Pega o id que não muda e consulta o estado atual no banco
       return usuario // Retorna os dados do usuário autenticado com base no banco de dados (atualizado)
     } catch (error) {
       throw error
@@ -32,7 +32,7 @@ export const authServices = {
   async confirmarSenha(confirmar: IConfirmPassword): Promise<Boolean> {
     try {
       const usuarioToken = await this.getByToken() // Pega os dados do usuário autenticado
-      const usuario = await usuariosServices.getUserById(usuarioToken.idUser) // Pega o id que não muda e consulta o estado atual no banco
+      const usuario = await usersServices.getUserById(usuarioToken.idUser) // Pega o id que não muda e consulta o estado atual no banco
       confirmar.emailUser = usuario.email // Atribuir o e-mail para facilitar o preenchimento do formulário
       const { data } = await http.post('/auth/confirmar', confirmar)
       return data

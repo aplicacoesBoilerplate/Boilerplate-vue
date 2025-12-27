@@ -1,7 +1,5 @@
 export interface IHeaderPaginatorModel<T> {
-  limite: number
+  limit: number
   offset: number
-  totalPaginas: number
-  totalRegistros: number
-  registros?: Array<T>
+  items?: Array<T>
 }

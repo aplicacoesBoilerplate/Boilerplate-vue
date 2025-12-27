@@ -32,10 +32,18 @@ const items = computed(() => {
     v-if="items.length > 0"
     :items="items"
     divider="/"
-    class="px-0 py-2"
+    class="breadcrumbs-sticky px-4 py-2 bg-background border-b"
   >
     <template v-slot:title="{ item }">
       {{ item.title }}
     </template>
   </v-breadcrumbs>
 </template>
+
+<style scoped>
+.breadcrumbs-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+</style>

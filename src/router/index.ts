@@ -36,6 +36,16 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/users',
+    name: 'Usuários',
+    component: () => import('@/views/UsersView.vue'),
+    meta: {
+      title: 'Usuários',
+      icon: 'mdi-account-group',
+      hotkey: 'cmd+shift+u',
+    },
+  },
+  {
     path: '/admin',
     name: 'Admin',
     component: () => import('@/views/DashboardView.vue'),

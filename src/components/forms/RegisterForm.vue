@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
-import { usuariosServices } from '@/services/usuariosService'
+import { usersServices } from '@/services/usuariosService'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 import { rules } from '@/utils/rules'
 import { ref } from 'vue'
@@ -89,7 +89,7 @@ const loading = ref(false) // Carregamento
 async function solicitarAcesso() {
   try {
     loading.value = true
-    await usuariosServices.solicitarAcesso(newUser.value)
+    await usersServices.solicitarAcesso(newUser.value)
     useSnackbarStore().showSnackbar('Conta registrada, aguarde a liberação de um administrador', 'success')
     newUser.value = {
       nome: '',
