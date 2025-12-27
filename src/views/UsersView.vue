@@ -1,3 +1,17 @@
+<template>
+  <v-container fluid class="fill-height align-start">
+    <data-table
+      title="Relatório de Usuários"
+      density="compact"
+      :headers="headers"
+      :items="data"
+      :loading="loading"
+      :height="'auto'"
+      @item-selecionado="handleSelection"
+    />
+  </v-container>
+</template>
+
 <script setup lang="ts">
 import type { IHeadersDataTable } from '@/classes/models/modelComponents/ModelHeaderTable';
 import DataTable from '@/components/DataTable.vue';
@@ -46,17 +60,3 @@ const { loading } = useInfiniteList(route.fullPath, usersServices.getAllUsers, 2
 //   if (isIntersecting) loadMore();
 // }
 </script>
-
-<template>
-  <v-container fluid class="fill-height align-start">
-    <data-table
-      title="Relatório de Usuários"
-      density="compact"
-      :headers="headers"
-      :items="data"
-      :loading="loading"
-      :height="500"
-      @item-selecionado="handleSelection"
-    />
-  </v-container>
-</template>
