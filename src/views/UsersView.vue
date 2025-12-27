@@ -1,39 +1,62 @@
 <script setup lang="ts">
+import type { IHeadersDataTable } from '@/classes/models/modelComponents/ModelHeaderTable';
+import DataTable from '@/components/DataTable.vue';
 import { useInfiniteList } from '@/composables/useInfiniteList';
 import { usersServices } from '@/services/usuariosService';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
-const headers = [
-  { title: 'ID', key: 'id', width: 80 },
-  { title: 'Nome', key: 'nome' },
-  { title: 'Email', key: 'email' },
-];
+const headers: IHeadersDataTable[] = [
+  { title: 'Barco', align: 'start', key: 'name', width: 200 },
+  { title: 'Velocidade (knots)', align: 'end', key: 'speed' },
+  { title: 'Tamanho (m)', align: 'end', key: 'length' },
+  {
+    title: 'Preço ($)',
+    align: 'end',
+    key: 'price',
+    value: (item: any) => formatPrice(item.price)
+  },
+  { title: 'Ano', align: 'center', key: 'year' },
+]
 
-const dataFake = Array.from({ length: 1000 }, (_, i) => ({
-  id: i + 1,
-  nome: `Usuário ${i + 1}`,
-  email: `usuario${i + 1}@example.com`
-}));
-
-const { items, loading, loadMore, tableId } = useInfiniteList(route.fullPath, usersServices.getAllUsers, 20);
-
-function onIntersect(isIntersecting: boolean) {
-  if (isIntersecting) loadMore();
+function formatPrice (value: number) {
+  return `$${value.toFixed(0).replace(/\d(?=(\d{3})+$)/g, '$&,')}`
 }
+
+const data = ref([
+  { id: 1, name: 'Speedster', speed: 35, length: 22, price: 300000, year: 2021 },
+  { id: 2, name: 'Ocean King', speed: 25, length: 35, price: 4500000, year: 2023 },
+])
+
+onMounted(() => {
+  setTimeout(() => {
+    loading.value = false;
+  }, 10000);
+});
+
+function handleSelection(item: any[]) {
+  console.log('Selecionado:', item);
+}
+
+const { loading } = useInfiniteList(route.fullPath, usersServices.getAllUsers, 20);
+
+// function onIntersect(isIntersecting: boolean) {
+//   if (isIntersecting) loadMore();
+// }
 </script>
 
 <template>
   <v-container fluid class="fill-height align-start">
-    <v-card>
-      <v-data-table-virtual :id="tableId" :items="dataFake" :headers="headers" height="600">
-        <template v-slot:body.append>
-          <div v-intersect="onIntersect" class="pa-4 text-center">
-            <v-progress-circular v-if="loading" indeterminate size="24" />
-          </div>
-        </template>
-      </v-data-table-virtual>
-    </v-card>
+    <data-table
+      title="Relatório de Usuários"
+      density="compact"
+      :headers="headers"
+      :items="data"
+      :loading="loading"
+      :height="500"
+      @item-selecionado="handleSelection"
+    />
   </v-container>
 </template>
