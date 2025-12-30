@@ -14,7 +14,13 @@
       </template>
 
       <template #dataChart>
-        <ChartPie v-model:dataChart="gridConfig.modelChart" />
+        <div class="fill-height w-100">
+          <ChartPie
+            v-model:selectedFilter="selectedChartFilter"
+            :chart-data="chartDataComputed"
+            :filter-options="headersParaGrafico"
+          />
+        </div>
       </template>
 
     </grid-data-chart>
@@ -22,12 +28,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, watchEffect } from 'vue';
+import { reactive, ref, onMounted, watchEffect, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { ClassGridDataChart } from '@/classes/ClassGridDataChart';
 import type { IHeadersDataTable } from '@/classes/models/modelComponents/ModelHeaderTable';
 import { usersServices } from '@/services/usuariosService';
 import { useInfiniteList } from '@/composables/useInfiniteList';
+import { useChartHelpers } from '@/composables/useChartHelpers';
 import GridDataChart from '@/components/layouts/GridDataChart.vue';
 import DataTable from '@/components/DataTable.vue';
 import ChartPie from '@/components/ChartPie.vue';
@@ -46,10 +53,10 @@ const headers: IHeadersDataTable[] = [
 const data = ref([
   { id: 1, name: 'Speedster', speed: 35, length: 22, price: 300000, year: 2021 },
   { id: 2, name: 'Ocean King', speed: 25, length: 35, price: 4500000, year: 2023 },
+  { id: 3, name: 'Ocean King', speed: 35, length: 26, price: 4500600, year: 2024 },
 ]);
 
-const optionsChartFilter = ref<string[]>(headers.map((header) => header.title));
-optionsChartFilter.value.pop();
+const optionsChartFilter = ref(headers.map(h => h.title).slice(0, -1));
 
 const gridManager = new ClassGridDataChart({
   modelTable: {
@@ -88,11 +95,29 @@ function handleSelection(item: any[]) {
   console.log('Selecionado:', item);
 }
 
+function formatPrice(value: number) {
+  return `$${value.toFixed(0).replace(/\d(?=(\d{3})+$)/g, '$&,')}`;
+}
+
 function toggleChartState() {
   gridConfig.modelTable.model.hiddenChart = !gridConfig.modelTable.model.hiddenChart;
 }
 
-function formatPrice(value: number) {
-  return `$${value.toFixed(0).replace(/\d(?=(\d{3})+$)/g, '$&,')}`;
-}
+const headersParaGrafico = computed(() => {
+  return headers
+    .filter(h => h.key !== 'actions')
+    .map(h => ({ title: h.title, value: h.key }));
+});
+
+const selectedChartFilter = ref(
+  headersParaGrafico.value.find(h => h.value === 'year')?.value ||
+  headersParaGrafico.value[0]?.value
+);
+
+const chartDataComputed = computed(() => {
+  const items = gridConfig.modelTable.model.itemsTable;
+  const filtro = selectedChartFilter.value;
+  return useChartHelpers(items, filtro);
+});
+
 </script>

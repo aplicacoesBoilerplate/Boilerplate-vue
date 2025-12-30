@@ -7,9 +7,15 @@ export class ClassGridDataChart {
     this.modelGridDataChart = {
       modelTable: {
         model: {
-          hiddenChart: data?.modelTable.model.hiddenChart || true,
+          hiddenChart: data?.modelTable.model.hiddenChart ?? true,
+          titleTable: data?.modelTable.model.titleTable || undefined,
+          heightTable: data?.modelTable.model.heightTable || 400,
+          maxHeightTable: data?.modelTable.model.maxHeightTable || 400,
+          bgColorTable: data?.modelTable.model.bgColorTable || undefined,
+          densityTable: data?.modelTable.model.densityTable || 'compact',
           headersTable: data?.modelTable.model.headersTable || [],
-          itemsTable: data?.modelTable.model.itemsTable || []
+          itemsTable: data?.modelTable.model.itemsTable || [],
+          loadingDataTable: data?.modelTable.model.loadingDataTable || true,
         }
       },
       modelChart: {
