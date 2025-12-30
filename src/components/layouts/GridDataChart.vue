@@ -10,17 +10,20 @@
 
     <Transition name="expand-charts">
       <v-col
-        v-if="!hiddenChart"
+        v-show="!hiddenChart"
         cols="12"
         md="6"
         class="scroll-offset overflow-hidden"
         ref="refCharts"
         tabindex="-1"
       >
-        <slot name="dataChart" :toggleChart="() => emit('toggle-chart')" />
+        <div v-if="!hiddenChart" class="fill-height w-100">
+          <slot name="dataChart" />
+        </div>
       </v-col>
     </Transition>
   </v-row>
+  <slot name="moreInfo" />
 </template>
 
 <script setup lang="ts">
@@ -37,6 +40,7 @@ const emit = defineEmits<{
 defineSlots<{
   dataTable(props: { toggleChart: () => void }): any;
   dataChart(): any;
+  moreInfo(): any;
 }>();
 
 const refCharts = ref<any>(null);

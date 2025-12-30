@@ -1,33 +1,38 @@
 import type { ValueDataChart } from "@/classes/models/modelComponents/ModelGridDataChart";
+import { stringToColor } from "@/utils/generateColors";
 
-const COLORS = [
-  '#767119', '#9e850d', '#cb9700', '#ffa600',
-  '#ff7b00', '#ff4d00', '#2196F3', '#4CAF50'
-];
-
-export function useChartHelpers(items: any[], campoKey: string): ValueDataChart[] {
+export function useChartHelpers(
+  items: any[],
+  campoAgrupamento: string,
+  chartAgregacao: 'sum' | 'count' = 'count'
+): ValueDataChart[] {
   if (!items || items.length === 0) {
     return [];
   }
 
   const agrupado: Record<string, number> = {};
-  const isNumericField = typeof items[0][campoKey] === 'number';
 
   items.forEach(item => {
-    const valorChave = item[campoKey]; // ex: 2021
-    const label = String(valorChave);
+    const chave = String(item[campoAgrupamento]);
 
-    if (!agrupado[label]) {
-      agrupado[label] = 0;
+    let valorInicial = 1;
+
+    if (chartAgregacao === 'sum') {
+        valorInicial = Number(item[campoAgrupamento]) || 0;
     }
 
-    agrupado[label] += 1;
+    if (!agrupado[chave]) {
+      agrupado[chave] = 0;
+    }
+
+    agrupado[chave] += valorInicial;
   });
 
   return Object.keys(agrupado).map((key, index) => ({
-    id: parseInt(key),
+    key: key,
+    id: index,
     title: key,
     value: agrupado[key],
-    color: COLORS[index % COLORS.length]
+    color: stringToColor(key)
   }));
 }
