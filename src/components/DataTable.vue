@@ -8,7 +8,7 @@
               v-bind="props"
               icon="mdi-table-cog"
               v-tooltip="'Colunas da tabela'"
-              variant="plain"
+              variant="text"
               color="primary"
             />
           </template>
@@ -44,9 +44,11 @@
 
         <v-spacer />
 
-        <v-icon-btn
-          icon="mdi-plus-circle-outline"
+        <BtnOpenDialog
+          icon="mdi-plus-circle"
           v-tooltip="'Novo registro'"
+          :rotate="true"
+          @click="toggleDialog"
         />
 
         <v-divider
@@ -56,9 +58,10 @@
           :thickness="3"
         />
 
-        <v-icon-btn
+        <BtnOpenDialog
           icon="mdi-chart-donut-variant"
           v-tooltip="'Gráfico'"
+          :rotate="true"
           @click="toggleChart"
         />
       </div>
@@ -116,12 +119,14 @@
 <script setup lang="ts">
 import type { IModelValueDataTable } from "@/classes/models/modelComponents/ModelGridDataChart";
 import { ref, computed, watchEffect } from "vue";
+import BtnOpenDialog from "./dialog/BtnOpenDialog.vue";
 
 const dataTable = defineModel<IModelValueDataTable<any>>('dataTable', { required: true });
 
 const emits = defineEmits<{
   (e: 'item-selecionado', item: any[]): void;
   (e: 'toggle-chart'): void;
+  (e: 'toggle-dialog'): void;
 }>();
 
 const allHeaders = computed(() => {
@@ -165,6 +170,10 @@ const propsDaLinha = ({ item }: any) => {
 
 function toggleChart() {
   emits('toggle-chart');
+}
+
+function toggleDialog() {
+  emits('toggle-dialog');
 }
 
 </script>

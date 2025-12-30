@@ -23,7 +23,12 @@
         <v-icon-btn icon="mdi-bell" v-tooltip="'Notificações'" variant="flat" />
       </v-badge>
 
-      <v-divider vertical class="mx-2 my-auto" style="height: 24px" :thickness="2" />
+      <v-divider
+        vertical
+        class="mx-2 my-auto"
+        style="height: 24px"
+        :thickness="2"
+      />
 
       <BtnOpenDialog
         icon="mdi-license"
@@ -32,13 +37,18 @@
         @click="toggleDialogLicenca"
       />
 
-      <v-divider vertical class="mx-2 my-auto" style="height: 24px" :thickness="2" />
+      <v-divider
+        vertical
+        class="mx-2 my-auto"
+        style="height: 24px"
+        :thickness="2"
+      />
 
-      <v-icon-btn
+      <BtnOpenDialog
         :color="isDark ? 'yellow-lighten-3' : 'primary'"
         :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
-        v-tooltip="'Alterar Tema'"
-        variant="plain"
+        v-tooltip="isDark ? 'Tema claro' : 'Tema escuro'"
+        :rotate="true"
         class="me-3"
         @click="toggleTheme"
       />
@@ -47,7 +57,7 @@
 
   <BaseDialog
     v-model:atributos="classDialogLicenca.model"
-    @toggle-dialog="toggleDialogLicenca()"
+    @toggle-dialog="toggleDialogLicenca"
   >
     <template #titulo>
       <v-icon size="small" icon="mdi-information-variant-circle-outline" />
@@ -101,7 +111,6 @@ const isDark = computed(() => theme.global.current.value.dark)
 const versaoDoSistema = pkg.version
 const dataVersaoFormatada = computed(() => {
   const data = new Date(__APP_BUILD_DATE__)
-
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',

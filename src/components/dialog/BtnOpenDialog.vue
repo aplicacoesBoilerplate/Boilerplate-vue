@@ -14,7 +14,7 @@
     </span>
     <v-icon-btn
       :icon="icon"
-      :v-tooltip="tooltip"
+      :variant="variant"
       v-bind="$attrs"
       class="mx-2 transition-swing"
       :class="{ 'rotate-icon': isHovering && rotate }"
@@ -31,13 +31,13 @@ defineOptions({
 
 withDefaults(defineProps<{
   icon?: string
-  tooltip?: string
+  variant?: "flat" | "plain" | "text" | "elevated" | "outlined" | "tonal" | undefined
   label?: string
   labelPosition?: 'left' | 'right'
   rotate?: boolean
 }>(), {
   icon: 'mdi-plus',
-  tooltip: undefined,
+  variant: 'flat',
   labelPosition: 'right',
   rotate: true
 })
@@ -69,7 +69,7 @@ const isHovering = ref(false)
 }
 
 .rotate-icon :deep(.v-icon) {
-  transform: rotate(90deg);
-  transition: transform 0.3s ease-in-out;
+  transform: rotate(360deg);
+  transition: transform 0.8s ease-in-out;
 }
 </style>
