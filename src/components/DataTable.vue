@@ -8,7 +8,7 @@
               v-bind="props"
               icon="mdi-table-cog"
               v-tooltip="'Colunas da tabela'"
-              variant="plain"
+              variant="text"
               color="primary"
             />
           </template>
@@ -42,25 +42,30 @@
           {{ dataTable.model.titleTable || 'Resultados' }}
         </div>
 
-        <v-spacer />
+        <slot name="toolbar-actions">
+          <v-spacer />
 
-        <v-icon-btn
-          icon="mdi-plus-circle-outline"
-          v-tooltip="'Novo registro'"
-        />
+          <BtnOpenDialog
+            icon="mdi-plus-circle"
+            v-tooltip="'Novo registro'"
+            :rotate="true"
+            @click="novoRegistro"
+          />
 
-        <v-divider
-          vertical
-          class="mx-2 my-auto"
-          style="height: 24px"
-          :thickness="3"
-        />
+          <v-divider
+            vertical
+            class="mx-2 my-auto"
+            style="height: 24px"
+            :thickness="3"
+          />
 
-        <v-icon-btn
-          icon="mdi-chart-donut-variant"
-          v-tooltip="'Gráfico'"
-          @click="toggleChart"
-        />
+          <BtnOpenDialog
+            icon="mdi-chart-donut-variant"
+            v-tooltip="'Gráfico'"
+            :rotate="true"
+            @click="toggleChart"
+          />
+        </slot>
       </div>
     </v-card-title>
 
@@ -93,6 +98,7 @@
               variant="plain"
               color="primary"
               v-tooltip="'Editar'"
+              @click="editarRegistro(item)"
             />
 
             <v-icon-btn
@@ -116,12 +122,14 @@
 <script setup lang="ts">
 import type { IModelValueDataTable } from "@/classes/models/modelComponents/ModelGridDataChart";
 import { ref, computed, watchEffect } from "vue";
+import BtnOpenDialog from "./dialog/BtnOpenDialog.vue";
 
 const dataTable = defineModel<IModelValueDataTable<any>>('dataTable', { required: true });
 
 const emits = defineEmits<{
   (e: 'item-selecionado', item: any[]): void;
   (e: 'toggle-chart'): void;
+  (e: 'gerenciar-registro', payload: { modoEdicao: boolean, item?: any }): void;
 }>();
 
 const allHeaders = computed(() => {
@@ -167,4 +175,11 @@ function toggleChart() {
   emits('toggle-chart');
 }
 
+function novoRegistro() {
+  emits('gerenciar-registro', { modoEdicao: false });
+}
+
+function editarRegistro(item: any) {
+  emits('gerenciar-registro', { modoEdicao: true, item: item });
+}
 </script>

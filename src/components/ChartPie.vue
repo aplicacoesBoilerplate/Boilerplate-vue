@@ -1,10 +1,9 @@
 <template>
   <div class="d-flex justify-center">
-    <v-card class="pa-6" elevation="6" rounded="xl" width="100%" >
-
+    <v-card class="pa-6" elevation="6" rounded="xl" width="100%">
       <v-card-title class="d-flex align-center justify-space-between">
         <div class="text-truncate mr-6 text-subtitle-1 font-weight-bold">
-          Distribuições
+          {{ tituloGrafico }}
         </div>
         <v-select
           v-model="filtroSelecionado"
@@ -23,48 +22,56 @@
 
       <div v-if="chartData.length > 0">
         <v-pie
+          :key="filtroSelecionado"
           :items="chartData"
-          :legend="{ position: 'right' }"
-          :tooltip="{ subtitleFormat: '<b>[value]</b> registros' }"
+          :legend="{ position: $vuetify.display.mdAndUp ? 'right' : 'bottom' }"
           class="pa-3 mt-3 justify-center"
           gap="2"
-          inner-cut="60"
+          hover-scale=".1"
+          inner-cut="70"
           item-key="key"
-          rounded="4"
-          size="280"
+          rounded="2"
+          size="300"
+          tooltip
           animation
+          hide-slice
           reveal
         >
           <template v-slot:center>
             <div class="text-center">
-              <div class="text-h4 font-weight-bold">{{ totalValue }}</div>
-              <div class="text-caption text-medium-emphasis">Registros</div>
+              <div class="text-h6 font-weight-bold">{{ formatValue(totalValue) }}</div>
+              <div class="opacity-70 text-caption text-medium-emphasis mt-1 mb-n1">
+                {{ labelCentro }}
+              </div>
             </div>
           </template>
 
           <template v-slot:legend="{ items, toggle, isActive }">
-            <v-list class="py-0 mt-4 bg-transparent" density="compact">
+            <v-list class="py-0 mb-n5 mb-md-0 bg-transparent" density="compact" width="300">
               <v-list-item
                 v-for="item in items"
                 :key="item.key"
-                :class="['mb-1', { 'opacity-40': !isActive(item) }]"
+                :class="['my-1', { 'opacity-40': !isActive(item) }]"
+                :title="formatValue(parseInt(item.title))"
                 rounded="lg"
                 link
                 @click="toggle(item)"
               >
                 <template v-slot:prepend>
-                  <v-avatar :color="item.color" size="12" class="mr-2" />
+                  <v-avatar :color="item.color" :size="16" class="mr-2" />
                 </template>
 
-                <v-list-item-title class="text-caption font-weight-medium">
-                  {{ item.title }}
-                </v-list-item-title>
-
                 <template v-slot:append>
-                  <span class="text-caption font-weight-bold ms-2">{{ item.value }}</span>
+                  <div class="font-weight-black text-caption">
+                    {{ calcularPorcentagem(item.value) }}%
+                  </div>
                 </template>
               </v-list-item>
             </v-list>
+          </template>
+
+          <template v-slot:tooltip="{ item }">
+            {{ item.title }}: {{ formatValue(item.value) }}x ({{ calcularPorcentagem(item.value) }}%)
           </template>
         </v-pie>
       </div>
@@ -73,23 +80,46 @@
         <v-icon icon="mdi-chart-pie-off" size="40" class="mb-2" />
         <span class="text-caption">Sem dados para exibir</span>
       </div>
-
     </v-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { ValueDataChart } from '@/classes/models/modelComponents/ModelGridDataChart';
-import { computed } from 'vue';
+import type { ValueDataChart } from '@/classes/models/modelComponents/ModelGridDataChart'
+import type { IHeadersDataTable } from '@/classes/models/modelComponents/ModelHeaderTable'
+import { computed } from 'vue'
 
 const props = defineProps<{
-  chartData: ValueDataChart[];
-  filterOptions: { title: string; value: string }[];
-}>();
+  chartData: ValueDataChart[]
+  filterOptions: { title: string; value: string }[]
+  activeConfig?: IHeadersDataTable
+}>()
 
-const filtroSelecionado = defineModel<string>('selectedFilter', { required: true });
+const filtroSelecionado = defineModel<string>('selectedFilter', { required: true })
+
+const labelCentro = computed(() => {
+  return props.activeConfig?.chartAggregator === 'sum' ? 'Total Acumulado' : 'Registros Totais'
+})
+
+const tituloGrafico = computed(() => {
+  return `Distribuição por ${props.activeConfig?.title || 'Categoria'}`
+})
 
 const totalValue = computed(() => {
-  return props.chartData.reduce((acc, curr) => acc + curr.value, 0);
-});
+  return props.chartData.reduce((acc, curr) => acc + curr.value, 0)
+})
+
+function formatValue(val: string | number) {
+  if (props.activeConfig?.chartFormatter) {
+    return props.activeConfig.chartFormatter(val)
+  }
+  return val.toLocaleString()
+}
+
+function calcularPorcentagem(val: number) {
+  if (!totalValue.value) {
+    return 0
+  }
+  return ((val / totalValue.value) * 100).toFixed(1)
+}
 </script>

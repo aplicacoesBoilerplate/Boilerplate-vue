@@ -1,26 +1,25 @@
 import type { IModelValueGridDataChart } from "./models/modelComponents/ModelGridDataChart";
 
-export class ClassGridDataChart {
-  private modelGridDataChart: IModelValueGridDataChart<any>;
+export class ClassGridDataChart<T> {
+  private modelGridDataChart: IModelValueGridDataChart<T>;
 
-  constructor(data?: IModelValueGridDataChart<any>) {
-    this.modelGridDataChart = {
+  constructor(data?: IModelValueGridDataChart<T>) {
+    const defaults = {
       modelTable: {
         model: {
-          hiddenChart: data?.modelTable.model.hiddenChart ?? true,
-          titleTable: data?.modelTable.model.titleTable || undefined,
-          heightTable: data?.modelTable.model.heightTable || 400,
-          maxHeightTable: data?.modelTable.model.maxHeightTable || 400,
-          bgColorTable: data?.modelTable.model.bgColorTable || undefined,
-          densityTable: data?.modelTable.model.densityTable || 'compact',
-          headersTable: data?.modelTable.model.headersTable || [],
-          itemsTable: data?.modelTable.model.itemsTable || [],
-          loadingDataTable: data?.modelTable.model.loadingDataTable || true,
+          hiddenChart: true,
+          titleTable: '',
+          heightTable: 400,
+          maxHeightTable: 400,
+          densityTable: 'compact',
+          headersTable: [],
+          itemsTable: Array <T>,
+          loadingDataTable: true,
         }
       },
       modelChart: {
-        optionsFilterSelectData: data?.modelChart.optionsFilterSelectData || [],
-        model: data?.modelChart.model || [
+        optionsFilterSelectData: [],
+        model: [
           {
             id: 1,
             color: 'rgba(var(--v-theme-on-surface), .2)',
@@ -29,7 +28,16 @@ export class ClassGridDataChart {
           }
         ]
       }
-    }
+    };
+    this.modelGridDataChart = {
+      modelTable: {
+        model: { ...defaults.modelTable.model, ...data?.modelTable?.model }
+      },
+      modelChart: {
+        ...defaults.modelChart,
+        ...data?.modelChart
+      }
+    } as IModelValueGridDataChart<T>;
   }
 
   getModelGridDataChart() {
