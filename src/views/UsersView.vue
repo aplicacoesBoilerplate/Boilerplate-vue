@@ -98,7 +98,14 @@ const data = ref([
 
 const optionsChartFilter = ref(headers.map((h) => h.title).slice(0, -1))
 
-const gridManager = new ClassGridDataChart({
+const gridManager = new ClassGridDataChart<{
+  id: number,
+  name: string,
+  speed: number,
+  length: number,
+  price: number,
+  year: number,
+}>({
   modelTable: {
     model: {
       titleTable: 'Relatório de Usuários',
