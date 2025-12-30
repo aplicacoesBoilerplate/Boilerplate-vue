@@ -32,22 +32,26 @@
 </template>
 
 <script setup lang="ts">
-import type { IModelBaseDialog } from '@/classes/models/modelComponents/ModelDialogBase'
+import type { IModelBaseDialog } from '@/classes/models/modelComponents/ModelBaseDialog'
 import { computed } from 'vue'
 
 const dialog = defineModel<IModelBaseDialog>('atributos', { required: true })
+
+const emit = defineEmits<{
+  (e: 'toggle-dialog'): void;
+}>();
 
 const isDialogVisible = computed({
   get() {
     return dialog.value.visualizar
   },
   set(newValue: boolean) {
-    dialog.value = { ...dialog.value, visualizar: newValue }
+    dialog.value.visualizar = newValue
   },
 })
 
 function toggleDialog() {
-  dialog.value = { ...dialog.value, visualizar: !dialog.value.visualizar }
+  emit('toggle-dialog')
 }
 
 </script>

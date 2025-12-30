@@ -45,7 +45,10 @@
     </template>
   </v-app-bar>
 
-  <BaseDialog v-model:atributos="atributosDialogLicenca">
+  <BaseDialog
+    v-model:atributos="classDialogLicenca.model"
+    @toggle-dialog="toggleDialogLicenca()"
+  >
     <template #titulo>
       <v-icon size="small" icon="mdi-information-variant-circle-outline" />
       Informações da licença
@@ -89,12 +92,13 @@ import BaseDialog from '@/components/dialog/BaseDialog.vue'
 import { useDisplay } from 'vuetify'
 import { ref, computed } from 'vue'
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'
-import { type IModelBaseDialog } from '@/classes/models/modelComponents/ModelDialogBase'
+import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
 
 const { smAndDown, mdAndUp } = useDisplay()
 const { theme, toggleTheme } = useThemeSwitch()
 const isDark = computed(() => theme.global.current.value.dark)
 
+const versaoDoSistema = pkg.version
 const dataVersaoFormatada = computed(() => {
   const data = new Date(__APP_BUILD_DATE__)
 
@@ -107,8 +111,6 @@ const dataVersaoFormatada = computed(() => {
   }).format(data)
 })
 
-const versaoDoSistema = pkg.version
-
 const emits = defineEmits(['toggle-drawer'])
 
 const loading = ref(false)
@@ -118,14 +120,14 @@ function handleSearch(term: string) {
   setTimeout(() => (loading.value = false), 2000)
 }
 
-const atributosDialogLicenca = ref<IModelBaseDialog>({
+const classDialogLicenca = new ClassBaseDialog({
   visualizar: false,
   maxHeight: 350,
   maxWidth: 400,
 })
 
 function toggleDialogLicenca() {
-  atributosDialogLicenca.value.visualizar = !atributosDialogLicenca.value.visualizar
+  classDialogLicenca.toggleDialog()
 }
 </script>
 

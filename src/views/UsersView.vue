@@ -23,6 +23,17 @@
       </template>
     </grid-data-chart>
   </v-container>
+
+  <BaseDialog v-model:atributos="atributosDialogFormUser">
+    <template v-slot:titulo>
+      <v-icon size="small" :icon="editingUser ? 'account-edit' : 'account-plus'" />
+      {{ editingUser ? 'Editar usuário' : 'Cadastrar usuário' }}
+    </template>
+
+    <template v-slot:default> </template>
+
+    <template #acoes> </template>
+  </BaseDialog>
 </template>
 
 <script setup lang="ts">
@@ -36,21 +47,37 @@ import { useChartHelpers } from '@/composables/useChartHelpers'
 import GridDataChart from '@/components/layouts/GridDataChart.vue'
 import DataTable from '@/components/DataTable.vue'
 import ChartPie from '@/components/ChartPie.vue'
+import BaseDialog from '@/components/dialog/BaseDialog.vue'
+import type { IModelBaseDialog } from '@/classes/models/modelComponents/ModelBaseDialog'
 
 const route = useRoute()
 
-const formatPrice = (value: string | number) => `R$ ${value.toLocaleString('pt-BR', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2
-})}`;
+const formatPrice = (value: string | number) =>
+  `R$ ${value.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`
 
 const formatKnots = (value: string | number) => `${value} kn`
 
 const headers: IHeadersDataTable[] = [
   { title: 'Barco', align: 'start', key: 'name', chartAggregator: 'count', width: 200 },
-  { title: 'Velocidade (knots)', align: 'end', key: 'speed', chartAggregator: 'count', chartFormatter: formatKnots },
+  {
+    title: 'Velocidade (knots)',
+    align: 'end',
+    key: 'speed',
+    chartAggregator: 'count',
+    chartFormatter: formatKnots,
+  },
   { title: 'Tamanho (m)', align: 'end', key: 'length', chartAggregator: 'count' },
-  { title: 'Preço (R$)', align: 'end', key: 'price', value: (item) => formatPrice(item.price), chartAggregator: 'sum', chartFormatter: formatPrice },
+  {
+    title: 'Preço (R$)',
+    align: 'end',
+    key: 'price',
+    value: (item) => formatPrice(item.price),
+    chartAggregator: 'sum',
+    chartFormatter: formatPrice,
+  },
   { title: 'Ano', align: 'end', key: 'year', chartAggregator: 'count' },
   { title: 'Ações', key: 'actions', sortable: false, align: 'center' },
 ]
@@ -114,14 +141,21 @@ const selectedChartFilter = ref(
 )
 
 const activeHeaderConfig = computed(() => {
-  return headers.find(h => h.key === selectedChartFilter.value);
-});
+  return headers.find((h) => h.key === selectedChartFilter.value)
+})
 
 const chartDataComputed = computed(() => {
-  const items = gridConfig.modelTable.model.itemsTable;
-  const key = selectedChartFilter.value;
-  const strategy = activeHeaderConfig.value?.chartAggregator || 'count';
-  return useChartHelpers(items, key, strategy);
-});
+  const items = gridConfig.modelTable.model.itemsTable
+  const key = selectedChartFilter.value
+  const strategy = activeHeaderConfig.value?.chartAggregator || 'count'
+  return useChartHelpers(items, key, strategy)
+})
 
+const atributosDialogFormUser = ref<IModelBaseDialog>({
+  visualizar: false,
+  maxHeight: 600,
+  maxWidth: 500,
+})
+
+const editingUser = ref<boolean>(false)
 </script>
