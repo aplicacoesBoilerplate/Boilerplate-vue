@@ -10,14 +10,16 @@
 
     <Transition name="expand-charts">
       <v-col
-        v-if="!hiddenChart"
+        v-show="!hiddenChart"
         cols="12"
         md="6"
         class="scroll-offset overflow-hidden"
         ref="refCharts"
         tabindex="-1"
       >
-        <slot name="dataChart" :toggleChart="() => emit('toggle-chart')" />
+        <div v-if="!hiddenChart" class="fill-height w-100">
+          <slot name="dataChart" :toggleChart="() => emit('toggle-chart')" />
+        </div>
       </v-col>
     </Transition>
   </v-row>
