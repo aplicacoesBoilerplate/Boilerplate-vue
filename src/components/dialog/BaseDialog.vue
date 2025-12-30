@@ -6,7 +6,7 @@
     :persistent="dialog.persistente" || false
   >
     <v-card>
-      <v-card-title class="d-flex justify-space-between align-center">
+      <v-card-title class="d-flex justify-space-between align-baseline">
         <div class="text-h6">
           <slot name="titulo">TÍTULO</slot>
         </div>
@@ -37,10 +37,6 @@ import { computed } from 'vue'
 
 const dialog = defineModel<IModelBaseDialog>('atributos', { required: true })
 
-const emit = defineEmits<{
-  (e: 'toggle-dialog'): void;
-}>();
-
 const isDialogVisible = computed({
   get() {
     return dialog.value.visualizar
@@ -51,7 +47,7 @@ const isDialogVisible = computed({
 })
 
 function toggleDialog() {
-  emit('toggle-dialog')
+  isDialogVisible.value = !isDialogVisible.value
 }
 
 </script>

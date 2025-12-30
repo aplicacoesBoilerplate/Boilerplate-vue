@@ -55,10 +55,7 @@
     </template>
   </v-app-bar>
 
-  <BaseDialog
-    v-model:atributos="classDialogLicenca.model"
-    @toggle-dialog="toggleDialogLicenca"
-  >
+  <BaseDialog v-model:atributos="classDialogLicenca.model">
     <template #titulo>
       <v-icon size="small" icon="mdi-information-variant-circle-outline" />
       Informações da licença

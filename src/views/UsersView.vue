@@ -9,6 +9,7 @@
           v-model:dataTable="gridConfig.modelTable"
           @item-selecionado="handleSelection"
           @toggle-chart="toggleChartState"
+          @gerenciar-registro="handleGerenciarRegistro"
         />
       </template>
 
@@ -24,10 +25,16 @@
     </grid-data-chart>
   </v-container>
 
-  <BaseDialog v-model:atributos="atributosDialogFormUser">
+  <BaseDialog
+    v-model:atributos="classDialogUser.model"
+    @toggle-dialog="toggleDialogUsers"
+  >
     <template v-slot:titulo>
-      <v-icon size="small" :icon="editingUser ? 'account-edit' : 'account-plus'" />
-      {{ editingUser ? 'Editar usuário' : 'Cadastrar usuário' }}
+      <v-icon
+        size="small"
+        :icon="classDialogUser.model.formModoEdicao ? 'mdi-account-edit' : 'mdi-account-plus'"
+      />
+      {{ classDialogUser.model.formModoEdicao ? 'Editar usuário' : 'Cadastrar usuário' }}
     </template>
 
     <template v-slot:default> </template>
@@ -48,7 +55,8 @@ import GridDataChart from '@/components/layouts/GridDataChart.vue'
 import DataTable from '@/components/DataTable.vue'
 import ChartPie from '@/components/ChartPie.vue'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
-import type { IModelBaseDialog } from '@/classes/models/modelComponents/ModelBaseDialog'
+import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
+import type { IUser } from '@/classes/models/ModelUser'
 
 const route = useRoute()
 
@@ -151,11 +159,23 @@ const chartDataComputed = computed(() => {
   return useChartHelpers(items, key, strategy)
 })
 
-const atributosDialogFormUser = ref<IModelBaseDialog>({
+const classDialogUser = new ClassBaseDialog<IUser>({
   visualizar: false,
-  maxHeight: 600,
-  maxWidth: 500,
+  persistente: true,
+  maxHeight: 400,
+  maxWidth: 600,
 })
 
-const editingUser = ref<boolean>(false)
+function toggleDialogUsers() {
+  classDialogUser.toggleDialog()
+}
+
+function handleGerenciarRegistro(payload: { modoEdicao: boolean, item?: any }) {
+  if (payload.modoEdicao && payload.item) {
+    classDialogUser.abrirEdicao(payload.item);
+  } else {
+    classDialogUser.abrirNovo();
+  }
+}
+
 </script>

@@ -48,7 +48,7 @@
           icon="mdi-plus-circle"
           v-tooltip="'Novo registro'"
           :rotate="true"
-          @click="toggleDialog"
+          @click="novoRegistro"
         />
 
         <v-divider
@@ -96,6 +96,7 @@
               variant="plain"
               color="primary"
               v-tooltip="'Editar'"
+              @click="editarRegistro(item)"
             />
 
             <v-icon-btn
@@ -126,7 +127,7 @@ const dataTable = defineModel<IModelValueDataTable<any>>('dataTable', { required
 const emits = defineEmits<{
   (e: 'item-selecionado', item: any[]): void;
   (e: 'toggle-chart'): void;
-  (e: 'toggle-dialog'): void;
+  (e: 'gerenciar-registro', payload: { modoEdicao: boolean, item?: any }): void;
 }>();
 
 const allHeaders = computed(() => {
@@ -172,8 +173,11 @@ function toggleChart() {
   emits('toggle-chart');
 }
 
-function toggleDialog() {
-  emits('toggle-dialog');
+function novoRegistro() {
+  emits('gerenciar-registro', { modoEdicao: false });
 }
 
+function editarRegistro(item: any) {
+  emits('gerenciar-registro', { modoEdicao: true, item: item });
+}
 </script>
