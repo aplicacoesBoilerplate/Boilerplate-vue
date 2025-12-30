@@ -13,13 +13,19 @@
       loader-height="2"
       :loading="loading"
       placeholder="Buscar..."
+      :rules="[rules.required()]"
     >
-      <template #prepend-inner v-if="mdAndUp">
+      <template #prepend-inner v-if="$vuetify.display.mdAndUp">
         <v-hotkey keys="ctrl+k" display-mode="icon" variant="contained" platform="auto" class="mr-2"/>
       </template>
 
       <template #append-inner>
-        <v-icon-btn icon="mdi-magnify" variant="plain" @click="onSubmit" />
+        <v-icon-btn
+          icon="mdi-magnify"
+          v-tooltip="'Buscar'"
+          variant="plain"
+          @click="onSubmit"
+        />
       </template>
     </v-text-field>
   </v-form>
@@ -27,9 +33,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useHotkey, useDisplay } from 'vuetify'
+import { useHotkey } from 'vuetify'
+import { useRules } from 'vuetify/labs/rules'
 
-const { mdAndUp } = useDisplay();
+const rules = useRules()
 const props = defineProps<{ loading: boolean }>()
 const emits = defineEmits(['search'])
 

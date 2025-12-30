@@ -7,14 +7,14 @@ export function useThemeSwitch() {
 
   const toggleTheme = () => {
     const newVal = theme.global.current.value.dark ? 'light' : 'dark'
-    theme.global.name.value = newVal
+    theme.change(newVal);
     localStorage.setItem(THEME_KEY, newVal)
   }
 
   onMounted(() => {
     const storedTheme = localStorage.getItem(THEME_KEY)
     if (storedTheme) {
-      theme.global.name.value = storedTheme
+      theme.change(storedTheme);
     }
   })
 
