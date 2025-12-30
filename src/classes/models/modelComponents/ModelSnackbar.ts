@@ -1,7 +1,7 @@
-export type SnackbarColor = 'success' | 'info' | 'warning' | 'error';
+export type SnackbarColor = 'success' | 'info' | 'warning' | 'error'
 
 export interface IModelSnackbar {
-  visible: boolean;
-  message: string;
-  color: SnackbarColor;
+  visible: boolean
+  message: string
+  color: SnackbarColor
 }

@@ -2,7 +2,6 @@
   <v-card flat border rounded="lg">
     <v-card-title>
       <div class="d-flex align-center">
-
         <v-menu :close-on-content-click="false">
           <template v-slot:activator="{ props }">
             <v-icon-btn
@@ -32,7 +31,12 @@
           </v-card>
         </v-menu>
 
-        <v-divider vertical class="mx-2 my-auto" style="height: 24px" :thickness="3" />
+        <v-divider
+          vertical
+          class="mx-2 my-auto"
+          style="height: 24px"
+          :thickness="3"
+        />
 
         <div class="text-h6 font-weight-bold text-high-emphasis text-truncate">
           {{ dataTable.model.titleTable || 'Resultados' }}
@@ -45,7 +49,12 @@
           v-tooltip="'Novo registro'"
         />
 
-        <v-divider vertical class="mx-2 my-auto" style="height: 24px" :thickness="3" />
+        <v-divider
+          vertical
+          class="mx-2 my-auto"
+          style="height: 24px"
+          :thickness="3"
+        />
 
         <v-icon-btn
           icon="mdi-chart-donut-variant"
@@ -58,16 +67,13 @@
     <v-divider :thickness="3" />
 
     <v-card-text class="pa-0">
-      <div v-if="dataTable.model.loadingDataTable" class="pa-4">
-        <v-skeleton-loader type="table-heading, table-row-divider@6" />
-      </div>
-
       <v-data-table-virtual
-        v-else-if="dataTable.model.itemsTable && dataTable.model.itemsTable.length > 0"
+        v-if="dataTable.model.itemsTable && dataTable.model.itemsTable.length > 0"
         :headers="filteredHeaders"
         :items="dataTable.model.itemsTable"
         :height="dataTable.model.heightTable || 'auto'"
         :max-height="dataTable.model.maxHeightTable || 500"
+        :loading="dataTable.model.loadingDataTable"
         fixed-header
         density="compact"
         hover
@@ -75,6 +81,10 @@
         @click:row="aoClicarNaLinha"
         :mobile-breakpoint="0"
       >
+        <template v-slot:loading>
+          <v-skeleton-loader type="table-row@6"></v-skeleton-loader>
+        </template>
+
         <template #item.actions="{ item }">
           <div class="d-flex justify-center gap-2">
 
@@ -105,9 +115,9 @@
 
 <script setup lang="ts">
 import type { IModelValueDataTable } from "@/classes/models/modelComponents/ModelGridDataChart";
-import { ref, computed, watchEffect, nextTick } from "vue";
+import { ref, computed, watchEffect } from "vue";
 
-const dataTable = defineModel<IModelValueDataTable>('dataTable', { required: true });
+const dataTable = defineModel<IModelValueDataTable<any>>('dataTable', { required: true });
 
 const emits = defineEmits<{
   (e: 'item-selecionado', item: any[]): void;
