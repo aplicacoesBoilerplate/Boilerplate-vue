@@ -8,6 +8,7 @@ import { VIconBtn } from 'vuetify/labs/VIconBtn'
 import { pt } from 'vuetify/locale'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import '@mdi/font/css/materialdesignicons.css'
+import { VPie } from 'vuetify/labs/VPie'
 
 export default createVuetify({
   theme: {
@@ -31,7 +32,8 @@ export default createVuetify({
     ...components,
     VDateInput,
     VHotkey,
-    VIconBtn
+    VIconBtn,
+    VPie
   },
   directives,
   icons: {

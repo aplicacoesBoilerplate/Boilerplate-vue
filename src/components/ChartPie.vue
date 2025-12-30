@@ -1,30 +1,18 @@
 <template>
-<!-- <v-pie
-  :gauge-cut="120"
-  hide-slice
-  :inner-cut="83"
-  animation
-  legend
-  :palette="['#048BA8', '#99C24D', '#F18F01']"
-  :size="242"
-  tooltip
-  reveal
-  :items="items"
-/> -->
   <div class="d-flex my-6 justify-center">
     <v-card class="pa-6" elevation="6" rounded="xl">
       <v-card-title class="d-flex align-center justify-space-between">
         <div class="text-truncate mr-6">Expenses</div>
         <v-select
           v-model="selectedGroup"
-          :items="['Transactions', 'Other']"
+          :items="selectFilterData"
           density="compact"
           max-width="200"
           variant="solo-filled"
           flat
           hide-details
           single-line
-        ></v-select>
+        />
       </v-card-title>
 
       <v-pie
@@ -91,15 +79,13 @@
 </template>
 
 <script setup lang="ts">
-  // const items = [
-  //   { key: 1, title: "Yes", value: 45 },
-  //   { key: 2, title: "No", value: 40 },
-  //   { key: 3, title: "Maybe", value: 15 },
-  // ]
+import { type IModelValueDataChart } from '@/classes/models/modelComponents/ModelGridDataChart';
+import { ref, shallowRef, toRef } from 'vue'
 
-import { shallowRef, toRef } from 'vue'
+const data = defineModel<IModelValueDataChart>('dataChart', { required: true })
+const selectFilterData = ref<string[]>(data.value.optionsFilterSelectData)
+const selectedGroup = shallowRef(selectFilterData.value[0])
 
-const selectedGroup = shallowRef('Transactions')
 const currentItems = toRef(() => selectedGroup.value === 'Transactions'
   ? [
     { id: 1, title: 'House & Bills', value: 40, color: 'rgba(var(--v-theme-on-surface), .2)', pattern: 'url(#pattern-0)' },

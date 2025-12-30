@@ -1,9 +1,12 @@
 <template>
   <v-app-bar app flat border="b">
-    <v-app-bar-nav-icon @click="emits('toggle-drawer')" />
+    <v-app-bar-nav-icon
+      v-tooltip="'Menu'"
+      @click="emits('toggle-drawer')"
+    />
 
     <v-app-bar-title class="font-weight-bold">
-    Boilerplate
+      Boilerplate
     </v-app-bar-title>
 
     <template v-if="mdAndUp">
@@ -15,14 +18,18 @@
     </template>
 
     <template v-slot:extension v-if="smAndDown">
-       <div class="px-4 pb-2 w-100">
-         <AppBarSearchForm :loading="loading" @search="handleSearch" />
-       </div>
+      <div class="px-4 pb-2 w-100">
+        <AppBarSearchForm :loading="loading" @search="handleSearch" />
+      </div>
     </template>
 
     <template v-slot:append>
       <v-badge location="bottom left" color="warning" dot class="ms-2">
-        <v-icon-btn icon="mdi-bell" variant="flat" />
+        <v-icon-btn
+          icon="mdi-bell"
+          v-tooltip="'Notificações'"
+          variant="flat"
+        />
       </v-badge>
 
       <v-divider
@@ -32,17 +39,14 @@
         :thickness="2"
       />
 
-      <v-btn
-        icon
+      <v-icon-btn
+        :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+        v-tooltip="'Alterar Tema'"
         variant="plain"
-        @click="toggleTheme"
         :color="isDark ? 'yellow-lighten-3' : 'primary'"
-        title="Alternar Tema"
-      >
-        <v-icon>
-          {{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}
-        </v-icon>
-      </v-btn>
+        class="me-3"
+        @click="toggleTheme"
+      />
     </template>
   </v-app-bar>
 </template>

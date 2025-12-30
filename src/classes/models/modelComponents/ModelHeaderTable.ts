@@ -3,9 +3,9 @@ export interface IHeadersDataTable {
   key: string;
   align?: 'start' | 'end' | 'center';
   sortable?: boolean;
+  height?: string | number;
+  maxHeigth?: string | number;
   width?: string | number;
-  minWidth?: string | number;
   maxWidth?: string | number;
-  fixed?: boolean;
   value?: (item: any) => any;
 }
