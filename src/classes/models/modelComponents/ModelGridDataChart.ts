@@ -1,10 +1,10 @@
-import type { IHeadersDataTable } from "./ModelHeaderTable";
+import type { IHeadersDataTable } from './ModelHeaderTable'
 
 export type ValueDataChart = {
-  id: number,
-  title: string,
-  value: number,
-  color: string,
+  id: number
+  title: string
+  value: number
+  color: string
   pattern?: string
 }
 
@@ -13,23 +13,23 @@ export interface IModelValueDataChart {
   model: ValueDataChart[]
 }
 
-export interface IPropsDataTable {
-  hiddenChart: boolean,
-  titleTable?: string;
-  heightTable?: string | number;
-  maxHeightTable?: string | number;
-  bgColorTable?: string;
-  densityTable?: 'comfortable' | 'compact' | 'default';
-  headersTable: IHeadersDataTable[];
-  itemsTable: any[];
-  loadingDataTable?: boolean;
+export interface IPropsDataTable<T> {
+  hiddenChart: boolean
+  titleTable?: string
+  heightTable?: string | number
+  maxHeightTable?: string | number
+  bgColorTable?: string
+  densityTable?: 'comfortable' | 'compact' | 'default'
+  headersTable: IHeadersDataTable[]
+  itemsTable: Array<T>
+  loadingDataTable?: boolean
 }
 
-export interface IModelValueDataTable {
-  model: IPropsDataTable
+export interface IModelValueDataTable<T> {
+  model: IPropsDataTable<T>
 }
 
-export interface IModelValueGridDataChart {
-  modelTable: IModelValueDataTable;
-  modelChart: IModelValueDataChart;
+export interface IModelValueGridDataChart<T> {
+  modelTable: IModelValueDataTable<T>
+  modelChart: IModelValueDataChart
 }

@@ -1,5 +1,5 @@
 <template>
-  <v-row class="prevent-jump-desktop">
+  <v-row dense class="prevent-jump-desktop">
     <v-col
       cols="12"
       :md="hiddenChart ? 12 : 6"

@@ -105,9 +105,9 @@
 
 <script setup lang="ts">
 import type { IModelValueDataTable } from "@/classes/models/modelComponents/ModelGridDataChart";
-import { ref, computed, watchEffect, nextTick } from "vue";
+import { ref, computed, watchEffect } from "vue";
 
-const dataTable = defineModel<IModelValueDataTable>('dataTable', { required: true });
+const dataTable = defineModel<IModelValueDataTable<any>>('dataTable', { required: true });
 
 const emits = defineEmits<{
   (e: 'item-selecionado', item: any[]): void;

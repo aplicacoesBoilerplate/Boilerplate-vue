@@ -1,9 +1,9 @@
 import type { IModelValueGridDataChart } from "./models/modelComponents/ModelGridDataChart";
 
 export class ClassGridDataChart {
-  private modelGridDataChart: IModelValueGridDataChart;
+  private modelGridDataChart: IModelValueGridDataChart<any>;
 
-  constructor(data?: IModelValueGridDataChart) {
+  constructor(data?: IModelValueGridDataChart<any>) {
     this.modelGridDataChart = {
       modelTable: {
         model: {
