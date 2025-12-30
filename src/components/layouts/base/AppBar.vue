@@ -23,7 +23,12 @@
         <v-icon-btn icon="mdi-bell" v-tooltip="'Notificações'" variant="flat" />
       </v-badge>
 
-      <v-divider vertical class="mx-2 my-auto" style="height: 24px" :thickness="2" />
+      <v-divider
+        vertical
+        class="mx-2 my-auto"
+        style="height: 24px"
+        :thickness="2"
+      />
 
       <BtnOpenDialog
         icon="mdi-license"
@@ -32,20 +37,25 @@
         @click="toggleDialogLicenca"
       />
 
-      <v-divider vertical class="mx-2 my-auto" style="height: 24px" :thickness="2" />
+      <v-divider
+        vertical
+        class="mx-2 my-auto"
+        style="height: 24px"
+        :thickness="2"
+      />
 
-      <v-icon-btn
+      <BtnOpenDialog
         :color="isDark ? 'yellow-lighten-3' : 'primary'"
         :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
-        v-tooltip="'Alterar Tema'"
-        variant="plain"
+        v-tooltip="isDark ? 'Tema claro' : 'Tema escuro'"
+        :rotate="true"
         class="me-3"
         @click="toggleTheme"
       />
     </template>
   </v-app-bar>
 
-  <BaseDialog v-model:atributos="atributosDialogLicenca">
+  <BaseDialog v-model:atributos="classDialogLicenca.model">
     <template #titulo>
       <v-icon size="small" icon="mdi-information-variant-circle-outline" />
       Informações da licença
@@ -89,15 +99,15 @@ import BaseDialog from '@/components/dialog/BaseDialog.vue'
 import { useDisplay } from 'vuetify'
 import { ref, computed } from 'vue'
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'
-import { type IModelBaseDialog } from '@/classes/models/modelComponents/ModelDialogBase'
+import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
 
 const { smAndDown, mdAndUp } = useDisplay()
 const { theme, toggleTheme } = useThemeSwitch()
 const isDark = computed(() => theme.global.current.value.dark)
 
+const versaoDoSistema = pkg.version
 const dataVersaoFormatada = computed(() => {
   const data = new Date(__APP_BUILD_DATE__)
-
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
@@ -106,8 +116,6 @@ const dataVersaoFormatada = computed(() => {
     minute: '2-digit',
   }).format(data)
 })
-
-const versaoDoSistema = pkg.version
 
 const emits = defineEmits(['toggle-drawer'])
 
@@ -118,14 +126,14 @@ function handleSearch(term: string) {
   setTimeout(() => (loading.value = false), 2000)
 }
 
-const atributosDialogLicenca = ref<IModelBaseDialog>({
+const classDialogLicenca = new ClassBaseDialog({
   visualizar: false,
   maxHeight: 350,
   maxWidth: 400,
 })
 
 function toggleDialogLicenca() {
-  atributosDialogLicenca.value.visualizar = !atributosDialogLicenca.value.visualizar
+  classDialogLicenca.toggleDialog()
 }
 </script>
 
