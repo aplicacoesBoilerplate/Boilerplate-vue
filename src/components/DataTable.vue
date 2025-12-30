@@ -42,28 +42,30 @@
           {{ dataTable.model.titleTable || 'Resultados' }}
         </div>
 
-        <v-spacer />
+        <slot name="toolbar-actions">
+          <v-spacer />
 
-        <BtnOpenDialog
-          icon="mdi-plus-circle"
-          v-tooltip="'Novo registro'"
-          :rotate="true"
-          @click="novoRegistro"
-        />
+          <BtnOpenDialog
+            icon="mdi-plus-circle"
+            v-tooltip="'Novo registro'"
+            :rotate="true"
+            @click="novoRegistro"
+          />
 
-        <v-divider
-          vertical
-          class="mx-2 my-auto"
-          style="height: 24px"
-          :thickness="3"
-        />
+          <v-divider
+            vertical
+            class="mx-2 my-auto"
+            style="height: 24px"
+            :thickness="3"
+          />
 
-        <BtnOpenDialog
-          icon="mdi-chart-donut-variant"
-          v-tooltip="'Gráfico'"
-          :rotate="true"
-          @click="toggleChart"
-        />
+          <BtnOpenDialog
+            icon="mdi-chart-donut-variant"
+            v-tooltip="'Gráfico'"
+            :rotate="true"
+            @click="toggleChart"
+          />
+        </slot>
       </div>
     </v-card-title>
 

@@ -23,7 +23,9 @@
       </v-col>
     </Transition>
   </v-row>
-  <slot name="moreInfo" />
+  <div class="w-100 mt-5">
+    <slot name="moreInfo" />
+  </div>
 </template>
 
 <script setup lang="ts">

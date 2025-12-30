@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height align-start">
+  <v-container fluid class="fill-height">
     <grid-data-chart
       :hidden-chart="gridConfig.modelTable.model.hiddenChart"
       @toggle-chart="toggleChartState"
@@ -138,7 +138,10 @@ watchEffect(() => {
   gridConfig.modelTable.model.loadingDataTable = loading.value
 })
 
+const itemSelecionado = ref()
+
 function handleSelection(item: any[]) {
+  itemSelecionado.value = item
   console.log('Selecionado:', item)
 }
 
