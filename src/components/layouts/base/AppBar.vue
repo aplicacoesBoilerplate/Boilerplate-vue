@@ -57,10 +57,13 @@ import { ref, computed } from 'vue';
 import { useHotkey } from 'vuetify';
 import { useThemeSwitch } from '@/composables/useThemeSwitch'
 import AppBarSearchForm from '@/components/forms/AppBarSearchForm.vue';
+import pkg from '../../../../package.json';
 
 const { smAndDown, mdAndUp } = useDisplay();
 
 const emits = defineEmits(['toggle-drawer']);
+
+const versaoDoSistema = pkg.version;
 
 const formSearchRef = ref<any>(null)
 const searchInput = ref<any>(null)
