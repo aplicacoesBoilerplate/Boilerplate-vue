@@ -1,25 +1,36 @@
+import { reactive } from "vue";
 import type { IModelValueGridDataChart } from "./models/modelComponents/ModelGridDataChart";
 
 export class ClassGridDataChart<T> {
   private modelGridDataChart: IModelValueGridDataChart<T>;
 
   constructor(data?: IModelValueGridDataChart<T>) {
-    const defaults = {
-      modelTable: {
+    this.modelGridDataChart = this.getDefault(data);
+  }
+
+  get model() {
+    return this.modelGridDataChart;
+  }
+
+  private getDefault(data?: Partial<IModelValueGridDataChart<T>>) {
+    const dataMTable = data?.modelTable?.model
+    const dataMChart = data?.modelChart?.model
+    return reactive({
+      modelTable: data?.modelTable || {
         model: {
-          hiddenChart: true,
-          titleTable: '',
-          heightTable: 'auto',
-          maxHeightTable: 400,
-          densityTable: 'compact',
-          headersTable: [],
-          itemsTable: Array <T>,
-          loadingDataTable: true,
+          hiddenChart: dataMTable?.hiddenChart || true,
+          titleTable: dataMTable?.titleTable || '',
+          heightTable: dataMTable?.heightTable || 'auto',
+          maxHeightTable: dataMTable?.maxHeightTable || 400,
+          densityTable: dataMTable?.densityTable || 'compact',
+          headersTable: dataMTable?.headersTable || [],
+          itemsTable: dataMTable?.itemsTable || Array <T>,
+          loadingDataTable: dataMTable?.loadingDataTable || true,
         }
       },
       modelChart: {
-        optionsFilterSelectData: [],
-        model: [
+        optionsFilterSelectData: data?.modelChart?.optionsFilterSelectData || [],
+        model: dataMChart || [
           {
             id: 1,
             color: 'rgba(var(--v-theme-on-surface), .2)',
@@ -28,20 +39,7 @@ export class ClassGridDataChart<T> {
           }
         ]
       }
-    };
-    this.modelGridDataChart = {
-      modelTable: {
-        model: { ...defaults.modelTable.model, ...data?.modelTable?.model }
-      },
-      modelChart: {
-        ...defaults.modelChart,
-        ...data?.modelChart
-      }
-    } as IModelValueGridDataChart<T>;
-  }
-
-  getModelGridDataChart() {
-    return this.modelGridDataChart;
+    }) as IModelValueGridDataChart<T>;
   }
 
 }
