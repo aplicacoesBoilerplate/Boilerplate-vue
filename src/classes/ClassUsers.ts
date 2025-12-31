@@ -1,5 +1,6 @@
 import type { IUser } from "@/classes/models/ModelUser";
 import { reactive } from "vue";
+import type { IHeadersDataTable } from "./models/modelComponents/ModelHeaderTable";
 
 export class ClassUsers {
   private user: IUser
@@ -37,5 +38,38 @@ export class ClassUsers {
     });
 
     Object.assign(this.user, defaults);
+  }
+
+  static formatBoolean(value?: boolean): string {
+    return value ? 'Yes' : 'No'
+  }
+
+  static getHeaders(): IHeadersDataTable[] {
+    return [
+      { title: 'Id', align: 'start', key: 'idUser', width: 50 },
+      { title: 'Username', align: 'start', key: 'username', width: 150 },
+      { title: 'Email', align: 'start', key: 'email', width: 200 },
+      { title: 'Role', align: 'start', key: 'role', width: 'auto', maxWidth: 100 },
+      { title: 'Phone Number', align: 'end', key: 'phoneNumber', width: 'auto', maxWidth: 300 },
+      {
+        title: 'Receive Notifications',
+        key: 'receiveNotifications',
+        align: 'center',
+        value: (item: IUser) => ClassUsers.formatBoolean(item.receiveNotifications),
+        chartFormatter: ClassUsers.formatBoolean
+      },
+      {
+        title: 'Active',
+        key: 'active',
+        align: 'center',
+        value: (item: IUser) => ClassUsers.formatBoolean(item.active),
+        chartFormatter: ClassUsers.formatBoolean
+      },
+      {
+        title: 'Actions',
+        key: 'actions',
+        align: 'center'
+      },
+    ];
   }
 }
