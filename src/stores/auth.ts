@@ -7,7 +7,7 @@ import type { IUser } from '@/classes/models/ModelUser';
 
 export const useAuthStore = defineStore('auth', () => {
   const classUser = new ClassUsers();
-  const user = ref<IUser | undefined>(classUser.getUser);
+  const user = ref<IUser | undefined>(classUser.model);
   const token = ref(localStorage.getItem('token') || null);
   const isAuthenticated = computed(() => !!token.value);
   const listCacheStore = useListCacheStore();

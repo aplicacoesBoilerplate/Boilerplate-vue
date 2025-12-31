@@ -5,18 +5,22 @@ export class ClassBaseDialog<T = any> {
   private modelBaseDialog: IModelBaseDialog<T>
 
   constructor(data?: Partial<IModelBaseDialog<T>>) {
-    this.modelBaseDialog = reactive({
+    this.modelBaseDialog = this.getDefault(data)
+  }
+
+  get model() {
+    return this.modelBaseDialog;
+  }
+
+  private getDefault(data?: Partial<IModelBaseDialog<T>>) {
+    return reactive({
       visualizar: data?.visualizar ?? false,
       persistente: data?.persistente ?? false,
       maxWidth: data?.maxWidth || 400,
       maxHeight: data?.maxHeight || 400,
       formModoEdicao: data?.formModoEdicao ?? false,
       itemEdicao: null
-    })
-  }
-
-  get model() {
-    return this.modelBaseDialog;
+    }) as IModelBaseDialog<T>;
   }
 
   abrirNovo() {

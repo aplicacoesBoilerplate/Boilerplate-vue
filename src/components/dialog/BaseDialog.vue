@@ -24,7 +24,7 @@
         <slot />
       </v-card-text>
 
-      <v-card-actions class="sticky-actions">
+      <v-card-actions class="sticky-actions bg-surface ">
         <slot name="acoes" />
       </v-card-actions>
     </v-card>
@@ -34,6 +34,12 @@
 <script setup lang="ts">
 import type { IModelBaseDialog } from '@/classes/models/modelComponents/ModelBaseDialog'
 import { computed } from 'vue'
+import { useHotkey } from 'vuetify'
+
+useHotkey('esc', () => {
+  if (isDialogVisible.value === true)
+    toggleDialog()
+})
 
 const dialog = defineModel<IModelBaseDialog>('atributos', { required: true })
 

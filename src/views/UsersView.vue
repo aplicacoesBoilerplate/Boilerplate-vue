@@ -34,12 +34,36 @@
         size="small"
         :icon="classDialogUser.model.formModoEdicao ? 'mdi-account-edit' : 'mdi-account-plus'"
       />
-      {{ classDialogUser.model.formModoEdicao ? 'Editar usuário' : 'Cadastrar usuário' }}
+      {{ classDialogUser.model.formModoEdicao ? `Editar usuário ${classDialogUser.model.itemEdicao?.idUser || ''}` : 'Cadastrar usuário' }}
     </template>
 
-    <template v-slot:default> </template>
+    <template v-slot:default>
+      <UserForm
+        ref="refFormUser"
+        v-model:user="modelFormUser.model"
+        v-model:valid="isFormValid"
+      />
+    </template>
 
-    <template #acoes> </template>
+    <template #acoes>
+      <v-icon-btn
+        icon="mdi-refresh"
+        v-tooltip="'Limpar'"
+        variant="text"
+        color="amber"
+        @click="resetFormUser"
+      />
+
+      <v-spacer />
+
+      <v-icon-btn
+        icon="mdi-content-save"
+        v-tooltip="'Salvar'"
+        variant="text"
+        color="success"
+        :disabled="!isFormValid"
+      />
+    </template>
   </BaseDialog>
 </template>
 
@@ -57,64 +81,34 @@ import ChartPie from '@/components/ChartPie.vue'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
 import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
 import type { IUser } from '@/classes/models/ModelUser'
+import UserForm from '@/components/forms/UserForm.vue'
+import { ClassUsers } from '@/classes/ClassUsers'
 
 const route = useRoute()
 
-const formatPrice = (value: string | number) =>
-  `R$ ${value.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
+const headers = ClassUsers.getHeaders();
 
-const formatKnots = (value: string | number) => `${value} kn`
-
-const headers: IHeadersDataTable[] = [
-  { title: 'Barco', align: 'start', key: 'name', chartAggregator: 'count', width: 200 },
+const data = ref<IUser[]>([
   {
-    title: 'Velocidade (knots)',
-    align: 'end',
-    key: 'speed',
-    chartAggregator: 'count',
-    chartFormatter: formatKnots,
-  },
-  { title: 'Tamanho (m)', align: 'end', key: 'length', chartAggregator: 'count' },
-  {
-    title: 'Preço (R$)',
-    align: 'end',
-    key: 'price',
-    value: (item) => formatPrice(item.price),
-    chartAggregator: 'sum',
-    chartFormatter: formatPrice,
-  },
-  { title: 'Ano', align: 'end', key: 'year', chartAggregator: 'count' },
-  { title: 'Ações', key: 'actions', sortable: false, align: 'center' },
-]
-
-const data = ref([
-  { id: 1, name: 'Speedster', speed: 35, length: 22, price: 300000, year: 2021 },
-  { id: 2, name: 'Ocean King', speed: 25, length: 35, price: 4500000, year: 2023 },
-  { id: 3, name: 'Ocean King', speed: 35, length: 26, price: 4500600, year: 2024 },
+    idUser: 1,
+    username: 'BOILERPLATE',
+    email: 'boilerplate@gmail.com',
+    role: 'ADMIN' as const,
+    phoneNumber: '(32) 99999-9999',
+    receiveNotifications: true,
+    active: true
+  }
 ])
 
 const optionsChartFilter = ref(headers.map((h) => h.title).slice(0, -1))
 
-const gridManager = new ClassGridDataChart<{
-  id: number,
-  name: string,
-  speed: number,
-  length: number,
-  price: number,
-  year: number,
-}>({
+const gridManager = new ClassGridDataChart<IUser>({
   modelTable: {
     model: {
+      hiddenChart: true,
       titleTable: 'Relatório de Usuários',
-      densityTable: 'compact',
       headersTable: headers,
       itemsTable: [],
-      loadingDataTable: true,
-      heightTable: 'auto',
-      hiddenChart: true,
     },
   },
   modelChart: {
@@ -123,7 +117,7 @@ const gridManager = new ClassGridDataChart<{
   },
 })
 
-const gridConfig = reactive(gridManager.getModelGridDataChart())
+const gridConfig = reactive(gridManager.model)
 
 const { loading } = useInfiniteList(route.fullPath, usersServices.getAllUsers, 20)
 
@@ -142,7 +136,6 @@ const itemSelecionado = ref()
 
 function handleSelection(item: any[]) {
   itemSelecionado.value = item
-  console.log('Selecionado:', item)
 }
 
 function toggleChartState() {
@@ -154,8 +147,7 @@ const headersParaGrafico = computed(() => {
 })
 
 const selectedChartFilter = ref(
-  headersParaGrafico.value.find((h) => h.value === 'year')?.value ||
-    headersParaGrafico.value[0]?.value,
+  headersParaGrafico.value[0]?.value,
 )
 
 const activeHeaderConfig = computed(() => {
@@ -169,11 +161,15 @@ const chartDataComputed = computed(() => {
   return useChartHelpers(items, key, strategy)
 })
 
+const modelFormUser = new ClassUsers();
+const refFormUser = ref<InstanceType<typeof UserForm> | null>(null);
+const isFormValid = ref(false);
+
 const classDialogUser = new ClassBaseDialog<IUser>({
   visualizar: false,
   persistente: true,
   maxHeight: 400,
-  maxWidth: 600,
+  maxWidth: 800,
 })
 
 function toggleDialogUsers() {
@@ -182,10 +178,17 @@ function toggleDialogUsers() {
 
 function handleGerenciarRegistro(payload: { modoEdicao: boolean, item?: any }) {
   if (payload.modoEdicao && payload.item) {
+    modelFormUser.updateModel({ ...payload.item });
     classDialogUser.abrirEdicao(payload.item);
   } else {
+    modelFormUser.reset();
     classDialogUser.abrirNovo();
   }
+  resetFormUser()
+}
+
+function resetFormUser() {
+  refFormUser.value?.reset()
 }
 
 </script>

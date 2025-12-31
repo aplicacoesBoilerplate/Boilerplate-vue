@@ -8,6 +8,6 @@ export interface IHeadersDataTable {
   maxWidth?: string | number
   sortable?: boolean
   chartAggregator?: 'sum' | 'count'
-  chartFormatter?: (value: string | number) => string
+  chartFormatter?: (value?: any) => string
   value?: (item: any) => any
 }
