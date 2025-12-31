@@ -86,52 +86,23 @@ import { ClassUsers } from '@/classes/ClassUsers'
 
 const route = useRoute()
 
-const formatPrice = (value: string | number) =>
-  `R$ ${value.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
-
-const formatKnots = (value: string | number) => `${value} kn`
-
-const headers: IHeadersDataTable[] = [
-  { title: 'Barco', align: 'start', key: 'name', chartAggregator: 'count', width: 200 },
-  {
-    title: 'Velocidade (knots)',
-    align: 'end',
-    key: 'speed',
-    chartAggregator: 'count',
-    chartFormatter: formatKnots,
-  },
-  { title: 'Tamanho (m)', align: 'end', key: 'length', chartAggregator: 'count' },
-  {
-    title: 'Preço (R$)',
-    align: 'end',
-    key: 'price',
-    value: (item) => formatPrice(item.price),
-    chartAggregator: 'sum',
-    chartFormatter: formatPrice,
-  },
-  { title: 'Ano', align: 'end', key: 'year', chartAggregator: 'count' },
-  { title: 'Ações', key: 'actions', sortable: false, align: 'center' },
-]
+const headers = ClassUsers.getHeaders();
 
 const data = ref([
-  { id: 1, name: 'Speedster', speed: 35, length: 22, price: 300000, year: 2021 },
-  { id: 2, name: 'Ocean King', speed: 25, length: 35, price: 4500000, year: 2023 },
-  { id: 3, name: 'Ocean King', speed: 35, length: 26, price: 4500600, year: 2024 },
+  {
+    idUser: 1,
+    username: 'BOILERPLATE',
+    email: 'boilerplate@gmail.com',
+    role: 'ADMIN',
+    phoneNumber: '(32) 99999-9999',
+    receiveNotifications: true,
+    active: true
+  }
 ])
 
 const optionsChartFilter = ref(headers.map((h) => h.title).slice(0, -1))
 
-const gridManager = new ClassGridDataChart<{
-  id: number,
-  name: string,
-  speed: number,
-  length: number,
-  price: number,
-  year: number,
-}>({
+const gridManager = new ClassGridDataChart<IUser>({
   modelTable: {
     model: {
       hiddenChart: true,
@@ -146,7 +117,7 @@ const gridManager = new ClassGridDataChart<{
   },
 })
 
-const gridConfig = reactive(gridManager.getModelGridDataChart())
+const gridConfig = reactive(gridManager.model)
 
 const { loading } = useInfiniteList(route.fullPath, usersServices.getAllUsers, 20)
 
@@ -165,7 +136,6 @@ const itemSelecionado = ref()
 
 function handleSelection(item: any[]) {
   itemSelecionado.value = item
-  console.log('Selecionado:', item)
 }
 
 function toggleChartState() {
@@ -177,8 +147,7 @@ const headersParaGrafico = computed(() => {
 })
 
 const selectedChartFilter = ref(
-  headersParaGrafico.value.find((h) => h.value === 'year')?.value ||
-    headersParaGrafico.value[0]?.value,
+  headersParaGrafico.value[0]?.value,
 )
 
 const activeHeaderConfig = computed(() => {

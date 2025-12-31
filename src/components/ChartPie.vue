@@ -52,7 +52,7 @@
                 v-for="item in items"
                 :key="item.key"
                 :class="['my-1', { 'opacity-40': !isActive(item) }]"
-                :title="formatValue(parseInt(item.title))"
+                :title="formatValue(item.title)"
                 rounded="lg"
                 link
                 @click="toggle(item)"
@@ -102,18 +102,18 @@ const labelCentro = computed(() => {
 })
 
 const tituloGrafico = computed(() => {
-  return `Distribuição por ${props.activeConfig?.title || 'Categoria'}`
+  return `Distribuição por ${props.activeConfig?.title.toLocaleLowerCase() || 'Categoria'}`
 })
 
 const totalValue = computed(() => {
   return props.chartData.reduce((acc, curr) => acc + curr.value, 0)
 })
 
-function formatValue(val: string | number) {
+function formatValue(value: any) {
   if (props.activeConfig?.chartFormatter) {
-    return props.activeConfig.chartFormatter(val)
+    return props.activeConfig.chartFormatter(value)
   }
-  return val.toLocaleString()
+  return value.toLocaleString()
 }
 
 function calcularPorcentagem(val: number) {
