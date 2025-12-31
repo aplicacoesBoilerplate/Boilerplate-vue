@@ -24,7 +24,7 @@
         <slot />
       </v-card-text>
 
-      <v-card-actions class="sticky-actions">
+      <v-card-actions class="sticky-actions bg-surface ">
         <slot name="acoes" />
       </v-card-actions>
     </v-card>

@@ -88,12 +88,12 @@ const route = useRoute()
 
 const headers = ClassUsers.getHeaders();
 
-const data = ref([
+const data = ref<IUser[]>([
   {
     idUser: 1,
     username: 'BOILERPLATE',
     email: 'boilerplate@gmail.com',
-    role: 'ADMIN',
+    role: 'ADMIN' as const,
     phoneNumber: '(32) 99999-9999',
     receiveNotifications: true,
     active: true
@@ -169,7 +169,7 @@ const classDialogUser = new ClassBaseDialog<IUser>({
   visualizar: false,
   persistente: true,
   maxHeight: 400,
-  maxWidth: 600,
+  maxWidth: 800,
 })
 
 function toggleDialogUsers() {
