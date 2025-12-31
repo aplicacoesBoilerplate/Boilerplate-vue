@@ -9,7 +9,7 @@ export class ClassGridDataChart<T> {
         model: {
           hiddenChart: true,
           titleTable: '',
-          heightTable: 400,
+          heightTable: 'auto',
           maxHeightTable: 400,
           densityTable: 'compact',
           headersTable: [],

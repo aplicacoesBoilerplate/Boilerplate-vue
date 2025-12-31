@@ -6,7 +6,6 @@ export interface IUser {
   phoneNumber?: string
   receiveNotifications?: boolean
   active?: boolean
-  attemptsFailures?: number
 }
 
 // Informações confidenciais do usuário

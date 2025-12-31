@@ -34,12 +34,36 @@
         size="small"
         :icon="classDialogUser.model.formModoEdicao ? 'mdi-account-edit' : 'mdi-account-plus'"
       />
-      {{ classDialogUser.model.formModoEdicao ? 'Editar usuário' : 'Cadastrar usuário' }}
+      {{ classDialogUser.model.formModoEdicao ? `Editar usuário ${classDialogUser.model.itemEdicao?.idUser || ''}` : 'Cadastrar usuário' }}
     </template>
 
-    <template v-slot:default> </template>
+    <template v-slot:default>
+      <UserForm
+        ref="refFormUser"
+        v-model:user="modelFormUser.model"
+        v-model:valid="isFormValid"
+      />
+    </template>
 
-    <template #acoes> </template>
+    <template #acoes>
+      <v-icon-btn
+        icon="mdi-refresh"
+        v-tooltip="'Limpar'"
+        variant="text"
+        color="amber"
+        @click="resetFormUser"
+      />
+
+      <v-spacer />
+
+      <v-icon-btn
+        icon="mdi-content-save"
+        v-tooltip="'Salvar'"
+        variant="text"
+        color="success"
+        :disabled="!isFormValid"
+      />
+    </template>
   </BaseDialog>
 </template>
 
@@ -57,6 +81,8 @@ import ChartPie from '@/components/ChartPie.vue'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
 import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
 import type { IUser } from '@/classes/models/ModelUser'
+import UserForm from '@/components/forms/UserForm.vue'
+import { ClassUsers } from '@/classes/ClassUsers'
 
 const route = useRoute()
 
@@ -108,13 +134,10 @@ const gridManager = new ClassGridDataChart<{
 }>({
   modelTable: {
     model: {
+      hiddenChart: true,
       titleTable: 'Relatório de Usuários',
-      densityTable: 'compact',
       headersTable: headers,
       itemsTable: [],
-      loadingDataTable: true,
-      heightTable: 'auto',
-      hiddenChart: true,
     },
   },
   modelChart: {
@@ -169,6 +192,10 @@ const chartDataComputed = computed(() => {
   return useChartHelpers(items, key, strategy)
 })
 
+const modelFormUser = new ClassUsers();
+const refFormUser = ref<InstanceType<typeof UserForm> | null>(null);
+const isFormValid = ref(false);
+
 const classDialogUser = new ClassBaseDialog<IUser>({
   visualizar: false,
   persistente: true,
@@ -182,10 +209,17 @@ function toggleDialogUsers() {
 
 function handleGerenciarRegistro(payload: { modoEdicao: boolean, item?: any }) {
   if (payload.modoEdicao && payload.item) {
+    modelFormUser.updateModel({ ...payload.item });
     classDialogUser.abrirEdicao(payload.item);
   } else {
+    modelFormUser.reset();
     classDialogUser.abrirNovo();
   }
+  resetFormUser()
+}
+
+function resetFormUser() {
+  refFormUser.value?.reset()
 }
 
 </script>
