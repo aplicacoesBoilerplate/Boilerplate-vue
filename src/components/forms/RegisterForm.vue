@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
-import { usersServices } from '@/services/usuariosService'
+import { usersServices } from '@/services/usersService'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 import { rules } from '@/utils/rules'
 import { ref } from 'vue'

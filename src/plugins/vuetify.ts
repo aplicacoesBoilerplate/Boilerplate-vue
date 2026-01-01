@@ -9,7 +9,9 @@ import { VIconBtn } from 'vuetify/labs/VIconBtn'
 import { VPie } from 'vuetify/labs/VPie'
 import { VMaskInput } from 'vuetify/labs/VMaskInput'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
-import { pt } from 'vuetify/locale'
+import { createVueI18nAdapter } from 'vuetify/locale/adapters/vue-i18n'
+import { useI18n } from 'vue-i18n'
+import { i18n } from './i18n'
 
 export default createVuetify({
   theme: {
@@ -46,7 +48,6 @@ export default createVuetify({
     },
   },
   locale: {
-    locale: 'pt',
-    messages: { pt },
+    adapter: createVueI18nAdapter({ i18n, useI18n }),
   },
 })

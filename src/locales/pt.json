@@ -1,0 +1,19 @@
+{
+  "$vuetify": {
+    "badge": "Emblema",
+    "close": "Fechar",
+    "dataIterator": {
+      "noResultsText": "Nenhum registro correspondente encontrado",
+      "loadingText": "Carregando itens..."
+    }
+  },
+  "app": {
+    "title": "Boilerplate",
+    "welcome": "Bem-vindo"
+  },
+  "menu": {
+    "language": "Idioma",
+    "license": "Licença",
+    "theme": "Tema"
+  }
+}
