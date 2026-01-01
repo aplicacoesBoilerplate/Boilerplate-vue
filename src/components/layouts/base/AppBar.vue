@@ -44,6 +44,33 @@
         :thickness="2"
       />
 
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn icon v-bind="props" v-tooltip="t('menu.language')">
+            <v-icon>mdi-translate</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="(item, index) in availableLocales"
+            :key="index"
+            :value="item.value"
+            @click="changeLocale(item.value)"
+            :active="currentLocale === item.value"
+            color="primary"
+          >
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <v-divider
+        vertical
+        class="mx-2 my-auto"
+        style="height: 24px"
+        :thickness="2"
+      />
+
       <BtnOpenDialog
         :color="isDark ? 'yellow-lighten-3' : 'primary'"
         :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
@@ -93,13 +120,14 @@
 
 <script setup lang="ts">
 import pkg from '../../../../package.json'
-import { useThemeSwitch } from '@/composables/useThemeSwitch'
+import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
 import AppBarSearchForm from '@/components/forms/AppBarSearchForm.vue'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
+import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'
+import { useThemeSwitch } from '@/composables/useThemeSwitch'
+import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 import { ref, computed } from 'vue'
-import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'
-import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
 
 const { smAndDown, mdAndUp } = useDisplay()
 const { theme, toggleTheme } = useThemeSwitch()
@@ -134,6 +162,19 @@ const classDialogLicenca = new ClassBaseDialog({
 
 function toggleDialogLicenca() {
   classDialogLicenca.toggleDialog()
+}
+
+const { t, locale } = useI18n()
+const currentLocale = computed(() => locale.value)
+
+const availableLocales = [
+  { title: 'Português', value: 'pt' },
+  { title: 'English', value: 'en' },
+  { title: 'Español', value: 'es' }
+]
+
+function changeLocale(lang: string) {
+  locale.value = lang
 }
 </script>
 

@@ -1,7 +1,7 @@
 import type { IAlterPassword, IConfirmPassword, ILogin } from '@/classes/models/ModelLogin'
 import http from './axios'
 import type { IUser } from '@/classes/models/ModelUser'
-import { usersServices } from './usuariosService'
+import { usersServices } from './usersService'
 
 export const authServices = {
   async login(loginData: ILogin): Promise<string> {
