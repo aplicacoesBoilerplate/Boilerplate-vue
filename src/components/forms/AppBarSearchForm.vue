@@ -12,7 +12,7 @@
       variant="solo"
       loader-height="2"
       :loading="loading"
-      placeholder="Buscar..."
+      :placeholder="t('forms.formSearch.inputSearch.placeholder')"
       :rules="[rules.required()]"
     >
       <template #prepend-inner v-if="$vuetify.display.mdAndUp">
@@ -22,7 +22,7 @@
       <template #append-inner>
         <v-icon-btn
           icon="mdi-magnify"
-          v-tooltip="'Buscar'"
+          v-tooltip="t('tooltips.appBar.search')"
           variant="plain"
           @click="onSubmit"
         />
@@ -35,8 +35,11 @@
 import { ref } from 'vue'
 import { useHotkey } from 'vuetify'
 import { useRules } from 'vuetify/labs/rules'
+import { useI18n } from 'vue-i18n'
 
 const rules = useRules()
+const { t } = useI18n()
+
 const props = defineProps<{ loading: boolean }>()
 const emits = defineEmits(['search'])
 

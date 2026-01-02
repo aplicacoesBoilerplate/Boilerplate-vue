@@ -1,6 +1,6 @@
 <template>
   <v-app-bar app flat border="b">
-    <v-app-bar-nav-icon v-tooltip="'Menu'" @click="emits('toggle-drawer')" />
+    <v-app-bar-nav-icon v-tooltip="t('tooltips.appBar.menu')" @click="emits('toggle-drawer')" />
 
     <v-app-bar-title class="font-weight-bold"> Boilerplate </v-app-bar-title>
 
@@ -20,7 +20,7 @@
 
     <template v-slot:append>
       <v-badge location="bottom left" color="warning" dot class="ms-2">
-        <v-icon-btn icon="mdi-bell" v-tooltip="'Notificações'" variant="flat" />
+        <v-icon-btn icon="mdi-bell" v-tooltip="t('tooltips.appBar.notifications')" variant="flat" />
       </v-badge>
 
       <v-divider
@@ -32,7 +32,7 @@
 
       <BtnOpenDialog
         icon="mdi-license"
-        v-tooltip="'Licença'"
+        v-tooltip="t('tooltips.appBar.licence')"
         :rotate="false"
         @click="toggleDialogLicenca"
       />
@@ -46,7 +46,7 @@
 
       <v-menu>
         <template v-slot:activator="{ props }">
-          <v-btn icon v-bind="props" v-tooltip="t('menu.language')">
+          <v-btn icon v-bind="props" v-tooltip="t('tooltips.appBar.language')">
             <v-icon>mdi-translate</v-icon>
           </v-btn>
         </template>
@@ -74,7 +74,7 @@
       <BtnOpenDialog
         :color="isDark ? 'yellow-lighten-3' : 'primary'"
         :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
-        v-tooltip="isDark ? 'Tema claro' : 'Tema escuro'"
+        v-tooltip="t('tooltips.appBar.theme')"
         :rotate="true"
         class="me-3"
         @click="toggleTheme"
@@ -85,7 +85,7 @@
   <BaseDialog v-model:atributos="classDialogLicenca.model">
     <template #titulo>
       <v-icon size="small" icon="mdi-information-variant-circle-outline" />
-      Informações da licença
+      {{ t('app.cardInfoLicence') }}
     </template>
 
     <template #default>
@@ -97,8 +97,8 @@
             </v-list-item-icon>
           </template>
           <v-list-item-content>
-            <v-list-item-title>Versão: {{ versaoDoSistema }}</v-list-item-title>
-            <v-list-item-subtitle>Atualizado em: {{ dataVersaoFormatada }}</v-list-item-subtitle>
+            <v-list-item-title>{{ t('app.version') + ': ' + versaoDoSistema }}</v-list-item-title>
+            <v-list-item-subtitle>{{ t('app.updateDate') + ': ' + dataVersaoFormatada }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
 
@@ -109,8 +109,8 @@
             </v-list-item-icon>
           </template>
           <v-list-item-content>
-            <v-list-item-title>Software</v-list-item-title>
-            <v-list-item-subtitle><em>Boilerplate</em></v-list-item-subtitle>
+            <v-list-item-title>{{ t('app.software') }}</v-list-item-title>
+            <v-list-item-subtitle><em>{{ t('app.title') }}</em></v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -132,6 +132,7 @@ import { ref, computed } from 'vue'
 const { smAndDown, mdAndUp } = useDisplay()
 const { theme, toggleTheme } = useThemeSwitch()
 const isDark = computed(() => theme.global.current.value.dark)
+const { t, locale } = useI18n()
 
 const versaoDoSistema = pkg.version
 const dataVersaoFormatada = computed(() => {
@@ -164,7 +165,6 @@ function toggleDialogLicenca() {
   classDialogLicenca.toggleDialog()
 }
 
-const { t, locale } = useI18n()
 const currentLocale = computed(() => locale.value)
 
 const availableLocales = [

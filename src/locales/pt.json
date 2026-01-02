@@ -1,19 +1,129 @@
 {
-  "$vuetify": {
-    "badge": "Emblema",
-    "close": "Fechar",
-    "dataIterator": {
-      "noResultsText": "Nenhum registro correspondente encontrado",
-      "loadingText": "Carregando itens..."
+    "app": {
+        "title": "Boilerplate",
+        "version": "Versão",
+        "cardInfoLicence": "Informações da Licença",
+        "updateDate": "Atualizado em",
+        "software": "software"
+    },
+    "routes": {
+        "home": {
+            "title": "Página Inícial"
+        },
+        "login": {
+            "title": "Acessar"
+        },
+        "dashboard": {
+            "title": "Painel"
+        },
+        "users": {
+            "title": "Usuários"
+        },
+        "adm": {
+            "title": "Administrador",
+            "children": {
+                "users": {
+                    "title": "Gestão de usuários"
+                },
+                "settings": {
+                    "title": "Configurações"
+                }
+            }
+        },
+        "forbidden": {
+            "title": "Acesso negado"
+        },
+        "serverError": {
+            "title": "Erro no sistema"
+        },
+        "notFound": {
+            "title": "Recurso não encontrado"
+        }
+    },
+    "forms": {
+        "formSearch": {
+            "inputSearch": {
+                "placeholder": "Buscar"
+            }
+        },
+        "formUser": {
+            "inputUsername": {
+                "label": "Nome de usuário",
+                "hint": "Preencha com o seu nome"
+            },
+            "inputEmail": {
+                "label": "Email",
+                "hint": "Preencha com o seu email"
+            },
+            "inputRole": {
+                "label": "Permissão"
+            },
+            "inputPhoneNumber": {
+                "label": "Número de telefone"
+            },
+            "inputReceiveNotifications": {
+                "label": "Recebe notificações?"
+            },
+            "inputUserActive": {
+                "label": "Usuário ativo?"
+            }
+        }
+    },
+    "tooltips": {
+        "appBar": {
+            "menu": "Recursos",
+            "search": "Buscar",
+            "notifications": "Notificações",
+            "licence": "Licença",
+            "language": "Idioma",
+            "theme": "Mudar tema"
+        },
+        "forms": {
+            "close": "Fechar",
+            "save": "Salvar",
+            "reset": "Limpar",
+            "create": "Novo registro",
+            "edit": "Editar",
+            "delete": "Excluir"
+        },
+        "components": {
+            "dataTable": {
+                "colunsDataTable": "Colunas da tabela",
+                "graph": "Gráfico"
+            }
+        }
+    },
+    "messages": {
+        "yes": "Sim",
+        "no": "Não",
+        "forms": {
+            "formUsers": {
+                "createUser": "Criar usuário",
+                "editingUser": "Editar usuário"
+            }
+        },
+        "components": {
+            "dataTable": {
+                "titleDefault": "Resultados",
+                "dataNotFound": "Nenhum dado encontrado"
+            }
+        }
+    },
+    "dataTable": {
+        "users": {
+            "title": "Relatório de usuários",
+            "headers": {
+                "id": "Id",
+                "username": "Nome de usuário",
+                "email": "Email",
+                "role": "Permissão",
+                "phoneNumber": "Número de telefone",
+                "receiveNotifications": "Recebe notificações",
+                "active": "Ativo"                
+            }
+        },
+        "headersDefault": {
+            "actions": "Ações"
+        }
     }
-  },
-  "app": {
-    "title": "Boilerplate",
-    "welcome": "Bem-vindo"
-  },
-  "menu": {
-    "language": "Idioma",
-    "license": "Licença",
-    "theme": "Tema"
-  }
 }

@@ -14,7 +14,7 @@ const route = useRoute();
 watch(
   [() => route.meta.title, locale],
   () => {
-    const defaultTitle = 'Boilerplate Vue';
+    const defaultTitle = t('app.title');
     const routeTitle = route.meta.title as string;
 
     if (routeTitle) {
