@@ -7,15 +7,13 @@
             <v-icon-btn
               v-bind="props"
               icon="mdi-table-cog"
-              v-tooltip="'Colunas da tabela'"
+              v-tooltip="t('tooltips.components.dataTable.colunsDataTable')"
               variant="text"
               color="primary"
             />
           </template>
 
           <v-card min-width="250" max-height="400" class="overflow-y-auto">
-            <v-card-title class="text-subtitle-2 pb-0">Exibir/Ocultar colunas</v-card-title>
-            <v-divider class="my-2" />
             <v-list density="compact" select-strategy="classic" v-model:selected="selectedHeadersKeys">
               <v-list-item v-for="header in allHeaders" :key="header.key" :value="header.key">
                 <template v-slot:prepend="{ isActive }">
@@ -39,7 +37,7 @@
         />
 
         <div class="text-h6 font-weight-bold text-high-emphasis text-truncate">
-          {{ dataTable.model.titleTable || 'Resultados' }}
+          {{ dataTable.model.titleTable || t('messages.components.dataTable.titleDefault') }}
         </div>
 
         <slot name="toolbar-actions">
@@ -47,7 +45,7 @@
 
           <BtnOpenDialog
             icon="mdi-plus-circle"
-            v-tooltip="'Novo registro'"
+            v-tooltip="t('tooltips.forms.create')"
             :rotate="true"
             @click="novoRegistro"
           />
@@ -61,7 +59,7 @@
 
           <BtnOpenDialog
             icon="mdi-chart-donut-variant"
-            v-tooltip="'Gráfico'"
+            v-tooltip="t('tooltips.components.dataTable.graph')"
             :rotate="true"
             @click="toggleChart"
           />
@@ -95,17 +93,17 @@
 
             <v-icon-btn
               icon="mdi-pencil"
+              v-tooltip="t('tooltips.forms.edit')"
               variant="plain"
               color="primary"
-              v-tooltip="'Editar'"
               @click="editarRegistro(item)"
             />
 
             <v-icon-btn
               icon="mdi-delete"
+              v-tooltip="t('tooltips.forms.delete')"
               variant="plain"
               color="error"
-              v-tooltip="'Excluir'"
             />
           </div>
         </template>
@@ -113,7 +111,7 @@
 
       <div v-else class="d-flex flex-column align-center justify-center py-10 text-medium-emphasis">
         <v-icon icon="mdi-database-off" size="48" class="mb-2"></v-icon>
-        <div class="text-body-1">Nenhum dado encontrado</div>
+        <div class="text-body-1">{{ t('messages.components.dataTable.dataNotFound') }}</div>
       </div>
     </v-card-text>
   </v-card>
@@ -121,9 +119,11 @@
 
 <script setup lang="ts">
 import type { IModelValueDataTable } from "@/classes/models/modelComponents/ModelGridDataChart";
-import { ref, computed, watchEffect } from "vue";
 import BtnOpenDialog from "./dialog/BtnOpenDialog.vue";
+import { ref, computed, watchEffect } from "vue";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n()
 const dataTable = defineModel<IModelValueDataTable<any>>('dataTable', { required: true });
 
 const emits = defineEmits<{

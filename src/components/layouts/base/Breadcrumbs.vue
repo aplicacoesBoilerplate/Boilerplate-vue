@@ -1,22 +1,24 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const route = useRoute();
+const { t } = useI18n();
 
 const items = computed(() => {
   const matchedRoutes = route.matched.filter(r => r.meta && r.meta.title);
 
   const breadcrumbs = matchedRoutes.map((r, index) => ({
-    title: r.meta.title as string,
+    title: t(r.meta.title as string),
     disabled: index === matchedRoutes.length - 1,
     to: { name: r.name },
     exact: true
   }));
 
-  if (breadcrumbs.length > 0 && breadcrumbs[0].title !== 'Home') {
+  if (breadcrumbs.length > 0 && breadcrumbs[0].title !== t('routes.home.title')) {
     breadcrumbs.unshift({
-      title: 'Home',
+      title: t('routes.home.title'),
       disabled: false,
       to: { name: 'Home' },
       exact: true

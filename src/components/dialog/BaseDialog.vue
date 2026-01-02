@@ -13,7 +13,7 @@
 
         <v-icon-btn
           icon="mdi-close"
-          v-tooltip="'Fechar'"
+          v-tooltip="t('tooltips.forms.close')"
           color="red-lighten-1"
           variant="plain"
           @click="toggleDialog()"
@@ -34,6 +34,7 @@
 <script setup lang="ts">
 import type { IModelBaseDialog } from '@/classes/models/modelComponents/ModelBaseDialog'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useHotkey } from 'vuetify'
 
 useHotkey('esc', () => {
@@ -41,8 +42,9 @@ useHotkey('esc', () => {
     toggleDialog()
 })
 
-const dialog = defineModel<IModelBaseDialog>('atributos', { required: true })
+const { t } = useI18n()
 
+const dialog = defineModel<IModelBaseDialog>('atributos', { required: true })
 const isDialogVisible = computed({
   get() {
     return dialog.value.visualizar

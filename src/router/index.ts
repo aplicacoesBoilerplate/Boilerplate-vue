@@ -1,4 +1,5 @@
-import { createRouter, createWebHistory, type RouteRecord, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { i18n } from '@/plugins/i18n'
 import { authGuard } from './guards/auth.guard'
 import { rbacGuard } from './guards/roles.guard'
 import HomeView from '@/views/HomeView.vue'
@@ -10,7 +11,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Home',
     component: HomeView,
     meta: {
-      title: 'Home',
+      title: 'routes.home.title',
       icon: 'mdi-home',
       hotkey: 'cmd+shift+h',
     },
@@ -20,8 +21,8 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),
     meta: {
-      hidden: true,
-      title: 'Login'
+      title: 'routes.login.title',
+      hidden: true
     },
   },
   {
@@ -29,18 +30,17 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Dashboard',
     component: () => import('@/views/DashboardView.vue'),
     meta: {
-      title: 'Dashboard',
+      title: 'routes.dashboard.title',
       icon: 'mdi-view-dashboard',
       hotkey: 'cmd+shift+d',
-      requiresAuth: true,
     },
   },
   {
     path: '/users',
-    name: 'Usuários',
+    name: 'Users',
     component: () => import('@/views/UsersView.vue'),
     meta: {
-      title: 'Usuários',
+      title: 'routes.users.title',
       icon: 'mdi-account-group',
       hotkey: 'cmd+shift+u',
     },
@@ -51,7 +51,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/DashboardView.vue'),
     redirect: { name: 'AdminUsers' },
     meta: {
-      title: 'Administração',
+      title: 'routes.adm.title',
       icon: 'mdi-shield-crown',
       hotkey: 'cmd+shift+a',
       requiresAuth: true,
@@ -59,11 +59,11 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: 'usuarios',
+        path: 'users',
         name: 'AdminUsers',
         component: () => import('@/views/DashboardView.vue'),
         meta: {
-          title: 'Gerenciar Usuários',
+          title: 'routes.adm.children.users.title',
           icon: 'mdi-account-group',
           hotkey: 'cmd+shift+u',
           requiresAuth: true,
@@ -75,7 +75,7 @@ const routes: Array<RouteRecordRaw> = [
         name: 'AdminConfig',
         component: () => import('@/views/DashboardView.vue'),
         meta: {
-          title: 'Configurações',
+          title: 'routes.adm.children.settings.title',
           icon: 'mdi-cog',
           hotkey: 'cmd+shift+c',
           requiresAuth: true,
@@ -85,12 +85,12 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/forbidden',
-    name: 'AcessoNegado',
+    name: 'forbidden',
     component: ErrorsView,
     props: { type: '403' },
     meta: {
       hidden: true,
-      title: 'Acesso Negado'
+      title: 'routes.forbidden.title',
     }
   },
   {
@@ -100,7 +100,7 @@ const routes: Array<RouteRecordRaw> = [
     props: { type: '500' },
     meta: {
       hidden: true,
-      title: 'Erro interno do servidor'
+      title: 'routes.serverError.title',
     }
   },
   {
@@ -110,14 +110,39 @@ const routes: Array<RouteRecordRaw> = [
     props: { type: '404' },
     meta: {
       hidden: true,
-      title: 'Página Não Encontrada'
+      title: 'routes.notFound.title',
     }
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    }
+    if (to.hash) {
+      return { el: to.hash, behavior: 'smooth' }
+    }
+    return { top: 0 }
+  },
   routes,
+})
+
+router.beforeEach((to, from, next) => {
+  const title = to.meta.title as string
+  // @ts-ignore: Dependendo da versão do TS, o acesso ao global pode pedir tipagem extra
+  const defaultTitle = i18n.global.t('project.title')
+
+  if (title) {
+    // @ts-ignore
+    const translatedTitle = i18n.global.t(title)
+    document.title = `${translatedTitle} - ${defaultTitle}`
+  } else {
+    document.title = defaultTitle
+  }
+
+  next()
 })
 
 router.beforeEach(authGuard)
