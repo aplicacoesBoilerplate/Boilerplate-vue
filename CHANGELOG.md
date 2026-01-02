@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/gersonfribeiro/Boilerplate-vue/compare/v1.0.0...v2.0.0) (2026-01-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* implementado i18n em todos os templates necessários
+
+### Features
+
+* implementado i18n em todos os templates necessários ([cda76ea](https://github.com/gersonfribeiro/Boilerplate-vue/commit/cda76eabe9259082750471e3f6f9a465d2f2ddb1))
+
 ## [1.0.0](https://github.com/gersonfribeiro/Boilerplate-vue/compare/v0.1.0...v1.0.0) (2026-01-02)
 
 ## [0.1.0](https://github.com/gersonfribeiro/Boilerplate-vue/compare/v0.0.4...v0.1.0) (2026-01-02)
