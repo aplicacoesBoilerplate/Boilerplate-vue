@@ -1,6 +1,6 @@
 <template>
   <v-app-bar app flat border="b">
-    <v-app-bar-nav-icon v-tooltip="'Menu'" @click="emits('toggle-drawer')" />
+    <v-app-bar-nav-icon v-tooltip="t('tooltips.appBar.menu')" @click="emits('toggle-drawer')" />
 
     <v-app-bar-title class="font-weight-bold"> Boilerplate </v-app-bar-title>
 
@@ -20,7 +20,7 @@
 
     <template v-slot:append>
       <v-badge location="bottom left" color="warning" dot class="ms-2">
-        <v-icon-btn icon="mdi-bell" v-tooltip="'Notificações'" variant="flat" />
+        <v-icon-btn icon="mdi-bell" v-tooltip="t('tooltips.appBar.notifications')" variant="flat" />
       </v-badge>
 
       <v-divider
@@ -32,7 +32,7 @@
 
       <BtnOpenDialog
         icon="mdi-license"
-        v-tooltip="'Licença'"
+        v-tooltip="t('tooltips.appBar.licence')"
         :rotate="false"
         @click="toggleDialogLicenca"
       />
@@ -44,10 +44,37 @@
         :thickness="2"
       />
 
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn icon v-bind="props" v-tooltip="t('tooltips.appBar.language')">
+            <v-icon>mdi-translate</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="(item, index) in availableLocales"
+            :key="index"
+            :value="item.value"
+            @click="changeLocale(item.value)"
+            :active="currentLocale === item.value"
+            color="primary"
+          >
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <v-divider
+        vertical
+        class="mx-2 my-auto"
+        style="height: 24px"
+        :thickness="2"
+      />
+
       <BtnOpenDialog
         :color="isDark ? 'yellow-lighten-3' : 'primary'"
         :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
-        v-tooltip="isDark ? 'Tema claro' : 'Tema escuro'"
+        v-tooltip="t('tooltips.appBar.theme')"
         :rotate="true"
         class="me-3"
         @click="toggleTheme"
@@ -58,7 +85,7 @@
   <BaseDialog v-model:atributos="classDialogLicenca.model">
     <template #titulo>
       <v-icon size="small" icon="mdi-information-variant-circle-outline" />
-      Informações da licença
+      {{ t('app.cardInfoLicence') }}
     </template>
 
     <template #default>
@@ -70,8 +97,8 @@
             </v-list-item-icon>
           </template>
           <v-list-item-content>
-            <v-list-item-title>Versão: {{ versaoDoSistema }}</v-list-item-title>
-            <v-list-item-subtitle>Atualizado em: {{ dataVersaoFormatada }}</v-list-item-subtitle>
+            <v-list-item-title>{{ t('app.version') + ': ' + versaoDoSistema }}</v-list-item-title>
+            <v-list-item-subtitle>{{ t('app.updateDate') + ': ' + dataVersaoFormatada }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
 
@@ -82,8 +109,8 @@
             </v-list-item-icon>
           </template>
           <v-list-item-content>
-            <v-list-item-title>Software</v-list-item-title>
-            <v-list-item-subtitle><em>Boilerplate</em></v-list-item-subtitle>
+            <v-list-item-title>{{ t('app.software') }}</v-list-item-title>
+            <v-list-item-subtitle><em>{{ t('app.title') }}</em></v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -93,17 +120,19 @@
 
 <script setup lang="ts">
 import pkg from '../../../../package.json'
-import { useThemeSwitch } from '@/composables/useThemeSwitch'
+import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
 import AppBarSearchForm from '@/components/forms/AppBarSearchForm.vue'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
+import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'
+import { useThemeSwitch } from '@/composables/useThemeSwitch'
+import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 import { ref, computed } from 'vue'
-import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'
-import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
 
 const { smAndDown, mdAndUp } = useDisplay()
 const { theme, toggleTheme } = useThemeSwitch()
 const isDark = computed(() => theme.global.current.value.dark)
+const { t, locale } = useI18n()
 
 const versaoDoSistema = pkg.version
 const dataVersaoFormatada = computed(() => {
@@ -134,6 +163,18 @@ const classDialogLicenca = new ClassBaseDialog({
 
 function toggleDialogLicenca() {
   classDialogLicenca.toggleDialog()
+}
+
+const currentLocale = computed(() => locale.value)
+
+const availableLocales = [
+  { title: 'Português', value: 'pt' },
+  { title: 'English', value: 'en' },
+  { title: 'Español', value: 'es' }
+]
+
+function changeLocale(lang: string) {
+  locale.value = lang
 }
 </script>
 

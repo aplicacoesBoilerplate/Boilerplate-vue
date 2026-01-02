@@ -34,7 +34,10 @@
         size="small"
         :icon="classDialogUser.model.formModoEdicao ? 'mdi-account-edit' : 'mdi-account-plus'"
       />
-      {{ classDialogUser.model.formModoEdicao ? `Editar usuário ${classDialogUser.model.itemEdicao?.idUser || ''}` : 'Cadastrar usuário' }}
+      {{ classDialogUser.model.formModoEdicao
+          ? t('messages.forms.formUsers.editingUser') + ` ${classDialogUser.model.itemEdicao?.idUser || ''}`
+          : t('messages.forms.formUsers.createUser')
+      }}
     </template>
 
     <template v-slot:default>
@@ -48,7 +51,7 @@
     <template #acoes>
       <v-icon-btn
         icon="mdi-refresh"
-        v-tooltip="'Limpar'"
+        v-tooltip="t('tooltips.forms.reset')"
         variant="text"
         color="amber"
         @click="resetFormUser"
@@ -58,7 +61,7 @@
 
       <v-icon-btn
         icon="mdi-content-save"
-        v-tooltip="'Salvar'"
+        v-tooltip="t('tooltips.forms.save')"
         variant="text"
         color="success"
         :disabled="!isFormValid"
@@ -68,25 +71,26 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted, watchEffect, computed } from 'vue'
-import { useRoute } from 'vue-router'
 import { ClassGridDataChart } from '@/classes/ClassGridDataChart'
-import type { IHeadersDataTable } from '@/classes/models/modelComponents/ModelHeaderTable'
-import { usersServices } from '@/services/usuariosService'
+import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
+import type { IUser } from '@/classes/models/ModelUser'
+import { ClassUsers } from '@/classes/ClassUsers'
+import { usersServices } from '@/services/usersService'
 import { useInfiniteList } from '@/composables/useInfiniteList'
 import { useChartHelpers } from '@/composables/useChartHelpers'
 import GridDataChart from '@/components/layouts/GridDataChart.vue'
 import DataTable from '@/components/DataTable.vue'
 import ChartPie from '@/components/ChartPie.vue'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
-import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
-import type { IUser } from '@/classes/models/ModelUser'
 import UserForm from '@/components/forms/UserForm.vue'
-import { ClassUsers } from '@/classes/ClassUsers'
+import { reactive, ref, onMounted, watchEffect, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
+const { t } = useI18n()
 
-const headers = ClassUsers.getHeaders();
+const headers = computed(() => ClassUsers.getHeaders());
 
 const data = ref<IUser[]>([
   {
@@ -100,14 +104,16 @@ const data = ref<IUser[]>([
   }
 ])
 
-const optionsChartFilter = ref(headers.map((h) => h.title).slice(0, -1))
+const optionsChartFilter = computed(() =>
+  headers.value.map((h) => h.title).slice(0, -1)
+)
 
 const gridManager = new ClassGridDataChart<IUser>({
   modelTable: {
     model: {
       hiddenChart: true,
-      titleTable: 'Relatório de Usuários',
-      headersTable: headers,
+      titleTable: t('dataTable.users.title'),
+      headersTable: headers.value,
       itemsTable: [],
     },
   },
@@ -130,6 +136,9 @@ onMounted(() => {
 watchEffect(() => {
   gridConfig.modelTable.model.itemsTable = data.value
   gridConfig.modelTable.model.loadingDataTable = loading.value
+  gridConfig.modelTable.model.headersTable = headers.value
+  gridConfig.modelChart.optionsFilterSelectData = optionsChartFilter.value
+  gridConfig.modelTable.model.titleTable = t('dataTable.users.title')
 })
 
 const itemSelecionado = ref()
@@ -143,7 +152,7 @@ function toggleChartState() {
 }
 
 const headersParaGrafico = computed(() => {
-  return headers.filter((h) => h.key !== 'actions').map((h) => ({ title: h.title, value: h.key }))
+  return headers.value.filter((h) => h.key !== 'actions').map((h) => ({ title: h.title, value: h.key }))
 })
 
 const selectedChartFilter = ref(
@@ -151,7 +160,7 @@ const selectedChartFilter = ref(
 )
 
 const activeHeaderConfig = computed(() => {
-  return headers.find((h) => h.key === selectedChartFilter.value)
+  return headers.value.find((h) => h.key === selectedChartFilter.value)
 })
 
 const chartDataComputed = computed(() => {
@@ -190,5 +199,4 @@ function handleGerenciarRegistro(payload: { modoEdicao: boolean, item?: any }) {
 function resetFormUser() {
   refFormUser.value?.reset()
 }
-
 </script>

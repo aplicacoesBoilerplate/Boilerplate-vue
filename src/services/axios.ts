@@ -3,6 +3,7 @@ import axios, { AxiosError } from 'axios'
 import { ClassErrorAPI } from '@/classes/ClassErrorAPI'
 import type { IErrorAPI } from '@/classes/models/ModelErrorAPI'
 import { useSnackbarStore } from '@/stores/SnackbarStore'
+import { i18n } from '@/plugins/i18n'
 
 const http = axios.create({
   baseURL: window.env?.VITE_API_URL || import.meta.env.VITE_API_URL,
@@ -18,6 +19,9 @@ http.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // @ts-ignore
+  config.headers['Accept-Language'] = i18n.global.locale.value
+
   return config
 })
 

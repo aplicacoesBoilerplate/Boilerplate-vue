@@ -1,0 +1,129 @@
+{
+    "app": {
+        "title": "Boilerplate",
+        "version": "Versión",
+        "cardInfoLicence": "License information",
+        "updateDate": "Actualizado el",
+        "software": "Software"
+    },
+    "routes": {
+        "home": {
+            "title": "Inicio"
+        },
+        "login": {
+            "title": "Acceder"
+        },
+        "dashboard": {
+            "title": "Panel"
+        },
+        "users": {
+            "title": "Usuarios"
+        },
+        "adm": {
+            "title": "Administrador",
+            "children": {
+                "users": {
+                    "title": "Gestión de usuarios"
+                },
+                "settings": {
+                    "title": "Configuraciones"
+                }
+            }
+        },
+        "forbidden": {
+            "title": "Acceso denegado"
+        },
+        "serverError": {
+            "title": "Error del sistema"
+        },
+        "notFound": {
+            "title": "Recurso no encontrado"
+        }
+    },
+    "forms": {
+        "formSearch": {
+            "inputSearch": {
+                "placeholder": "Buscar"
+            }
+        },
+        "formUser": {
+            "inputUsername": {
+                "label": "Nombre de usuario",
+                "hint": "Ingrese su nombre"
+            },
+            "inputEmail": {
+                "label": "Correo electrónico",
+                "hint": "Ingrese su correo electrónico"
+            },
+            "inputRole": {
+                "label": "Permiso"
+            },
+            "inputPhoneNumber": {
+                "label": "Número de teléfono"
+            },
+            "inputReceiveNotifications": {
+                "label": "¿Recibe notificaciones?"
+            },
+            "inputUserActive": {
+                "label": "¿Usuario activo?"
+            }
+        }
+    },
+    "tooltips": {
+        "appBar": {
+            "menu": "Recursos",
+            "search": "Buscar",
+            "notifications": "Notificaciones",
+            "licence": "Licencia",
+            "language": "Idioma",
+            "theme": "Cambiar tema"
+        },
+        "forms": {
+            "close": "Cerrar",
+            "save": "Guardar",
+            "reset": "Limpiar",
+            "create": "Nuevo registro",
+            "edit": "Editar",
+            "delete": "Eliminar"
+        },
+        "components": {
+            "dataTable": {
+                "colunsDataTable": "Columnas de la tabla",
+                "graph": "Gráfico"
+            }
+        }
+    },
+    "messages": {
+        "yes": "Sí",
+        "no": "No",
+        "forms": {
+            "formUsers": {
+                "createUser": "Crear usuario",
+                "editingUser": "Editar usuario"
+            }
+        },
+        "components": {
+            "dataTable": {
+                "titleDefault": "Resultados",
+                "dataNotFound": "No se encontraron datos"
+            }
+        }
+    },
+    "dataTable": {
+        "users": {
+        "title": "Informe de usuarios",
+            "headers": {
+                "id": "ID",
+                "username": "Nombre de usuario",
+                "email": "Correo electrónico",
+                "role": "Permiso",
+                "phoneNumber": "Número de teléfono",
+                "receiveNotifications": "Recibe notificaciones",
+                "active": "Activo"
+            }
+        },
+        "headersDefault": {
+            "actions": "Acciones"
+        }
+    }
+}

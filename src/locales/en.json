@@ -1,0 +1,129 @@
+{
+    "app": {
+        "title": "Boilerplate",
+        "version": "Version",
+        "cardInfoLicence": "License information",
+        "updateDate": "Updated on",
+        "software": "Software"
+    },
+    "routes": {
+        "home": {
+            "title": "Home"
+        },
+        "login": {
+            "title": "Login"
+        },
+        "dashboard": {
+            "title": "Dashboard"
+        },
+        "users": {
+            "title": "Users"
+        },
+        "adm": {
+            "title": "Administrator",
+            "children": {
+                "users": {
+                    "title": "User Management"
+                },
+                "settings": {
+                    "title": "Settings"
+                }
+            }
+        },
+        "forbidden": {
+            "title": "Access denied"
+        },
+        "serverError": {
+            "title": "System error"
+        },
+        "notFound": {
+            "title": "Resource not found"
+        }
+    },
+    "forms": {
+        "formSearch": {
+            "inputSearch": {
+                "placeholder": "Search"
+            }
+        },
+        "formUser": {
+            "inputUsername": {
+                "label": "Username",
+                "hint": "Enter your name"
+            },
+            "inputEmail": {
+                "label": "Email",
+                "hint": "Enter your email"
+            },
+            "inputRole": {
+                "label": "Role"
+            },
+            "inputPhoneNumber": {
+                "label": "Phone number"
+            },
+            "inputReceiveNotifications": {
+                "label": "Receive notifications?"
+            },
+            "inputUserActive": {
+                "label": "Active user?"
+            }
+        }
+    },
+    "tooltips": {
+        "appBar": {
+            "menu": "Resources",
+            "search": "Search",
+            "notifications": "Notifications",
+            "licence": "License",
+            "language": "Language",
+            "theme": "Change theme"
+        },
+        "forms": {
+            "close": "Close",
+            "save": "Save",
+            "reset": "Clear",
+            "create": "New record",
+            "edit": "Edit",
+            "delete": "Delete"
+        },
+        "components": {
+            "dataTable": {
+                "colunsDataTable": "Table columns",
+                "graph": "Chart"
+            }
+        }
+    },
+    "messages": {
+        "yes": "Yes",
+        "no": "No",
+        "forms": {
+            "formUsers": {
+                "createUser": "Create user",
+                "editingUser": "Edit user"
+            }
+        },
+        "components": {
+            "dataTable": {
+                "titleDefault": "Results",
+                "dataNotFound": "No data found"
+            }
+        }
+    },
+    "dataTable": {
+        "users": {
+            "title": "User report",
+            "headers": {
+                "id": "ID",
+                "username": "Username",
+                "email": "Email",
+                "role": "Role",
+                "phoneNumber": "Phone number",
+                "receiveNotifications": "Receives notifications",
+                "active": "Active"
+            }
+        },
+        "headersDefault": {
+            "actions": "Actions"
+        }
+    }
+}

@@ -17,12 +17,12 @@
           :value="item.name"
         >
           <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" :prepend-icon="item.icon" :title="item.title" />
+            <v-list-item v-bind="props" :prepend-icon="item.icon" :title="t(item.title || '')" />
           </template>
 
           <v-list-item v-for="child in item.children" :key="child.path"
             :prepend-icon="child.icon"
-            :title="child.title"
+            :title="t(child.title || '')"
             :to="{ name: child.name }" exact
           >
             <template v-slot:append v-if="item.hotkey && mdAndUp">
@@ -38,7 +38,7 @@
 
         <v-list-item v-else
           :prepend-icon="item.icon"
-          :title="item.title"
+          :title="t(item.title || '')"
           :to="{ name: item.name }" exact
         >
           <template v-slot:append v-if="item.hotkey && mdAndUp">
@@ -57,7 +57,7 @@
       <v-list density="compact" nav>
         <v-list-item
           prepend-icon="mdi-logout"
-          title="Logout"
+          :title="t('routes.logout.title')"
           :to="{ name: 'Login' }"
           exact
           @click="handleLogout"
@@ -73,12 +73,13 @@ import { useAuthStore } from '@/stores/auth';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useHotkey, useDisplay } from 'vuetify';
+import { useI18n } from 'vue-i18n';
 
 const { mdAndUp } = useDisplay();
-
 const { menuItems } = useNavigation();
 const authStore = useAuthStore();
 const router = useRouter();
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue: boolean | null
@@ -115,5 +116,4 @@ function handleLogout() {
   authStore.logout();
   router.push({ name: 'Login' });
 }
-
 </script>
