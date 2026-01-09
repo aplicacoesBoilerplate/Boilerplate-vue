@@ -4,6 +4,7 @@ import { authGuard } from './guards/auth.guard'
 import { rbacGuard } from './guards/roles.guard'
 import HomeView from '@/views/HomeView.vue'
 import ErrorsView from '@/views/ErrorsView.vue'
+import { ClassDefinitions } from '@/classes/ClassDefinitions'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -43,6 +44,8 @@ const routes: Array<RouteRecordRaw> = [
       title: 'routes.users.title',
       icon: 'mdi-account-group',
       hotkey: 'cmd+shift+u',
+      hasFilters: true,
+      filterConfig: ClassDefinitions.filterColumnsUsers
     },
   },
   {
@@ -131,8 +134,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const title = to.meta.title as string
-  // @ts-ignore: Dependendo da versão do TS, o acesso ao global pode pedir tipagem extra
-  const defaultTitle = i18n.global.t('project.title')
+  // @ts-ignore
+  const defaultTitle = i18n.global.t('app.title')
 
   if (title) {
     // @ts-ignore
@@ -141,7 +144,6 @@ router.beforeEach((to, from, next) => {
   } else {
     document.title = defaultTitle
   }
-
   next()
 })
 

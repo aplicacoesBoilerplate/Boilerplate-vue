@@ -25,22 +25,19 @@
     </grid-data-chart>
   </v-container>
 
-  <BaseDialog
-    v-model:atributos="classDialogUser.model"
-    @toggle-dialog="toggleDialogUsers"
-  >
-    <template v-slot:titulo>
+  <BaseDialog v-model:attributes="classDialogUser.model">
+    <template v-slot:title>
       <v-icon
         size="small"
-        :icon="classDialogUser.model.formModoEdicao ? 'mdi-account-edit' : 'mdi-account-plus'"
+        :icon="classDialogUser.model.formEditingMode ? 'mdi-account-edit' : 'mdi-account-plus'"
       />
-      {{ classDialogUser.model.formModoEdicao
-          ? t('messages.forms.formUsers.editingUser') + ` ${classDialogUser.model.itemEdicao?.idUser || ''}`
+      {{ classDialogUser.model.formEditingMode
+          ? t('messages.forms.formUsers.editingUser') + ` ${classDialogUser.model.itemEdition?.idUser || ''}`
           : t('messages.forms.formUsers.createUser')
       }}
     </template>
 
-    <template v-slot:default>
+    <template #default>
       <UserForm
         ref="refFormUser"
         v-model:user="modelFormUser.model"
@@ -48,7 +45,7 @@
       />
     </template>
 
-    <template #acoes>
+    <template #actions>
       <v-icon-btn
         icon="mdi-refresh"
         v-tooltip="t('tooltips.forms.reset')"
@@ -175,15 +172,11 @@ const refFormUser = ref<InstanceType<typeof UserForm> | null>(null);
 const isFormValid = ref(false);
 
 const classDialogUser = new ClassBaseDialog<IUser>({
-  visualizar: false,
-  persistente: true,
+  view: false,
+  persistent: true,
   maxHeight: 400,
   maxWidth: 800,
 })
-
-function toggleDialogUsers() {
-  classDialogUser.toggleDialog()
-}
 
 function handleGerenciarRegistro(payload: { modoEdicao: boolean, item?: any }) {
   if (payload.modoEdicao && payload.item) {

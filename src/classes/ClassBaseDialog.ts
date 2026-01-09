@@ -14,28 +14,28 @@ export class ClassBaseDialog<T = any> {
 
   private getDefault(data?: Partial<IModelBaseDialog<T>>) {
     return reactive({
-      visualizar: data?.visualizar ?? false,
-      persistente: data?.persistente ?? false,
+      view: data?.view ?? false,
+      persistente: data?.persistent ?? false,
       maxWidth: data?.maxWidth || 400,
       maxHeight: data?.maxHeight || 400,
-      formModoEdicao: data?.formModoEdicao ?? false,
+      formModoEdicao: data?.formEditingMode ?? false,
       itemEdicao: null
     }) as IModelBaseDialog<T>;
   }
 
   abrirNovo() {
-    this.modelBaseDialog.formModoEdicao = false;
-    this.modelBaseDialog.itemEdicao = null;
-    this.modelBaseDialog.visualizar = true;
+    this.modelBaseDialog.formEditingMode = false;
+    this.modelBaseDialog.itemEdition = null;
+    this.modelBaseDialog.view = true;
   }
 
   abrirEdicao(item: T) {
-    this.modelBaseDialog.formModoEdicao = true;
-    this.modelBaseDialog.itemEdicao = { ...item };
-    this.modelBaseDialog.visualizar = true;
+    this.modelBaseDialog.formEditingMode = true;
+    this.modelBaseDialog.itemEdition = { ...item };
+    this.modelBaseDialog.view = true;
   }
 
   toggleDialog() {
-    this.modelBaseDialog.visualizar = !this.modelBaseDialog.visualizar
+    this.modelBaseDialog.view = !this.modelBaseDialog.view
   }
 }

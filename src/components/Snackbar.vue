@@ -9,7 +9,7 @@
     rounded
     multi-line
   >
-    {{ store.message }}
+    {{ t(store.message) }}
 
     <template #actions>
       <v-btn color="white" variant="text" @click="store.hideSnackbar()">
@@ -29,8 +29,10 @@
 
 <script setup lang="ts">
 import { useSnackbarStore } from '@/stores/SnackbarStore'
+import { useI18n } from "vue-i18n";
 import { ref, watch, onBeforeUnmount } from 'vue'
 
+const { t } = useI18n()
 const store = useSnackbarStore()
 const snackbarTimeout = 4000
 const progress = ref(100)

@@ -1,129 +1,174 @@
 {
-    "app": {
-        "title": "Boilerplate",
-        "version": "Version",
-        "cardInfoLicence": "License information",
-        "updateDate": "Updated on",
-        "software": "Software"
+  "app": {
+    "title": "Boilerplate",
+    "version": "Version",
+    "cardInfoLicence": "License information",
+    "updateDate": "Updated on",
+    "software": "Software"
+  },
+  "routes": {
+    "home": {
+      "title": "Home"
     },
-    "routes": {
-        "home": {
-            "title": "Home"
-        },
-        "login": {
-            "title": "Login"
-        },
-        "dashboard": {
-            "title": "Dashboard"
-        },
+    "login": {
+      "title": "Login"
+    },
+    "logout": {
+      "title": "Logout"
+    },
+    "dashboard": {
+      "title": "Dashboard"
+    },
+    "users": {
+      "title": "Users"
+    },
+    "adm": {
+      "title": "Administrator",
+      "children": {
         "users": {
-            "title": "Users"
+          "title": "User Management"
         },
-        "adm": {
-            "title": "Administrator",
-            "children": {
-                "users": {
-                    "title": "User Management"
-                },
-                "settings": {
-                    "title": "Settings"
-                }
-            }
-        },
-        "forbidden": {
-            "title": "Access denied"
-        },
-        "serverError": {
-            "title": "System error"
-        },
-        "notFound": {
-            "title": "Resource not found"
+        "settings": {
+          "title": "Settings"
         }
+      }
+    },
+    "forbidden": {
+      "title": "Access denied"
+    },
+    "serverError": {
+      "title": "System error"
+    },
+    "notFound": {
+      "title": "Resource not found"
+    }
+  },
+  "forms": {
+    "formSearch": {
+      "inputSearch": {
+        "placeholder": "Search"
+      },
+      "inputField": {
+        "label": "Field"
+      },
+      "inputCondition": {
+        "label": "Condition"
+      }
+    },
+    "formUser": {
+      "id": "id",
+      "inputUsername": {
+        "label": "Username",
+        "hint": "Enter your name"
+      },
+      "inputEmail": {
+        "label": "Email",
+        "hint": "Enter your email"
+      },
+      "inputRole": {
+        "label": "Role"
+      },
+      "inputPhoneNumber": {
+        "label": "Phone number"
+      },
+      "inputReceiveNotifications": {
+        "label": "Receive notifications?"
+      },
+      "inputUserActive": {
+        "label": "Active user?"
+      }
+    }
+  },
+  "tooltips": {
+    "appBar": {
+      "menu": "Resources",
+      "search": "Search",
+      "filter": "Filters",
+      "notifications": "Notifications",
+      "licence": "License",
+      "language": "Language",
+      "theme": "Change theme"
     },
     "forms": {
-        "formSearch": {
-            "inputSearch": {
-                "placeholder": "Search"
-            }
-        },
-        "formUser": {
-            "inputUsername": {
-                "label": "Username",
-                "hint": "Enter your name"
-            },
-            "inputEmail": {
-                "label": "Email",
-                "hint": "Enter your email"
-            },
-            "inputRole": {
-                "label": "Role"
-            },
-            "inputPhoneNumber": {
-                "label": "Phone number"
-            },
-            "inputReceiveNotifications": {
-                "label": "Receive notifications?"
-            },
-            "inputUserActive": {
-                "label": "Active user?"
-            }
-        }
+      "close": "Close",
+      "save": "Save",
+      "add": "To add",
+      "reset": "Clear",
+      "create": "New record",
+      "edit": "Edit",
+      "delete": "Delete"
     },
-    "tooltips": {
-        "appBar": {
-            "menu": "Resources",
-            "search": "Search",
-            "notifications": "Notifications",
-            "licence": "License",
-            "language": "Language",
-            "theme": "Change theme"
-        },
-        "forms": {
-            "close": "Close",
-            "save": "Save",
-            "reset": "Clear",
-            "create": "New record",
-            "edit": "Edit",
-            "delete": "Delete"
-        },
-        "components": {
-            "dataTable": {
-                "colunsDataTable": "Table columns",
-                "graph": "Chart"
-            }
-        }
-    },
-    "messages": {
-        "yes": "Yes",
-        "no": "No",
-        "forms": {
-            "formUsers": {
-                "createUser": "Create user",
-                "editingUser": "Edit user"
-            }
-        },
-        "components": {
-            "dataTable": {
-                "titleDefault": "Results",
-                "dataNotFound": "No data found"
-            }
-        }
-    },
-    "dataTable": {
-        "users": {
-            "title": "User report",
-            "headers": {
-                "id": "ID",
-                "username": "Username",
-                "email": "Email",
-                "role": "Role",
-                "phoneNumber": "Phone number",
-                "receiveNotifications": "Receives notifications",
-                "active": "Active"
-            }
-        },
-        "headersDefault": {
-            "actions": "Actions"
-        }
+    "components": {
+      "dataTable": {
+        "columnsDataTable": "Table columns",
+        "graph": "Chart"
+      }
     }
+  },
+  "tabs": {
+    "dialogQueryFilter": {
+      "form": "Filter",
+      "list": "Applied"
+    }
+  },
+  "messages": {
+    "yes": "Yes",
+    "no": "No",
+    "value": "Value",
+    "from": "From",
+    "until": "Until",
+    "errors": {
+      "reqGenerics": "An error occurred in the request!"
+    },
+    "forms": {
+      "formUsers": {
+        "createUser": "Create user",
+        "editingUser": "Edit user"
+      }
+    },
+    "components": {
+      "dataTable": {
+        "titleDefault": "Results",
+        "dataNotFound": "No data found"
+      },
+      "queryFilter": {
+        "title": "Filter resources by:",
+        "alertDuplicate": "This filter has already been added!"
+      }
+    }
+  },
+  "dataTable": {
+    "users": {
+      "title": "User report",
+      "headers": {
+        "id": "Id",
+        "username": "Username",
+        "email": "Email",
+        "role": "Role",
+        "phoneNumber": "Phone number",
+        "receiveNotifications": "Receives notifications",
+        "active": "Active"
+      }
+    },
+    "headersDefault": {
+      "actions": "Actions"
+    }
+  },
+  "filterColumn": {
+    "operators": {
+      "startsIn": "Starts with",
+      "endsIn": "Ends with",
+      "contains": "Contains",
+      "equals": "Equals",
+      "notEquals": "Not equal to",
+      "greaterEqual": "Greater than or equal to",
+      "greaterThan": "Greater than",
+      "lessEqual": "Less than or equal to",
+      "lessThan": "Less than",
+      "between": "Between",
+      "select": "Select",
+      "except": "Except"
+    },
+    "none": "No filter applied"
+  }
 }

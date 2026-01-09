@@ -1,8 +1,7 @@
 <template>
   <v-app-bar app flat border="b">
     <v-app-bar-nav-icon v-tooltip="t('tooltips.appBar.menu')" @click="emits('toggle-drawer')" />
-
-    <v-app-bar-title class="font-weight-bold"> Boilerplate </v-app-bar-title>
+    <v-app-bar-title class="font-weight-bold">{{ t('app.title') }}</v-app-bar-title>
 
     <template v-if="mdAndUp">
       <v-spacer />
@@ -34,7 +33,7 @@
         icon="mdi-license"
         v-tooltip="t('tooltips.appBar.licence')"
         :rotate="false"
-        @click="toggleDialogLicenca"
+        @click="toggleDialogLicence"
       />
 
       <v-divider
@@ -56,7 +55,7 @@
             :key="index"
             :value="item.value"
             @click="changeLocale(item.value)"
-            :active="currentLocale === item.value"
+            :active="locale === item.value"
             color="primary"
           >
             <v-list-item-title>{{ item.title }}</v-list-item-title>
@@ -82,36 +81,30 @@
     </template>
   </v-app-bar>
 
-  <BaseDialog v-model:atributos="classDialogLicenca.model">
-    <template #titulo>
+  <BaseDialog v-model:attributes="classDialogLicence.model">
+    <template v-slot:title>
       <v-icon size="small" icon="mdi-information-variant-circle-outline" />
       {{ t('app.cardInfoLicence') }}
     </template>
 
     <template #default>
       <v-list dense>
-        <v-list-item>
+        <v-list-item
+          :title="t('app.version') + ': ' + systemVersion"
+          :subtitle="t('app.updateDate') + ': ' + formattedVersionDate"
+        >
           <template v-slot:prepend>
-            <v-list-item-icon>
-              <v-icon size="x-large" color="info" class="mr-3">mdi-code-block-tags</v-icon>
-            </v-list-item-icon>
+            <v-icon size="x-large" color="info" class="mr-3">mdi-code-block-tags</v-icon>
           </template>
-          <v-list-item-content>
-            <v-list-item-title>{{ t('app.version') + ': ' + versaoDoSistema }}</v-list-item-title>
-            <v-list-item-subtitle>{{ t('app.updateDate') + ': ' + dataVersaoFormatada }}</v-list-item-subtitle>
-          </v-list-item-content>
         </v-list-item>
 
-        <v-list-item>
+        <v-list-item
+          :title="t('app.software')"
+          :subtitle="t('app.title')"
+        >
           <template v-slot:prepend>
-            <v-list-item-icon>
-              <v-icon size="x-large" color="warning" class="mr-3">mdi-license</v-icon>
-            </v-list-item-icon>
+            <v-icon size="x-large" color="warning" class="mr-3">mdi-license</v-icon>
           </template>
-          <v-list-item-content>
-            <v-list-item-title>{{ t('app.software') }}</v-list-item-title>
-            <v-list-item-subtitle><em>{{ t('app.title') }}</em></v-list-item-subtitle>
-          </v-list-item-content>
         </v-list-item>
       </v-list>
     </template>
@@ -120,11 +113,13 @@
 
 <script setup lang="ts">
 import pkg from '../../../../package.json'
-import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
 import AppBarSearchForm from '@/components/forms/AppBarSearchForm.vue'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'
+import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
 import { useThemeSwitch } from '@/composables/useThemeSwitch'
+import { formattedDate } from '@/utils/formattedDate'
+import { StorageUtils } from '@/utils/StorageUtils'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 import { ref, computed } from 'vue'
@@ -134,16 +129,9 @@ const { theme, toggleTheme } = useThemeSwitch()
 const isDark = computed(() => theme.global.current.value.dark)
 const { t, locale } = useI18n()
 
-const versaoDoSistema = pkg.version
-const dataVersaoFormatada = computed(() => {
-  const data = new Date(__APP_BUILD_DATE__)
-  return new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(data)
+const systemVersion = pkg.version
+const formattedVersionDate = computed(() => {
+  return formattedDate(new Date(__APP_BUILD_DATE__), locale.value);
 })
 
 const emits = defineEmits(['toggle-drawer'])
@@ -155,17 +143,15 @@ function handleSearch(term: string) {
   setTimeout(() => (loading.value = false), 2000)
 }
 
-const classDialogLicenca = new ClassBaseDialog({
-  visualizar: false,
+const classDialogLicence = new ClassBaseDialog({
+  view: false,
   maxHeight: 350,
   maxWidth: 400,
 })
 
-function toggleDialogLicenca() {
-  classDialogLicenca.toggleDialog()
+function toggleDialogLicence() {
+  classDialogLicence.toggleDialog()
 }
-
-const currentLocale = computed(() => locale.value)
 
 const availableLocales = [
   { title: 'Português', value: 'pt' },
@@ -175,6 +161,7 @@ const availableLocales = [
 
 function changeLocale(lang: string) {
   locale.value = lang
+  StorageUtils.set('user_locale', lang, 'local');
 }
 </script>
 
