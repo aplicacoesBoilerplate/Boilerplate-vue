@@ -44,7 +44,7 @@ http.interceptors.response.use(
 
     const objetoError = new ClassErrorAPI(error.response?.data as IErrorAPI)
 
-    snackbar.showSnackbar(objetoError.getErrorAPI.errorMessage || 'Ocorreu um erro na requisição.', 'error');
+    snackbar.showSnackbar(objetoError.getErrorAPI.errorMessage || 'messages.errors.reqGenerics', 'error');
 
     return Promise.reject(objetoError.getErrorAPI)
   },

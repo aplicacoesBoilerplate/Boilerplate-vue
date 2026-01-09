@@ -1,8 +1,8 @@
 export interface IModelBaseDialog<T = any> {
-  visualizar: boolean
-  persistente?: boolean
+  view: boolean
+  persistent?: boolean
   maxWidth?: number
   maxHeight?: number
-  formModoEdicao?: boolean
-  itemEdicao?: T | null;
+  formEditingMode?: boolean
+  itemEdition?: T | null;
 }

@@ -1,3 +1,16 @@
+<template>
+  <v-breadcrumbs
+    v-if="items.length > 0"
+    :items="items"
+    divider="/"
+    class="breadcrumbs-sticky px-4 py-2 bg-background border-b"
+  >
+    <template v-slot:title="{ item }">
+      {{ item.title }}
+    </template>
+  </v-breadcrumbs>
+</template>
+
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
@@ -28,19 +41,6 @@ const items = computed(() => {
   return breadcrumbs;
 });
 </script>
-
-<template>
-  <v-breadcrumbs
-    v-if="items.length > 0"
-    :items="items"
-    divider="/"
-    class="breadcrumbs-sticky px-4 py-2 bg-background border-b"
-  >
-    <template v-slot:title="{ item }">
-      {{ item.title }}
-    </template>
-  </v-breadcrumbs>
-</template>
 
 <style scoped>
 .breadcrumbs-sticky {

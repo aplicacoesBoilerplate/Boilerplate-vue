@@ -16,7 +16,7 @@
       :icon="icon"
       :variant="variant"
       v-bind="$attrs"
-      class="mx-2 transition-swing"
+      class="transition-swing"
       :class="{ 'rotate-icon': isHovering && rotate }"
     />
   </div>

@@ -7,7 +7,7 @@
             <v-icon-btn
               v-bind="props"
               icon="mdi-table-cog"
-              v-tooltip="t('tooltips.components.dataTable.colunsDataTable')"
+              v-tooltip="t('tooltips.components.dataTable.columnsDataTable')"
               variant="text"
               color="primary"
             />

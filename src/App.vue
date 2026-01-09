@@ -1,3 +1,21 @@
+<template>
+  <v-app>
+    <Snackbar />
+
+    <Navigation v-if="isLayoutVisible" v-model="drawerOpen" />
+    <AppBar v-if="isLayoutVisible" @toggle-drawer="toggleDrawer" />
+
+    <v-main class="main-scroll">
+      <Breadcrumbs v-if="isLayoutVisible" />
+
+      <v-container fluid class="pt-2">
+        <RouterView />
+      </v-container>
+    </v-main>
+
+  </v-app>
+</template>
+
 <script setup lang="ts">
 import { computed, watch, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -36,24 +54,6 @@ function toggleDrawer() {
   drawerOpen.value = !drawerOpen.value
 }
 </script>
-
-<template>
-  <v-app>
-    <Snackbar />
-
-    <Navigation v-if="isLayoutVisible" v-model="drawerOpen" />
-    <AppBar v-if="isLayoutVisible" @toggle-drawer="toggleDrawer" />
-
-    <v-main class="main-scroll">
-      <Breadcrumbs v-if="isLayoutVisible" />
-
-      <v-container fluid class="pt-2">
-        <RouterView />
-      </v-container>
-    </v-main>
-
-  </v-app>
-</template>
 
 <style global>
 html,

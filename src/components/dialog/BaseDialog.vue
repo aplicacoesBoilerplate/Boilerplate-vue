@@ -2,13 +2,13 @@
   <v-dialog
     v-model="isDialogVisible"
     :max-width="dialog.maxWidth || 400"
-    :max-height="dialog.maxHeight || 800"
-    :persistent="dialog.persistente" || false
+    :max-height="dialog.maxHeight || 400"
+    :persistent="dialog.persistent" || false
   >
     <v-card>
       <v-card-title class="d-flex justify-space-between align-baseline">
         <div class="text-h6">
-          <slot name="titulo">TÍTULO</slot>
+          <slot name="title">TITLE</slot>
         </div>
 
         <v-icon-btn
@@ -24,8 +24,8 @@
         <slot />
       </v-card-text>
 
-      <v-card-actions class="sticky-actions bg-surface ">
-        <slot name="acoes" />
+      <v-card-actions class="sticky-actions bg-surface">
+        <slot name="actions" />
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -44,13 +44,13 @@ useHotkey('esc', () => {
 
 const { t } = useI18n()
 
-const dialog = defineModel<IModelBaseDialog>('atributos', { required: true })
+const dialog = defineModel<IModelBaseDialog>('attributes', { required: true })
 const isDialogVisible = computed({
   get() {
-    return dialog.value.visualizar
+    return dialog.value.view
   },
   set(newValue: boolean) {
-    dialog.value.visualizar = newValue
+    dialog.value.view = newValue
   },
 })
 

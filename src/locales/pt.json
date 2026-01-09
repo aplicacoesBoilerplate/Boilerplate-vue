@@ -1,129 +1,174 @@
 {
-    "app": {
-        "title": "Boilerplate",
-        "version": "Versão",
-        "cardInfoLicence": "Informações da Licença",
-        "updateDate": "Atualizado em",
-        "software": "software"
+  "app": {
+    "title": "Boilerplate",
+    "version": "Versão",
+    "cardInfoLicence": "Informações da Licença",
+    "updateDate": "Atualizado em",
+    "software": "software"
+  },
+  "routes": {
+    "home": {
+      "title": "Página Inícial"
     },
-    "routes": {
-        "home": {
-            "title": "Página Inícial"
-        },
-        "login": {
-            "title": "Acessar"
-        },
-        "dashboard": {
-            "title": "Painel"
-        },
+    "login": {
+      "title": "Acessar"
+    },
+    "logout": {
+      "title": "Sair"
+    },
+    "dashboard": {
+      "title": "Painel"
+    },
+    "users": {
+      "title": "Usuários"
+    },
+    "adm": {
+      "title": "Administrador",
+      "children": {
         "users": {
-            "title": "Usuários"
+          "title": "Gestão de usuários"
         },
-        "adm": {
-            "title": "Administrador",
-            "children": {
-                "users": {
-                    "title": "Gestão de usuários"
-                },
-                "settings": {
-                    "title": "Configurações"
-                }
-            }
-        },
-        "forbidden": {
-            "title": "Acesso negado"
-        },
-        "serverError": {
-            "title": "Erro no sistema"
-        },
-        "notFound": {
-            "title": "Recurso não encontrado"
+        "settings": {
+          "title": "Configurações"
         }
+      }
+    },
+    "forbidden": {
+      "title": "Acesso negado"
+    },
+    "serverError": {
+      "title": "Erro no sistema"
+    },
+    "notFound": {
+      "title": "Recurso não encontrado"
+    }
+  },
+  "forms": {
+    "formSearch": {
+      "inputSearch": {
+        "placeholder": "Buscar"
+      },
+      "inputField": {
+        "label": "Campo"
+      },
+      "inputCondition": {
+        "label": "Condição"
+      }
+    },
+    "formUser": {
+      "id": "id",
+      "inputUsername": {
+        "label": "Nome de usuário",
+        "hint": "Preencha com o seu nome"
+      },
+      "inputEmail": {
+        "label": "Email",
+        "hint": "Preencha com o seu email"
+      },
+      "inputRole": {
+        "label": "Permissão"
+      },
+      "inputPhoneNumber": {
+        "label": "Número de telefone"
+      },
+      "inputReceiveNotifications": {
+        "label": "Recebe notificações?"
+      },
+      "inputUserActive": {
+        "label": "Usuário ativo?"
+      }
+    }
+  },
+  "tooltips": {
+    "appBar": {
+      "menu": "Recursos",
+      "search": "Buscar",
+      "filter": "Filtros",
+      "notifications": "Notificações",
+      "licence": "Licença",
+      "language": "Idioma",
+      "theme": "Mudar tema"
     },
     "forms": {
-        "formSearch": {
-            "inputSearch": {
-                "placeholder": "Buscar"
-            }
-        },
-        "formUser": {
-            "inputUsername": {
-                "label": "Nome de usuário",
-                "hint": "Preencha com o seu nome"
-            },
-            "inputEmail": {
-                "label": "Email",
-                "hint": "Preencha com o seu email"
-            },
-            "inputRole": {
-                "label": "Permissão"
-            },
-            "inputPhoneNumber": {
-                "label": "Número de telefone"
-            },
-            "inputReceiveNotifications": {
-                "label": "Recebe notificações?"
-            },
-            "inputUserActive": {
-                "label": "Usuário ativo?"
-            }
-        }
+      "close": "Fechar",
+      "save": "Salvar",
+      "add": "Adicionar",
+      "reset": "Limpar",
+      "create": "Novo registro",
+      "edit": "Editar",
+      "delete": "Excluir"
     },
-    "tooltips": {
-        "appBar": {
-            "menu": "Recursos",
-            "search": "Buscar",
-            "notifications": "Notificações",
-            "licence": "Licença",
-            "language": "Idioma",
-            "theme": "Mudar tema"
-        },
-        "forms": {
-            "close": "Fechar",
-            "save": "Salvar",
-            "reset": "Limpar",
-            "create": "Novo registro",
-            "edit": "Editar",
-            "delete": "Excluir"
-        },
-        "components": {
-            "dataTable": {
-                "colunsDataTable": "Colunas da tabela",
-                "graph": "Gráfico"
-            }
-        }
-    },
-    "messages": {
-        "yes": "Sim",
-        "no": "Não",
-        "forms": {
-            "formUsers": {
-                "createUser": "Criar usuário",
-                "editingUser": "Editar usuário"
-            }
-        },
-        "components": {
-            "dataTable": {
-                "titleDefault": "Resultados",
-                "dataNotFound": "Nenhum dado encontrado"
-            }
-        }
-    },
-    "dataTable": {
-        "users": {
-            "title": "Relatório de usuários",
-            "headers": {
-                "id": "Id",
-                "username": "Nome de usuário",
-                "email": "Email",
-                "role": "Permissão",
-                "phoneNumber": "Número de telefone",
-                "receiveNotifications": "Recebe notificações",
-                "active": "Ativo"                
-            }
-        },
-        "headersDefault": {
-            "actions": "Ações"
-        }
+    "components": {
+      "dataTable": {
+        "columnsDataTable": "Colunas da tabela",
+        "graph": "Gráfico"
+      }
     }
+  },
+  "tabs": {
+    "dialogQueryFilter": {
+      "form": "Filtro",
+      "list": "Aplicados"
+    }
+  },
+  "messages": {
+    "yes": "Sim",
+    "no": "Não",
+    "value": "Valor",
+    "from": "De",
+    "until": "Até",
+    "errors": {
+      "reqGenerics": "Ocorreu um erro na requisição!"
+    },
+    "forms": {
+      "formUsers": {
+        "createUser": "Criar usuário",
+        "editingUser": "Editar usuário"
+      }
+    },
+    "components": {
+      "dataTable": {
+        "titleDefault": "Resultados",
+        "dataNotFound": "Nenhum dado encontrado"
+      },
+      "queryFilter": {
+        "title": "Filtrar recursos de:",
+        "alertDuplicate": "Esse filtro já foi adicionado!"
+      }
+    }
+  },
+  "dataTable": {
+    "users": {
+      "title": "Relatório de usuários",
+      "headers": {
+        "id": "Id",
+        "username": "Nome de usuário",
+        "email": "Email",
+        "role": "Permissão",
+        "phoneNumber": "Número de telefone",
+        "receiveNotifications": "Recebe notificações",
+        "active": "Ativo"
+      }
+    },
+    "headersDefault": {
+      "actions": "Ações"
+    }
+  },
+  "filterColumn": {
+    "operators": {
+      "startsIn": "Inicia em",
+      "endsIn": "Termina em",
+      "contains": "Que contém",
+      "equals": "Igual a",
+      "notEquals": "Diferente de",
+      "greaterEqual": "Maior ou igual a",
+      "greaterThan": "Maior que",
+      "lessEqual": "Menor ou igual a",
+      "lessThan": "Menor que",
+      "between": "Entre",
+      "select": "Seleção",
+      "except": "Exceto"
+    },
+    "none": "Nenhum filtro aplicado"
+  }
 }

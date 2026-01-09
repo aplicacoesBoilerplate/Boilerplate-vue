@@ -69,27 +69,19 @@ import { useRules } from 'vuetify/labs/rules'
 import { useI18n } from 'vue-i18n';
 import { ref } from 'vue';
 
-const rules = useRules()
+const rules = useRules();
 const { t } = useI18n();
 
+const formRef = ref<any>(null);
 const user = defineModel<IUser>('user', { required: true });
 const formIsValid = defineModel<boolean>('valid', { default: false });
 
-const formRef = ref<any>(null);
-
-const validate = async () => {
-  const { isValid } = await formRef.value?.validate();
-  return isValid;
-};
-
-const reset = () => {
-  formRef.value?.reset();
-}
-
 defineExpose({
-  reset,
-  validate,
-  formIsValid
+  reset: () => formRef.value?.reset(),
+  validate: async () => {
+    const { valid } = await formRef.value?.validate();
+    return valid;
+  }
 });
 
 </script>
