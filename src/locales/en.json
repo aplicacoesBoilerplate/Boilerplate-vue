@@ -16,6 +16,9 @@
     "logout": {
       "title": "Logout"
     },
+    "forgotPassword": {
+      "title": "Forgot Password"
+    },
     "dashboard": {
       "title": "Dashboard"
     },
@@ -77,6 +80,14 @@
       "inputUserActive": {
         "label": "Active user?"
       }
+    },
+    "formLogin": {
+      "inputEmail": {
+        "label": "Email"
+      },
+      "inputPassword": {
+        "label": "Password"
+      }
     }
   },
   "tooltips": {
@@ -87,7 +98,8 @@
       "notifications": "Notifications",
       "licence": "License",
       "language": "Language",
-      "theme": "Change theme"
+      "theme": "Change theme",
+      "info": "System information"
     },
     "forms": {
       "close": "Close",
@@ -96,7 +108,9 @@
       "reset": "Clear",
       "create": "New record",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "submit": "Confirm",
+      "forgotPassword": "I forgot my password"
     },
     "components": {
       "dataTable": {
@@ -117,6 +131,7 @@
     "value": "Value",
     "from": "From",
     "until": "Until",
+    "welcome": "Welcome",
     "errors": {
       "reqGenerics": "An error occurred in the request!"
     },
@@ -170,5 +185,41 @@
       "except": "Except"
     },
     "none": "No filter applied"
+  },
+  "forgotPassword": {
+    "title": "Account Recovery",
+    "titleVerify": "Verify Code",
+    "titleAlterPassword": "Change Password",
+    "stepEmail": {
+      "instruction": "Enter your email to receive the verification code.",
+      "labelEmail": "Email",
+      "placeholderEmail": "example@email.com",
+      "btnSend": "Send Code"
+    },
+    "stepVerify": {
+      "instruction": "We sent a 6-digit code to:",
+      "expiresIn": "Code expires in:",
+      "expired": "The code has expired.",
+      "btnResend": "Resend Code",
+      "btnVerify": "Verify",
+      "btnChangeEmail": "Change Email"
+    },
+    "stepAlterPassword": {
+      "instruction": "Please enter your new password below.",
+      "labelNewPassword": "New Password",
+      "placeholderNewPassword": "Enter the new password",
+      "labelConfirmPassword": "Confirm Password",
+      "placeholderConfirmPassword": "Confirm the new password",
+      "btnAlterPassword": "Change Password"
+    },
+    "feedback": {
+      "sentSuccess": "Code sent successfully!",
+      "sentError": "Error sending code.",
+      "verifySuccess": "Account verified successfully!",
+      "verifyError": "Invalid code.",
+      "resendInfo": "Code resent!",
+      "alterSuccess": "Password changed successfully!",
+      "alterError": "Error changing password."
+    }
   }
 }

@@ -33,7 +33,7 @@ export const authServices = {
     try {
       const usuarioToken = await this.getByToken() // Pega os dados do usuário autenticado
       const usuario = await usersServices.getUserById(usuarioToken.idUser) // Pega o id que não muda e consulta o estado atual no banco
-      confirmar.emailUser = usuario.email // Atribuir o e-mail para facilitar o preenchimento do formulário
+      confirmar.email = usuario.email // Atribuir o e-mail para facilitar o preenchimento do formulário
       const { data } = await http.post('/auth/confirmar', confirmar)
       return data
     } catch (error) {

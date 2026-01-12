@@ -9,9 +9,9 @@
     rounded
     multi-line
   >
-    {{ t(store.message) }}
+    {{ translatedMessage }}
 
-    <template #actions>
+    <template v-slot:actions>
       <v-btn color="white" variant="text" @click="store.hideSnackbar()">
         <v-icon>mdi-close</v-icon>
       </v-btn>
@@ -30,10 +30,18 @@
 <script setup lang="ts">
 import { useSnackbarStore } from '@/stores/SnackbarStore'
 import { useI18n } from "vue-i18n";
-import { ref, watch, onBeforeUnmount } from 'vue'
+import { ref, watch, onBeforeUnmount, computed } from 'vue'
 
-const { t } = useI18n()
+const { t, te } = useI18n();
 const store = useSnackbarStore()
+
+const translatedMessage = computed(() => {
+  const msg = store.message;
+  if (!msg) return '';
+
+  return te(msg) ? t(msg) : msg;
+})
+
 const snackbarTimeout = 4000
 const progress = ref(100)
 const intervalStep = 50

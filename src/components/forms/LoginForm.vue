@@ -1,90 +1,69 @@
 <template>
-  <div>
-    <!-- Loading -->
-    <div class="d-flex justify-center mb-5" v-if="loading">
-      <v-progress-circular color="primary" indeterminate />
-    </div>
-    <v-card class="mx-auto" width="400">
-      <v-card-title class="d-flex justify-center pt-5">
-        Login
+  <div class="d-flex justify-center align-center h-100" style="min-height: 90vh">
+    <v-card class="mx-auto" width="600" elevation="8" rounded="lg">
+      <v-card-title class="d-flex justify-center pt-5 pb-5">
+        {{ t('routes.login.title') }}
       </v-card-title>
-      <v-form ref="formRef" v-model="formIsValid" @submit.prevent="authLogin()">
-        <v-container class="d-flex justify-center mb-6">
-          <v-col cols="12">
-            <v-row dense>
-              <v-col cols="12">
-                <InputUpperCase v-model:="loginForm.emailUser" :style="{ label: 'Email*', maxWidth: 400 }"
-                  :rules="[rules.required, rules.emailFormat]" variant="outlined" />
-              </v-col>
-
-              <v-col cols="12">
-                <v-text-field clearable v-model="loginForm.passwordUser" :rules="[rules.required]"
-                  :type="showPassword ? 'text' : 'password'" label="Senha" variant="outlined">
-                  <template v-slot:append-inner>
-                    <v-btn :icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click="showPassword = !showPassword"
-                      variant="text" />
-                  </template>
-                </v-text-field>
-              </v-col>
-
-              <v-col cols="12">
-                <v-btn class="mt-2" type="submit" :disabled="!formIsValid" block color="success">Login
-                </v-btn>
-              </v-col>
-            </v-row>
+      <v-form ref="formRef" v-model="formIsValid">
+        <v-row dense class="d-flex justify-center">
+          <v-col cols="11">
+            <v-text-field
+              v-model="loginForm.email"
+              :rules="[rules.required(), rules.email()]"
+              :label="t('forms.formLogin.inputEmail.label')"
+              density="compact"
+              variant="outlined"
+              clearable
+            />
           </v-col>
-        </v-container>
+
+          <v-col cols="11">
+            <v-text-field
+              v-model="loginForm.password"
+              :rules="[rules.required()]"
+              :type="showPassword ? 'text' : 'password'"
+              :label="t('forms.formLogin.inputPassword.label')"
+              density="compact"
+              variant="outlined"
+              clearable
+            >
+              <template v-slot:append-inner>
+                <v-icon-btn
+                  :icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  @click="showPassword = !showPassword"
+                  density="compact"
+                  variant="text"
+                />
+              </template>
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <slot name="actions" />
       </v-form>
     </v-card>
   </div>
 </template>
 
 <script setup lang="ts">
-// Componentes
-import InputUpperCase from '@/components/forms/fixtures/InputUpperCase.vue';
+import type { ILogin } from '@/classes/models/ModelLogin'
+import { useRules } from 'vuetify/labs/rules';
+import { useI18n } from 'vue-i18n';
+import { ref } from 'vue'
 
-// Composables
-import { useSnackbar } from '@/composables/useSnackbar';
+const showPassword = ref(false);
+const rules = useRules();
+const { t } = useI18n();
 
-// Models
-import { type ILogin } from '@/classes/models/ModelLogin'
+const formRef = ref<any>(null);
+const loginForm = defineModel<ILogin>('login', { required: true });
+const formIsValid = defineModel<boolean>('valid', { default: false });
 
-// Services
-import { rules } from '@/utils/rules'
-import { authServices } from '@/services/authService'
-
-// Vue
-import type { VForm } from 'vuetify/components'
-import { useRouter } from 'vue-router'
-import { ref, type Ref } from 'vue'
-
-const { notify } = useSnackbar();
-
-const formRef: Ref<VForm | null> = ref(null)
-const formIsValid = ref(false)
-const showPassword = ref(false)
-const emailDefalt = '@gmail.com';
-const loginForm = ref<ILogin>({ emailUser: emailDefalt, passwordUser: '' })
-const redirectRouter = useRouter()
-const authService = authServices
-const loading = ref(false)
-
-async function authLogin() {
-  const isValid = await formRef.value?.validate()
-  if (isValid) {
-    try {
-      loading.value = true
-      await authService.login(loginForm.value!)
-      const usuarioLogado = await authServices.getByToken()
-
-      notify(`Bem-vindo(a), ${usuarioLogado.username}!`, 'success')
-    } catch (err) {
-      notify(err as string, 'error')
-      throw err
-    } finally {
-      loading.value = false
-    }
+defineExpose({
+  reset: () => formRef.value?.resetValidation(),
+  validate: async () => {
+    const { valid } = await formRef.value?.validate();
+    return valid;
   }
-}
+});
 
 </script>

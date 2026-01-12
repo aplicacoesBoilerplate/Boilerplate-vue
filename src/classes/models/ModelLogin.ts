@@ -1,6 +1,6 @@
 export interface ILogin {
-  emailUser: string
-  passwordUser: string
+  email: string
+  password: string
 }
 
 export interface IConfirmPassword extends ILogin {
