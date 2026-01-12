@@ -57,7 +57,7 @@
       {{ t('messages.components.queryFilter.title') }} {{ titleDialogFilter }}
     </template>
 
-    <template #default>
+    <template v-slot:default>
       <v-tabs color="primary" v-model="tab">
         <v-tab value="form">{{ t('tabs.dialogQueryFilter.form') }}</v-tab>
         <v-tab value="list">{{ t('tabs.dialogQueryFilter.list') }}</v-tab>
@@ -123,7 +123,7 @@
         </v-tabs-window>
     </template>
 
-    <template #actions>
+    <template v-slot:actions>
       <v-icon-btn
         icon="mdi-refresh"
         v-tooltip="t('tooltips.forms.reset')"

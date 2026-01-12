@@ -9,6 +9,7 @@
       <Breadcrumbs v-if="isLayoutVisible" />
 
       <v-container fluid class="pt-2">
+        <BtnFabOtherTemplate v-if="!isLayoutVisible" />
         <RouterView />
       </v-container>
     </v-main>
@@ -24,6 +25,7 @@ import AppBar from './components/layouts/base/AppBar.vue';
 import Navigation from './components/layouts/base/Navigation.vue';
 import Breadcrumbs from './components/layouts/base/Breadcrumbs.vue';
 import { useI18n } from 'vue-i18n';
+import BtnFabOtherTemplate from './components/layouts/BtnFabOtherTemplate.vue';
 
 const { t, locale } = useI18n();
 
@@ -45,7 +47,7 @@ watch(
 );
 
 const isLayoutVisible = computed(() => {
-  return route.name !== 'Login' && route.meta.hidden !== true;
+  return route.meta.hidden !== true;
 });
 
 const drawerOpen = ref<boolean | null>(null)

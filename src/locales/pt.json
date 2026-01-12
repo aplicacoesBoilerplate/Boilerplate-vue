@@ -16,6 +16,9 @@
     "logout": {
       "title": "Sair"
     },
+    "forgotPassword": {
+      "title": "Recuperar senha"
+    },
     "dashboard": {
       "title": "Painel"
     },
@@ -77,6 +80,14 @@
       "inputUserActive": {
         "label": "Usuário ativo?"
       }
+    },
+    "formLogin": {
+      "inputEmail": {
+        "label": "Email"
+      },
+      "inputPassword": {
+        "label": "Senha"
+      }
     }
   },
   "tooltips": {
@@ -87,7 +98,8 @@
       "notifications": "Notificações",
       "licence": "Licença",
       "language": "Idioma",
-      "theme": "Mudar tema"
+      "theme": "Mudar tema",
+      "info": "Informações do sistema"
     },
     "forms": {
       "close": "Fechar",
@@ -96,7 +108,9 @@
       "reset": "Limpar",
       "create": "Novo registro",
       "edit": "Editar",
-      "delete": "Excluir"
+      "delete": "Excluir",
+      "submit": "Confirmar",
+      "forgotPassword": "Esqueci minha senha"
     },
     "components": {
       "dataTable": {
@@ -117,6 +131,7 @@
     "value": "Valor",
     "from": "De",
     "until": "Até",
+    "welcome": "Bem-vindo(a)",
     "errors": {
       "reqGenerics": "Ocorreu um erro na requisição!"
     },
@@ -170,5 +185,41 @@
       "except": "Exceto"
     },
     "none": "Nenhum filtro aplicado"
+  },
+  "forgotPassword": {
+    "title": "Recuperação de Conta",
+    "titleVerify": "Verificar Código",
+    "titleAlterPassword": "Alterar Senha",
+    "stepEmail": {
+      "instruction": "Informe seu e-mail para receber o código de verificação.",
+      "labelEmail": "E-mail",
+      "placeholderEmail": "exemplo@email.com",
+      "btnSend": "Enviar Código"
+    },
+    "stepVerify": {
+      "instruction": "Enviamos um código de 6 dígitos para:",
+      "expiresIn": "O código expira em:",
+      "expired": "O código expirou.",
+      "btnResend": "Reenviar Código",
+      "btnVerify": "Verificar",
+      "btnChangeEmail": "Alterar E-mail"
+    },
+    "stepAlterPassword": {
+      "instruction": "Por favor, insira sua nova senha abaixo.",
+      "labelNewPassword": "Nova Senha",
+      "placeholderNewPassword": "Digite a nova senha",
+      "labelConfirmPassword": "Confirmar Senha",
+      "placeholderConfirmPassword": "Confirme a nova senha",
+      "btnAlterPassword": "Alterar Senha"
+    },
+    "feedback": {
+      "sentSuccess": "Código enviado com sucesso!",
+      "sentError": "Erro ao enviar código.",
+      "verifySuccess": "Conta verificada com sucesso!",
+      "verifyError": "Código inválido.",
+      "resendInfo": "Código reenviado!",
+      "alterSuccess": "Senha alterada com sucesso!",
+      "alterError": "Erro ao alterar senha."
+    }
   }
 }

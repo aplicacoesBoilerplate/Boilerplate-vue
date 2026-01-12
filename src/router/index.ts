@@ -18,11 +18,29 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/system-info',
+    name: 'SystemInfo',
+    component: () => import('@/views/SystemInfoView.vue'),
+    meta: {
+      title: 'routes.home.title',
+      hidden: true
+    },
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),
     meta: {
       title: 'routes.login.title',
+      hidden: true
+    },
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: () => import('@/views/ForgotPasswordView.vue'),
+    meta: {
+      title: 'routes.forgotPassword.title',
       hidden: true
     },
   },

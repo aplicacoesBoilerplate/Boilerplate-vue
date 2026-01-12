@@ -45,9 +45,7 @@
 
       <v-menu>
         <template v-slot:activator="{ props }">
-          <v-btn icon v-bind="props" v-tooltip="t('tooltips.appBar.language')">
-            <v-icon>mdi-translate</v-icon>
-          </v-btn>
+          <v-icon-btn icon="mdi-translate" v-bind="props" v-tooltip="t('tooltips.appBar.language')" />
         </template>
         <v-list>
           <v-list-item
@@ -87,7 +85,7 @@
       {{ t('app.cardInfoLicence') }}
     </template>
 
-    <template #default>
+    <template v-slot:default>
       <v-list dense>
         <v-list-item
           :title="t('app.version') + ': ' + systemVersion"
@@ -113,6 +111,7 @@
 
 <script setup lang="ts">
 import pkg from '../../../../package.json'
+import { availableLocales } from '@/locales/AvailableLocales'
 import AppBarSearchForm from '@/components/forms/AppBarSearchForm.vue'
 import BaseDialog from '@/components/dialog/BaseDialog.vue'
 import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'
@@ -152,12 +151,6 @@ const classDialogLicence = new ClassBaseDialog({
 function toggleDialogLicence() {
   classDialogLicence.toggleDialog()
 }
-
-const availableLocales = [
-  { title: 'Português', value: 'pt' },
-  { title: 'English', value: 'en' },
-  { title: 'Español', value: 'es' }
-]
 
 function changeLocale(lang: string) {
   locale.value = lang

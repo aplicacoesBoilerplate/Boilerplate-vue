@@ -16,6 +16,9 @@
     "logout": {
       "title": "Cerrar sesión"
     },
+    "forgotPassword": {
+      "title": "Recuperar contraseña"
+    },
     "dashboard": {
       "title": "Panel"
     },
@@ -77,6 +80,14 @@
       "inputUserActive": {
         "label": "¿Usuario activo?"
       }
+    },
+    "formLogin": {
+      "inputEmail": {
+        "label": "Correo electrónico"
+      },
+      "inputPassword": {
+        "label": "Contraseña"
+      }
     }
   },
   "tooltips": {
@@ -87,7 +98,8 @@
       "notifications": "Notificaciones",
       "licence": "Licencia",
       "language": "Idioma",
-      "theme": "Cambiar tema"
+      "theme": "Cambiar tema",
+      "info": "Información del sistema"
     },
     "forms": {
       "close": "Cerrar",
@@ -96,7 +108,9 @@
       "reset": "Limpiar",
       "create": "Nuevo registro",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "submit": "Confirmar",
+      "forgotPassword": "Olvidé mi contraseña"
     },
     "components": {
       "dataTable": {
@@ -117,6 +131,7 @@
     "value": "Valor",
     "from": "De",
     "until": "Hasta",
+    "welcome": "Bien-vindo(a)",
     "errors": {
       "reqGenerics": "¡Se produjo un error en la solicitud!"
     },
@@ -170,5 +185,41 @@
       "except": "Excepto"
     },
     "none": "No se aplicó ningún filtro"
+  },
+  "forgotPassword": {
+    "title": "Recuperación de Cuenta",
+    "titleVerify": "Verificar Código",
+    "titleAlterPassword": "Cambiar Contraseña",
+    "stepEmail": {
+      "instruction": "Ingrese su correo electrónico para recibir el código de verificación.",
+      "labelEmail": "Correo electrónico",
+      "placeholderEmail": "ejemplo@email.com",
+      "btnSend": "Enviar Código"
+    },
+    "stepVerify": {
+      "instruction": "Enviamos un código de 6 dígitos a:",
+      "expiresIn": "El código expira en:",
+      "expired": "El código ha expirado.",
+      "btnResend": "Reenviar Código",
+      "btnVerify": "Verificar",
+      "btnChangeEmail": "Cambiar correo"
+    },
+    "stepAlterPassword": {
+      "instruction": "Por favor, ingrese su nueva contraseña a continuación.",
+      "labelNewPassword": "Nueva Contraseña",
+      "placeholderNewPassword": "Ingrese la nueva contraseña",
+      "labelConfirmPassword": "Confirmar Contraseña",
+      "placeholderConfirmPassword": "Confirme la nueva contraseña",
+      "btnAlterPassword": "Cambiar Contraseña"
+    },
+    "feedback": {
+      "sentSuccess": "¡Código enviado con éxito!",
+      "sentError": "Error al enviar el código.",
+      "verifySuccess": "¡Cuenta verificada con éxito!",
+      "verifyError": "Código inválido.",
+      "resendInfo": "¡Código reenviado!",
+      "alterSuccess": "Contraseña cambiada con éxito!",
+      "alterError": "Error al cambiar contraseña."
+    }
   }
 }

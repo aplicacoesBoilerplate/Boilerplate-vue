@@ -37,7 +37,7 @@
       }}
     </template>
 
-    <template #default>
+    <template v-slot:default>
       <UserForm
         ref="refFormUser"
         v-model:user="modelFormUser.model"
@@ -45,7 +45,7 @@
       />
     </template>
 
-    <template #actions>
+    <template v-slot:actions>
       <v-icon-btn
         icon="mdi-refresh"
         v-tooltip="t('tooltips.forms.reset')"
