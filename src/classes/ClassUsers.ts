@@ -1,7 +1,7 @@
 import type { IHeadersDataTable } from "./models/modelComponents/ModelHeaderTable";
 import type { IUser } from "@/classes/models/ModelUser";
-import { reactive } from "vue";
 import { i18n } from '@/plugins/i18n';
+import { reactive } from "vue";
 
 export class ClassUsers {
   private user: IUser
