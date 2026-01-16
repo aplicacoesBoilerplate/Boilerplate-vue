@@ -1,4 +1,5 @@
 import { StorageUtils } from '@/utils/StorageUtils'
+import { availableLocales } from '@/locales/AvailableLocales'
 import ptBrMessages from '../locales/pt.json'
 import enUsMessages from '../locales/en.json'
 import esEsMessages from '../locales/es.json'
@@ -16,18 +17,29 @@ function mergeMessages(vuetifyMessages: any, customMessages: any) {
   }
 }
 
+export const FALLBACK_LOCALE = 'pt-BR'
+
 const messages = {
-  pt: mergeMessages(pt, ptBrMessages),
-  en: mergeMessages(en, enUsMessages),
-  es: mergeMessages(es, esEsMessages),
+  'pt-BR': mergeMessages(pt, ptBrMessages),
+  'en-US': mergeMessages(en, enUsMessages),
+  'es-ES': mergeMessages(es, esEsMessages),
 }
 
-const savedLocale = StorageUtils.get<string>('user_locale', 'local');
-const browserLocale = navigator.language || 'pt-BR';
+function initLocaleDefault(): string {
+  const savedLocale = StorageUtils.get<string>('user_locale')
+  const supportedLocales = availableLocales.map(l => l.value)
+
+  if (savedLocale && supportedLocales.includes(savedLocale)) {
+    return savedLocale
+  }
+
+  return navigator.language || FALLBACK_LOCALE
+}
 
 export const i18n = createI18n({
   legacy: false,
-  locale: savedLocale || browserLocale,
-  fallbackLocale: 'en',
+  globalInjection: true,
+  locale: initLocaleDefault(),
+  fallbackLocale: FALLBACK_LOCALE,
   messages,
 })

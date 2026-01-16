@@ -153,9 +153,10 @@ function toggleDialogLicence() {
 }
 
 function changeLocale(lang: string) {
-  locale.value = lang
+  locale.value = lang;
   StorageUtils.set('user_locale', lang, 'local');
 }
+
 </script>
 
 <style scoped>

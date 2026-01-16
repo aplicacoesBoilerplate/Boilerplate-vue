@@ -2,6 +2,7 @@ import type { FilterColumn } from "./ClassDefinitions";
 import type { IQueryFilter } from "./models/modelComponents/ModelQueryFilter";
 import { formattedDate } from "@/utils/formattedDate";
 import { StorageUtils } from "@/utils/StorageUtils";
+import { FALLBACK_LOCALE } from "@/plugins/i18n";
 import { useRoute } from "vue-router";
 import { reactive, ref, watch } from "vue";
 
@@ -26,12 +27,11 @@ export class ClassQueryFilter {
 
         this.query.splice(0, this.query.length);
         if (savedData && savedData.length > 0) {
-            savedData.forEach(item => this.query.push(this.createItem(item)));
+          savedData.forEach(item => this.query.push(this.createItem(item)));
         }
 
         this.resetStaging();
-      },
-      { immediate: true }
+      },{ immediate: true }
     );
 
     watch(
@@ -63,7 +63,7 @@ export class ClassQueryFilter {
 
   private createItem(data: Partial<IQueryFilter> = {}): IQueryFilter {
     const today = new Date();
-    const locale = typeof navigator !== 'undefined' ? navigator.language : 'pt-BR';
+    const locale = typeof navigator !== 'undefined' ? navigator.language : FALLBACK_LOCALE;
 
     const defaults: IQueryFilter = {
       field: '',
