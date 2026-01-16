@@ -11,7 +11,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token') || null);
   const isAuthenticated = computed(() => !!token.value);
   const listCacheStore = useListCacheStore();
-  const isAdmin = computed(() => user.value?.role === 'admin');
+  const isAdmin = computed(() => user.value?.role === 'ADMIN');
 
   async function fetchUser() {
     if (!token.value) return;
