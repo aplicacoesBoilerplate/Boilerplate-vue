@@ -1,5 +1,10 @@
 <template>
-  <v-navigation-drawer app v-model="drawer" :expand-on-hover="mdAndUp" :rail="mdAndUp">
+  <v-navigation-drawer
+    app
+    v-model="drawer"
+    :expand-on-hover="mdAndUp"
+    :rail="mdAndUp"
+  >
     <v-list>
       <v-list-item
         prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
@@ -10,22 +15,38 @@
 
     <v-divider />
 
-    <v-list density="compact" nav>
-      <template v-for="item in menuItems" :key="item.path">
+    <v-list
+      density="compact"
+      nav
+    >
+      <template
+        v-for="item in menuItems"
+        :key="item.path"
+      >
         <v-list-group
           v-if="item.children && item.children.length > 0"
           :value="item.name"
         >
           <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" :prepend-icon="item.icon" :title="t(item.title || '')" />
+            <v-list-item
+              v-bind="props"
+              :prepend-icon="item.icon"
+              :title="t(item.title || '')"
+            />
           </template>
 
-          <v-list-item v-for="child in item.children" :key="child.path"
+          <v-list-item
+            v-for="child in item.children"
+            :key="child.path"
             :prepend-icon="child.icon"
             :title="t(child.title || '')"
-            :to="{ name: child.name }" exact
+            :to="{ name: child.name }"
+            exact
           >
-            <template v-slot:append v-if="item.hotkey && mdAndUp">
+            <template
+              v-slot:append
+              v-if="item.hotkey && mdAndUp"
+            >
               <v-hotkey
                 :keys="child.hotkey"
                 display-mode="icon"
@@ -36,12 +57,17 @@
           </v-list-item>
         </v-list-group>
 
-        <v-list-item v-else
+        <v-list-item
+          v-else
           :prepend-icon="item.icon"
           :title="t(item.title || '')"
-          :to="{ name: item.name }" exact
+          :to="{ name: item.name }"
+          exact
         >
-          <template v-slot:append v-if="item.hotkey && mdAndUp">
+          <template
+            v-slot:append
+            v-if="item.hotkey && mdAndUp"
+          >
             <v-hotkey
               :keys="item.hotkey"
               display-mode="icon"
@@ -54,7 +80,10 @@
     </v-list>
 
     <template v-slot:append>
-      <v-list density="compact" nav>
+      <v-list
+        density="compact"
+        nav
+      >
         <v-list-item
           prepend-icon="mdi-logout"
           :title="t('routes.logout.title')"
@@ -68,30 +97,36 @@
 </template>
 
 <script setup lang="ts">
-import { useNavigation } from '@/composables/useNavigation';
-import { useAuthStore } from '@/stores/auth';
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useHotkey, useDisplay } from 'vuetify';
-import { useI18n } from 'vue-i18n';
+// Ecossistema Vue
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useHotkey, useDisplay } from "vuetify";
 
+// Stores
+import { useAuthStore } from "@/stores/auth";
+
+// Composables
+import { useNavigation } from "@/composables/useNavigation";
+
+type TProps = {
+  modelValue: boolean | null;
+};
+const props = defineProps<TProps>();
+
+type TEmits = {
+  "update:modelValue": [value: boolean | null];
+};
+const emits = defineEmits<TEmits>();
+
+// Composables
 const { mdAndUp } = useDisplay();
 const { menuItems } = useNavigation();
 const authStore = useAuthStore();
 const router = useRouter();
 const { t } = useI18n();
 
-const props = defineProps<{
-  modelValue: boolean | null
-}>()
-
-const emits = defineEmits(['update:modelValue'])
-
-const drawer = computed({
-  get: () => props.modelValue,
-  set: (val) => emits('update:modelValue', val)
-})
-
+// Funções
 const flattenMenuItems = (items: typeof menuItems.value): any[] => {
   return items.reduce((acc: any[], item) => {
     acc.push(item);
@@ -114,6 +149,13 @@ allItems.forEach((item) => {
 
 function handleLogout() {
   authStore.logout();
-  router.push({ name: 'Login' });
+  router.push({ name: "Login" });
 }
+
+// Computadas
+const drawer = computed({
+  get: () => props.modelValue,
+  set: (val) => emits("update:modelValue", val),
+});
+
 </script>

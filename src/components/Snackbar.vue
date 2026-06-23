@@ -1,20 +1,27 @@
 <template>
   <v-snackbar
-    v-model="store.visible"
-    :color="store.color"
+    v-model="snackbarStore.visible"
+    :color="snackbarStore.color"
     :timeout="snackbarTimeout"
     class="py-15"
     location="top right"
     variant="elevated"
-    rounded
-    multi-line
+    rounded="ts-xl be-xl"
+    multiLine
   >
     {{ translatedMessage }}
 
-    <template v-slot:actions>
-      <v-btn color="white" variant="text" @click="store.hideSnackbar()">
-        <v-icon>mdi-close</v-icon>
-      </v-btn>
+    <template
+      v-slot:actions
+      :close="store.hideSnackbar()"
+    >
+      <v-btn
+        color="white"
+        variant="text"
+        icon="mdi-close"
+        size="small"
+        @click="snackbarStore.hideSnackbar()"
+      />
     </template>
 
     <v-progress-linear
@@ -28,58 +35,75 @@
 </template>
 
 <script setup lang="ts">
-import { useSnackbarStore } from '@/stores/SnackbarStore'
+// Ecossistema Vue
+import { ref, watch, onBeforeUnmount, computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { ref, watch, onBeforeUnmount, computed } from 'vue'
 
+// Stores
+import { useSnackbarStore } from "@/stores/SnackbarStore";
+
+// Constantes
+const snackbarTimeout = 4000;
+const intervalStep = 50;
+
+// Store
+const snackbarStore = useSnackbarStore();
+
+// Composables
 const { t, te } = useI18n();
-const store = useSnackbarStore()
 
+// Reativas
+const progress = ref(100);
+
+// Variáveis
+let intervalId: number | null = null;
+
+// Computadas
 const translatedMessage = computed(() => {
-  const msg = store.message;
-  if (!msg) return '';
+  const msg = snackbarStore.message;
+  if (!msg) return "";
 
   return te(msg) ? t(msg) : msg;
-})
+});
 
-const snackbarTimeout = 4000
-const progress = ref(100)
-const intervalStep = 50
-let intervalId: number | null = null
-
+// Funções
 function clearProgress() {
   if (intervalId !== null) {
-    clearInterval(intervalId)
-    intervalId = null
+    clearInterval(intervalId);
+    intervalId = null;
   }
 }
 
 function startProgress() {
-  clearProgress()
-  let elapsed = 0
-  progress.value = 100
+  clearProgress();
+
+  let elapsed = 0;
+  progress.value = 100;
 
   intervalId = setInterval(() => {
-    elapsed += intervalStep
-    progress.value = 100 - (elapsed / snackbarTimeout) * 100
+    elapsed += intervalStep;
+    progress.value = 100 - (elapsed / snackbarTimeout) * 100;
 
     if (elapsed >= snackbarTimeout) {
-      clearProgress()
+      clearProgress();
     }
-  }, intervalStep)
+  }, intervalStep);
 }
 
-watch(() => store.visible, (isVisible) => {
-  if (isVisible) {
-    startProgress()
-  } else {
-    clearProgress()
-    progress.value = 100
-  }
-})
+// Observadores
+watch(() => snackbarStore.visible, (isVisible) => {
+    if (isVisible) {
+      startProgress();
+    } else {
+      clearProgress();
+      progress.value = 100;
+    }
+  },
+);
 
+// Lifecycle Hooks
 onBeforeUnmount(() => {
-  clearProgress()
-})
+  clearProgress();
+});
 
 </script>

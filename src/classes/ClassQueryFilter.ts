@@ -1,10 +1,11 @@
 import type { FilterColumn } from "./ClassDefinitions";
 import type { IQueryFilter } from "./models/modelComponents/ModelQueryFilter";
-import { formattedDate } from "@/utils/formattedDate";
+
 import { StorageUtils } from "@/utils/StorageUtils";
 import { FALLBACK_LOCALE } from "@/plugins/i18n";
 import { useRoute } from "vue-router";
 import { reactive, ref, watch } from "vue";
+import { ClassFormatters } from "./Utils/ClassFormatters";
 
 export class ClassQueryFilter {
   private query: IQueryFilter[]
@@ -69,8 +70,8 @@ export class ClassQueryFilter {
       field: '',
       condition: '',
       value: '',
-      startDate: formattedDate(today, locale),
-      endDate: formattedDate(today, locale),
+      startDate: ClassFormatters.formatarDataHora(today, locale),
+      endDate: ClassFormatters.formatarDataHora(today, locale),
       selectValues: []
     };
 

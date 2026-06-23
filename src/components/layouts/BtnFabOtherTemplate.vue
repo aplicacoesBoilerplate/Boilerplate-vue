@@ -1,14 +1,13 @@
 <template>
   <v-fab
-    key="absolute"
-    absolute
-    app
+    :icon="open ? 'mdi-close' : 'mdi-cog'"
     :color="open ? '' : 'primary'"
+    key="absolute"
     location="top left"
     size="large"
-    icon
+    absolute
+    app
   >
-    <v-icon>{{ open ? 'mdi-close' : 'mdi-cog' }}</v-icon>
     <v-speed-dial
       v-model="open"
       location="right center"
@@ -18,10 +17,10 @@
       <div key="1">
         <v-menu>
           <template v-slot:activator="{ props }">
-            <v-icon-btn
+            <v-btn
+              v-bind="props"
               icon="mdi-translate"
               color="info"
-              v-bind="props"
               v-tooltip="t('tooltips.appBar.language')"
             />
           </template>
@@ -30,9 +29,9 @@
               v-for="(item, index) in availableLocales"
               :key="index"
               :value="item.value"
-              @click="changeLocale(item.value)"
               :active="locale === item.value"
               color="primary"
+              @click="changeLocale(item.value)"
             >
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
@@ -44,18 +43,18 @@
         <BtnOpenDialog
           :color="isDark ? 'yellow-lighten-3' : 'primary'"
           :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
-          v-tooltip="t('tooltips.appBar.theme')"
           :rotate="true"
+          v-tooltip="t('tooltips.appBar.theme')"
           @click="toggleTheme"
         />
       </div>
 
       <div key="3">
         <BtnOpenDialog
+          :rotate="true"
           color="primary"
           icon="mdi-information"
           v-tooltip="t('tooltips.appBar.info')"
-          :rotate="true"
           @click="redirectToInfoSystem"
         />
       </div>
@@ -64,28 +63,45 @@
 </template>
 
 <script setup lang="ts">
-import { availableLocales } from '@/locales/AvailableLocales'
-import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue';
-import { useThemeSwitch } from '@/composables/useThemeSwitch';
-import { StorageUtils } from '@/utils/StorageUtils';
-import router from '@/router';
-import { useI18n } from 'vue-i18n';
-import { computed, ref } from 'vue'
+// Ecossistema Vue
+import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 
-const { theme, toggleTheme } = useThemeSwitch()
-const { t, locale } = useI18n()
-const open = ref(false)
+// Router
+import router from "@/router";
 
-const isDark = computed(() => theme.global.current.value.dark)
+// Utils
+import { StorageUtils } from "@/utils/StorageUtils";
 
+// Composables
+import { useThemeSwitch } from "@/composables/useThemeSwitch";
+
+// Componentes
+import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue";
+
+// Constantes
+import { availableLocales } from "@/locales/AvailableLocales";
+
+// Composables
+const { theme, toggleTheme } = useThemeSwitch();
+const { t, locale } = useI18n();
+
+// Reativas
+const open = ref(false);
+
+// Funções
 function changeLocale(lang: string) {
-  locale.value = lang
-  StorageUtils.set('user_locale', lang, 'local');
+  locale.value = lang;
+  StorageUtils.set("user_locale", lang, "local");
 }
 
 function redirectToInfoSystem() {
   router.push({
-    name: 'SystemInfo'
+    name: "SystemInfo",
   });
 }
+
+// Computadas
+const isDark = computed(() => theme.global.current.value.dark);
+
 </script>

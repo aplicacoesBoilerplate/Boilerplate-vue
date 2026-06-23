@@ -1,71 +1,33 @@
 <template>
   <v-app>
+    <component :is="layoutComponent" />
     <Snackbar />
-
-    <Navigation v-if="isLayoutVisible" v-model="drawerOpen" />
-    <AppBar v-if="isLayoutVisible" @toggle-drawer="toggleDrawer" />
-
-    <v-main class="main-scroll">
-      <Breadcrumbs v-if="isLayoutVisible" />
-
-      <v-container fluid class="pt-2">
-        <BtnFabOtherTemplate v-if="!isLayoutVisible" />
-        <RouterView />
-      </v-container>
-    </v-main>
-
   </v-app>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref } from 'vue';
+// Ecossistema Vue
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
+
+// Componentes
+import AppLayout from '@/layouts/AppLayout.vue';
+import DefaultLayout from '@/layouts/DefaultLayout.vue';
 import Snackbar from '@/components/Snackbar.vue';
-import AppBar from './components/layouts/base/AppBar.vue';
-import Navigation from './components/layouts/base/Navigation.vue';
-import Breadcrumbs from './components/layouts/base/Breadcrumbs.vue';
-import { useI18n } from 'vue-i18n';
-import BtnFabOtherTemplate from './components/layouts/BtnFabOtherTemplate.vue';
 
-const { t, locale } = useI18n();
-
+// Composables
 const route = useRoute();
 
-watch(
-  [() => route.meta.title, locale],
-  () => {
-    const defaultTitle = t('app.title');
-    const routeTitle = route.meta.title as string;
-
-    if (routeTitle) {
-      document.title = `${t(routeTitle)} - ${defaultTitle}`;
-    } else {
-      document.title = defaultTitle;
-    }
-  },
-  { immediate: true }
-);
-
-const isLayoutVisible = computed(() => {
-  return route.meta.hidden !== true;
+// Computadas
+const layoutComponent = computed(() => {
+  return route.meta.hidden === true ? DefaultLayout : AppLayout;
 });
-
-const drawerOpen = ref<boolean | null>(null)
-
-function toggleDrawer() {
-  drawerOpen.value = !drawerOpen.value
-}
 </script>
 
-<style global>
-html,
-v-main {
+<style>
+html, body {
   margin: 0;
   padding: 0;
-}
-
-.main-scroll {
-  height: calc(100vh - var(--v-layout-top));
-  overflow-y: auto;
+  height: 100%;
 }
 </style>

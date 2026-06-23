@@ -1,25 +1,50 @@
 <template>
-  <v-app-bar app flat border="b">
-    <v-app-bar-nav-icon v-tooltip="t('tooltips.appBar.menu')" @click="emits('toggle-drawer')" />
-    <v-app-bar-title class="font-weight-bold">{{ t('app.title') }}</v-app-bar-title>
+  <v-app-bar
+    border="b"
+    app
+    flat
+  >
+    <v-app-bar-nav-icon
+      v-tooltip="t('tooltips.appBar.menu')"
+      @click="emits('toggleDrawer')"
+    />
+    <v-app-bar-title class="font-weight-bold">{{t("app.title")}}</v-app-bar-title>
 
     <template v-if="mdAndUp">
       <v-spacer />
       <div style="width: 100%; max-width: 480px">
-        <AppBarSearchForm :loading="loading" @search="handleSearch" />
+        <AppBarSearchForm
+          :loading="loading"
+          @search="handleSearch"
+        />
       </div>
       <v-spacer />
     </template>
 
-    <template v-slot:extension v-if="smAndDown">
+    <template
+      v-if="smAndDown"
+      v-slot:extension
+    >
       <div class="px-4 pb-2 w-100">
-        <AppBarSearchForm :loading="loading" @search="handleSearch" />
+        <AppBarSearchForm
+          :loading="loading"
+          @search="handleSearch"
+        />
       </div>
     </template>
 
     <template v-slot:append>
-      <v-badge location="bottom left" color="warning" dot class="ms-2">
-        <v-icon-btn icon="mdi-bell" v-tooltip="t('tooltips.appBar.notifications')" variant="flat" />
+      <v-badge
+        class="ms-2"
+        location="bottom left"
+        color="warning"
+        dot
+      >
+        <v-icon-btn
+          icon="mdi-bell"
+          v-tooltip="t('tooltips.appBar.notifications')"
+          variant="flat"
+        />
       </v-badge>
 
       <v-divider
@@ -45,7 +70,11 @@
 
       <v-menu>
         <template v-slot:activator="{ props }">
-          <v-icon-btn icon="mdi-translate" v-bind="props" v-tooltip="t('tooltips.appBar.language')" />
+          <v-icon-btn
+            v-bind="props"
+            icon="mdi-translate"
+            v-tooltip="t('tooltips.appBar.language')"
+          />
         </template>
         <v-list>
           <v-list-item
@@ -81,8 +110,11 @@
 
   <BaseDialog v-model:attributes="classDialogLicence.model">
     <template v-slot:title>
-      <v-icon size="small" icon="mdi-information-variant-circle-outline" />
-      {{ t('app.cardInfoLicence') }}
+      <v-icon
+        icon="mdi-information-variant-circle-outline"
+        size="small"
+      />
+      {{ t("app.cardInfoLicence") }}
     </template>
 
     <template v-slot:default>
@@ -92,7 +124,12 @@
           :subtitle="t('app.updateDate') + ': ' + formattedVersionDate"
         >
           <template v-slot:prepend>
-            <v-icon size="x-large" color="info" class="mr-3">mdi-code-block-tags</v-icon>
+            <v-icon
+              icon="mdi-code-block-tags"
+              size="x-large"
+              class="mr-3"
+              color="info"
+            />
           </template>
         </v-list-item>
 
@@ -101,7 +138,12 @@
           :subtitle="t('app.title')"
         >
           <template v-slot:prepend>
-            <v-icon size="x-large" color="warning" class="mr-3">mdi-license</v-icon>
+            <v-icon
+              icon="mdi-license"
+              size="x-large"
+              class="mr-3"
+              color="warning"
+            />
           </template>
         </v-list-item>
       </v-list>
@@ -110,58 +152,70 @@
 </template>
 
 <script setup lang="ts">
-import pkg from '../../../../package.json'
-import { availableLocales } from '@/locales/AvailableLocales'
-import AppBarSearchForm from '@/components/forms/AppBarSearchForm.vue'
-import BaseDialog from '@/components/dialog/BaseDialog.vue'
-import BtnOpenDialog from '@/components/dialog/BtnOpenDialog.vue'
-import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
-import { useThemeSwitch } from '@/composables/useThemeSwitch'
-import { formattedDate } from '@/utils/formattedDate'
-import { StorageUtils } from '@/utils/StorageUtils'
-import { useI18n } from 'vue-i18n'
-import { useDisplay } from 'vuetify'
-import { ref, computed } from 'vue'
+// Ecossistema Vue
+import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 
-const { smAndDown, mdAndUp } = useDisplay()
-const { theme, toggleTheme } = useThemeSwitch()
-const isDark = computed(() => theme.global.current.value.dark)
-const { t, locale } = useI18n()
+// Constantes
+import pkg from "../../../../package.json";
+import { availableLocales } from "@/locales/AvailableLocales";
+import { ClassBaseDialog } from "@/classes/ClassBaseDialog";
 
-const systemVersion = pkg.version
-const formattedVersionDate = computed(() => {
-  return formattedDate(new Date(__APP_BUILD_DATE__), locale.value);
-})
+// Composables
+import { useThemeSwitch } from "@/composables/useThemeSwitch";
 
-const emits = defineEmits(['toggle-drawer'])
+// Utils
+import { StorageUtils } from "@/utils/StorageUtils";
 
-const loading = ref(false)
+// Formatação
+import { ClassFormatters } from "@/classes/Utils/ClassFormatters";
 
-function handleSearch(term: string) {
-  loading.value = true
-  setTimeout(() => (loading.value = false), 2000)
+// Componentes
+import AppBarSearchForm from "@/components/forms/AppBarSearchForm.vue";
+import BaseDialog from "@/components/dialog/BaseDialog.vue";
+import BtnOpenDialog from "@/components/dialog/BtnOpenDialog.vue";
+
+// Constantes
+const systemVersion = pkg.version;
+
+type TEmits = {
+  toggleDrawer: []
 }
+const emits = defineEmits<TEmits>();
 
+// Composables
+const { smAndDown, mdAndUp } = useDisplay();
+const { theme, toggleTheme } = useThemeSwitch();
+const { t, locale } = useI18n();
+
+// Reativas
+const loading = ref(false);
 const classDialogLicence = new ClassBaseDialog({
   view: false,
   maxHeight: 350,
   maxWidth: 400,
-})
+});
+
+// Funções
+function handleSearch(pTermoBusca: string) {
+  loading.value = true;
+  setTimeout(() => (loading.value = false), 2000);
+}
 
 function toggleDialogLicence() {
-  classDialogLicence.toggleDialog()
+  classDialogLicence.toggleDialog();
 }
 
 function changeLocale(lang: string) {
   locale.value = lang;
-  StorageUtils.set('user_locale', lang, 'local');
+  StorageUtils.set("user_locale", lang, "local");
 }
+
+// Computadas
+const isDark = computed(() => theme.global.current.value.dark);
+const formattedVersionDate = computed(() => {
+  return ClassFormatters.formatarDataHora(__APP_BUILD_DATE__, locale.value, true);
+});
 
 </script>
-
-<style scoped>
-.search-form {
-  max-width: 480px;
-  width: 100%;
-}
-</style>
