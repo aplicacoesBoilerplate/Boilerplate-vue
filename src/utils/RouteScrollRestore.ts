@@ -1,8 +1,6 @@
 // Ecossistema vue
 import type { RouteLocationNormalizedLoaded } from 'vue-router';
 
-// Constantes
-
 /**
  * Chave para obter o seletor de scroll do parâmetro da URL no browser usando vue router.
  */
