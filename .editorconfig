@@ -1,9 +1,31 @@
-[*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,vue,css,scss,sass,less,styl}]
+# Arquivo de configuracao do EditorConfig, ferramenta para configuracao de estilo.
+
+# Indica que este e o arquivo raiz do EditorConfig.
+root = true
+
+# Regras padrao para todos os arquivos do projeto.
+[*]
+
+# Codificacao de caracteres.
 charset = utf-8
+
+# Tamanho da indentacao.
 indent_size = 2
+
+# Estilo de indentacao.
 indent_style = space
+
+# Insere linha em branco no final do arquivo.
 insert_final_newline = true
+
+# Remove espacos em branco no final das linhas.
 trim_trailing_whitespace = true
 
+# Final de linha. (lf - Linux/Mac, crlf - Windows)
 end_of_line = lf
-max_line_length = 400
+
+# Arquivos Markdown.
+[*.md]
+
+# Markdown utiliza dois espacos ao final da linha para representar quebras de linha.
+trim_trailing_whitespace = false
