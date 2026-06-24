@@ -26,7 +26,7 @@ import { useRouter } from "vue-router";
 import { useDisplay, useHotkey } from "vuetify";
 
 // Types e Interfaces
-import type { IRouteMeta } from "@/classes/models/ModelRouteMeta";
+import type { IRouteMeta } from "@/models/model/ModelRouteMeta";
 
 type TProps = {
   item: IRouteMeta;
@@ -45,5 +45,4 @@ if (props.item.hotkey && props.item.name) {
     router.push({ name: props.item.name });
   });
 }
-
 </script>

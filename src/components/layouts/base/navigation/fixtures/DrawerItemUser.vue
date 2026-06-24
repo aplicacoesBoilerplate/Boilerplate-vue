@@ -61,7 +61,7 @@ import { useAuthStore } from "@/stores/auth";
 import { usePreferencesStore } from "@/stores/preferences.store";
 
 // Constantes
-import { ROLE_ICONS } from "@/classes/models/ModelUser";
+import { ROLE_ICONS } from "@/models/model/ModelUser";
 
 // Composables
 const { mdAndUp } = useDisplay();
@@ -85,5 +85,4 @@ const initialLetter = computed(() =>
 const isPinned = computed(
   () => preferencesStore.preferences.drawer.isDrawerPinned,
 );
-
 </script>
