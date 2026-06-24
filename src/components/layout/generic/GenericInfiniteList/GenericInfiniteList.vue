@@ -123,11 +123,11 @@ import type {
 } from "@/models/components/IGenericListContext";
 import type { TManagerStorageLocation } from "@/utils/ManagerStorage";
 
-// Utils
-import { createRouteScrollItemBindings } from "@/utils/RouteScrollRestore";
-
 // Composables
 import { useRouteScrollRedirect } from "@/composables/useRouteScrollRedirect";
+
+// Utils
+import { createRouteScrollItemBindings } from "@/utils/RouteScrollRestore";
 
 // Contextos
 import { genericInfiniteListKey } from "@/components/layout/generic/genericInfiniteList.context";
