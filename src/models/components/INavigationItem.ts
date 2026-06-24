@@ -3,7 +3,7 @@ export interface INavigationItem {
   title: string;
   /** Icone opcional exibido a esquerda do item. */
   icon?: string;
-  /** Tecla de atalho para acessar a rota, ex: 'ctrl+m'. */
+  /** Tecla de atalho para acessar a rota, ex: 'ctrl + m'. */
   hotkey?: string;
   /** Caminho (path) da rota. */
   to?: string;
