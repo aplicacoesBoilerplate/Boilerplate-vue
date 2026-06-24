@@ -1,31 +1,59 @@
-import type { SnackbarColor } from '@/classes/models/modelComponents/ModelSnackbar'
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+// Ecossistema Vue
+import { ref } from 'vue';
 
+// Pinia
+import { defineStore } from 'pinia';
+
+// Types e Interfaces
+import type { IPropsSnackbarQueue, TSnackbarQueueItem, TSnackbarType } from '@/models/IPropsSnackbarQueue';
+
+// Mapeamento default dos icones por tipo
+const snackbarIcons: Record<TSnackbarType, string> = {
+  success: 'mdi-check-circle-outline',
+  error: 'mdi-alert-circle-outline',
+  info: 'mdi-information-outline',
+  warning: 'mdi-alert-outline',
+};
+
+/**
+ * Store para gerenciar a fila de SnackBar's.
+ */
 export const useSnackbarStore = defineStore('snackbar', () => {
-  const visible = ref(false)
-  const message = ref('')
-  const color = ref<SnackbarColor>('success')
+  // Reativas
+  const messages = ref<TSnackbarQueueItem[]>([]);
 
-  function showSnackbar(msg: string, colorType: SnackbarColor = 'success') {
-    visible.value = false
+  /**
+   * Adiciona uma mensagem na fila da Snackbar.
+   */
+  function adicionar(snackbar: IPropsSnackbarQueue) {
+    const type = snackbar.type ?? 'info';
 
-    setTimeout(() => {
-      message.value = msg
-      color.value = colorType
-      visible.value = true
-    }, 100)
+    messages.value.push({
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15),
+      title: snackbar.title,
+      text: snackbar.text,
+      color: type,
+      variant: 'elevated',
+      rounded: 'ts-xl be-xl',
+      location: 'top right',
+      timer: 'bottom',
+      timerColor: 'white',
+      timeout: snackbar.timeout ?? 4000,
+      prependIcon: snackbar.icon ?? snackbarIcons[type],
+      actionUrl: snackbar.actionUrl,
+    } as any);
   }
 
-  function hideSnackbar() {
-    visible.value = false
+  /**
+   * Limpa todas as mensagens ativas na tela.
+   */
+  function limpar() {
+    messages.value = [];
   }
 
   return {
-    visible,
-    message,
-    color,
-    showSnackbar,
-    hideSnackbar,
-  }
-})
+    messages,
+    adicionar,
+    limpar
+  };
+});
