@@ -1,7 +1,7 @@
 // Types e Interfaces
-import type { EFilterType } from "./enums/EnumFilterType";
+import type { ETipoFiltro } from './enums/EnumTipoFiltro';
 
-export interface ICampoFiltroOption<T> {
+export interface ICampoFiltro<T> {
   /** O valor da opção do campo selecionado que será utilizado no filtro */
   valor: T;
   /** A descrição do campo que será exibida no filtro */
@@ -9,5 +9,7 @@ export interface ICampoFiltroOption<T> {
   /** O ícone que será exibido no filtro */
   icone: string;
   /** Os tipos de dados do campo que serão aceitos no filtro */
-  tipos: EFilterType[];
+  tipos: ETipoFiltro[];
+  /** Suporte a campos de objetos aninhados (recursivo). */
+  filhos?: ICampoFiltro<T>[];
 }
