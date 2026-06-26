@@ -24,12 +24,12 @@
       <template #subtitle>
         <v-sheet class="d-flex align-center justify-center">
           <v-chip
-            :appendIcon="ROLE_ICONS[authStore.user?.role ?? 'USER']"
+            :appendIcon="ICONE_PAPEL[authStore.user?.papel ?? 'USER']"
             class="ma-0"
             color="primary"
             size="x-small"
             label
-            >{{ authStore.user?.role }}
+            >{{ authStore.user?.papel }}
           </v-chip>
         </v-sheet>
       </template>
@@ -53,15 +53,15 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed } from "vue";
-import { useDisplay } from "vuetify";
+import { computed } from 'vue';
+import { useDisplay } from 'vuetify';
 
 // Stores
-import { useAuthStore } from "@/stores/auth";
-import { usePreferencesStore } from "@/stores/preferences.store";
+import { useAuthStore } from '@/stores/auth';
+import { usePreferencesStore } from '@/stores/preferences.store';
 
 // Constantes
-import { ROLE_ICONS } from "@/models/model/ModelUser";
+import { ICONE_PAPEL } from '@/models/model/usuario/lUsuario';
 
 // Composables
 const { mdAndUp } = useDisplay();
@@ -76,13 +76,10 @@ function togglePin() {
 }
 
 // Computadas
-const shortName = computed(() => authStore.user?.username?.split(" ")[0] ?? "");
+const shortName = computed(() => authStore.user?.nome?.split(' ')[0] ?? '');
 
-const initialLetter = computed(() =>
-  shortName.value ? shortName.value.charAt(0).toUpperCase() : "",
-);
+const initialLetter = computed(() => (shortName.value ? shortName.value.charAt(0).toUpperCase() : ''));
 
-const isPinned = computed(
-  () => preferencesStore.preferences.drawer.isDrawerPinned,
-);
+const isPinned = computed(() => preferencesStore.preferences.drawer.isDrawerPinned);
+
 </script>

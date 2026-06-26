@@ -17,7 +17,7 @@ export const ICONE_PAPEL: Record<TPapel, string> = {
 
 // Extraído o tipo do papel para ser usado em input fixtures no form.
 export type TPapelUsuario = {
-  role: TPapel;
+  papel: TPapel;
 };
 
 export interface IUsuario extends TPapelUsuario {

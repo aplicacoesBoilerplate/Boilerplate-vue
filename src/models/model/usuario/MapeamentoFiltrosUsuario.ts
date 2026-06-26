@@ -3,9 +3,9 @@ import type { IUsuario } from './lUsuario';
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 
 // Enums
-import { ETipoFiltro } from '@/models/filters/enums/EnumTipoFiltro';
+import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 
-// Define com base na interface do Model, quais são os campos os quais os filtros não são aplicaveis.
+// Define com base na interface do Model, um tipo com os campos que os filtros são aplicaveis.
 export type TCamposFiltroUsuario = Omit<IUsuario, 'avatar' | 'notificar'>;
 
 const DESCRICAO_CAMPOS_FILTRO_USUARIO: Record<keyof TCamposFiltroUsuario, string> = {

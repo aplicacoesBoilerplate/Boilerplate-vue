@@ -1,16 +1,100 @@
 <template>
-  <v-container fluid class="fill-height">
-    <grid-data-chart
-      :hidden-chart="gridConfig.modelTable.model.hiddenChart"
-      @toggle-chart="toggleChartState"
+  <v-container
+    fluid
+    class="fill-height pb-0 overflow-hidden"
+  >
+    <GridDataChart
+      :hidden-chart="hiddenChart"
+      @toggle-chart="hiddenChart = !hiddenChart"
     >
-      <template #dataTable>
-        <DataTable
-          v-model:dataTable="gridConfig.modelTable"
-          @item-selecionado="handleSelection"
-          @toggle-chart="toggleChartState"
-          @gerenciar-registro="handleGerenciarRegistro"
-        />
+      <template #dataTable="{ toggleChart }">
+        <GenericView
+          ref="genericViewRef"
+          title="Usuários"
+          contextId="users-list"
+          :serviceFetch="fetchUsersMock"
+          :limitOptions="[10, 25, 50]"
+        >
+          <template #list-header>
+            <div class="d-flex align-center justify-space-between mb-4 w-100">
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-plus"
+                text="Novo Usuário"
+                @click="handleGerenciarRegistro({ modoEdicao: false })"
+              />
+              <v-btn
+                variant="tonal"
+                color="info"
+                :prepend-icon="hiddenChart ? 'mdi-chart-pie' : 'mdi-table'"
+                :text="hiddenChart ? 'Ver Gráficos' : 'Esconder Gráficos'"
+                @click="toggleChart"
+              />
+            </div>
+          </template>
+
+          <template #default="{ items }">
+            <GenericInfiniteListItem
+              v-for="user in items as IUser[]"
+              :key="user.idUser"
+              :item="user"
+              itemKey="idUser"
+              contextId="users-list"
+            >
+              <v-list-item
+                class="border rounded mb-2 pa-3"
+                lines="two"
+              >
+                <template #prepend>
+                  <v-avatar
+                    color="primary"
+                    class="text-white"
+                  >
+                    {{ user.username.charAt(0).toUpperCase() }}
+                  </v-avatar>
+                </template>
+
+                <v-list-item-title class="font-weight-bold text-primary">
+                  {{ user.username }}
+                </v-list-item-title>
+                <v-list-item-subtitle> {{ user.email }} • {{ user.role }} </v-list-item-subtitle>
+
+                <template #append>
+                  <div class="d-flex align-center">
+                    <v-chip
+                      :color="user.active ? 'success' : 'error'"
+                      size="small"
+                      class="mr-4"
+                    >
+                      {{ user.active ? 'Ativo' : 'Inativo' }}
+                    </v-chip>
+
+                    <v-btn
+                      icon="mdi-pencil"
+                      variant="text"
+                      color="info"
+                      size="small"
+                      class="mr-2"
+                      @click.stop="
+                        handleGerenciarRegistro({
+                          modoEdicao: true,
+                          item: user,
+                        })
+                      "
+                    />
+                    <v-btn
+                      icon="mdi-delete"
+                      variant="text"
+                      color="error"
+                      size="small"
+                      @click.stop="deleteUser(user.idUser)"
+                    />
+                  </div>
+                </template>
+              </v-list-item>
+            </GenericInfiniteListItem>
+          </template>
+        </GenericView>
       </template>
 
       <template #dataChart>
@@ -19,177 +103,189 @@
           :chart-data="chartDataComputed"
           :filter-options="headersParaGrafico"
           :active-config="activeHeaderConfig"
-          :key="String(gridConfig.modelTable.model.hiddenChart)"
         />
       </template>
-    </grid-data-chart>
+    </GridDataChart>
+
+    <BaseDialog
+      v-model:showDialog="showDialogUser"
+      :maxWidth="800"
+    >
+      <template v-slot:title>
+        <v-icon
+          size="small"
+          class="mr-2"
+          :icon="modelFormUser.idUser ? 'mdi-account-edit' : 'mdi-account-plus'"
+        />
+        {{
+          modelFormUser.idUser
+            ? t('messages.forms.formUsers.editingUser') + ` ${modelFormUser.idUser}`
+            : t('messages.forms.formUsers.createUser')
+        }}
+      </template>
+
+      <template v-slot:content>
+        <UserForm
+          ref="refFormUser"
+          v-model:usuario="modelFormUser"
+          v-model:valido="isFormValid"
+        />
+      </template>
+
+      <template v-slot:actions>
+        <v-btn
+          prepend-icon="mdi-refresh"
+          v-tooltip="t('tooltips.forms.reset')"
+          variant="text"
+          color="amber"
+          @click="resetFormUser"
+          text="Limpar"
+        />
+
+        <v-spacer />
+
+        <v-btn
+          prepend-icon="mdi-content-save"
+          v-tooltip="t('tooltips.forms.save')"
+          variant="flat"
+          color="success"
+          :disabled="!isFormValid"
+          text="Salvar"
+          @click="saveUser"
+        />
+      </template>
+    </BaseDialog>
   </v-container>
-
-  <BaseDialog v-model:attributes="classDialogUser.model">
-    <template v-slot:title>
-      <v-icon
-        size="small"
-        :icon="classDialogUser.model.formEditingMode ? 'mdi-account-edit' : 'mdi-account-plus'"
-      />
-      {{ classDialogUser.model.formEditingMode
-          ? t('messages.forms.formUsers.editingUser') + ` ${classDialogUser.model.itemEdition?.idUser || ''}`
-          : t('messages.forms.formUsers.createUser')
-      }}
-    </template>
-
-    <template v-slot:default>
-      <UserForm
-        ref="refFormUser"
-        v-model:user="modelFormUser.model"
-        v-model:valid="isFormValid"
-      />
-    </template>
-
-    <template v-slot:actions>
-      <v-icon-btn
-        icon="mdi-refresh"
-        v-tooltip="t('tooltips.forms.reset')"
-        variant="text"
-        color="amber"
-        @click="resetFormUser"
-      />
-
-      <v-spacer />
-
-      <v-icon-btn
-        icon="mdi-content-save"
-        v-tooltip="t('tooltips.forms.save')"
-        variant="text"
-        color="success"
-        :disabled="!isFormValid"
-      />
-    </template>
-  </BaseDialog>
 </template>
 
 <script setup lang="ts">
-import { ClassGridDataChart } from '@/classes/ClassGridDataChart'
-import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
-import type { IUser } from '@/classes/models/ModelUser'
-import { ClassUsers } from '@/classes/ClassUsers'
-import { usersServices } from '@/services/usersService'
-import { useInfiniteList } from '@/composables/useInfiniteList'
-import { useChartHelpers } from '@/composables/useChartHelpers'
-import GridDataChart from '@/components/layouts/GridDataChart.vue'
-import DataTable from '@/components/DataTable.vue'
-import ChartPie from '@/components/ChartPie.vue'
-import BaseDialog from '@/components/dialog/BaseDialog.vue'
-import UserForm from '@/components/forms/UserForm.vue'
-import { reactive, ref, onMounted, watchEffect, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
+// Ecossistema vue
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-const route = useRoute()
-const { t } = useI18n()
+// Stores
+import { useGenericListStore } from '@/stores/genericList.store';
 
-const headers = computed(() => ClassUsers.getHeaders());
+// Types e Interfaces
+import type { IUser } from '@/models/model/lUser';
+import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
 
-const data = ref<IUser[]>([
+// Classes
+import { ClassUsuarios } from '@/classes/ClassUsers';
+
+// Composables
+import { useChartHelpers } from '@/composables/useChartHelpers';
+
+// Componentes
+import GridDataChart from '@/components/layouts/GridDataChart.vue';
+import ChartPie from '@/components/ChartPie.vue';
+import BaseDialog from '@/components/dialogs/BaseDialog.vue';
+import UserForm from '@/components/forms/UserForm.vue';
+import GenericView from '@/components/layout/generic/GenericView.vue';
+import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
+
+// Composables
+const { t } = useI18n();
+const listStore = useGenericListStore();
+
+// Constantes e Dados Base
+const headers = ClassUsuarios.getHeaders();
+const headersParaGrafico = headers.filter((h) => h.key !== 'actions').map((h) => ({ title: h.title, value: h.key }));
+
+// Reativas - Model/ref
+const genericViewRef = ref<InstanceType<typeof GenericView> | null>(null);
+const hiddenChart = ref(true);
+const selectedChartFilter = ref(headersParaGrafico[0]?.value);
+
+// Estados de Formulário
+const showDialogUser = ref(false);
+const modelFormUser = ref<IUser>(new ClassUsuarios().model);
+const refFormUser = ref<InstanceType<typeof UserForm> | null>(null);
+const isFormValid = ref(false);
+
+// Funções Síncronas (Mock de API)
+const mockData: IUser[] = [
   {
     idUser: 1,
     username: 'BOILERPLATE',
     email: 'boilerplate@gmail.com',
-    role: 'ADMIN' as const,
+    role: 'ADMIN',
     phoneNumber: '(32) 99999-9999',
     receiveNotifications: true,
-    active: true
-  }
-])
-
-const optionsChartFilter = computed(() =>
-  headers.value.map((h) => h.title).slice(0, -1)
-)
-
-const gridManager = new ClassGridDataChart<IUser>({
-  modelTable: {
-    model: {
-      hiddenChart: true,
-      titleTable: t('dataTable.users.title'),
-      headersTable: headers.value,
-      itemsTable: [],
-    },
+    active: true,
   },
-  modelChart: {
-    optionsFilterSelectData: optionsChartFilter.value,
-    model: [],
+  {
+    idUser: 2,
+    username: 'GERSON',
+    email: 'gerson@gmail.com',
+    role: 'USER',
+    phoneNumber: '(32) 99999-9998',
+    receiveNotifications: false,
+    active: true,
   },
-})
+  {
+    idUser: 3,
+    username: 'MARCOS',
+    email: 'marcos@gmail.com',
+    role: 'USER',
+    phoneNumber: '(32) 99999-9997',
+    receiveNotifications: true,
+    active: false,
+  },
+];
 
-const gridConfig = reactive(gridManager.model)
+async function fetchUsersMock(payload: IGenericListFetchPayload): Promise<TGenericListFetchResponse> {
+  // Simula latência de rede
+  await new Promise((resolve) => setTimeout(resolve, 800));
 
-const { loading } = useInfiniteList(route.fullPath, usersServices.getAllUsers, 20)
+  const start = (payload.nextEntry as number) || 0;
+  const limit = payload.limit || 10;
+  const data = mockData.slice(start, start + limit);
 
-onMounted(() => {
-  setTimeout(() => {
-    loading.value = false
-  }, 2000)
-})
-
-watchEffect(() => {
-  gridConfig.modelTable.model.itemsTable = data.value
-  gridConfig.modelTable.model.loadingDataTable = loading.value
-  gridConfig.modelTable.model.headersTable = headers.value
-  gridConfig.modelChart.optionsFilterSelectData = optionsChartFilter.value
-  gridConfig.modelTable.model.titleTable = t('dataTable.users.title')
-})
-
-const itemSelecionado = ref()
-
-function handleSelection(item: any[]) {
-  itemSelecionado.value = item
+  return {
+    items: data,
+    hasMore: start + data.length < mockData.length,
+    nextEntry: start + data.length < mockData.length ? start + data.length : undefined,
+  };
 }
 
-function toggleChartState() {
-  gridConfig.modelTable.model.hiddenChart = !gridConfig.modelTable.model.hiddenChart
-}
-
-const headersParaGrafico = computed(() => {
-  return headers.value.filter((h) => h.key !== 'actions').map((h) => ({ title: h.title, value: h.key }))
-})
-
-const selectedChartFilter = ref(
-  headersParaGrafico.value[0]?.value,
-)
-
-const activeHeaderConfig = computed(() => {
-  return headers.value.find((h) => h.key === selectedChartFilter.value)
-})
-
-const chartDataComputed = computed(() => {
-  const items = gridConfig.modelTable.model.itemsTable
-  const key = selectedChartFilter.value
-  const strategy = activeHeaderConfig.value?.chartAggregator || 'count'
-  return useChartHelpers(items, key, strategy)
-})
-
-const modelFormUser = new ClassUsers();
-const refFormUser = ref<InstanceType<typeof UserForm> | null>(null);
-const isFormValid = ref(false);
-
-const classDialogUser = new ClassBaseDialog<IUser>({
-  view: false,
-  persistent: true,
-  maxHeight: 400,
-  maxWidth: 800,
-})
-
-function handleGerenciarRegistro(payload: { modoEdicao: boolean, item?: any }) {
+function handleGerenciarRegistro(payload: { modoEdicao: boolean; item?: IUser }) {
   if (payload.modoEdicao && payload.item) {
-    modelFormUser.updateModel({ ...payload.item });
-    classDialogUser.abrirEdicao(payload.item);
+    modelFormUser.value = { ...payload.item };
   } else {
-    modelFormUser.reset();
-    classDialogUser.abrirNovo();
+    modelFormUser.value = new ClassUsuarios().model;
   }
-  resetFormUser()
+  showDialogUser.value = true;
+  resetFormUser();
 }
 
 function resetFormUser() {
-  refFormUser.value?.reset()
+  refFormUser.value?.reset();
 }
+
+// Funções Assíncronas
+async function saveUser() {
+  // Chamada simulada a service
+  showDialogUser.value = false;
+  await genericViewRef.value?.resetAndLoad();
+}
+
+async function deleteUser(idUser: number | undefined) {
+  // Chamada simulada a service
+  if (!idUser) return;
+
+  await genericViewRef.value?.resetAndLoad();
+}
+
+// Computadas
+const activeHeaderConfig = computed(() => {
+  return headers.find((h) => h.key === selectedChartFilter.value);
+});
+
+const chartDataComputed = computed(() => {
+  const items = (listStore.contexts['users-list']?.items as IUser[]) || [];
+  const key = selectedChartFilter.value;
+  const strategy = activeHeaderConfig.value?.chartAggregator || 'count';
+  return useChartHelpers(items, key, strategy);
+});
 </script>

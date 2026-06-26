@@ -2,13 +2,13 @@
 import type { RouteRecordRaw } from 'vue-router';
 
 // Classes
-import { ClassFilterMappings } from '@/classes/filters/ClassFilterMappings';
+import { ClassMapeamentosFiltro } from '@/classes/filters/ClassMapeamentosFiltro';
 
 // Types e Interfaces
-import type { TCamposFiltroUsuario } from '@/models/model/users/MapeamentoFiltrosUsuario';
+import type { TCamposFiltroUsuario } from '@/models/model/usuario/MapeamentoFiltrosUsuario';
 
 // Enums
-import { EFilterResources } from '@/models/filters/enums/EFilterResource';
+import { ERecursosFiltro } from '@/models/filters/enums/ERecursosFiltro';
 
 // Views
 import HomeView from '@/views/HomeView.vue';
@@ -70,7 +70,7 @@ export const routes: Array<RouteRecordRaw> = [
       title: 'routes.users.title',
       icon: 'mdi-account-group',
       hotkey: 'cmd+shift+u',
-      filterResource: ClassFilterMappings.getMapping<TCamposFiltroUsuario>(EFilterResources.USERS),
+      filterResource: ClassMapeamentosFiltro.getMapeamento<TCamposFiltroUsuario>(ERecursosFiltro.USUARIOS),
     },
   },
   {

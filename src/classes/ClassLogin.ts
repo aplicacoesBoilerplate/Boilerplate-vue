@@ -1,7 +1,15 @@
-import { ClassManagerStorage } from "@/utils/ManagerStorage";
-import type { ILogin } from "./models/ModelLogin";
+// Ecossistema Vue
 import { reactive } from "vue";
 
+// Types e Interfaces
+import type { ILogin } from "./models/ModelLogin";
+
+// Utils
+import { ClassManagerStorage } from "@/utils/ManagerStorage";
+
+/**
+ * Classe responsável por gerenciar o comportamento do componente de LoginForm.
+ */
 export class ClassLogin {
   private login: ILogin
 
@@ -31,5 +39,4 @@ export class ClassLogin {
   saveEmailPreference() {
     ClassManagerStorage.set('access_email', this.login.email, 'local');
   }
-
 }

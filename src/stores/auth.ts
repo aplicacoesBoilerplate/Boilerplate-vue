@@ -2,16 +2,16 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import http from '@/services/axios';
 import { useListCacheStore } from './listCache';
-import { ClassUsers } from '@/classes/ClassUsers';
-import type { IUser } from '@/classes/models/ModelUser';
+import { ClassUsuarios } from '@/classes/ClassUsers';
+import type { IUsuario } from '@/models/model/usuario/lUsuario';
 
 export const useAuthStore = defineStore('auth', () => {
-  const classUser = new ClassUsers();
-  const user = ref<IUser | undefined>(classUser.model);
+  const classUser = new ClassUsuarios();
+  const user = ref<IUsuario | undefined>(classUser.model);
   const token = ref(localStorage.getItem('token') || null);
   const isAuthenticated = computed(() => !!token.value);
   const listCacheStore = useListCacheStore();
-  const isAdmin = computed(() => user.value?.role === 'ADMIN');
+  const isAdmin = computed(() => user.value?.papel === 'ADMIN');
 
   async function fetchUser() {
     if (!token.value) return;
@@ -36,6 +36,6 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     isAdmin,
     fetchUser,
-    logout
+    logout,
   };
 });

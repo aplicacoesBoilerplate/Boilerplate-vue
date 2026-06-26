@@ -21,12 +21,12 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
-import { useDisplay, useHotkey } from "vuetify";
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import { useDisplay, useHotkey } from 'vuetify';
 
 // Types e Interfaces
-import type { IRouteMeta } from "@/models/model/ModelRouteMeta";
+import type { IRouteMeta } from '@/models/model/IRouteMeta';
 
 type TProps = {
   item: IRouteMeta;

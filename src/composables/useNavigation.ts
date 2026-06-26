@@ -1,12 +1,13 @@
 // Ecossistema Vue
-import { computed } from "vue";
-import { useRouter, type RouteRecordRaw } from "vue-router";
+import { computed } from 'vue';
+import { useRouter, type RouteRecordRaw } from 'vue-router';
 
 // Types e Interfaces
-import type { IRouteMeta } from "@/models/model/ModelRouteMeta";
+import type { IRouteMeta } from '@/models/model/IRouteMeta';
+import type { TPapel } from '@/models/model/usuario/lUsuario';
 
 // Stores
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from '@/stores/auth';
 
 /**
  * Composable responsável por gerenciar o comportamento do componente de Navigation.
@@ -24,10 +25,10 @@ export function useNavigation() {
   const canAccess = (route: RouteRecordRaw): boolean => {
     if (route.meta?.hidden) return false;
 
-    const requiredRoles = route.meta?.authorize as string[] | undefined;
+    const requiredRoles = route.meta?.authorize as TPapel[] | undefined;
     if (!requiredRoles || requiredRoles.length === 0) return true;
 
-    const userRole = authStore.user?.role;
+    const userRole = authStore.user?.papel;
     return userRole ? requiredRoles.includes(userRole) : false;
   };
 
@@ -45,10 +46,8 @@ export function useNavigation() {
       hotkey: route.meta?.hotkey as string | undefined,
       hidden: route.meta?.hidden as boolean | undefined,
       requiresAuth: route.meta?.requiresAuth as boolean | undefined,
-      authorize: route.meta?.authorize as string[] | undefined,
-      children: route.children
-        ? route.children.map(mapRouteToMenuItem)
-        : undefined,
+      authorize: route.meta?.authorize as TPapel[] | undefined,
+      children: route.children ? route.children.map(mapRouteToMenuItem) : undefined,
     };
   };
 
@@ -57,9 +56,7 @@ export function useNavigation() {
    */
   const menuItems = computed<IRouteMeta[]>(() => {
     const allRoutes = router.options.routes;
-    const filterRoutes = (
-      routes: readonly RouteRecordRaw[],
-    ): RouteRecordRaw[] => {
+    const filterRoutes = (routes: readonly RouteRecordRaw[]): RouteRecordRaw[] => {
       return routes
         .filter((route) => canAccess(route))
         .map((route) => {
@@ -69,11 +66,12 @@ export function useNavigation() {
               children: filterRoutes(route.children),
             };
           }
-          
+
           return route;
         });
     };
 
+    // Realização do filtro e mapeamento dos itens do menu.
     return filterRoutes(allRoutes).map(mapRouteToMenuItem);
   });
 

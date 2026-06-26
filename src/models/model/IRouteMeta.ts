@@ -1,6 +1,6 @@
 // Types e Interfaces
-import type { EFilterResources } from '../filters/enums/EFilterResource';
-import type { TRole } from './users/lUser';
+import type { ERecursosFiltro } from '../filters/enums/ERecursosFiltro';
+import type { TPapel } from './usuario/lUsuario';
 
 export interface IRouteMeta {
   /** O caminho da rota. */
@@ -17,9 +17,9 @@ export interface IRouteMeta {
   /** Se a rota requer autenticação. */
   requiresAuth?: boolean;
   /** Cargos para os quais a rota está disponível. */
-  authorize?: TRole[];
+  authorize?: TPapel[];
   /** As rotas filhas. */
   children?: IRouteMeta[];
   /** O recurso de filtros da rota. */
-  filterResource?: EFilterResources;
+  filterResource?: ERecursosFiltro;
 }

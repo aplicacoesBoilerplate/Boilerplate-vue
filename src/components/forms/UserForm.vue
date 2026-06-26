@@ -1,9 +1,12 @@
 <template>
-  <v-form ref="formRef" v-model="formIsValid">
+  <v-form
+    ref="formRef"
+    v-model="formIsValid"
+  >
     <v-row dense>
       <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
         <v-text-field
-          v-model="user.username"
+          v-model="user.nome"
           :counter="30"
           :rules="[rules.required(), rules.maxLength(30)]"
           :label="t('forms.formUser.inputUsername.label')"
@@ -25,10 +28,10 @@
       </v-col>
       <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
         <v-autocomplete
-          v-model="user.role"
+          v-model="user.papel"
           :rules="[rules.required()]"
           :filter-keys="['title', 'raw.abbr']"
-          :items="ValidRoles"
+          :items="PAPEIS_VALIDOS"
           item-title="name"
           :label="t('forms.formUser.inputRole.label')"
           density="compact"
@@ -37,7 +40,7 @@
       </v-col>
       <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
         <v-mask-input
-          v-model="user.phoneNumber"
+          v-model="user.telefone"
           mask="(##) #####-####"
           placeholder="(##) #####-####"
           :label="t('forms.formUser.inputPhoneNumber.label')"
@@ -47,14 +50,14 @@
       </v-col>
       <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
         <v-checkbox
-          v-model="user.receiveNotifications"
+          v-model="user.notificar"
           :label="t('forms.formUser.inputReceiveNotifications.label')"
           color="success"
         />
       </v-col>
       <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
         <v-checkbox
-          v-model="user.active"
+          v-model="user.ativo"
           :label="t('forms.formUser.inputUserActive.label')"
           color="success"
         />
@@ -64,8 +67,8 @@
 </template>
 
 <script setup lang="ts">
-import { ValidRoles, type IUser } from '@/classes/models/ModelUser';
-import { useRules } from 'vuetify/labs/rules'
+import { PAPEIS_VALIDOS, type IUsuario } from '@/models/model/usuario/lUsuario';
+import { useRules } from 'vuetify/labs/rules';
 import { useI18n } from 'vue-i18n';
 import { ref } from 'vue';
 
@@ -73,15 +76,14 @@ const rules = useRules();
 const { t } = useI18n();
 
 const formRef = ref<any>(null);
-const user = defineModel<IUser>('user', { required: true });
-const formIsValid = defineModel<boolean>('valid', { default: false });
+const user = defineModel<IUsuario>('usuario', { required: true });
+const formIsValid = defineModel<boolean>('valido', { default: false });
 
 defineExpose({
   reset: () => formRef.value?.reset(),
   validate: async () => {
     const { valid } = await formRef.value?.validate();
     return valid;
-  }
+  },
 });
-
 </script>

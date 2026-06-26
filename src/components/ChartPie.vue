@@ -1,6 +1,11 @@
 <template>
   <div class="d-flex justify-center">
-    <v-card class="pa-6" elevation="6" rounded="xl" width="100%">
+    <v-card
+      class="pa-6"
+      elevation="6"
+      rounded="xl"
+      width="100%"
+    >
       <v-card-title class="d-flex align-center justify-space-between">
         <div class="text-truncate mr-6 text-subtitle-1 font-weight-bold">
           {{ tituloGrafico }}
@@ -47,7 +52,11 @@
           </template>
 
           <template v-slot:legend="{ items, toggle, isActive }">
-            <v-list class="py-0 mb-n5 mb-md-0 bg-transparent" density="compact" width="300">
+            <v-list
+              class="py-0 mb-n5 mb-md-0 bg-transparent"
+              density="compact"
+              width="300"
+            >
               <v-list-item
                 v-for="item in items"
                 :key="item.key"
@@ -58,13 +67,15 @@
                 @click="toggle(item)"
               >
                 <template v-slot:prepend>
-                  <v-avatar :color="item.color" :size="16" class="mr-2" />
+                  <v-avatar
+                    :color="item.color"
+                    :size="16"
+                    class="mr-2"
+                  />
                 </template>
 
                 <template v-slot:append>
-                  <div class="font-weight-black text-caption">
-                    {{ calcularPorcentagem(item.value) }}%
-                  </div>
+                  <div class="font-weight-black text-caption">{{ calcularPorcentagem(item.value) }}%</div>
                 </template>
               </v-list-item>
             </v-list>
@@ -76,8 +87,15 @@
         </v-pie>
       </div>
 
-      <div v-else class="d-flex flex-column align-center justify-center py-10 opacity-60">
-        <v-icon icon="mdi-chart-pie-off" size="40" class="mb-2" />
+      <div
+        v-else
+        class="d-flex flex-column align-center justify-center py-10 opacity-60"
+      >
+        <v-icon
+          icon="mdi-chart-pie-off"
+          size="40"
+          class="mb-2"
+        />
         <span class="text-caption">Sem dados para exibir</span>
       </div>
     </v-card>
@@ -85,41 +103,41 @@
 </template>
 
 <script setup lang="ts">
-import type { ValueDataChart } from '@/classes/models/modelComponents/ModelGridDataChart'
-import type { IHeadersDataTable } from '@/classes/models/modelComponents/ModelHeaderTable'
-import { computed } from 'vue'
+import type { ValueDataChart } from '@/classes/models/modelComponents/ModelGridDataChart';
+import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
+import { computed } from 'vue';
 
 const props = defineProps<{
-  chartData: ValueDataChart[]
-  filterOptions: { title: string; value: string }[]
-  activeConfig?: IHeadersDataTable
-}>()
+  chartData: ValueDataChart[];
+  filterOptions: { title: string; value: string }[];
+  activeConfig?: IHeadersDataTable;
+}>();
 
-const filtroSelecionado = defineModel<string>('selectedFilter', { required: true })
+const filtroSelecionado = defineModel<string>('selectedFilter', { required: true });
 
 const labelCentro = computed(() => {
-  return props.activeConfig?.chartAggregator === 'sum' ? 'Total Acumulado' : 'Registros Totais'
-})
+  return props.activeConfig?.chartAggregator === 'sum' ? 'Total Acumulado' : 'Registros Totais';
+});
 
 const tituloGrafico = computed(() => {
-  return `Distribuição por ${props.activeConfig?.title.toLocaleLowerCase() || 'Categoria'}`
-})
+  return `Distribuição por ${props.activeConfig?.title.toLocaleLowerCase() || 'Categoria'}`;
+});
 
 const totalValue = computed(() => {
-  return props.chartData.reduce((acc, curr) => acc + curr.value, 0)
-})
+  return props.chartData.reduce((acc, curr) => acc + curr.value, 0);
+});
 
 function formatValue(value: any) {
   if (props.activeConfig?.chartFormatter) {
-    return props.activeConfig.chartFormatter(value)
+    return props.activeConfig.chartFormatter(value);
   }
-  return value.toLocaleString()
+  return value.toLocaleString();
 }
 
 function calcularPorcentagem(val: number) {
   if (!totalValue.value) {
-    return 0
+    return 0;
   }
-  return ((val / totalValue.value) * 100).toFixed(1)
+  return ((val / totalValue.value) * 100).toFixed(1);
 }
 </script>

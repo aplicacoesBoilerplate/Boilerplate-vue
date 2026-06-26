@@ -6,7 +6,7 @@
     :temporary="!mdAndUp"
     app
   >
-    <DrawerItemUser />
+    <DrawerItemUsuario />
 
     <v-divider />
 
@@ -78,7 +78,7 @@ import { usePreferencesStore } from "@/stores/preferences.store";
 import { useNavigation } from "@/composables/useNavigation";
 
 // Componentes
-import DrawerItemUser from "@/components/layouts/base/navigation/fixtures/DrawerItemUser.vue";
+import DrawerItemUsuario from "./fixtures/DrawerItemUsuario.vue";
 import DrawerItemNavigation from "@/components/layouts/base/navigation/fixtures/DrawerItemNavigation.vue";
 
 // Stores
