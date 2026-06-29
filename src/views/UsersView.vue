@@ -1,11 +1,11 @@
 <template>
   <v-container
-    fluid
     class="fill-height pb-0 overflow-hidden"
+    fluid
   >
     <GridDataChart
-      :hidden-chart="hiddenChart"
-      @toggle-chart="hiddenChart = !hiddenChart"
+      :hiddenChart="hiddenChart"
+      @toggleChart="hiddenChart = !hiddenChart"
     >
       <template #dataTable="{ toggleChart }">
         <GenericView
@@ -98,15 +98,15 @@
       <template #dataChart>
         <ChartPie
           v-model:selectedFilter="selectedChartFilter"
-          :chart-data="chartDataComputed"
-          :filter-options="headersParaGrafico"
-          :active-config="activeHeaderConfig"
+          :chartData="chartDataComputed"
+          :filterOptions="headersParaGrafico"
+          :activeConfig="activeHeaderConfig"
         />
       </template>
     </GridDataChart>
 
     <BaseDialog
-      v-model:showDialog="showDialogUser"
+      v-model:exibirDialog="showDialogUser"
       :maxWidth="800"
     >
       <template v-slot:title>
@@ -181,7 +181,6 @@ import BaseDialog from '@/components/dialogs/BaseDialog.vue';
 import UserForm from '@/components/forms/UserForm.vue';
 import GenericView from '@/components/layout/generic/GenericView.vue';
 import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
-import BtnActionDrawer from '@/components/layouts/base/appbar/fixtures/BtnActionDrawer.vue';
 
 // Composables
 const { t } = useI18n();
@@ -191,7 +190,7 @@ const listStore = useGenericListStore();
 const headers = ClassUsuarios.getHeaders();
 const headersParaGrafico = headers.filter((h) => h.key !== 'actions').map((h) => ({ title: h.title, value: h.key }));
 
-// Reativas - Model/ref
+// Reativas
 const genericViewRef = ref<InstanceType<typeof GenericView> | null>(null);
 const hiddenChart = ref(true);
 const selectedChartFilter = ref(headersParaGrafico[0]?.value);
@@ -202,7 +201,7 @@ const modelFormUser = ref<IUsuario>(new ClassUsuarios().model);
 const refFormUser = ref<InstanceType<typeof UserForm> | null>(null);
 const isFormValid = ref(false);
 
-// Funções Síncronas (Mock de API)
+// Funções
 const mockData: IUsuario[] = [
   {
     id: 1,
@@ -233,6 +232,20 @@ const mockData: IUsuario[] = [
   },
 ];
 
+function handleGerenciarRegistro(payload: { modoEdicao: boolean; item?: IUsuario }) {
+  if (payload.modoEdicao && payload.item) {
+    modelFormUser.value = { ...payload.item };
+  } else {
+    modelFormUser.value = new ClassUsuarios().model;
+  }
+  showDialogUser.value = true;
+  resetFormUser();
+}
+
+function resetFormUser() {
+  refFormUser.value?.reset();
+}
+
 async function fetchUsersMock(payload: IGenericListFetchPayload): Promise<TGenericListFetchResponse> {
   // Simula latência de rede
   await new Promise((resolve) => setTimeout(resolve, 800));
@@ -248,21 +261,6 @@ async function fetchUsersMock(payload: IGenericListFetchPayload): Promise<TGener
   };
 }
 
-function handleGerenciarRegistro(payload: { modoEdicao: boolean; item?: IUsuario }) {
-  if (payload.modoEdicao && payload.item) {
-    modelFormUser.value = { ...payload.item };
-  } else {
-    modelFormUser.value = new ClassUsuarios().model;
-  }
-  showDialogUser.value = true;
-  resetFormUser();
-}
-
-function resetFormUser() {
-  refFormUser.value?.reset();
-}
-
-// Funções Assíncronas
 async function saveUser() {
   // Chamada simulada a service
   showDialogUser.value = false;
@@ -287,4 +285,5 @@ const chartDataComputed = computed(() => {
   const strategy = activeHeaderConfig.value?.chartAggregator || 'count';
   return useChartHelpers(items, key, strategy);
 });
+
 </script>

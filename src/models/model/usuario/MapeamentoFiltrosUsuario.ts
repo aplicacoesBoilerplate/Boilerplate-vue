@@ -4,6 +4,7 @@ import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 
 // Enums
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
+import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 
 // Define com base na interface do Model, um tipo com os campos que os filtros são aplicaveis.
 export type TCamposFiltroUsuario = Omit<IUsuario, 'avatar' | 'notificar'>;
@@ -12,7 +13,7 @@ const DESCRICAO_CAMPOS_FILTRO_USUARIO: Record<keyof TCamposFiltroUsuario, string
   id: 'Código',
   nome: 'Nome',
   email: 'Email',
-  role: 'Cargo',
+  papel: 'Cargo',
   telefone: 'Telefone',
   ativo: 'Ativo',
 };
@@ -21,7 +22,7 @@ const ICONE_CAMPOS_FILTRO_USUARIO: Record<keyof TCamposFiltroUsuario, string> = 
   id: 'mdi-account',
   nome: 'mdi-account',
   email: 'mdi-email',
-  role: 'mdi-account-tie',
+  papel: 'mdi-account-tie',
   telefone: 'mdi-phone',
   ativo: 'mdi-check-circle',
 };
@@ -30,7 +31,7 @@ const TIPOS_CAMPOS_FILTRO_USUARIO: Record<keyof TCamposFiltroUsuario, ETipoFiltr
   id: [ETipoFiltro.NUMBER],
   nome: [ETipoFiltro.STRING],
   email: [ETipoFiltro.STRING],
-  role: [ETipoFiltro.SELECT],
+  papel: [ETipoFiltro.SELECT],
   telefone: [ETipoFiltro.STRING],
   ativo: [ETipoFiltro.BOOLEAN],
 };
@@ -42,4 +43,6 @@ export const MAPEAMENTO_CAMPOS_FILTRO_USUARIO: ICampoFiltro<keyof TCamposFiltroU
   descricao: DESCRICAO_CAMPOS_FILTRO_USUARIO[key],
   icone: ICONE_CAMPOS_FILTRO_USUARIO[key],
   tipos: TIPOS_CAMPOS_FILTRO_USUARIO[key],
+  pesquisaPadrao: key === 'nome',
+  operadorPesquisaPadrao: key === 'nome' ? EOperadoresFiltro.CONTEM : undefined,
 }));

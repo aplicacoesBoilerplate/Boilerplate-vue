@@ -1,5 +1,5 @@
 // Ecossistema Vue
-import { ref, computed, toRaw } from 'vue';
+import { ref, computed, toRaw, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 // Pinia
@@ -9,7 +9,8 @@ import { defineStore } from 'pinia';
 import { useSnackbarStore } from './SnackbarStore';
 
 // Types e Interfaces
-import type { IQueryFilter } from '@/classes/models/modelComponents/ModelQueryFilter';
+import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 
 /**
  * Store responsável por gerenciar os filtros aplicados na view atual.
@@ -25,13 +26,26 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
 
   // Reativas
   /** Array contendo os filtros consolidados e aplicados na view atual. */
-  const filtersApplied = ref<IQueryFilter[]>([]);
+  const filtersApplied = ref<IFiltrosConsulta[]>([]);
 
   /** Filtro em construção no formulário (rascunho). */
-  const filterModel = ref<Partial<IQueryFilter>>({});
+  const filterModel = ref<Partial<IFiltrosConsulta>>({});
 
   /** Controle de abertura/fechamento do Drawer de filtros. */
   const drawerFilterOpen = ref(false);
+
+  /** Valor da pesquisa de campos disponível no left drawer (persiste localmente). */
+  const pesquisaDrawerLeft = ref<string>(localStorage.getItem('genericFilter_pesquisaDrawerLeft') || '');
+
+  // Persiste a pesquisa toda vez que ela muda
+  watch(pesquisaDrawerLeft, (newVal) => {
+    localStorage.setItem('genericFilter_pesquisaDrawerLeft', newVal || '');
+  });
+
+  /** Campos disponíveis fornecidos pela view atual baseados nos metadados da rota. */
+  const camposDisponiveis = computed(() => {
+    return (route.meta.filterResource as ICampoFiltro<any>[]) || [];
+  });
 
   // Funções
   /**
@@ -42,11 +56,11 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     const query: Record<string, string | string[]> = {};
 
     filtersApplied.value.forEach((filtro) => {
-      if (!filtro.field || !filtro.condition) return;
+      if (!filtro.campo || !filtro.condicao) return;
 
-      const campoChave = filtro.field;
+      const campoChave = filtro.campo;
       // Serializa no formato: "condicao:valor" (ex: "contains:joao")
-      const valorConvertido = `${filtro.condition}:${filtro.value ?? ''}`;
+      const valorConvertido = `${filtro.condicao}:${filtro.valor ?? ''}`;
 
       if (query[campoChave]) {
         if (Array.isArray(query[campoChave])) {
@@ -67,7 +81,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
    * Le a query da rota atual e recria o estado em `filtersApplied`.
    */
   function loadFromUrl() {
-    const novosFiltros: IQueryFilter[] = [];
+    const novosFiltros: IFiltrosConsulta[] = [];
 
     Object.entries(route.query).forEach(([campo, valorQuery]) => {
       // Ignora parâmetros de paginacao ou estruturais.
@@ -75,19 +89,19 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
 
       const arrayDeValores = Array.isArray(valorQuery) ? valorQuery : [valorQuery];
 
-      arrayDeValores.forEach(val => {
+      arrayDeValores.forEach((val) => {
         if (val) {
           const splitVal = String(val).split(':');
           if (splitVal.length >= 2) {
             const condition = splitVal[0];
             const value = splitVal.slice(1).join(':');
             novosFiltros.push({
-              field: campo,
-              condition: condition,
-              value: value,
-              startDate: '',
-              endDate: '',
-              selectValues: []
+              campo: campo,
+              condicao: condition,
+              valor: value,
+              dataInicio: '',
+              dataFinal: '',
+              valoresSelecionados: [],
             });
           }
         }
@@ -104,24 +118,22 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   function applyFilterModel() {
     const rawFilter = toRaw(filterModel.value);
 
-    if (!rawFilter.field || !rawFilter.condition) {
-      snackbarStore.adicionar({ type: 'warning', text: "Selecione o campo e a condição!" });
+    if (!rawFilter.campo || !rawFilter.condicao) {
+      snackbarStore.adicionar({ type: 'warning', text: 'Selecione o campo e a condição!' });
       return;
     }
 
-    const isDuplicate = filtersApplied.value.some(f =>
-      f.field === rawFilter.field &&
-      f.condition === rawFilter.condition &&
-      f.value === rawFilter.value
+    const isDuplicate = filtersApplied.value.some(
+      (f) => f.campo === rawFilter.campo && f.condicao === rawFilter.condicao && f.valor === rawFilter.valor,
     );
 
     if (isDuplicate) {
-      snackbarStore.adicionar({ type: 'info', title: "Filtro duplicado", text: "Você já adicionou esta condição." });
+      snackbarStore.adicionar({ type: 'info', title: 'Filtro duplicado', text: 'Você já adicionou esta condição.' });
       return;
     }
 
-    filtersApplied.value.push(rawFilter as IQueryFilter);
-    filterModel.value = { field: rawFilter.field, condition: rawFilter.condition };
+    filtersApplied.value.push(rawFilter as IFiltrosConsulta);
+    filterModel.value = { campo: rawFilter.campo, condicao: rawFilter.condicao };
   }
 
   /** Remove um filtro ativo no indice especificado. */
@@ -150,12 +162,14 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     filtersApplied,
     filterModel,
     drawerFilterOpen,
+    pesquisaDrawerLeft,
+    camposDisponiveis,
     appliedCount,
     syncToUrl,
     loadFromUrl,
     applyFilterModel,
     removeFilter,
     editFilter,
-    clearAll
+    clearAll,
   };
 });

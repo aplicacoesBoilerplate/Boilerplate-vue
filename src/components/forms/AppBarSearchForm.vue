@@ -3,25 +3,22 @@
     <v-text-field
       ref="inputRef"
       v-model="searchQuery"
+      :placeholder="t('forms.formSearch.inputSearch.placeholder')"
+      :loading="loading"
       class="rounded-search"
-      hide-details
-      single-line
-      clearable
-      rounded="pill"
       density="compact"
       variant="solo"
-      loader-height="2"
-      :loading="loading"
-      :placeholder="t('forms.formSearch.inputSearch.placeholder')"
+      rounded="pill"
+      loaderHeight="2"
+      hideDetails
+      singleLine
+      clearable
     >
-      <template #prepend-inner v-if="$vuetify.display.mdAndUp">
+      <template v-if="$vuetify.display.mdAndUp" #prepend-inner>
         <div class="d-flex flex-row" v-if="hasFilters">
-          <v-btn
-            icon="mdi-filter-cog"
-            v-tooltip="t('tooltips.appBar.filter')"
-            variant="text"
-            size="small"
-            @click="toggleDrawerFilter"
+          <DialogFiltro
+            v-model:exibirFiltros="exibirFiltros"
+            :camposDisponiveis="genericFilterStore.camposDisponiveis"
           />
 
           <v-divider
@@ -42,7 +39,7 @@
       </template>
 
       <template #append-inner>
-        <v-icon-btn
+        <v-btn
           icon="mdi-magnify"
           v-tooltip="t('tooltips.appBar.search')"
           variant="plain"
@@ -63,10 +60,17 @@ import { useHotkey } from 'vuetify'
 // Stores
 import { useGenericFilterStore } from '@/stores/genericFilter.store'
 
+// Types e Interfaces
+import type { TParametrosBusca } from '@/models/filters/TParametrosBusca';
+import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
+
+// Componentes
+import DialogFiltro from '../dialogs/filtros/DialogFiltro.vue'
+
 type TProps = { loading: boolean };
 defineProps<TProps>();
 
-type TEmits = { search: [query: string] };
+type TEmits = { search: [consulta: TParametrosBusca] };
 const emits = defineEmits<TEmits>();
 
 // Composables
@@ -74,20 +78,33 @@ const route = useRoute();
 const { t } = useI18n();
 
 // Stores
-const filterStore = useGenericFilterStore();
+const genericFilterStore = useGenericFilterStore();
 
-// Reativas - Model/ref
+// Reativas - ref
 const inputRef = ref<any>(null)
 const searchQuery = ref('');
+const exibirFiltros = ref<boolean>(false);
 
 // Funções
-function toggleDrawerFilter() {
-  filterStore.drawerFilterOpen = !filterStore.drawerFilterOpen;
-}
-
 function onSubmit() {
   if (searchQuery.value) {
-    emits('search', searchQuery.value);
+    const campoPadrao = genericFilterStore.camposDisponiveis.find((c) => c.pesquisaPadrao);
+    
+    if (campoPadrao) {
+      genericFilterStore.filtersApplied.push({
+        campo: campoPadrao.valor as string,
+        condicao: campoPadrao.operadorPesquisaPadrao || EOperadoresFiltro.CONTEM,
+        valor: searchQuery.value,
+        dataInicio: '',
+        dataFinal: '',
+        valoresSelecionados: []
+      });
+      genericFilterStore.syncToUrl();
+    } else {
+      emits('search', { queryBasica: searchQuery.value });
+    }
+    
+    searchQuery.value = '';
   }
 }
 

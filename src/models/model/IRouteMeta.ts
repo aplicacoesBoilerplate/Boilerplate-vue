@@ -1,6 +1,6 @@
 // Types e Interfaces
-import type { ERecursosFiltro } from '../filters/enums/ERecursosFiltro';
 import type { TPapel } from './usuario/lUsuario';
+import type { ICampoFiltro } from '../filters/ICampoFiltro';
 
 export interface IRouteMeta {
   /** O caminho da rota. */
@@ -20,6 +20,6 @@ export interface IRouteMeta {
   authorize?: TPapel[];
   /** As rotas filhas. */
   children?: IRouteMeta[];
-  /** O recurso de filtros da rota. */
-  filterResource?: ERecursosFiltro;
+  /** Os campos disponíveis para filtro nesta rota. */
+  filterResource?: ICampoFiltro<any>[];
 }

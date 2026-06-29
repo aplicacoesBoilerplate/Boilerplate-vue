@@ -98,10 +98,10 @@
 
 <script setup lang="ts">
 // Ecossistema vue
-import { computed } from "vue";
+import { computed } from 'vue';
 
 // Types e Interfaces
-import type { IPropsBaseDialog } from "@/models/IPropsBaseDialog";
+import type { IPropsBaseDialog } from '@/models/IPropsBaseDialog';
 
 const props = withDefaults(defineProps<IPropsBaseDialog>(), {
   persistent: false,
@@ -112,11 +112,11 @@ const props = withDefaults(defineProps<IPropsBaseDialog>(), {
   maxHeight: 650,
   zIndex: 2400,
 
-  title: "Dialog",
+  title: 'Dialog',
   showExtension: false,
   showActions: true,
   loading: false,
-  contentClass: "",
+  contentClass: '',
 });
 
 type TEmits = {
@@ -127,7 +127,7 @@ type TEmits = {
 const emits = defineEmits<TEmits>();
 
 // Reativas - Model
-const dialogModel = defineModel<boolean>("showDialog", { default: false });
+const dialogModel = defineModel<boolean>('exibirDialog', { default: false });
 
 // Funções
 function setOpen(value: boolean) {
@@ -139,17 +139,17 @@ function open() {
 }
 
 function close() {
-  emits("fechar");
+  emits('fechar');
   setOpen(false);
 }
 
 function handleCancelar() {
-  emits("cancelar");
+  emits('cancelar');
   close();
 }
 
 function handleSalvar() {
-  emits("salvar");
+  emits('salvar');
 }
 
 // Computadas
@@ -169,5 +169,4 @@ defineExpose({
   handleCancelar,
   handleSalvar,
 });
-
 </script>

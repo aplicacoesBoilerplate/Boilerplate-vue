@@ -10,7 +10,7 @@
     />
 
     <v-app-bar-title class="font-weight-bold">
-      {{ t("app.title") }}
+      {{ t('app.title') }}
     </v-app-bar-title>
 
     <template v-if="mdAndUp">
@@ -44,19 +44,19 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { ref } from "vue";
-import { useI18n } from "vue-i18n";
-import { useDisplay } from "vuetify";
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useDisplay } from 'vuetify';
 
 // Stores
-import { usePreferencesStore } from "@/stores/preferences.store";
+import { usePreferencesStore } from '@/stores/preferences.store';
 
 // Types e Interfaces
-import type { IQueryFilter } from "@/classes/models/modelComponents/ModelQueryFilter";
+import type { TParametrosBusca } from '@/models/filters/TParametrosBusca.ts';
 
 // Componentes
-import AppBarSearchForm from "@/components/forms/AppBarSearchForm.vue";
-import MenuOptionsDrawer from "./fixtures/MenuOptionsDrawer.vue";
+import AppBarSearchForm from '@/components/forms/AppBarSearchForm.vue';
+import MenuOptionsDrawer from './fixtures/MenuOptionsDrawer.vue';
 
 // Stores
 const preferencesStore = usePreferencesStore();
@@ -71,12 +71,10 @@ const dialogLicenceOpen = ref(false);
 
 // Funções
 function toggleDrawer() {
-  preferencesStore.setDesktopDrawerVisible(
-    !preferencesStore.preferences.drawer.isDesktopDrawerVisible,
-  );
+  preferencesStore.setDesktopDrawerVisible(!preferencesStore.preferences.drawer.isDesktopDrawerVisible);
 }
 
-function handleSearch(filters: IQueryFilter[]) {
+function handleSearch(pParams: TParametrosBusca) {
   loading.value = true;
   setTimeout(() => (loading.value = false), 2000);
 }

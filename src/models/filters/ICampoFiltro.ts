@@ -22,4 +22,8 @@ export interface ICampoFiltro<T> {
   opcoes?: IOpcaoFiltro[];
   /** Operadores específicos permitidos para este campo */
   operadores?: EOperadoresFiltro[];
+  /** Indica se este é o campo utilizado por padrão quando o usuário usar a barra de busca rápida (Ex: Nome) */
+  pesquisaPadrao?: boolean;
+  /** Operador utilizado pela busca rápida para o campo padrão (Ex: CONTEM, IGUAL) */
+  operadorPesquisaPadrao?: EOperadoresFiltro;
 }

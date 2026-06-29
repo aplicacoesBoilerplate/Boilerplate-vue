@@ -1,6 +1,6 @@
 <template>
   <BaseDialog
-    v-model:showDialog="dialogLicenceOpen"
+    v-model:exibirDialog="dialogLicenceOpen"
     :maxWidth="400"
   >
     <template #activator="{ props: dialogProps }">
@@ -26,7 +26,7 @@
         icon="mdi-information-variant-circle-outline"
         size="small"
       />
-      {{ t("app.cardInfoLicence") }}
+      {{ t('app.cardInfoLicence') }}
     </template>
 
     <template v-slot:content>
@@ -79,7 +79,7 @@ import { computed, mergeProps } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // Constantes
-import pkg from "../../../package.json";
+import pkg from '../../../package.json';
 
 // Formatação
 import { ClassFormatters } from '@/classes/Utils/ClassFormatters.ts';
@@ -94,14 +94,10 @@ const systemVersion = pkg.version;
 const { t, locale } = useI18n();
 
 // Reativas
-const dialogLicenceOpen = defineModel<boolean>("dialogLicenceOpen", { required: true });
+const dialogLicenceOpen = defineModel<boolean>('dialogLicenceOpen', { required: true });
 
 // Computadas
 const formattedVersionDate = computed(() => {
-  return ClassFormatters.formatarDataHora(
-    __APP_BUILD_DATE__,
-    locale.value,
-    true,
-  );
+  return ClassFormatters.formatarDataHora(__APP_BUILD_DATE__, locale.value, true);
 });
 </script>
