@@ -172,7 +172,7 @@ const props = withDefaults(defineProps<TProps>(), {
   initialOrder: undefined,
   itemKey: undefined,
   limitOptions: () => [5, 10, 25, 50, 100],
-  showLimitSelector: true,
+  showLimitSelector: false,
   storage: "session",
 });
 

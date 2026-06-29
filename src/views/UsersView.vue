@@ -10,35 +10,33 @@
       <template #dataTable="{ toggleChart }">
         <GenericView
           ref="genericViewRef"
-          title="Usuários"
           contextId="users-list"
           :serviceFetch="fetchUsersMock"
-          :limitOptions="[10, 25, 50]"
         >
-          <template #list-header>
-            <div class="d-flex align-center justify-space-between mb-4 w-100">
-              <v-btn
-                color="primary"
-                prepend-icon="mdi-plus"
-                text="Novo Usuário"
-                @click="handleGerenciarRegistro({ modoEdicao: false })"
-              />
-              <v-btn
-                variant="tonal"
-                color="info"
-                :prepend-icon="hiddenChart ? 'mdi-chart-pie' : 'mdi-table'"
-                :text="hiddenChart ? 'Ver Gráficos' : 'Esconder Gráficos'"
-                @click="toggleChart"
-              />
-            </div>
+          <template #list-header-actions>
+            <v-tooltip
+              :text="hiddenChart ? 'Ver Gráficos' : 'Esconder Gráficos'"
+              location="bottom"
+            >
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  :icon="hiddenChart ? 'mdi-chart-pie' : 'mdi-table'"
+                  color="info"
+                  variant="tonal"
+                  size="x-small"
+                  @click="toggleChart"
+                />
+              </template>
+            </v-tooltip>
           </template>
 
           <template #default="{ items }">
             <GenericInfiniteListItem
-              v-for="user in items as IUser[]"
-              :key="user.idUser"
+              v-for="user in items as IUsuario[]"
+              :key="user.id"
               :item="user"
-              itemKey="idUser"
+              itemKey="id"
               contextId="users-list"
             >
               <v-list-item
@@ -50,23 +48,23 @@
                     color="primary"
                     class="text-white"
                   >
-                    {{ user.username.charAt(0).toUpperCase() }}
+                    {{ user.nome.charAt(0).toUpperCase() }}
                   </v-avatar>
                 </template>
 
                 <v-list-item-title class="font-weight-bold text-primary">
-                  {{ user.username }}
+                  {{ user.nome }}
                 </v-list-item-title>
-                <v-list-item-subtitle> {{ user.email }} • {{ user.role }} </v-list-item-subtitle>
+                <v-list-item-subtitle> {{ user.email }} • {{ user.papel }} </v-list-item-subtitle>
 
                 <template #append>
                   <div class="d-flex align-center">
                     <v-chip
-                      :color="user.active ? 'success' : 'error'"
+                      :color="user.ativo ? 'success' : 'error'"
                       size="small"
                       class="mr-4"
                     >
-                      {{ user.active ? 'Ativo' : 'Inativo' }}
+                      {{ user.ativo ? 'Ativo' : 'Inativo' }}
                     </v-chip>
 
                     <v-btn
@@ -87,7 +85,7 @@
                       variant="text"
                       color="error"
                       size="small"
-                      @click.stop="deleteUser(user.idUser)"
+                      @click.stop="deleteUser(user.id)"
                     />
                   </div>
                 </template>
@@ -115,11 +113,11 @@
         <v-icon
           size="small"
           class="mr-2"
-          :icon="modelFormUser.idUser ? 'mdi-account-edit' : 'mdi-account-plus'"
+          :icon="modelFormUser.id ? 'mdi-account-edit' : 'mdi-account-plus'"
         />
         {{
-          modelFormUser.idUser
-            ? t('messages.forms.formUsers.editingUser') + ` ${modelFormUser.idUser}`
+          modelFormUser.id
+            ? t('messages.forms.formUsers.editingUser') + ` ${modelFormUser.id}`
             : t('messages.forms.formUsers.createUser')
         }}
       </template>
@@ -167,7 +165,7 @@ import { useI18n } from 'vue-i18n';
 import { useGenericListStore } from '@/stores/genericList.store';
 
 // Types e Interfaces
-import type { IUser } from '@/models/model/lUser';
+import type { IUsuario } from '@/models/model/usuario/lUsuario';
 import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
 
 // Classes
@@ -183,6 +181,7 @@ import BaseDialog from '@/components/dialogs/BaseDialog.vue';
 import UserForm from '@/components/forms/UserForm.vue';
 import GenericView from '@/components/layout/generic/GenericView.vue';
 import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
+import BtnActionDrawer from '@/components/layouts/base/appbar/fixtures/BtnActionDrawer.vue';
 
 // Composables
 const { t } = useI18n();
@@ -199,38 +198,38 @@ const selectedChartFilter = ref(headersParaGrafico[0]?.value);
 
 // Estados de Formulário
 const showDialogUser = ref(false);
-const modelFormUser = ref<IUser>(new ClassUsuarios().model);
+const modelFormUser = ref<IUsuario>(new ClassUsuarios().model);
 const refFormUser = ref<InstanceType<typeof UserForm> | null>(null);
 const isFormValid = ref(false);
 
 // Funções Síncronas (Mock de API)
-const mockData: IUser[] = [
+const mockData: IUsuario[] = [
   {
-    idUser: 1,
-    username: 'BOILERPLATE',
+    id: 1,
+    nome: 'BOILERPLATE',
     email: 'boilerplate@gmail.com',
-    role: 'ADMIN',
-    phoneNumber: '(32) 99999-9999',
-    receiveNotifications: true,
-    active: true,
+    papel: 'ADMIN',
+    telefone: '(32) 99999-9999',
+    notificar: true,
+    ativo: true,
   },
   {
-    idUser: 2,
-    username: 'GERSON',
+    id: 2,
+    nome: 'GERSON',
     email: 'gerson@gmail.com',
-    role: 'USER',
-    phoneNumber: '(32) 99999-9998',
-    receiveNotifications: false,
-    active: true,
+    papel: 'USER',
+    telefone: '(32) 99999-9998',
+    notificar: false,
+    ativo: true,
   },
   {
-    idUser: 3,
-    username: 'MARCOS',
+    id: 3,
+    nome: 'MARCOS',
     email: 'marcos@gmail.com',
-    role: 'USER',
-    phoneNumber: '(32) 99999-9997',
-    receiveNotifications: true,
-    active: false,
+    papel: 'USER',
+    telefone: '(32) 99999-9997',
+    notificar: true,
+    ativo: false,
   },
 ];
 
@@ -249,7 +248,7 @@ async function fetchUsersMock(payload: IGenericListFetchPayload): Promise<TGener
   };
 }
 
-function handleGerenciarRegistro(payload: { modoEdicao: boolean; item?: IUser }) {
+function handleGerenciarRegistro(payload: { modoEdicao: boolean; item?: IUsuario }) {
   if (payload.modoEdicao && payload.item) {
     modelFormUser.value = { ...payload.item };
   } else {
@@ -270,9 +269,9 @@ async function saveUser() {
   await genericViewRef.value?.resetAndLoad();
 }
 
-async function deleteUser(idUser: number | undefined) {
+async function deleteUser(pIdUsuario: number | undefined) {
   // Chamada simulada a service
-  if (!idUser) return;
+  if (!pIdUsuario) return;
 
   await genericViewRef.value?.resetAndLoad();
 }
@@ -283,7 +282,7 @@ const activeHeaderConfig = computed(() => {
 });
 
 const chartDataComputed = computed(() => {
-  const items = (listStore.contexts['users-list']?.items as IUser[]) || [];
+  const items = (listStore.contexts['users-list']?.items as IUsuario[]) || [];
   const key = selectedChartFilter.value;
   const strategy = activeHeaderConfig.value?.chartAggregator || 'count';
   return useChartHelpers(items, key, strategy);

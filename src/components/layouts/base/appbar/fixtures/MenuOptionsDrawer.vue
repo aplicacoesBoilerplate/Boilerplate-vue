@@ -14,8 +14,8 @@
     />
 
     <BtnAlterLanguage />
-    <BtnToggleTheme />
     <BtnInfoSystem />
+    <BtnToggleTheme />
 
     <v-divider
       class="mx-1 my-2"
