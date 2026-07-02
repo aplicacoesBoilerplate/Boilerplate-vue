@@ -207,6 +207,7 @@ const loading = ref<boolean>(false);
 function handleOnLimparFiltros() {
   genericFilterStore.clearAll();
   handleOnAplicarFiltros();
+  toggleLeftDrawer.value = true;
 }
 
 function handleOnAplicarFiltros() {
