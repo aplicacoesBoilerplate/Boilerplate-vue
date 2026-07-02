@@ -14,7 +14,7 @@
       singleLine
       clearable
     >
-      <template v-if="$vuetify.display.mdAndUp" #prepend-inner>
+      <template #prepend-inner>
         <div class="d-flex flex-row" v-if="hasFilters">
           <DialogFiltro
             v-model:exibirFiltros="exibirFiltros"
@@ -30,6 +30,7 @@
         </div>
 
         <v-hotkey
+          v-if="$vuetify.display.mdAndUp"
           keys="ctrl+k"
           display-mode="icon"
           variant="contained"

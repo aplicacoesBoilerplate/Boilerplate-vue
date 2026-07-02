@@ -79,21 +79,42 @@
       <v-layout style="height: 100%; min-height: 450px">
         <DrawerFiltroLeft
           v-model:toggleLeftDrawer="toggleLeftDrawer"
-          v-model:selectedField="selectedField"
           :camposDisponiveis="camposDisponiveis"
         />
 
         <DrawerFiltroRight
           v-model:toggleRightDrawer="toggleRightDrawer"
-          v-model:selectedField="selectedField"
           :camposDisponiveis="camposDisponiveis"
         />
 
-        <v-main class="ma-2">
-          <FormFiltros
-            :selectedField="selectedField"
-            :registros="registros"
-          />
+        <v-main
+          :class="[
+            'dialog-filtro-main ma-2',
+            { 'dialog-filtro-main--consulta-aberta': deveExibirConsultaRegistros },
+          ]"
+        >
+          <div class="dialog-filtro-main__formulario">
+            <FormFiltros
+              v-model:exibirConsultaRegistros="exibirConsultaRegistros"
+              :registros="registros"
+            />
+          </div>
+
+          <Transition name="consulta-registros-drawer">
+            <section
+              v-if="deveExibirConsultaRegistros"
+              class="dialog-filtro-main__consulta pa-1"
+              aria-label="Consulta auxiliar de registros"
+            >
+              <ConsultaRegistrosFiltro
+                v-model:valorFiltro="genericFilterStore.filterModel.valor"
+                v-model:valoresSelecionados="genericFilterStore.filterModel.valoresSelecionados"
+                :campoSelecionado="campoSelecionadoAtual"
+                :condicao="genericFilterStore.filterModel.condicao"
+                @fechar="exibirConsultaRegistros = false"
+              />
+            </section>
+          </Transition>
         </v-main>
       </v-layout>
     </template>
@@ -101,6 +122,9 @@
     <template #actions="slotProps">
       <v-btn
         color="error"
+        :height="alturaBotaoAcao"
+        :minWidth="larguraMinimaBotaoAcao"
+        :size="tamanhoBotaoAcao"
         variant="tonal"
         text="CANCELAR"
         @click="slotProps.onCancelar"
@@ -110,14 +134,20 @@
 
       <v-btn
         color="red-darken-1"
+        :height="alturaBotaoAcao"
+        :minWidth="larguraMinimaBotaoAcao"
+        :size="tamanhoBotaoAcao"
         variant="tonal"
-        text="LIMPAR FILTROS"
+        :text="smAndDown ? 'LIMPAR' : 'LIMPAR FILTROS'"
         :loading="loading"
         @click="handleOnLimparFiltros"
       />
 
       <v-btn
         color="primary"
+        :height="alturaBotaoAcao"
+        :minWidth="larguraMinimaBotaoAcao"
+        :size="tamanhoBotaoAcao"
         variant="flat"
         text="APLICAR"
         :loading="loading"
@@ -129,8 +159,9 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { mergeProps, ref, watch } from 'vue';
+import { computed, mergeProps, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useDisplay } from 'vuetify';
 
 // Stores
 import { useGenericFilterStore } from '@/stores/genericFilter.store';
@@ -142,10 +173,11 @@ import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 import BaseDialog from '../base/BaseDialog.vue';
 import DrawerFiltroLeft from './fixtures/drawers/DrawerFiltroLeft.vue';
 import DrawerFiltroRight from './fixtures/drawers/DrawerFiltroRight.vue';
+import ConsultaRegistrosFiltro from './fixtures/consulta/ConsultaRegistrosFiltro.vue';
 import FormFiltros from '../../forms/FormFiltros.vue';
 
 type TProps = {
-  registros?: any[];
+  registros?: object[];
   camposDisponiveis: ICampoFiltro<any>[];
 };
 defineProps<TProps>();
@@ -159,6 +191,7 @@ const emits = defineEmits<TEmits>();
 const genericFilterStore = useGenericFilterStore();
 
 // Composables
+const { smAndDown } = useDisplay();
 const { t } = useI18n();
 
 // Reativas - Model
@@ -167,9 +200,8 @@ const exibirFiltros = defineModel<boolean>('exibirFiltros', { required: false })
 // Reativas - ref
 const toggleLeftDrawer = ref<boolean>(true);
 const toggleRightDrawer = ref<boolean>(false);
+const exibirConsultaRegistros = ref<boolean>(false);
 const loading = ref<boolean>(false);
-
-const selectedField = ref<ICampoFiltro<any> | null>(null);
 
 // Funções
 function handleOnLimparFiltros() {
@@ -182,18 +214,21 @@ function handleOnAplicarFiltros() {
   exibirFiltros.value = false;
 }
 
+// Computadas
+const campoSelecionadoAtual = computed(() => genericFilterStore.campoSelecionado);
+
+const deveExibirConsultaRegistros = computed(() => {
+  return exibirConsultaRegistros.value && !!campoSelecionadoAtual.value?.consultaRegistros;
+});
+
+const alturaBotaoAcao = computed(() => (smAndDown.value ? 32 : undefined));
+const larguraMinimaBotaoAcao = computed(() => (smAndDown.value ? 0 : undefined));
+const tamanhoBotaoAcao = computed(() => (smAndDown.value ? 'small' : 'default'));
+
 // Observadores
 watch(() => genericFilterStore.appliedCount, (newValue) => {
   toggleRightDrawer.value = newValue > 0;
 }, { immediate: true });
 </script>
 
-<style scoped>
-.small-badge :deep(.v-badge__badge) {
-  font-size: 0.65rem;
-  min-width: 16px;
-  height: 16px;
-  line-height: 16px;
-  padding: 0 4px;
-}
-</style>
+<style src="./DialogFiltro.scss" scoped lang="scss"></style>

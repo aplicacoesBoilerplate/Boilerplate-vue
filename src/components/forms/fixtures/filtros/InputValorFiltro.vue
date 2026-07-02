@@ -1,6 +1,6 @@
 <template>
   <div class="input-valor-dinamico">
-    <template v-if="tipoTemplate === 'NONE'">
+    <template v-if="tipoTemplate === 'NONE' || tipoTemplate === 'BOOLEAN'">
       <div
         class="d-flex align-center"
         style="min-height: 40px;"
@@ -13,18 +13,6 @@
           Nenhum valor necessário para esta condição.
         </div>
       </div>
-    </template>
-
-    <template v-else-if="tipoTemplate === 'BOOLEAN'">
-      <v-switch
-        v-model="valorTratado"
-        :rules="[rules.required()]"
-        class="mt-1"
-        color="primary"
-        label="Sim / Verdadeiro"
-        hideDetails
-        inset
-      />
     </template>
 
     <template v-else-if="tipoTemplate === 'MULTIPLE'">
@@ -140,13 +128,14 @@ import { computed, watch } from 'vue';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
+import type { IOpcaoSelecaoFiltro } from '@/models/filters/IOpcaoSelecaoFiltro';
 import type { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 
 type TProps = {
   operador: EOperadoresFiltro | string | null;
   tiposCampo: ETipoFiltro[];
-  opcoesDisponiveis?: any[];
+  opcoesDisponiveis?: IOpcaoSelecaoFiltro[];
   campo?: string | null;
 };
 const props = defineProps<TProps>();
@@ -179,7 +168,7 @@ const tipoTemplate = computed(() => {
 
   if ([EOperadoresFiltro.SELECAO, EOperadoresFiltro.EXCECAO].includes(props.operador as EOperadoresFiltro)) return 'MULTIPLE';
   if (props.operador === EOperadoresFiltro.ENTRE) return 'RANGE';
-  if (props.tiposCampo.includes('boolean' as ETipoFiltro)) return 'BOOLEAN';
+  if ([EOperadoresFiltro.VERDADEIRO, EOperadoresFiltro.FALSO].includes(props.operador as EOperadoresFiltro)) return 'BOOLEAN';
 
   return 'DEFAULT';
 });
@@ -220,11 +209,26 @@ const rangeSafe = computed({
   set: (novoRange) => { valor.value = novoRange; }
 });
 
+function atualizarValorBooleanoPorOperador(pOperador: EOperadoresFiltro | string | null): boolean {
+  if (pOperador === EOperadoresFiltro.VERDADEIRO) {
+    valor.value = true;
+    return true;
+  }
+
+  if (pOperador === EOperadoresFiltro.FALSO) {
+    valor.value = false;
+    return true;
+  }
+
+  return false;
+}
+
 // Observadores
 // Sempre que mudar o template, reseta o valor para não dar crash de tipos
-watch(tipoTemplate, (novoTemplate) => {
+watch(() => [tipoTemplate.value, props.operador], ([novoTemplate, novoOperador]) => {
+  if (atualizarValorBooleanoPorOperador(novoOperador)) return;
+
   if (novoTemplate === 'RANGE' || novoTemplate === 'MULTIPLE') valor.value = [];
-  else if (novoTemplate === 'BOOLEAN') valor.value = true;
   else valor.value = undefined;
 });
 

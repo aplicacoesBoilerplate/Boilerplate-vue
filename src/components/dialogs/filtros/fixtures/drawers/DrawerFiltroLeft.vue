@@ -1,8 +1,8 @@
 <template>
   <v-navigation-drawer
     v-model="toggleLeftDrawer"
-    :permanent="false"
     :absolute="true"
+    :temporary="!mdAndUp"
     :mobileBreakpoint="0"
   >
     <v-list-item class="pa-0">
@@ -19,7 +19,7 @@
       :key="String(campo.valor)"
       :title="campo.descricao"
       :prependIcon="campo.icone"
-      :active="selectedField?.valor === campo.valor"
+      :active="genericFilterStore.campoSelecionado?.valor === campo.valor"
       class="mt-1 ma-1"
       color="primary"
       rounded="ts-xl be-xl"
@@ -32,6 +32,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { ref, watch } from 'vue';
+import { useDisplay } from 'vuetify';
 
 // Types e Interfaces
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
@@ -51,9 +52,11 @@ const props = defineProps<TProps>();
 // Stores
 const genericFilterStore = useGenericFilterStore();
 
+// Composables
+const { mdAndUp } = useDisplay();
+
 // Reativas - Model
 const toggleLeftDrawer = defineModel<boolean>('toggleLeftDrawer', { required: true });
-const selectedField = defineModel<ICampoFiltro<any> | null>('selectedField', { required: true });
 
 // Reativas - ref
 const camposFiltrados = ref<ICampoFiltro<any>[]>(props.camposDisponiveis);
@@ -73,13 +76,15 @@ function onSearchCampo(pTermoPesquisa: string) {
 }
 
 function onSelecionarCampo(pCampo: ICampoFiltro<any>) {
-  selectedField.value = pCampo;
-
   genericFilterStore.filterModel = {
     campo: pCampo.valor as string,
     condicao: EOperadoresFiltro.IGUAL,
     valor: undefined,
   };
+
+  if (!mdAndUp.value) {
+    toggleLeftDrawer.value = false;
+  }
 }
 
 // Observadores

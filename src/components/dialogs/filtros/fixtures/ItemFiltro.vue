@@ -1,5 +1,9 @@
 <template>
-  <v-list-item :title="filtro.campo ?? ''">
+  <v-list-item
+    elevation="4"
+    rounded="te-xl bs-xl"
+    :title="filtro.campo ?? ''"
+  >
     <template #prepend>
       <div
         class="d-flex align-center"

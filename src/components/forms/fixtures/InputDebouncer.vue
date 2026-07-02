@@ -12,7 +12,15 @@
     :clearable="clearable"
     @keypress.enter="handleOnSearch(pesquisa)"
     @click:appendInner="handleOnSearch(pesquisa)"
-  />
+  >
+    <template #append-inner>
+      <slot
+        name="append"
+        :appendIcon="icon"
+        :handleFunction="handleOnSearch"
+      />
+    </template>
+  </v-text-field>
 </template>
 
 <script setup lang="ts">
