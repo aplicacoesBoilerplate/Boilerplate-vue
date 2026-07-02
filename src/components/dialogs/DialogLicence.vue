@@ -85,7 +85,7 @@ import pkg from '../../../package.json';
 import { ClassFormatters } from '@/classes/Utils/ClassFormatters.ts';
 
 // Componentes
-import BaseDialog from './BaseDialog.vue';
+import BaseDialog from './base/BaseDialog.vue';
 
 // Constantes
 const systemVersion = pkg.version;

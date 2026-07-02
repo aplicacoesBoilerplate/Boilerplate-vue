@@ -11,7 +11,7 @@
       <v-col cols="12">
         <v-card
           v-if="selectedField"
-          class="bg-grey-lighten-4 border rounded-lg w-100"
+          class="border rounded-lg w-100"
           variant="flat"
         >
           <CampoSelecionado :selectedField="selectedField" />
@@ -30,7 +30,10 @@
               />
 
               <div class="mt-2 d-flex align-center">
-                <v-tooltip>
+                <v-tooltip
+                  text="Limpar Valor(es) do Filtro Atual"
+                  location="bottom"
+                >
                   <template #activator="{ props: tooltipProps }">
                     <v-btn
                       v-bind="tooltipProps"
@@ -42,13 +45,12 @@
                       @click="refreshForm()"
                     />
                   </template>
-                  <span>Limpar Valor(es) do Filtro Atual</span>
                 </v-tooltip>
 
                 <v-btn
                   :disabled="!isFormValid"
                   class="font-weight-medium ml-auto flex-grow-1"
-                  color="indigo-darken-4"
+                  color="primary"
                   variant="elevated"
                   type="submit"
                   height="40"

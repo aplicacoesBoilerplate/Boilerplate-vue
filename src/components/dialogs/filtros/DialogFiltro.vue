@@ -110,14 +110,14 @@
 
       <v-btn
         color="red-darken-1"
-        variant="outlined"
+        variant="tonal"
         text="LIMPAR FILTROS"
         :loading="loading"
         @click="handleOnLimparFiltros"
       />
 
       <v-btn
-        color="indigo-darken-4"
+        color="primary"
         variant="flat"
         text="APLICAR"
         :loading="loading"
@@ -139,7 +139,7 @@ import { useGenericFilterStore } from '@/stores/genericFilter.store';
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 
 // Componentes
-import BaseDialog from '../BaseDialog.vue';
+import BaseDialog from '../base/BaseDialog.vue';
 import DrawerFiltroLeft from './fixtures/drawers/DrawerFiltroLeft.vue';
 import DrawerFiltroRight from './fixtures/drawers/DrawerFiltroRight.vue';
 import FormFiltros from '../../forms/FormFiltros.vue';

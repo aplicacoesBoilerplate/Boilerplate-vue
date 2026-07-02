@@ -1,5 +1,5 @@
 <template>
-  <v-list>
+  <v-list style="height: 64px;">
     <v-list-item>
       <template #prepend>
         <v-avatar

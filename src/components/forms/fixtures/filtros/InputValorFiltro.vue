@@ -47,7 +47,21 @@
 
     <template v-else-if="tipoTemplate === 'RANGE'">
       <div class="d-flex ga-2 align-center mt-2">
+        <v-number-input
+          v-if="htmlType === 'number'"
+          v-model="rangeSafe[0]"
+          :rules="[rules.required()]"
+          :type="htmlType"
+          label="De"
+          controlVariant="stacked"
+          variant="outlined"
+          density="compact"
+          autocomplete="off"
+          hideDetails
+        />
+
         <v-text-field
+          v-else
           v-model="rangeSafe[0]"
           :rules="[rules.required()]"
           :type="htmlType"
@@ -58,7 +72,22 @@
           hideDetails
         />
 
+        <v-number-input
+          v-if="htmlType === 'number'"
+          v-model="rangeSafe[1]"
+          :rules="[rules.required()]"
+          :type="htmlType"
+          label="Até"
+          controlVariant="stacked"
+          variant="outlined"
+          density="compact"
+          autocomplete="off"
+          hideDetails
+          @keypress.enter="$emit('onEnter')"
+        />
+
         <v-text-field
+          v-else
           v-model="rangeSafe[1]"
           :rules="[rules.required()]"
           :type="htmlType"
@@ -73,7 +102,23 @@
     </template>
 
     <template v-else>
+      <v-number-input
+        v-if="htmlType === 'number'"
+        v-model="valorTratado"
+        :rules="computedRules"
+        :type="htmlType"
+        label="Valor"
+        controlVariant="stacked"
+        variant="outlined"
+        density="compact"
+        autocomplete="off"
+        hideDetails
+        clearable
+        @keypress.enter="$emit('onEnter')"
+      />
+
       <v-text-field
+        v-else
         v-model="valorTratado"
         :rules="computedRules"
         :type="htmlType"
@@ -182,4 +227,5 @@ watch(tipoTemplate, (novoTemplate) => {
   else if (novoTemplate === 'BOOLEAN') valor.value = true;
   else valor.value = undefined;
 });
+
 </script>

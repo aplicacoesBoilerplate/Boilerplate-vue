@@ -24,7 +24,7 @@
       >
         <v-btn
           icon="mdi-pencil"
-          color="indigo-darken-4"
+          color="primary"
           variant="text"
           density="compact"
           @click="$emit('onEditar', index)"

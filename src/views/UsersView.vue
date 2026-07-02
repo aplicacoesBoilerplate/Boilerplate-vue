@@ -177,7 +177,7 @@ import { useChartHelpers } from '@/composables/useChartHelpers';
 // Componentes
 import GridDataChart from '@/components/layouts/GridDataChart.vue';
 import ChartPie from '@/components/ChartPie.vue';
-import BaseDialog from '@/components/dialogs/BaseDialog.vue';
+import BaseDialog from '@/components/dialogs/base/BaseDialog.vue';
 import UserForm from '@/components/forms/UserForm.vue';
 import GenericView from '@/components/layout/generic/GenericView.vue';
 import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';

@@ -4,7 +4,7 @@
       :cols="larguraOperador"
       class="col-animada pb-0"
     >
-      <v-select
+      <v-autocomplete
         v-model="filterModel.condicao"
         :label="label"
         :variant="variant"
@@ -14,6 +14,7 @@
         :items="operadores"
         itemTitle="descricao"
         itemValue="valor"
+        autocomplete="off"
         hideDetails
       >
         <template #item="{ props: itemProps, item }">
@@ -27,7 +28,7 @@
             </template>
           </v-list-item>
         </template>
-      </v-select>
+      </v-autocomplete>
     </v-col>
 
     <v-col
