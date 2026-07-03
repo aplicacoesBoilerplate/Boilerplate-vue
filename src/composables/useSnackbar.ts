@@ -1,19 +1,47 @@
-import type { SnackbarColor } from '@/classes/models/modelComponents/ModelSnackbar'
-import { useSnackbarStore } from '@/stores/SnackbarStore'
+// Stores
+import { useSnackbarStore } from '@/stores/SnackbarStore';
 
-export function useSnackbar() {
-  const store = useSnackbarStore()
+// Types e Interfaces
+import type { TSnackbarType } from '@/models/IPropsSnackbarQueue';
 
-  const notify = (message: string, color: SnackbarColor = 'success') => {
-    store.showSnackbar(message, color)
+function normalizarTipoSnackbar(pTipo: TSnackbarType | 'red' = 'success'): TSnackbarType {
+  if (pTipo === 'red') {
+    return 'error';
   }
 
-  const close = () => {
-    store.hideSnackbar()
+  return pTipo;
+}
+
+/**
+ * @description
+ * Permite adicionar feedbacks ao usuário de forma centralizada.
+ */
+export function useSnackbar(): {
+  notify: (pMensagem: string, pTipo?: TSnackbarType | 'red') => void;
+  hide: () => void;
+} {
+  const snackbarStore = useSnackbarStore();
+
+  /**
+   * @description
+   * Adiciona um feedback ao usuário.
+   * @param pMensagem Mensagem a ser exibida.
+   * @param pTipo Tipo de feedback (success, error, warning, info).
+   */
+  function notify(pMensagem: string, pTipo: TSnackbarType | 'red' = 'success'): void {
+    snackbarStore.adicionar({
+      mensagem: pMensagem,
+      tipo: normalizarTipoSnackbar(pTipo),
+    });
   }
 
-  return {
-    notify,
-    close
+  /**
+   * @description
+   * Remove todos os feedbacks do usuário.
+   */
+  function hide(): void {
+    snackbarStore.limpar();
   }
+
+  return { notify, hide };
 }

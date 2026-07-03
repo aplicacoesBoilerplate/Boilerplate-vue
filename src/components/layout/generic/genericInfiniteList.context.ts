@@ -4,7 +4,7 @@ import type { RouteLocationRaw } from 'vue-router';
 
 // Contexto compartilhado entre GenericInfiniteList e itens filhos.
 export interface IGenericInfiniteListProvided {
-  contextId: string;
+  contexto: string;
   /** Gera atributos CSS/data-* que permitem restaurar scroll apos redirect. */
   getItemBindings: (
     item: unknown,

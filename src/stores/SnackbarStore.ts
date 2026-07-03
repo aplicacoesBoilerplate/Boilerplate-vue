@@ -26,12 +26,12 @@ export const useSnackbarStore = defineStore('snackbar', () => {
    * Adiciona uma mensagem na fila da Snackbar.
    */
   function adicionar(snackbar: IPropsSnackbarQueue) {
-    const type = snackbar.type ?? 'info';
+    const type = snackbar.tipo ?? 'info';
 
     messages.value.push({
       id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15),
-      title: snackbar.title,
-      text: snackbar.text,
+      title: snackbar.titulo,
+      text: snackbar.mensagem,
       color: type,
       variant: 'elevated',
       rounded: 'ts-xl be-xl',
@@ -40,7 +40,7 @@ export const useSnackbarStore = defineStore('snackbar', () => {
       timerColor: 'white',
       timeout: snackbar.timeout ?? 4000,
       prependIcon: snackbar.icon ?? snackbarIcons[type],
-      actionUrl: snackbar.actionUrl,
+      actionUrl: snackbar.urlRedirecionamento,
     } as any);
   }
 

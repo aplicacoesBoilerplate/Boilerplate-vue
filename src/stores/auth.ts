@@ -1,40 +1,99 @@
+// Pinia
 import { defineStore } from 'pinia';
+
+// Ecossistema Vue
 import { ref, computed } from 'vue';
-import http from '@/services/axios';
+
+// Stores
 import { useListCacheStore } from './listCache';
-import { ClassUsuarios } from '@/classes/ClassUsers';
+
+// Types e Interfaces
+import type { ILogin } from '@/classes/models/ModelLogin';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 
+// Composables
+import { useRequisicaoService } from '@/composables/useRequisicaoService';
+
+// Services
+import { CAutenticacaoService } from '@/services/CAutenticacaoService';
+
+// Constantes
+const TOKEN_STORAGE_KEY = 'token';
+
 export const useAuthStore = defineStore('auth', () => {
-  const classUser = new ClassUsuarios();
-  const user = ref<IUsuario | undefined>(classUser.model);
-  const token = ref(localStorage.getItem('token') || null);
-  const isAuthenticated = computed(() => !!token.value);
+  // Stores
   const listCacheStore = useListCacheStore();
+
+  // Composables
+  const requisicaoService = useRequisicaoService();
+
+  // Reativas
+  const user = ref<IUsuario | undefined>();
+  const token = ref(sessionStorage.getItem(TOKEN_STORAGE_KEY) || localStorage.getItem(TOKEN_STORAGE_KEY) || null);
+
+  // Computadas
+  const carregando = computed(() => requisicaoService.carregando.value);
+  const erro = computed(() => requisicaoService.erro.value);
+  const isAuthenticated = computed(() => !!token.value);
   const isAdmin = computed(() => user.value?.papel === 'ADMIN');
 
-  async function fetchUser() {
-    if (!token.value) return;
+  // Funções
+  function persistirToken(pToken: string): void {
+    token.value = pToken;
+    sessionStorage.setItem(TOKEN_STORAGE_KEY, pToken);
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+  }
+
+  async function carregarUsuarioAutenticado(): Promise<IUsuario> {
+    const usuarioAutenticado = await requisicaoService.executar({
+      metodo: async () => CAutenticacaoService.buscarUsuarioAutenticado(),
+      parametros: undefined,
+    });
+
+    user.value = usuarioAutenticado;
+
+    return usuarioAutenticado;
+  }
+
+  async function login(pLogin: ILogin): Promise<IUsuario> {
+    const tokenAutenticacao = await requisicaoService.executar({
+      metodo: CAutenticacaoService.login,
+      parametros: pLogin,
+    });
+
+    persistirToken(tokenAutenticacao);
+
+    return carregarUsuarioAutenticado();
+  }
+
+  async function fetchUser(): Promise<void> {
+    if (!token.value) {
+      return;
+    }
+
     try {
-      const res = await http.get('/api/me');
-      user.value = res.data;
-    } catch (error) {
+      await carregarUsuarioAutenticado();
+    } catch {
       logout();
     }
   }
 
-  function logout() {
+  function logout(): void {
     token.value = null;
     user.value = undefined;
-    localStorage.removeItem('token');
+    sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
     listCacheStore.clearAll();
   }
 
   return {
     user,
     token,
+    carregando,
+    erro,
     isAuthenticated,
     isAdmin,
+    login,
     fetchUser,
     logout,
   };

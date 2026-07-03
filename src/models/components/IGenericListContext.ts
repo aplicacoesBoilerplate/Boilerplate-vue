@@ -1,21 +1,24 @@
 // Types e Interfaces
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
+import type { IFiltrosConsulta } from '../filters/IFiltrosConsulta';
+
+export type TOrdem = 'asc' | 'desc';
 
 export interface IGenericListContext<TItem = unknown> {
   /** Identificador unico dessa lista. */
-  contextId: string;
+  contexto: string;
   /** Registros ja consultados e restauraveis quando a rota voltar para a lista. */
   items: TItem[];
   /** Proximo Entry (cursor) usado pela chamada do backend em infinite scroll. */
-  nextEntry: unknown;
+  proximaEntrada: unknown;
   /** Indica se o componente ainda deve pedir novas paginas (tem mais dados no banco). */
-  hasMore: boolean;
+  temMaisRegistros: boolean;
   /** Limite atual escolhido pelo usuario para manter o contexto consistente. */
-  limit: number;
+  limite: number;
   /** Ordem da paginacao (ex: 'asc' ou 'desc'). */
-  order: string;
+  ordem: TOrdem;
   /** Ultima alteracao do contexto; util para debug e politicas futuras de cache. */
-  updatedAt: number;
+  atualizadoEm: number;
 }
 
 export interface IGenericListContextOptions {
@@ -24,26 +27,33 @@ export interface IGenericListContextOptions {
   /** Normalmente session para cache temporario de listas; local fica disponivel para outros usos. */
   storage?: TManagerStorageLocation;
   /** Quantidade inicial por pagina. */
-  limit?: number;
+  limite?: number;
   /** Orientacao padrao de ordenacao inicial. */
-  order?: string;
+  ordem?: TOrdem;
 }
 
-export interface IGenericListFetchPayload<TFiltros = any> {
-  contextId: string;
-  limit: number;
-  nextEntry: unknown;
-  order: string;
+/**
+ * Payload padrao de chamadas do tipo infinite scroll.
+ */
+export interface IGenericListFetchPayload<TFiltros = IFiltrosConsulta[]> {
+  contexto: string;
+  limite: number;
+  proximaEntrada: unknown;
+  ordem: TOrdem;
   filtros?: TFiltros;
 }
 
-export interface IGenericListFetchResult<TItem = unknown> {
+/**
+ * Resultado padrao de chamadas do tipo infinite scroll.
+ */
+export interface IGenericListFetchReturn<TItem = unknown> {
   items: TItem[];
-  nextEntry?: unknown;
-  /** Se ausente, o componente infere pelo tamanho da pagina retornada. (Se for < que o limit, recebe false) */
-  hasMore?: boolean;
+  proximaEntrada?: unknown;
+  /** Se ausente, o componente infere pelo tamanho da pagina retornada. (Se for < que o limite, recebe false) */
+  temMaisRegistros?: boolean;
 }
 
+/** Resposta padrao de chamadas do tipo infinite scroll. */
 export type TGenericListFetchResponse<TItem = unknown> =
   | TItem[]
-  | IGenericListFetchResult<TItem>;
+  | IGenericListFetchReturn<TItem>;

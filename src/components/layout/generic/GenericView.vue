@@ -20,16 +20,14 @@
       <GenericInfiniteList
         ref="infiniteListRef"
         :cacheTtlMs="cacheTtlMs"
-        :contextId="contextId"
-        :emptyText="emptyText"
-        :endText="endText"
-        :errorText="errorText"
-        :initialLimit="initialLimit"
-        :initialOrder="initialOrder"
+        :contexto="contexto"
+        :textoVazio="textoVazio"
+        :textoFinal="textoFinal"
+        :textoError="textoError"
+        :limite="limite"
+        :ordemInicial="ordemInicial"
         :itemKey="itemKey"
-        :limitOptions="limitOptions"
         :serviceFetch="serviceFetch"
-        :showLimitSelector="showLimitSelector"
         :storage="storage"
       >
         <!-- v-if="$slots['list-header']" -->
@@ -53,13 +51,18 @@
                     location="bottom"
                   >
                     <template #activator="{ props }">
-                      <v-btn
-                        v-bind="props"
-                        color="primary"
-                        icon="mdi-plus"
-                        size="x-small"
-                        @click="handleNovoRegistro({ modoEdicao: false })"
-                      />
+                      <slot
+                        name="activator-novo-registro"
+                        :handleNovoRegistro="handleNovoRegistro({ modoEdicao: false })"
+                      >
+                        <v-btn
+                          v-bind="props"
+                          color="primary"
+                          icon="mdi-plus"
+                          size="x-small"
+                          @click="handleNovoRegistro({ modoEdicao: false })"
+                        />
+                      </slot>
                     </template>
                   </v-tooltip>
                 </div>
@@ -98,7 +101,7 @@
 import { ref } from 'vue';
 
 // Types e Interfaces
-import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
+import type { IGenericListFetchPayload, TGenericListFetchResponse, TOrdem } from '@/models/components/IGenericListContext';
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
 
 // Components
@@ -110,25 +113,23 @@ type TProps = {
   /** Tempo de vida do contexto salvo em storage antes de a lista precisar recarregar. */
   cacheTtlMs?: number;
   /** Identificador unico do contexto usado pela store e pela chave no storage. */
-  contextId: string;
+  contexto: string;
   /** Texto exibido quando a lista ainda nao possui itens. */
-  emptyText?: string;
+  textoVazio?: string;
   /** Texto exibido quando todos os registros ja foram carregados. */
-  endText?: string;
+  textoFinal?: string;
   /** Texto exibido quando o carregamento do infinite scroll falhar. */
-  errorText?: string;
+  textoError?: string;
   /** Limite inicial de registros por requisicao. */
-  initialLimit?: number;
+  limite?: number;
   /** Ordenação inicial padrão. */
-  initialOrder?: string;
+  ordemInicial?: TOrdem;
   /** Campo estavel do item usado para montar seletor de restauracao de scroll. */
   itemKey?: string;
   /** Opcoes disponiveis no seletor de limite da lista. */
   limitOptions?: number[];
   /** Funcao responsavel por buscar a proxima pagina de registros. */
   serviceFetch: (payload: IGenericListFetchPayload) => Promise<TGenericListFetchResponse>;
-  /** Controla exibicao do seletor de limite no cabecalho da lista. */
-  showLimitSelector?: boolean;
   /** Define onde o contexto sera persistido; em listas temporarias o padrao e session. */
   storage?: TManagerStorageLocation;
   /** Titulo simples exibido quando o slot header nao for informado. */

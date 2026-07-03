@@ -3,7 +3,7 @@ import { computed, ref, toRaw } from 'vue';
 import { defineStore } from 'pinia';
 
 // Types e Interfaces
-import type { IGenericListContext, IGenericListContextOptions } from '@/models/components/IGenericListContext';
+import type { IGenericListContext, IGenericListContextOptions, TOrdem } from '@/models/components/IGenericListContext';
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
 
 // Utils
@@ -14,9 +14,9 @@ const STORAGE_PREFIX = 'boilerplate.generic-list.context.';
 const DEFAULT_CACHE_TTL_MS = 15 * 60 * 1000;
 const DEFAULT_STORAGE: TManagerStorageLocation = 'session';
 const DEFAULT_LIMIT = 10;
-const DEFAULT_ORDER = 'desc';
+const DEFAULT_ORDER: TOrdem = 'desc';
 
-type TResolvedContextOptions = Required<Pick<IGenericListContextOptions, 'cacheTtlMs' | 'storage' | 'limit' | 'order'>>;
+type TResolvedContextOptions = Required<Pick<IGenericListContextOptions, 'cacheTtlMs' | 'storage' | 'limite' | 'ordem'>>;
 
 /**
  * Função para criar um contexto vazio.
@@ -28,16 +28,16 @@ type TResolvedContextOptions = Required<Pick<IGenericListContextOptions, 'cacheT
 function createEmptyContext<TItem = unknown>(
   pContextId: string,
   pLimit = DEFAULT_LIMIT,
-  pOrder = DEFAULT_ORDER
+  pOrder: TOrdem = DEFAULT_ORDER
 ): IGenericListContext<TItem> {
   return {
-    contextId: pContextId,
+    contexto: pContextId,
     items: [],
-    nextEntry: null,
-    hasMore: true,
-    limit: pLimit,
-    order: pOrder,
-    updatedAt: Date.now(),
+    proximaEntrada: null,
+    temMaisRegistros: true,
+    limite: pLimit,
+    ordem: pOrder,
+    atualizadoEm: Date.now(),
   };
 }
 
@@ -60,8 +60,8 @@ function resolveOptions(pOptions?: IGenericListContextOptions): TResolvedContext
   return {
     cacheTtlMs: pOptions?.cacheTtlMs ?? DEFAULT_CACHE_TTL_MS,
     storage: pOptions?.storage ?? DEFAULT_STORAGE,
-    limit: pOptions?.limit ?? DEFAULT_LIMIT,
-    order: pOptions?.order ?? DEFAULT_ORDER,
+    limite: pOptions?.limite ?? DEFAULT_LIMIT,
+    ordem: pOptions?.ordem ?? DEFAULT_ORDER,
   };
 }
 
@@ -99,8 +99,8 @@ export const useGenericListStore = defineStore('genericList', () => {
     // ManagerStorage ja remove valores expirados; se voltar null, a lista comeca limpa.
     contexts.value[pContextId] = storedContext ?? createEmptyContext<TItem>(
       pContextId,
-      resolvedOptions.limit,
-      resolvedOptions.order
+      resolvedOptions.limite,
+      resolvedOptions.ordem
     );
 
     if (!storedContext) {
@@ -137,7 +137,7 @@ export const useGenericListStore = defineStore('genericList', () => {
    * @returns O próximo item do contexto.
    */
   function getNextEntry(pContextId: string) {
-    return getContext(pContextId).nextEntry;
+    return getContext(pContextId).proximaEntrada;
   }
 
   /**
@@ -146,7 +146,7 @@ export const useGenericListStore = defineStore('genericList', () => {
    * @returns Se ha mais itens no contexto.
    */
   function getHasMore(pContextId: string) {
-    return getContext(pContextId).hasMore;
+    return getContext(pContextId).temMaisRegistros;
   }
 
   /**
@@ -155,7 +155,7 @@ export const useGenericListStore = defineStore('genericList', () => {
    * @returns O limite de itens do contexto.
    */
   function getLimit(pContextId: string) {
-    return getContext(pContextId).limit;
+    return getContext(pContextId).limite;
   }
 
   /**
@@ -164,7 +164,7 @@ export const useGenericListStore = defineStore('genericList', () => {
    * @returns A ordem de itens do contexto.
    */
   function getOrder(pContextId: string) {
-    return getContext(pContextId).order;
+    return getContext(pContextId).ordem;
   }
 
   /**
@@ -174,7 +174,7 @@ export const useGenericListStore = defineStore('genericList', () => {
    */
   function setLimit(pContextId: string, pLimit: number) {
     // O limite tambem e persistido para manter a lista coerente ao voltar para a rota.
-    getContext(pContextId).limit = pLimit;
+    getContext(pContextId).limite = pLimit;
     persistContext(pContextId);
   }
 
@@ -183,9 +183,9 @@ export const useGenericListStore = defineStore('genericList', () => {
    * @param pContextId O ID do contexto.
    * @param pOrder A ordem de itens.
    */
-  function setOrder(pContextId: string, pOrder: string) {
+  function setOrder(pContextId: string, pOrder: TOrdem) {
     // A ordenacao tambem e persistida.
-    getContext(pContextId).order = pOrder;
+    getContext(pContextId).ordem = pOrder;
     persistContext(pContextId);
   }
 
@@ -206,9 +206,9 @@ export const useGenericListStore = defineStore('genericList', () => {
 
     // Acumula paginas ja consultadas para que o retorno de rota nao dependa de nova chamada.
     context.items.push(...pNewItems);
-    context.nextEntry = pNextEntry;
-    context.hasMore = pHasMore;
-    context.updatedAt = Date.now();
+    context.proximaEntrada = pNextEntry;
+    context.temMaisRegistros = pHasMore;
+    context.atualizadoEm = Date.now();
 
     persistContext(pContextId);
   }
@@ -229,9 +229,9 @@ export const useGenericListStore = defineStore('genericList', () => {
     const context = getContext<TItem>(pContextId);
 
     context.items = pItems;
-    context.nextEntry = pNextEntry;
-    context.hasMore = pHasMore;
-    context.updatedAt = Date.now();
+    context.proximaEntrada = pNextEntry;
+    context.temMaisRegistros = pHasMore;
+    context.atualizadoEm = Date.now();
 
     persistContext(pContextId);
   }
@@ -244,7 +244,7 @@ export const useGenericListStore = defineStore('genericList', () => {
     const options = getOptions(pContextId);
 
     // Mantem limite/opcoes atuais, mas descarta cursor e itens armazenados.
-    contexts.value[pContextId] = createEmptyContext(pContextId, options.limit, options.order);
+    contexts.value[pContextId] = createEmptyContext(pContextId, options.limite, options.ordem);
     persistContext(pContextId);
   }
 
@@ -281,7 +281,7 @@ export const useGenericListStore = defineStore('genericList', () => {
   function prependItem<TItem = unknown>(pContextId: string, pItem: TItem) {
     const context = getContext<TItem>(pContextId);
     context.items = [pItem, ...context.items];
-    context.updatedAt = Date.now();
+    context.atualizadoEm = Date.now();
     persistContext(pContextId);
   }
 
@@ -304,7 +304,7 @@ export const useGenericListStore = defineStore('genericList', () => {
     if (!item) return;
 
     Object.assign(item, pNewValues);
-    context.updatedAt = Date.now();
+    context.atualizadoEm = Date.now();
     persistContext(pContextId);
   }
 

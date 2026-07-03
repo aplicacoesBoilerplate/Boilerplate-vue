@@ -25,34 +25,34 @@
             <v-row dense>
               <v-col cols="6">
                 <InputUpperCase
-                  v-model:="newUser.nome"
+                  v-model="novoUsuario.nome"
                   :style="{
                     label: 'Nome de usuário*',
                     counter: 100,
                     inputVariant: 'outlined',
                   }"
-                  :rules="[rulesPersonalizadas.required, rulesPersonalizadas.max]"
+                  :rules="[rules.required(), rules.maxLength(100)]"
                 />
               </v-col>
 
               <v-col cols="6">
                 <InputUpperCase
-                  v-model:="newUser.email"
+                  v-model="novoUsuario.email"
                   :style="{
                     label: 'Email*',
                     counter: 100,
                     inputVariant: 'outlined',
                   }"
-                  :rules="[rulesPersonalizadas.required, rulesPersonalizadas.emailFormat]"
+                  :rules="[rules.required(), rules.email(), rules.maxLength(100)]"
                 />
               </v-col>
 
               <v-col cols="6">
                 <v-text-field
                   clearable
-                  v-model="newUser.senha"
-                  :rules="[rulesPersonalizadas.required, rulesPersonalizadas.min, rulesPersonalizadas.max]"
-                  :type="showPassword1 ? 'text' : 'password'"
+                  v-model="novoUsuario.senha"
+                  :rules="[rules.required(), rules.minLength(8), rules.maxLength(100)]"
+                  :type="mostrarSenha ? 'text' : 'password'"
                   hint="Mínimo de 8 caracteres"
                   label="Senha*"
                   variant="outlined"
@@ -60,8 +60,8 @@
                 >
                   <template v-slot:append-inner>
                     <v-btn
-                      :icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'"
-                      @click="showPassword1 = !showPassword1"
+                      :icon="mostrarSenha ? 'mdi-eye' : 'mdi-eye-off'"
+                      @click="mostrarSenha = !mostrarSenha"
                       variant="text"
                     />
                   </template>
@@ -71,17 +71,17 @@
               <v-col cols="6">
                 <v-text-field
                   clearable
-                  v-model="newUser.confirmarSenha"
-                  :rules="[rulesPersonalizadas.required, rulesPersonalizadas.equals(() => newUser.senha)]"
-                  :type="showPassword2 ? 'text' : 'password'"
+                  v-model="novoUsuario.confirmarSenha"
+                  :rules="[rules.required(), rulesPersonalizadas.equals(() => novoUsuario.senha)]"
+                  :type="mostrarConfirmacaoSenha ? 'text' : 'password'"
                   label="Confirmar sua senha*"
                   variant="outlined"
                   counter
                 >
                   <template v-slot:append-inner>
                     <v-btn
-                      :icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'"
-                      @click="showPassword2 = !showPassword2"
+                      :icon="mostrarConfirmacaoSenha ? 'mdi-eye' : 'mdi-eye-off'"
+                      @click="mostrarConfirmacaoSenha = !mostrarConfirmacaoSenha"
                       variant="text"
                     />
                   </template>
@@ -108,42 +108,70 @@
 </template>
 
 <script setup lang="ts">
-import InputUpperCase from '@/components/InputUpperCase.vue'; // Componente visual do input upper case
-import { usersServices } from '@/services/usersService';
-import { useSnackbarStore } from '@/stores/SnackbarStore';
-import { rulesPersonalizadas } from '@/utils/rules';
-import { ref } from 'vue';
+// Ecossistema Vue
+import { computed, nextTick, ref } from 'vue';
+import { useRules } from 'vuetify/labs/rules';
 
+// Types e Interfaces
+import type { IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
+
+// Composables
+import { useRequisicaoService } from '@/composables/useRequisicaoService';
+
+// Services
+import { CUsuarioService } from '@/services/CUsuarioService';
+
+// Utils
+import { rulesPersonalizadas } from '@/utils/rules';
+
+// Componentes
+import InputUpperCase from '@/components/forms/fixtures/InputUpperCase.vue';
+
+// Composables
+const rules = useRules();
+const requisicaoService = useRequisicaoService();
+
+// Reativas
 const formRef = ref();
 const formIsValid = ref(false);
-const showPassword1 = ref(false);
-const showPassword2 = ref(false);
-const emailDefalt = window.env?.VITE_DOMAIN_EMAIL || import.meta.env.VITE_DOMAIN_EMAIL;
-const newUser = ref({
-  nome: '',
-  email: emailDefalt,
-  senha: '',
-  confirmarSenha: '',
-});
-const loading = ref(false); // Carregamento
+const mostrarSenha = ref(false);
+const mostrarConfirmacaoSenha = ref(false);
+const dominioEmailPadrao = window.env?.VITE_DOMAIN_EMAIL || import.meta.env.VITE_DOMAIN_EMAIL || '';
+const novoUsuario = ref<IUsuarioSolicitacaoAcesso>(criarUsuarioParaRegistroPadrao());
 
-// Mesmo método de criar usuário porém sem autenticação e com um body menor
-async function solicitarAcesso() {
-  try {
-    loading.value = true;
-    await usersServices.solicitarAcesso(newUser.value);
-    useSnackbarStore().showSnackbar('Conta registrada, aguarde a liberação de um administrador', 'success');
-    newUser.value = {
-      nome: '',
-      email: emailDefalt,
-      senha: '',
-      confirmarSenha: '',
-    };
-  } catch (error) {
-    useSnackbarStore().showSnackbar(error, 'red');
-    throw error;
-  } finally {
-    loading.value = false;
-  }
+// Computadas
+const loading = computed(() => requisicaoService.carregando.value);
+
+// Funções
+
+/**
+ * @description Método que cria um usuário padrão para o registro de novo acesso.
+ * @returns IUsuarioSolicitacaoAcesso que contém os dados padrão do usuário.
+ */
+export function criarUsuarioParaRegistroPadrao(): IUsuarioSolicitacaoAcesso {
+  return {
+    nome: '',
+    email: dominioEmailPadrao,
+    senha: '',
+    confirmarSenha: '',
+  };
+}
+
+/**
+ * @description Método que solicita o registro de um novo acesso.
+ */
+async function solicitarAcesso(): Promise<void> {
+  await requisicaoService.executar({
+    metodo: CUsuarioService.solicitarAcesso,
+    parametros: novoUsuario.value,
+    sucesso: {
+      mensagem: 'Conta registrada, aguarde a liberação de um administrador',
+      tipo: 'success',
+    },
+  });
+
+  novoUsuario.value = criarUsuarioParaRegistroPadrao();
+  await nextTick();
+  formRef.value?.resetValidation();
 }
 </script>

@@ -4,7 +4,7 @@ import { createRulesPlugin } from 'vuetify/labs/rules';
 import { createPinia } from 'pinia';
 import router from '@/router';
 import { i18n } from './i18n';
-import '@/services/axios';
+import '@/services/base/axios';
 
 // Registro do PWA em modo AutoUpdate manual pra não depender exclusivamente do manifest no dev/docker.
 import { registerSW } from 'virtual:pwa-register';

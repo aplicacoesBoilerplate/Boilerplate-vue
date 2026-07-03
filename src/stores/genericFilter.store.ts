@@ -130,7 +130,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     const rawFilter = toRaw(filterModel.value);
 
     if (!rawFilter.campo || !rawFilter.condicao) {
-      snackbarStore.adicionar({ type: 'warning', text: 'Selecione o campo e a condição!' });
+      snackbarStore.adicionar({ tipo: 'warning', mensagem: 'Selecione o campo e a condição!' });
       return;
     }
 
@@ -139,7 +139,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     );
 
     if (isDuplicate) {
-      snackbarStore.adicionar({ type: 'info', title: 'Filtro duplicado', text: 'Você já adicionou esta condição.' });
+      snackbarStore.adicionar({ tipo: 'info', titulo: 'Filtro duplicado', mensagem: 'Você já adicionou esta condição.' });
       return;
     }
 

@@ -46,54 +46,64 @@
 </template>
 
 <script lang="ts" setup>
-import LoginForm from '@/components/forms/LoginForm.vue';
-import { useSnackbar } from '@/composables/useSnackbar';
-import { ClassLogin } from '@/classes/ClassLogin';
-import { authServices } from '@/services/authService'
-import { useRouter } from 'vue-router';
+// Ecossistema Vue
+import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { nextTick, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+// Stores
+import { useAuthStore } from '@/stores/auth';
+
+// Classes
+import { ClassLogin } from '@/classes/ClassLogin';
+
+// Composables
+import { useSnackbar } from '@/composables/useSnackbar';
+
+// Componentes
+import LoginForm from '@/components/forms/LoginForm.vue';
+
+// Classes
 const classLogin = new ClassLogin();
-const refFormLogin = ref<InstanceType<typeof LoginForm> | null>(null);
-const isFormValid = ref(false);
 
+// Composables
 const router = useRouter();
 const { t } = useI18n();
 const { notify } = useSnackbar();
-const loading = ref(false)
-const authService = authServices;
 
-async function authLogin() {
-  const isValid = await refFormLogin.value?.validate()
-  if (isValid) {
-    try {
-      loading.value = true
-      await authService.login(classLogin.model)
-      const usuarioLogado = await authServices.getByToken()
+// Stores
+const authStore = useAuthStore();
 
-      notify(`${t('messages.welcome')}, ${usuarioLogado.username}!`, 'success')
-    } catch (err) {
-      notify(err as string || 'messages.errors.reqGenerics', 'error')
-      throw err
-    } finally {
-      loading.value = false
-    }
+// Reativas
+const refFormLogin = ref<InstanceType<typeof LoginForm> | null>(null);
+const isFormValid = ref(false);
+
+// Computadas
+const loading = computed(() => authStore.carregando);
+
+// Funções
+async function authLogin(): Promise<void> {
+  const isValid = await refFormLogin.value?.validate();
+  if (!isValid) {
+    return;
   }
+
+  const usuarioLogado = await authStore.login(classLogin.model);
+  notify(`${t('messages.welcome')}, ${usuarioLogado.nome}!`, 'success');
 }
 
-async function handleReset() {
+async function handleReset(): Promise<void> {
   classLogin.reset();
   await nextTick();
   refFormLogin.value?.reset();
 }
 
-function forgotPassword() {
+function forgotPassword(): void {
   router.push({ name: 'ForgotPassword' });
 }
 
-async function onSubmit() {
-  classLogin.saveEmailPreference()
+async function onSubmit(): Promise<void> {
+  classLogin.saveEmailPreference();
   await nextTick();
   await authLogin();
 }

@@ -10,7 +10,7 @@
       <template #dataTable="{ toggleChart }">
         <GenericView
           ref="genericViewRef"
-          contextId="users-list"
+          contexto="lista-usuarios"
           :serviceFetch="fetchUsersMock"
         >
           <template #list-header-actions>
@@ -250,14 +250,14 @@ async function fetchUsersMock(payload: IGenericListFetchPayload): Promise<TGener
   // Simula latência de rede
   await new Promise((resolve) => setTimeout(resolve, 800));
 
-  const start = (payload.nextEntry as number) || 0;
-  const limit = payload.limit || 10;
+  const start = (payload.proximaEntrada as number) || 0;
+  const limit = payload.limite || 10;
   const data = mockData.slice(start, start + limit);
 
   return {
     items: data,
-    hasMore: start + data.length < mockData.length,
-    nextEntry: start + data.length < mockData.length ? start + data.length : undefined,
+    temMaisRegistros: start + data.length < mockData.length,
+    proximaEntrada: start + data.length < mockData.length ? start + data.length : undefined,
   };
 }
 

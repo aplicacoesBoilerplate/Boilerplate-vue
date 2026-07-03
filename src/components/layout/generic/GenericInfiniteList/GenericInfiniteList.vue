@@ -5,46 +5,46 @@
   >
     <div
       v-if="$slots.header || showLimitSelector"
-      class="d-flex align-center justify-space-between mb-4 flex-wrap gap-4 flex-shrink-0"
+      class="d-flex align-center justify-space-between mb-4 flex-wrap ga-4 flex-shrink-0"
     >
       <slot
         name="header"
-        :contextId="contextId"
+        :contextId="contexto"
         :items="items"
         :loading="loading"
       />
 
       <v-select
         v-if="showLimitSelector"
-        v-model="currentLimit"
+        v-model="limiteAtual"
         :items="limitOptions"
         label="Limite"
         variant="outlined"
         density="compact"
-        autoComplete="off"
-        hideDetails
+        autocomplete="off"
+        hide-details
         style="max-width: 140px; flex: 0 0 140px"
-        @update:model-value="resetAndLoad"
+        @update:model-value="resetarECarregar"
       />
     </div>
 
     <v-infinite-scroll
       :items="items"
-      :onLoad="loadMore"
-      :emptyText="emptyText"
+      :onLoad="carregarMaisRegistros"
+      :emptyText="textoVazio"
       class="w-100 flex-grow-1 overflow-y-auto overflow-x-hidden align-stretch"
       style="min-height: 0"
     >
       <slot
-        :contextId="contextId"
-        :currentLimit="currentLimit"
+        :contextId="contexto"
+        :currentLimit="limiteAtual"
         :getItemBindings="getItemBindings"
         :hasMore="hasMore"
         :items="items"
-        :loadMore="loadMore"
+        :loadMore="carregarMaisRegistros"
         :loading="loading"
-        :redirectTo="redirectTo"
-        :resetAndLoad="resetAndLoad"
+        :redirectTo="redirecionarPara"
+        :resetAndLoad="resetarECarregar"
       />
 
       <template #loading>
@@ -87,7 +87,7 @@
               size="40"
               class="mb-2"
             />
-            <span>{{ items.length ? endText : emptyText }}</span>
+            <span>{{ items.length ? textoFinal : textoVazio }}</span>
           </div>
         </slot>
       </template>
@@ -103,7 +103,7 @@
               size="40"
               class="mb-2"
             />
-            <span>{{ errorText }}</span>
+            <span>{{ textoError }}</span>
           </div>
         </slot>
       </template>
@@ -124,16 +124,18 @@ import { useGenericFilterStore } from "@/stores/genericFilter.store";
 import type {
   IGenericListFetchPayload,
   TGenericListFetchResponse,
+  TOrdem,
 } from "@/models/components/IGenericListContext";
 import type { TManagerStorageLocation } from "@/utils/ManagerStorage";
 
 // Composables
 import { useRouteScrollRedirect } from "@/composables/useRouteScrollRedirect";
+import { useRequisicaoService } from "@/composables/useRequisicaoService";
 
 // Utils
 import { createRouteScrollItemBindings } from "@/utils/RouteScrollRestore";
 
-// Contextos
+// Provider - Contextos
 import { genericInfiniteListKey } from "@/components/layout/generic/genericInfiniteList.context";
 
 // Types
@@ -141,7 +143,7 @@ type TLoadDone = (status: "ok" | "empty" | "error") => void;
 
 type TProps = {
   /** Identificador unico do cache/contexto desta lista. */
-  contextId: string;
+  contexto: string;
   /** Funcao que busca a proxima pagina usando limite e cursor atuais. */
   serviceFetch: (
     payload: IGenericListFetchPayload,
@@ -149,34 +151,34 @@ type TProps = {
   /** Tempo de vida do contexto salvo no storage. */
   cacheTtlMs?: number;
   /** Texto exibido quando não existem registros. */
-  emptyText?: string;
+  textoVazio?: string;
   /** Texto exibido quando não ha mais páginas para carregar. */
-  endText?: string;
+  textoFinal?: string;
   /** Texto exibido quando a chamada do infinite scroll falha. */
-  errorText?: string;
+  textoError?: string;
   /** Limite inicial de itens por página. */
-  initialLimit?: number;
+  limite?: number;
+  /** Opções disponíveis para seleção de limite em componentes que expõem esse controle. */
+  limitOptions?: number[];
   /** Order inicial da busca. */
-  initialOrder?: string;
+  ordemInicial?: TOrdem;
+  /** Controla a exibição do seletor de limite quando a lista possui cabeçalho próprio. */
+  showLimitSelector?: boolean;
   /** Campo estável do item usado para montar seletores de restauração de scroll. */
   itemKey?: string;
-  /** Opções do seletor de limite. */
-  limitOptions?: number[];
-  /** Controla se o seletor de limite aparece no cabeçalho. */
-  showLimitSelector?: boolean;
   /** Local de persistência do contexto; session evita cache permanente de respostas. */
   storage?: TManagerStorageLocation;
 };
 const props = withDefaults(defineProps<TProps>(), {
   cacheTtlMs: 15 * 60 * 1000,
-  emptyText: "Nenhum registro encontrado.",
-  endText: "Todos os registros foram carregados.",
-  errorText: "Não foi possível carregar os registros.",
-  initialLimit: undefined,
-  initialOrder: undefined,
-  itemKey: undefined,
-  limitOptions: () => [5, 10, 25, 50, 100],
+  textoVazio: "Nenhum registro encontrado.",
+  textoFinal: "Todos os registros foram carregados.",
+  textoError: "Não foi possível carregar os registros.",
+  limite: 10,
+  limitOptions: () => [10, 25, 50, 100],
+  ordemInicial: undefined,
   showLimitSelector: false,
+  itemKey: undefined,
   storage: "session",
 });
 
@@ -186,10 +188,11 @@ const genericFilterStore = useGenericFilterStore();
 
 // Composables
 const routeScrollRedirect = useRouteScrollRedirect();
+const requisicaoService = useRequisicaoService();
 
 // Reativas
 const loading = ref(false);
-const currentLimit = ref(props.initialLimit ?? props.limitOptions[0]);
+const limiteAtual = ref(props.limite);
 
 // Funções
 function resolveItemKey(
@@ -217,35 +220,35 @@ function getItemBindings(
   pItemKey?: string | number,
 ) {
   return createRouteScrollItemBindings(
-    props.contextId,
+    props.contexto,
     resolveItemKey(pItem, pIndex, pItemKey),
   );
 }
 
-function normalizeResponse(pResponse: TGenericListFetchResponse) {
+function normalizarResposta(pResponse: TGenericListFetchResponse) {
   if (Array.isArray(pResponse)) {
     return {
       items: pResponse,
-      nextEntry: undefined,
-      hasMore: undefined,
+      proximaEntrada: undefined,
+      temMaisRegistros: undefined,
     };
   }
 
   return pResponse;
 }
 
-async function redirectTo(to: RouteLocationRaw, pSelector?: string | null) {
+async function redirecionarPara(to: RouteLocationRaw, pSelector?: string | null) {
   await routeScrollRedirect.redirectTo(to, pSelector);
 }
 
-async function resetAndLoad() {
+async function resetarECarregar() {
   loading.value = true;
 
   try {
-    genericListStore.setLimit(props.contextId, currentLimit.value);
-    genericListStore.resetContext(props.contextId);
+    genericListStore.setLimit(props.contexto, limiteAtual.value);
+    genericListStore.resetContext(props.contexto);
 
-    await loadMore({ done: () => undefined, force: true });
+    await carregarMaisRegistros({ done: () => undefined, force: true });
   } catch (error) {
     throw error;
   } finally {
@@ -253,7 +256,7 @@ async function resetAndLoad() {
   }
 }
 
-async function loadMore({
+async function carregarMaisRegistros({
   done,
   force,
 }: { done?: TLoadDone; force?: boolean } = {}) {
@@ -265,22 +268,27 @@ async function loadMore({
   loading.value = true;
 
   try {
-    const response = await props.serviceFetch({
-      contextId: props.contextId,
-      limit: currentLimit.value,
-      nextEntry: nextEntry.value,
-      order: currentOrder.value,
+    const payloadRequisicao: IGenericListFetchPayload = {
+      contexto: props.contexto,
+      limite: limiteAtual.value,
+      proximaEntrada: nextEntry.value,
+      ordem: currentOrder.value,
       filtros: genericFilterStore.filtersApplied,
+    };
+
+    const response = await requisicaoService.executar({
+      metodo: props.serviceFetch,
+      parametros: payloadRequisicao,
     });
 
-    const normalizedResponse = normalizeResponse(response);
-    const newNextEntry = normalizedResponse.nextEntry;
+    const normalizedResponse = normalizarResposta(response);
+    const newNextEntry = normalizedResponse.proximaEntrada;
     const nextHasMore =
-      normalizedResponse.hasMore ??
-      normalizedResponse.items.length >= currentLimit.value;
+      normalizedResponse.temMaisRegistros ??
+      normalizedResponse.items.length >= limiteAtual.value;
 
     genericListStore.addItems(
-      props.contextId,
+      props.contexto,
       normalizedResponse.items,
       newNextEntry,
       nextHasMore,
@@ -295,45 +303,45 @@ async function loadMore({
 }
 
 // Computadas
-const items = computed(() => genericListStore.getItems(props.contextId));
-const hasMore = computed(() => genericListStore.getHasMore(props.contextId));
-const nextEntry = computed(() => genericListStore.getNextEntry(props.contextId));
-const currentOrder = computed(() => genericListStore.getOrder(props.contextId));
+const items = computed(() => genericListStore.getItems(props.contexto));
+const hasMore = computed(() => genericListStore.getHasMore(props.contexto));
+const nextEntry = computed(() => genericListStore.getNextEntry(props.contexto));
+const currentOrder = computed(() => genericListStore.getOrder(props.contexto));
 
 // Observadores
-watch(() => props.contextId, (pContextId) => {
+watch(() => props.contexto, (pContextId) => {
   genericListStore.initContext(pContextId, {
     cacheTtlMs: props.cacheTtlMs,
-    limit: currentLimit.value,
+    limite: limiteAtual.value,
     storage: props.storage,
-    order: props.initialOrder,
+    ordem: props.ordemInicial,
   });
 });
 
 // Lifecycle Hooks
 onMounted(() => {
-  genericListStore.initContext(props.contextId, {
+  genericListStore.initContext(props.contexto, {
     cacheTtlMs: props.cacheTtlMs,
-    limit: currentLimit.value,
+    limite: limiteAtual.value,
     storage: props.storage,
-    order: props.initialOrder,
+    ordem: props.ordemInicial,
   });
 
-  currentLimit.value = genericListStore.getLimit(props.contextId);
+  limiteAtual.value = genericListStore.getLimit(props.contexto);
 });
 
 // Provide
 provide(genericInfiniteListKey, {
-  contextId: props.contextId,
+  contexto: props.contexto,
   getItemBindings,
-  redirectTo,
+  redirectTo: redirecionarPara,
 });
 
 // Expose
 defineExpose({
-  loadMore,
-  resetAndLoad,
+  loadMore: carregarMaisRegistros,
+  resetAndLoad: resetarECarregar,
   getItemBindings,
-  redirectTo,
+  redirectTo: redirecionarPara,
 });
 </script>
