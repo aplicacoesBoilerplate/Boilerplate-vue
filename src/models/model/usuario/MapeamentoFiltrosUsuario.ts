@@ -23,10 +23,10 @@ const DESCRICAO_CAMPOS_FILTRO_USUARIO: Record<keyof TCamposFiltroUsuario, string
 };
 
 const ICONE_CAMPOS_FILTRO_USUARIO: Record<keyof TCamposFiltroUsuario, string> = {
-  id: 'mdi-account',
+  id: 'mdi-pound',
   nome: 'mdi-account',
   email: 'mdi-email',
-  papel: 'mdi-account-tie',
+  papel: 'mdi-badge-account',
   telefone: 'mdi-phone',
   ativo: 'mdi-check-circle',
 };

@@ -57,21 +57,21 @@ const DESCRICAO_OPERADORES: Record<EOperadoresFiltro, string> = {
 };
 
 const ICONE_OPERADORES: Record<EOperadoresFiltro, string> = {
-  [EOperadoresFiltro.IGUAL]: 'mdi-filter',
-  [EOperadoresFiltro.DIFERENTE]: 'mdi-filter-off',
-  [EOperadoresFiltro.COMECA_COM]: 'mdi-filter-plus',
-  [EOperadoresFiltro.CONTEM]: 'mdi-filter-variant',
-  [EOperadoresFiltro.NAO_CONTEM]: 'mdi-filter-remove',
-  [EOperadoresFiltro.TERMINA_COM]: 'mdi-filter-check',
-  [EOperadoresFiltro.ENTRE]: 'mdi-filter-outline',
-  [EOperadoresFiltro.MAIOR_QUE]: 'mdi-filter-plus',
-  [EOperadoresFiltro.MAIOR_IGUAL]: 'mdi-filter-plus',
-  [EOperadoresFiltro.MENOR_QUE]: 'mdi-filter-minus',
-  [EOperadoresFiltro.MENOR_IGUAL]: 'mdi-filter-minus',
-  [EOperadoresFiltro.SELECAO]: 'mdi-filter-check',
-  [EOperadoresFiltro.EXCECAO]: 'mdi-filter-off',
-  [EOperadoresFiltro.VERDADEIRO]: 'mdi-filter-check',
-  [EOperadoresFiltro.FALSO]: 'mdi-filter-off',
+  [EOperadoresFiltro.IGUAL]: 'mdi-equal',
+  [EOperadoresFiltro.DIFERENTE]: 'mdi-not-equal-variant',
+  [EOperadoresFiltro.COMECA_COM]: 'mdi-contain-start',
+  [EOperadoresFiltro.CONTEM]: 'mdi-contain',
+  [EOperadoresFiltro.NAO_CONTEM]: 'mdi-label-off-outline',
+  [EOperadoresFiltro.TERMINA_COM]: 'mdi-contain-end',
+  [EOperadoresFiltro.ENTRE]: 'mdi-ray-start-end',
+  [EOperadoresFiltro.MAIOR_QUE]: 'mdi-greater-than',
+  [EOperadoresFiltro.MAIOR_IGUAL]: 'mdi-greater-than-or-equal',
+  [EOperadoresFiltro.MENOR_QUE]: 'mdi-less-than',
+  [EOperadoresFiltro.MENOR_IGUAL]: 'mdi-less-than-or-equal',
+  [EOperadoresFiltro.SELECAO]: 'mdi-check-circle',
+  [EOperadoresFiltro.EXCECAO]: 'mdi-close-circle-outline',
+  [EOperadoresFiltro.VERDADEIRO]: 'mdi-check-circle',
+  [EOperadoresFiltro.FALSO]: 'mdi-circle-off-outline',
 };
 
 export const MAPEAMENTO_OPERADORES: IMapeamentoOperador[] = (
