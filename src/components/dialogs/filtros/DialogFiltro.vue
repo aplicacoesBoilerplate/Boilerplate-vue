@@ -1,7 +1,7 @@
 <template>
   <BaseDialog
     v-model:exibirDialog="exibirFiltros"
-    title="Filtros"
+    titulo="Filtros"
     maxWidth="1050px"
     height="600px"
     contentClass="pa-0"
@@ -211,6 +211,7 @@ function handleOnLimparFiltros() {
 }
 
 function handleOnAplicarFiltros() {
+  genericFilterStore.syncToUrl();
   emits('onAplicarFiltros');
   exibirFiltros.value = false;
 }

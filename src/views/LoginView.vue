@@ -3,12 +3,13 @@
     <v-progress-circular color="primary" indeterminate />
   </div>
 
-  <LoginForm
+  <FormLogin
     ref="refFormLogin"
-    v-model:login="classLogin.model"
+    v-model:login="login"
     v-model:valid="isFormValid"
+    @onSubmit="authLogin"
   >
-    <template v-slot:actions>
+    <template #actions>
       <div class="d-flex flex-row">
         <v-icon-btn
           icon="mdi-refresh"
@@ -42,60 +43,61 @@
         />
       </div>
     </template>
-  </LoginForm>
+  </FormLogin>
 </template>
 
 <script lang="ts" setup>
-import LoginForm from '@/components/forms/LoginForm.vue';
-import { useSnackbar } from '@/composables/useSnackbar';
-import { ClassLogin } from '@/classes/ClassLogin';
-import { authServices } from '@/services/authService'
-import { useRouter } from 'vue-router';
+// Ecossistema Vue
+import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { nextTick, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-const classLogin = new ClassLogin();
-const refFormLogin = ref<InstanceType<typeof LoginForm> | null>(null);
-const isFormValid = ref(false);
+// Stores
+import { useAuthStore } from '@/stores/auth';
 
+// Composables
+import { useSnackbar } from '@/composables/useSnackbar';
+import { useFormularioLogin } from '@/composables/useFormularioLogin';
+
+// Componentes
+import FormLogin from '@/components/forms/FormLogin.vue';
+
+// Composables
 const router = useRouter();
 const { t } = useI18n();
 const { notify } = useSnackbar();
-const loading = ref(false)
-const authService = authServices;
+const { login, resetarLogin, salvarPreferenciaEmail } = useFormularioLogin();
 
-async function authLogin() {
-  const isValid = await refFormLogin.value?.validate()
-  if (isValid) {
-    try {
-      loading.value = true
-      await authService.login(classLogin.model)
-      const usuarioLogado = await authServices.getByToken()
+// Stores
+const authStore = useAuthStore();
 
-      notify(`${t('messages.welcome')}, ${usuarioLogado.username}!`, 'success')
-    } catch (err) {
-      notify(err as string || 'messages.errors.reqGenerics', 'error')
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
+// Reativas
+const refFormLogin = ref<InstanceType<typeof FormLogin> | null>(null);
+const isFormValid = ref(false);
+
+// Computadas
+const loading = computed(() => authStore.carregando);
+
+// Funções
+async function authLogin(): Promise<void> {
+  const usuarioLogado = await authStore.login(login);
+  notify(`${t('messages.welcome')}, ${usuarioLogado.nome}!`, 'success');
 }
 
-async function handleReset() {
-  classLogin.reset();
+async function handleReset(): Promise<void> {
+  resetarLogin();
   await nextTick();
   refFormLogin.value?.reset();
 }
 
-function forgotPassword() {
+function forgotPassword(): void {
   router.push({ name: 'ForgotPassword' });
 }
 
-async function onSubmit() {
-  classLogin.saveEmailPreference()
+async function onSubmit(): Promise<void> {
+  salvarPreferenciaEmail();
   await nextTick();
-  await authLogin();
+  await refFormLogin.value?.submit();
 }
 
 </script>

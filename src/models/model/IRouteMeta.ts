@@ -22,4 +22,6 @@ export interface IRouteMeta {
   children?: IRouteMeta[];
   /** Os campos disponíveis para filtro nesta rota. */
   filterResource?: ICampoFiltro<any>[];
+  /** Contexto usado para isolar filtros aplicados por recurso. */
+  filterContext?: string;
 }

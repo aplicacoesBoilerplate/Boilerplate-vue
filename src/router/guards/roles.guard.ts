@@ -24,7 +24,7 @@ export const rbacGuard = async (
     return next({ name: 'Login', query: { redirect: to.fullPath } });
   }
 
-  const userRole = authStore.user.role;
+  const userRole = authStore.user.papel;
 
   if (authorizedRoles.includes(userRole)) {
     next();

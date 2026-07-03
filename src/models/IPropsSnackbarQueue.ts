@@ -4,18 +4,18 @@ export type TSnackbarType = 'success' | 'error' | 'info' | 'warning';
 
 export interface IPropsSnackbarQueue {
   /** Estilo visual baseado no contexto da mensagem. */
-  type?: TSnackbarType;
+  tipo?: TSnackbarType;
   /** Titulo principal da mensagem (em negrito no topo). */
-  title?: string;
+  titulo?: string;
   /** Corpo detalhado do alerta ou da notificacao. */
-  text: string;
+  mensagem: string;
   /** Tempo em milissegundos para desaparecer sozinho. */
   timeout?: number;
   /** Icone customizado (substitui o padrao atrelado ao `type`). */
   icon?: string;
   /** Url para um link acionavel gerado na lateral do snackbar. */
-  actionUrl?: string;
+  urlRedirecionamento?: string;
 }
 
 // Tipo para usar com o v-snackbar-queue na store
-export type TSnackbarQueueItem = Exclude<SnackbarQueueMessage, string> & { actionUrl?: string, id?: string };
+export type TSnackbarQueueItem = Exclude<SnackbarQueueMessage, string> & { urlRedirecionamento?: string, id?: string };

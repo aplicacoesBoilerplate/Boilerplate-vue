@@ -1,46 +1,39 @@
+/**
+ * @description Model utilizado para definicao de propriedades de Dialogs.
+ *
+ * @interface IPropsBaseDialog
+ * @property {boolean} persistent - Impede que o dialog feche ao clicar fora (overlay).
+ * @property {boolean} scrollable - Permite scroll na area de conteudo (`v-card-text`) enquanto cabecalho/rodape ficam fixos.
+ * @property {boolean} fullscreen - Expande o dialog para ocupar 100% da tela.
+ * @property {string|number} minWidth - Largura minima do dialog.
+ * @property {string|number} width - Largura desejada do dialog.
+ * @property {string|number} maxWidth - Largura maxima permitida do dialog.
+ * @property {string|number} minHeight - Altura minima do dialog.
+ * @property {string|number} height - Altura desejada do dialog.
+ * @property {string|number} maxHeight - Altura maxima permitida do dialog.
+ * @property {string|number} zIndex - Camada do eixo Z (z-index) do componente.
+ * @property {string} titulo - Titulo exibido no cabecalho padrao do dialog.
+ * @property {string} iconePrependTitulo - Icone que sera exibido no prepend do cabecalho padrao do dialog.
+ * @property {boolean} mostrarSlotExtension - Controla a exibicao do slot extension abaixo do toolbar do cabecalho.
+ * @property {boolean} mostrarAcoes - Controla a exibicao do card-actions no rodape (Botoes cancelar/salvar).
+ * @property {boolean} loading - Estado de carregamento do botao Salvar e possivel interatividade.
+ * @property {string} contentClass - Classe CSS customizada repassada diretamente para o slot de content (`v-card-text`).
+ */
 export interface IPropsBaseDialog {
-  /** Impede que o dialog feche ao clicar fora (overlay). */
   persistent?: boolean;
-  
-  /** Permite scroll na area de conteudo (`v-card-text`) enquanto cabecalho/rodape ficam fixos. */
   scrollable?: boolean;
-  
-  /** Expande o dialog para ocupar 100% da tela. */
   fullscreen?: boolean;
-  
-  /** Largura minima do dialog. */
   minWidth?: string | number;
-  
-  /** Largura desejada do dialog. */
   width?: string | number;
-  
-  /** Largura maxima permitida do dialog. */
   maxWidth?: string | number;
-  
-  /** Altura minima do dialog. */
   minHeight?: string | number;
-  
-  /** Altura desejada do dialog. */
   height?: string | number;
-  
-  /** Altura maxima permitida do dialog. */
   maxHeight?: string | number;
-  
-  /** Camada do eixo Z (z-index) do componente. */
   zIndex?: string | number;
-
-  /** Titulo exibido no cabecalho padrao do dialog. */
-  title?: string;
-
-  /** Controla a exibicao do slot extension abaixo do toolbar do cabecalho. */
-  showExtension?: boolean;
-
-  /** Controla a exibicao do card-actions no rodape (Botoes cancelar/salvar). */
-  showActions?: boolean;
-
-  /** Estado de carregamento do botao Salvar e possivel interatividade. */
+  titulo?: string;
+  iconePrependTitulo?: string;
+  mostrarSlotExtension?: boolean;
+  mostrarAcoes?: boolean;
   loading?: boolean;
-
-  /** Classe CSS customizada repassada diretamente para o slot de content (`v-card-text`). */
   contentClass?: string;
 }

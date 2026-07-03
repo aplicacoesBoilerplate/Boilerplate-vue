@@ -38,14 +38,14 @@
       <GenericInfiniteList
         :key="contextoConsulta"
         :cacheTtlMs="CACHE_TTL_CONSULTA_MS"
-        :contextId="contextoConsulta"
-        :emptyText="textoVazio"
-        :initialLimit="limiteConsulta"
+        :contexto="contextoConsulta"
+        :textoVazio="textoVazio"
+        :limite="limiteConsulta"
         :limitOptions="[limiteConsulta]"
         :serviceFetch="handleBuscarRegistros"
         :showLimitSelector="false"
-        endText="Todos os registros foram carregados."
-        errorText="Não foi possível consultar os registros."
+        textoFinal="Todos os registros foram carregados."
+        textoError="Não foi possível consultar os registros."
         storage="session"
         class="flex-grow-1"
       >
@@ -188,8 +188,8 @@ async function handleBuscarRegistros(
   const resultado = await configuracaoConsulta.value.buscarRegistros({
     campo: String(props.campoSelecionado?.valor ?? ''),
     condicao: props.condicao,
-    limite: pPayload.limit,
-    proximaEntrada: pPayload.nextEntry,
+    limite: pPayload.limite,
+    proximaEntrada: pPayload.proximaEntrada,
     termoPesquisa: termoPesquisa.value,
   });
 
@@ -197,8 +197,8 @@ async function handleBuscarRegistros(
 
   return {
     items: resultadoNormalizado.registros,
-    nextEntry: resultadoNormalizado.proximaEntrada,
-    hasMore: resultadoNormalizado.possuiMais,
+    proximaEntrada: resultadoNormalizado.proximaEntrada,
+    temMaisRegistros: resultadoNormalizado.possuiMais,
   };
 }
 
