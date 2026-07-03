@@ -1,5 +1,5 @@
 <template>
-  <v-form @submit.prevent="onSubmit" class="search-form w-100">
+  <v-form @submit.prevent="onSubmit" class="w-100">
     <v-text-field
       ref="inputRef"
       v-model="searchQuery"
@@ -120,9 +120,6 @@ useHotkey('ctrl+k', () => {
 </script>
 
 <style scoped>
-.search-form {
-  max-width: 480px;
-}
 .rounded-search :deep(.v-field) {
   overflow: hidden;
 }

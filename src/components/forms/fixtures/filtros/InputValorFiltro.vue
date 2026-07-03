@@ -17,7 +17,7 @@
 
     <template v-else-if="tipoTemplate === 'MULTIPLE'">
       <v-autocomplete
-        v-model="valorTratado"
+        v-model="valorSelecaoMultipla"
         :rules="computedRulesMultiple"
         :items="opcoesDisponiveis"
         itemTitle="title"
@@ -37,7 +37,7 @@
       <div class="d-flex ga-2 align-center mt-2">
         <v-number-input
           v-if="htmlType === 'number'"
-          v-model="rangeSafe[0]"
+          v-model="valorInicialIntervaloNumerico"
           :rules="[rules.required()]"
           :type="htmlType"
           label="De"
@@ -50,7 +50,7 @@
 
         <v-text-field
           v-else
-          v-model="rangeSafe[0]"
+          v-model="valorInicialIntervaloTexto"
           :rules="[rules.required()]"
           :type="htmlType"
           label="De"
@@ -62,7 +62,7 @@
 
         <v-number-input
           v-if="htmlType === 'number'"
-          v-model="rangeSafe[1]"
+          v-model="valorFinalIntervaloNumerico"
           :rules="[rules.required()]"
           :type="htmlType"
           label="Até"
@@ -76,7 +76,7 @@
 
         <v-text-field
           v-else
-          v-model="rangeSafe[1]"
+          v-model="valorFinalIntervaloTexto"
           :rules="[rules.required()]"
           :type="htmlType"
           label="Até"
@@ -92,7 +92,7 @@
     <template v-else>
       <v-number-input
         v-if="htmlType === 'number'"
-        v-model="valorTratado"
+        v-model="valorNumerico"
         :rules="computedRules"
         :type="htmlType"
         label="Valor"
@@ -107,7 +107,7 @@
 
       <v-text-field
         v-else
-        v-model="valorTratado"
+        v-model="valorTexto"
         :rules="computedRules"
         :type="htmlType"
         label="Valor"
@@ -132,6 +132,9 @@ import type { IOpcaoSelecaoFiltro } from '@/models/filters/IOpcaoSelecaoFiltro';
 import type { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 
+type TTemplateValorFiltro = 'NONE' | 'BOOLEAN' | 'MULTIPLE' | 'RANGE' | 'DEFAULT';
+type TValorIntervalo = [unknown, unknown];
+
 type TProps = {
   operador: EOperadoresFiltro | string | null;
   tiposCampo: ETipoFiltro[];
@@ -149,7 +152,7 @@ defineEmits<TEmits>();
 const rules = useRules();
 
 // Reativas
-const valor = defineModel<any>('valor', { required: true });
+const valor = defineModel<unknown>('valor', { required: true });
 
 // Computadas
 const computedRules = computed(() => {
@@ -159,11 +162,11 @@ const computedRules = computed(() => {
 
 const computedRulesMultiple = computed(() => {
   if (props.campo === 'RECURSO') return [];
-  return [(v: any) => (Array.isArray(v) && v.length > 0) || 'Selecione ao menos um valor'];
+  return [(pValor: unknown) => (Array.isArray(pValor) && pValor.length > 0) || 'Selecione ao menos um valor'];
 });
 
 // Descobre qual template renderizar baseado no operador e no tipo
-const tipoTemplate = computed(() => {
+const tipoTemplate = computed<TTemplateValorFiltro>(() => {
   if (!props.operador) return 'NONE';
 
   if ([EOperadoresFiltro.SELECAO, EOperadoresFiltro.EXCECAO].includes(props.operador as EOperadoresFiltro)) return 'MULTIPLE';
@@ -180,34 +183,110 @@ const htmlType = computed(() => {
   return 'text';
 });
 
-// Garante que os tipos vão corretos pra Store!
-const valorTratado = computed({
-  get: () => valor.value,
-  set: (novoValor: any) => {
-    // Tratamento estrito para números (para matar a duplicidade de '1000' vs 1000)
-    if (htmlType.value === 'number') {
-      if (tipoTemplate.value === 'RANGE' && Array.isArray(novoValor)) {
-        valor.value = [
-          novoValor[0] !== '' && !isNaN(Number(novoValor[0])) ? Number(novoValor[0]) : '',
-          novoValor[1] !== '' && !isNaN(Number(novoValor[1])) ? Number(novoValor[1]) : ''
-        ];
-        return;
-      }
+const valorSelecaoMultipla = computed<unknown[]>({
+  get: () => (Array.isArray(valor.value) ? valor.value : []),
+  set: (pNovosValores: unknown[]) => {
+    valor.value = pNovosValores;
+  },
+});
 
-      if (novoValor !== '' && novoValor !== null && !isNaN(Number(novoValor))) {
-        valor.value = Number(novoValor);
-        return;
-      }
-    }
+const valorNumerico = computed<number | null>({
+  get: () => normalizarNumero(valor.value),
+  set: (pNovoValor: number | null) => {
+    valor.value = normalizarNumero(pNovoValor);
+  },
+});
 
-    valor.value = novoValor;
+const valorTexto = computed<string>({
+  get: () => normalizarTexto(valor.value),
+  set: (pNovoValor: string) => {
+    valor.value = pNovoValor;
+  },
+});
+
+const valorInicialIntervaloNumerico = computed<number | null>({
+  get: () => normalizarNumero(obterValorIntervalo(0)),
+  set: (pNovoValor: number | null) => {
+    atualizarValorIntervalo(0, pNovoValor);
+  },
+});
+
+const valorFinalIntervaloNumerico = computed<number | null>({
+  get: () => normalizarNumero(obterValorIntervalo(1)),
+  set: (pNovoValor: number | null) => {
+    atualizarValorIntervalo(1, pNovoValor);
+  },
+});
+
+const valorInicialIntervaloTexto = computed<string>({
+  get: () => normalizarTexto(obterValorIntervalo(0)),
+  set: (pNovoValor: unknown) => {
+    atualizarValorIntervalo(0, pNovoValor);
+  },
+});
+
+const valorFinalIntervaloTexto = computed<string>({
+  get: () => normalizarTexto(obterValorIntervalo(1)),
+  set: (pNovoValor: unknown) => {
+    atualizarValorIntervalo(1, pNovoValor);
+  },
+});
+
+// Funções
+function normalizarNumero(pValor: unknown): number | null {
+  if (pValor === '' || pValor === null || pValor === undefined) {
+    return null;
   }
-});
 
-const rangeSafe = computed({
-  get: () => Array.isArray(valor.value) ? valor.value : ['', ''],
-  set: (novoRange) => { valor.value = novoRange; }
-});
+  const numero = Number(pValor);
+
+  return Number.isNaN(numero) ? null : numero;
+}
+
+function normalizarTexto(pValor: unknown): string {
+  if (pValor === null || pValor === undefined) {
+    return '';
+  }
+
+  return String(pValor);
+}
+
+function criarValorVazioIntervalo(): string | null {
+  return htmlType.value === 'number' ? null : '';
+}
+
+function normalizarValorPorTipo(pValor: unknown): unknown {
+  if (htmlType.value !== 'number') {
+    return pValor;
+  }
+
+  return normalizarNumero(pValor);
+}
+
+function normalizarIntervaloAtual(): TValorIntervalo {
+  const valorAtual = Array.isArray(valor.value) ? valor.value : [];
+
+  return [
+    valorAtual[0] ?? criarValorVazioIntervalo(),
+    valorAtual[1] ?? criarValorVazioIntervalo(),
+  ];
+}
+
+function obterValorIntervalo(pIndice: 0 | 1): unknown {
+  const valorIntervalo = normalizarIntervaloAtual()[pIndice];
+
+  if (htmlType.value === 'number') {
+    return normalizarNumero(valorIntervalo);
+  }
+
+  return valorIntervalo;
+}
+
+function atualizarValorIntervalo(pIndice: 0 | 1, pNovoValor: unknown): void {
+  const novoIntervalo = normalizarIntervaloAtual();
+  novoIntervalo[pIndice] = normalizarValorPorTipo(pNovoValor);
+  valor.value = novoIntervalo;
+}
 
 function atualizarValorBooleanoPorOperador(pOperador: EOperadoresFiltro | string | null): boolean {
   if (pOperador === EOperadoresFiltro.VERDADEIRO) {
@@ -223,13 +302,24 @@ function atualizarValorBooleanoPorOperador(pOperador: EOperadoresFiltro | string
   return false;
 }
 
+function montarValorInicialPorTemplate(pTemplate: TTemplateValorFiltro): unknown {
+  if (pTemplate === 'RANGE') {
+    return [criarValorVazioIntervalo(), criarValorVazioIntervalo()];
+  }
+
+  if (pTemplate === 'MULTIPLE') {
+    return [];
+  }
+
+  return undefined;
+}
+
 // Observadores
 // Sempre que mudar o template, reseta o valor para não dar crash de tipos
-watch(() => [tipoTemplate.value, props.operador], ([novoTemplate, novoOperador]) => {
+watch(() => [tipoTemplate.value, props.operador, htmlType.value], ([novoTemplate, novoOperador]) => {
   if (atualizarValorBooleanoPorOperador(novoOperador)) return;
 
-  if (novoTemplate === 'RANGE' || novoTemplate === 'MULTIPLE') valor.value = [];
-  else valor.value = undefined;
+  valor.value = montarValorInicialPorTemplate(novoTemplate as TTemplateValorFiltro);
 });
 
 </script>
