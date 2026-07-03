@@ -47,6 +47,16 @@
                 <div class="d-flex flex-row ga-2">
                   <slot name="list-header-actions" />
 
+                  <MenuExportacaoDados
+                    v-if="exibirExportacao"
+                    :contexto="contexto"
+                    :metodo="metodoExportacao"
+                    :parametros="parametrosExportacao"
+                    :colunas="colunasExportacao"
+                    :nomeArquivo="nomeArquivoExportacao || contexto"
+                    :ordem="ordemInicial"
+                  />
+
                   <v-tooltip
                     :text="'Novo Registro'"
                     location="bottom"
@@ -99,14 +109,17 @@
 
 <script setup lang="ts">
 // Ecossistema vue
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 // Types e Interfaces
 import type { IGenericListFetchPayload, TGenericListFetchResponse, TOrdem } from '@/models/components/IGenericListContext';
+import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
+import type { TMetodoExportacaoDados } from '@/models/components/IExportacaoDados';
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
 
 // Components
 import GenericInfiniteList from './GenericInfiniteList/GenericInfiniteList.vue';
+import MenuExportacaoDados from './fixtures/MenuExportacaoDados.vue';
 import BtnActionDrawer from '@/components/layouts/base/appbar/fixtures/BtnActionDrawer.vue';
 
 // Types
@@ -131,12 +144,22 @@ type TProps = {
   limitOptions?: number[];
   /** Funcao responsavel por buscar a proxima pagina de registros. */
   serviceFetch: (payload: IGenericListFetchPayload) => Promise<TGenericListFetchResponse>;
+  /** Metodo usado para exportar todos os registros; quando ausente, usa o serviceFetch da lista. */
+  serviceExportacao?: TMetodoExportacaoDados;
+  /** Parametros adicionais enviados somente durante a exportacao. */
+  parametrosExportacao?: Record<string, unknown>;
+  /** Colunas usadas para montar cabecalhos e valores dos arquivos exportados. */
+  colunasExportacao?: IHeadersDataTable[];
+  /** Nome base do arquivo exportado. */
+  nomeArquivoExportacao?: string;
+  /** Controla se o menu de exportacao sera exibido no drawer de acoes. */
+  exibirExportacao?: boolean;
   /** Define onde o contexto sera persistido; em listas temporarias o padrao e session. */
   storage?: TManagerStorageLocation;
   /** Titulo simples exibido quando o slot header nao for informado. */
   title?: string;
 };
-withDefaults(defineProps<TProps>(), {
+const props = withDefaults(defineProps<TProps>(), {
   cacheTtlMs: 15 * 60 * 1000,
   textoVazio: 'Nenhum registro encontrado.',
   textoFinal: 'Todos os registros foram carregados.',
@@ -145,6 +168,11 @@ withDefaults(defineProps<TProps>(), {
   ordemInicial: undefined,
   itemKey: undefined,
   limitOptions: () => [10, 25, 50, 100],
+  serviceExportacao: undefined,
+  parametrosExportacao: () => ({}),
+  colunasExportacao: () => [],
+  nomeArquivoExportacao: '',
+  exibirExportacao: true,
   storage: 'session',
   title: '',
 });
@@ -156,6 +184,9 @@ const emits = defineEmits<TEmits>();
 
 // Reativas
 const infiniteListRef = ref<InstanceType<typeof GenericInfiniteList> | null>(null);
+
+// Computadas
+const metodoExportacao = computed<TMetodoExportacaoDados>(() => props.serviceExportacao ?? props.serviceFetch);
 
 // Funções
 function handleNovoRegistro(pParams: { modoEdicao: boolean }): void {

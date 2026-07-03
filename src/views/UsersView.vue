@@ -12,6 +12,8 @@
           ref="genericViewRef"
           :contexto="CONTEXTO_LISTA_USUARIOS"
           :serviceFetch="fetchUsersMock"
+          :colunasExportacao="headersExportacao"
+          nomeArquivoExportacao="usuarios"
           @novoRegistro="handleGerenciarRegistro"
         >
           <template #list-header-actions>
@@ -160,6 +162,7 @@ const genericFilterStore = useGenericFilterStore();
 // Constantes e Dados Base
 const CONTEXTO_LISTA_USUARIOS = 'lista-usuarios';
 const headers = MAPEAMENTO_TABELA_USUARIO;
+const headersExportacao = headers.filter((pHeader) => pHeader.key !== 'actions');
 const camposAgrupamento = computed(() => genericFilterStore.camposAgrupadoresDisponiveis);
 
 // Reativas
