@@ -1,0 +1,211 @@
+<template>
+  <BaseForm
+    ref="baseFormRef"
+    @onSubmit="emits('onSubmit')"
+    @update:isValid="formIsValid = $event"
+  >
+    <v-tabs
+      v-model="abaAtual"
+      density="compact"
+      color="primary"
+    >
+      <v-tab value="dados">
+        <v-icon
+          icon="mdi-card-account-details-outline"
+          start
+        />
+        Dados
+      </v-tab>
+      <v-tab value="permissoes">
+        <v-icon
+          icon="mdi-shield-key-outline"
+          start
+        />
+        Permissões
+      </v-tab>
+      <v-tab value="usuarios">
+        <v-icon
+          icon="mdi-account-switch-outline"
+          start
+        />
+        Usuários
+      </v-tab>
+    </v-tabs>
+
+    <v-window
+      v-model="abaAtual"
+      class="pt-4"
+    >
+      <v-window-item value="dados">
+        <v-row density="comfortable">
+          <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
+            <v-text-field
+              :model-value="cargo.nome"
+              :counter="60"
+              :rules="[rules.required(), rules.maxLength(60)]"
+              label="Nome do cargo"
+              variant="outlined"
+              density="compact"
+              autocomplete="off"
+              @update:model-value="atualizarNomeCargo"
+            />
+          </v-col>
+
+          <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
+            <v-text-field
+              :model-value="cargo.codigo"
+              :counter="40"
+              :rules="[rules.required('Este campo é obrigatório, preencha um nome para o cargo.'), rules.maxLength(40)]"
+              label="Código"
+              hint="Usado no vínculo com usuários e nas políticas"
+              variant="outlined"
+              density="compact"
+              autocomplete="off"
+              readonly
+            />
+          </v-col>
+
+          <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
+            <v-text-field
+              v-model="cargo.icone"
+              :counter="60"
+              :prependInnerIcon="cargo.icone || 'mdi-shield-account-outline'"
+              :rules="[rules.maxLength(60)]"
+              label="Ícone"
+              hint="Informe um ícone Material Design, como mdi-shield-account-outline"
+              variant="outlined"
+              density="compact"
+              autocomplete="off"
+            />
+          </v-col>
+
+          <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
+            <v-select
+              v-model="cargo.comportamentoPadrao"
+              :items="COMPORTAMENTOS_PADRAO_PERMISSAO"
+              itemTitle="descricao"
+              itemValue="valor"
+              label="Quando não houver permissão específica"
+              variant="outlined"
+              density="compact"
+              autocomplete="off"
+            >
+              <template #selection="{ item }">
+                <div class="d-flex align-center ga-2">
+                  <v-icon
+                    :color="item.raw.cor"
+                    :icon="item.raw.icone"
+                    size="small"
+                  />
+                  <span>{{ item.raw.descricao }}</span>
+                </div>
+              </template>
+
+              <template #item="{ props: itemProps, item }">
+                <v-list-item
+                  v-bind="itemProps"
+                  :prependIcon="item.raw.icone"
+                />
+              </template>
+            </v-select>
+          </v-col>
+
+          <v-col cols="12">
+            <v-textarea
+              v-model="cargo.descricao"
+              :rules="[rules.maxLength(180)]"
+              :counter="180"
+              label="Descrição"
+              rows="2"
+              variant="outlined"
+              density="compact"
+              autocomplete="off"
+              autoGrow
+            />
+          </v-col>
+
+          <v-col cols="12">
+            <v-checkbox
+              v-model="cargo.ativo"
+              label="Cargo ativo"
+              color="success"
+              hideDetails
+            />
+          </v-col>
+        </v-row>
+      </v-window-item>
+
+      <v-window-item value="permissoes">
+        <ControlePermissoesCargo
+          v-model:permissoes="cargo.permissoes"
+          :comportamentoPadrao="cargo.comportamentoPadrao"
+        />
+      </v-window-item>
+
+      <v-window-item value="usuarios">
+        <UsuariosVinculadosCargo
+          v-model:usuarios="usuarios"
+          :cargo="cargo"
+          :cargos="cargosDisponiveis"
+        />
+      </v-window-item>
+    </v-window>
+  </BaseForm>
+</template>
+
+<script setup lang="ts">
+// Ecossistema Vue
+import { ref } from 'vue';
+import { useRules } from 'vuetify/labs/rules';
+
+// Types e Interfaces
+import type { ICargoRbac } from '@/models/model/rbac/rbac.models';
+import type { IUsuario } from '@/models/model/usuario/lUsuario';
+
+// Mapeamentos
+import { COMPORTAMENTOS_PADRAO_PERMISSAO, normalizarCodigoCargo } from '@/models/model/rbac/rbac.models';
+
+// Componentes
+import BaseForm from '@/components/forms/base/BaseForm.vue';
+import ControlePermissoesCargo from '@/components/forms/fixtures/rbac/ControlePermissoesCargo.vue';
+import UsuariosVinculadosCargo from '@/components/forms/fixtures/rbac/UsuariosVinculadosCargo.vue';
+
+type TProps = {
+  /**
+   * Cargos disponíveis para vínculo de usuários.
+   */
+  cargosDisponiveis: ICargoRbac[];
+};
+defineProps<TProps>();
+
+type TEmits = {
+  onSubmit: [];
+};
+const emits = defineEmits<TEmits>();
+
+// Composables
+const rules = useRules();
+
+// Reativas - Model
+const formIsValid = defineModel<boolean>('valido', { default: false });
+const cargo = defineModel<ICargoRbac>('cargo', { required: true });
+const usuarios = defineModel<IUsuario[]>('usuarios', { required: true });
+
+// Reativas - ref
+const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
+const abaAtual = ref('dados');
+
+// Funções
+function atualizarNomeCargo(pValor: unknown): void {
+  const nome = String(pValor ?? '');
+
+  cargo.value.nome = nome;
+  cargo.value.codigo = normalizarCodigoCargo(nome);
+}
+
+// Expose
+defineExpose({
+  reset: () => baseFormRef.value?.resetValidation(),
+  submit: () => baseFormRef.value?.submit(),
+});
+</script>

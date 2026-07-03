@@ -318,6 +318,10 @@ watch(() => props.contexto, (pContextId) => {
   });
 });
 
+watch(() => genericFilterStore.filtersApplied, () => {
+  void resetarECarregar();
+}, { deep: true });
+
 // Lifecycle Hooks
 onMounted(() => {
   genericListStore.initContext(props.contexto, {

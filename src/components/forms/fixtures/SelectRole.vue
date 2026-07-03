@@ -30,7 +30,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
-import { MAPEAMENTO_PAPEIS, type TPapel } from '@/models/model/usuario/lUsuario';
+import { MAPEAMENTO_PAPEIS, type TPapel, type TPapelPadrao } from '@/models/model/usuario/lUsuario';
 
 type TProps = {
   /**
@@ -80,6 +80,6 @@ const iconeSelecionado = computed((): string | undefined => {
     return undefined;
   }
   
-  return MAPEAMENTO_PAPEIS[papelSelecionado.value]?.icone;
+  return MAPEAMENTO_PAPEIS[papelSelecionado.value as TPapelPadrao]?.icone;
 });
 </script>

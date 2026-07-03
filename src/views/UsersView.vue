@@ -34,7 +34,7 @@
             </v-tooltip>
           </template>
 
-          <template #activator-novo-registro="{ handleNovoRegistro }">
+          <template #activator-novo-registro="{ handleNovoRegistro, tooltipProps }">
             <DialogFormUsuario
               v-model:exibirDialog="exibirDialogUsuario"
               v-model:usuario="modelFormUsuario"
@@ -43,7 +43,7 @@
             >
               <template #activator="{ props }">
                 <v-btn
-                  v-bind="props"
+                  v-bind="mergeProps(props, tooltipProps)"
                   color="primary"
                   variant="tonal"
                   size="x-small"
@@ -132,7 +132,7 @@
 
 <script setup lang="ts">
 // Ecossistema vue
-import { computed, ref } from 'vue';
+import { computed, mergeProps, ref } from 'vue';
 
 // Stores
 import { useGenericListStore } from '@/stores/genericList.store';

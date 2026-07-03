@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="mb-3 pa-3 bg-surface"
+    class="mb-3 pa-3 bg-surface w-100"
     elevation="4"
     rounded="te-xl bs-xl"
   >
@@ -65,6 +65,7 @@
                       <slot
                         name="activator-novo-registro"
                         :handleNovoRegistro="() => handleNovoRegistro({ modoEdicao: false })"
+                        :tooltipProps="props"
                       >
                         <v-btn
                           v-bind="props"
