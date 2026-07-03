@@ -1,8 +1,11 @@
 <template>
-  <div class="w-100">
+  <div
+    class="d-flex flex-column w-100 h-100"
+    style="min-height: 0"
+  >
     <div
       v-if="$slots.header || showLimitSelector"
-      class="d-flex align-center justify-space-between mb-4 flex-wrap gap-4"
+      class="d-flex align-center justify-space-between mb-4 flex-wrap gap-4 flex-shrink-0"
     >
       <slot
         name="header"
@@ -29,7 +32,8 @@
       :items="items"
       :onLoad="loadMore"
       :emptyText="emptyText"
-      class="w-100 overflow-hidden align-stretch"
+      class="w-100 flex-grow-1 overflow-y-auto overflow-x-hidden align-stretch"
+      style="min-height: 0"
     >
       <slot
         :contextId="contextId"

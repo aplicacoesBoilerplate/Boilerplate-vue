@@ -47,6 +47,17 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     return (route.meta.filterResource as ICampoFiltro<any>[]) || [];
   });
 
+  /** Campo selecionado no rascunho atual do filtro. */
+  const campoSelecionado = computed<ICampoFiltro<any> | null>(() => {
+    const campoAtual = filterModel.value.campo;
+
+    if (!campoAtual) {
+      return null;
+    }
+
+    return camposDisponiveis.value.find((pCampo) => pCampo.valor === campoAtual) ?? null;
+  });
+
   // Funções
   /**
    * Sincroniza a URL com o array `filtersApplied` de modo a manter a persistência
@@ -164,6 +175,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     drawerFilterOpen,
     pesquisaDrawerLeft,
     camposDisponiveis,
+    campoSelecionado,
     appliedCount,
     syncToUrl,
     loadFromUrl,

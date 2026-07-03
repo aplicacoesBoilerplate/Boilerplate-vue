@@ -82,10 +82,10 @@ import { useI18n } from 'vue-i18n';
 import pkg from '../../../package.json';
 
 // Formatação
-import { ClassFormatters } from '@/classes/Utils/ClassFormatters.ts';
+import { CFormatters } from '@/classes/Utils/CFormatters.ts';
 
 // Componentes
-import BaseDialog from './BaseDialog.vue';
+import BaseDialog from './base/BaseDialog.vue';
 
 // Constantes
 const systemVersion = pkg.version;
@@ -98,6 +98,6 @@ const dialogLicenceOpen = defineModel<boolean>('dialogLicenceOpen', { required: 
 
 // Computadas
 const formattedVersionDate = computed(() => {
-  return ClassFormatters.formatarDataHora(__APP_BUILD_DATE__, locale.value, true);
+  return CFormatters.formatarDataHora(__APP_BUILD_DATE__, locale.value, true);
 });
 </script>

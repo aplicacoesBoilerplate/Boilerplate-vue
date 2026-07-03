@@ -1,6 +1,7 @@
 <template>
   <v-navigation-drawer
     v-model="toggleRightDrawer"
+    :temporary="!mdAndUp"
     :mobileBreakpoint="0"
     location="right"
   >
@@ -17,6 +18,7 @@
       :filtro="filtro"
       :index="i"
       :camposDisponiveis="camposDisponiveis"
+      class="ma-1"
       @onEditar="onEditarFiltro"
       @onRemover="genericFilterStore.removeFilter($event)"
     />
@@ -24,6 +26,9 @@
 </template>
 
 <script setup lang="ts">
+// Ecossistema Vue
+import { useDisplay } from 'vuetify';
+
 // Stores
 import { useGenericFilterStore } from '@/stores/genericFilter.store';
 
@@ -36,26 +41,23 @@ import ItemFiltro from '../ItemFiltro.vue';
 type TProps = {
   camposDisponiveis: ICampoFiltro<any>[];
 };
-const props = defineProps<TProps>();
+defineProps<TProps>();
 
 // Stores
 const genericFilterStore = useGenericFilterStore();
 
+// Composables
+const { mdAndUp } = useDisplay();
+
 // Reativas
 const toggleRightDrawer = defineModel<boolean>('toggleRightDrawer', { required: true });
-const selectedField = defineModel<ICampoFiltro<any> | null>('selectedField', { required: true });
 
 // Funções
 function onEditarFiltro(index: number) {
-  const filtro = genericFilterStore.filtersApplied[index];
-  if (filtro && filtro.campo) {
-    const campoParaEditar = props.camposDisponiveis.find((c) => c.valor === filtro.campo);
-    if (campoParaEditar) {
-      selectedField.value = campoParaEditar;
-    }
-  }
-
   genericFilterStore.editFilter(index);
-}
 
+  if (!mdAndUp.value) {
+    toggleRightDrawer.value = false;
+  }
+}
 </script>

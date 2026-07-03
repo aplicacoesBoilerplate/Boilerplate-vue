@@ -1,5 +1,5 @@
 <template>
-  <v-form @submit.prevent="onSubmit" class="search-form w-100">
+  <v-form @submit.prevent="onSubmit" class="w-100">
     <v-text-field
       ref="inputRef"
       v-model="searchQuery"
@@ -10,11 +10,12 @@
       variant="solo"
       rounded="pill"
       loaderHeight="2"
+      autocomplete="off"
       hideDetails
       singleLine
       clearable
     >
-      <template v-if="$vuetify.display.mdAndUp" #prepend-inner>
+      <template #prepend-inner>
         <div class="d-flex flex-row" v-if="hasFilters">
           <DialogFiltro
             v-model:exibirFiltros="exibirFiltros"
@@ -30,6 +31,7 @@
         </div>
 
         <v-hotkey
+          v-if="$vuetify.display.mdAndUp"
           keys="ctrl+k"
           display-mode="icon"
           variant="contained"
@@ -119,9 +121,6 @@ useHotkey('ctrl+k', () => {
 </script>
 
 <style scoped>
-.search-form {
-  max-width: 480px;
-}
 .rounded-search :deep(.v-field) {
   overflow: hidden;
 }

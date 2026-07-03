@@ -13,9 +13,9 @@ export class ClassMapeamentosFiltro {
    * @param pRecurso Enum do recurso.
    * @returns Array de mapeamentos ou array vazio caso não exista.
    */
-  static getMapeamento<T>(pRecurso?: ERecursosFiltro): ICampoFiltro<T>[] {
+  static getMapeamento<T, TRegistroConsulta extends object = any>(pRecurso?: ERecursosFiltro): ICampoFiltro<T, TRegistroConsulta>[] {
     // Verifica se o recurso foi informado antes de retornar o mapeamento.
     if (!pRecurso) return [];
-    return (MAPEAMENTO_FILTROS[pRecurso] as ICampoFiltro<T>[]) || [];
+    return (MAPEAMENTO_FILTROS[pRecurso] as ICampoFiltro<T, TRegistroConsulta>[]) || [];
   }
 }

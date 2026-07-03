@@ -8,6 +8,6 @@ import { ERecursosFiltro } from './enums/ERecursosFiltro';
 import { MAPEAMENTO_CAMPOS_FILTRO_USUARIO } from '@/models/model/usuario/MapeamentoFiltrosUsuario';
 
 // Mapeamentos dos recursos para aplicação de filtros.
-export const MAPEAMENTO_FILTROS: Record<ERecursosFiltro, ICampoFiltro<any>[]> = {
+export const MAPEAMENTO_FILTROS: Record<ERecursosFiltro, ICampoFiltro<any, any>[]> = {
   [ERecursosFiltro.USUARIOS]: MAPEAMENTO_CAMPOS_FILTRO_USUARIO,
 };

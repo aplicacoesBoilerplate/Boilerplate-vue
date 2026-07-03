@@ -4,16 +4,17 @@
       :cols="larguraOperador"
       class="col-animada pb-0"
     >
-      <v-select
+      <v-autocomplete
         v-model="filterModel.condicao"
         :label="label"
         :variant="variant"
         :density="density"
         :appendInnerIcon="iconeOperadorSelecionado"
         :menuProps="{ closeOnContentClick: true }"
-        :items="operadores"
+        :items="operadoresDisponiveis"
         itemTitle="descricao"
         itemValue="valor"
+        autocomplete="off"
         hideDetails
       >
         <template #item="{ props: itemProps, item }">
@@ -27,7 +28,7 @@
             </template>
           </v-list-item>
         </template>
-      </v-select>
+      </v-autocomplete>
     </v-col>
 
     <v-col
@@ -39,7 +40,7 @@
           v-if="filterModel.condicao"
           v-model:valor="filterModel.valor"
           :operador="filterModel.condicao"
-          :tiposCampo="tiposCampo"
+          :tiposCampo="tiposCampoAtual"
           :opcoesDisponiveis="opcoesDisponiveis"
           :campo="filterModel.campo"
           @onEnter="$emit('onEnter')"
@@ -51,21 +52,26 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
+
+// Stores
+import { useGenericFilterStore } from '@/stores/genericFilter.store';
 
 // Types e Interfaces
 import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta.ts';
-import type { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
+import type { IOpcaoSelecaoFiltro } from '@/models/filters/IOpcaoSelecaoFiltro';
+
+// Enums
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
-import type { IMapeamentoOperador } from '@/models/filters/enums/EOperadoresFiltro';
+
+// Composables
+import { useOperadoresFiltro } from '@/composables/useOperadoresFiltro';
 
 // Componentes
 import InputValorFiltro from './InputValorFiltro.vue';
 
 type TProps = {
-  operadores: IMapeamentoOperador[];
-  tiposCampo?: ETipoFiltro[];
-  opcoesDisponiveis: any[];
+  opcoesDisponiveis: IOpcaoSelecaoFiltro[];
   label?: string;
   density?: 'default' | 'comfortable' | 'compact';
   variant?: 'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain';
@@ -74,7 +80,6 @@ const props = withDefaults(defineProps<TProps>(), {
   label: 'Operador',
   density: 'compact',
   variant: 'outlined',
-  tiposCampo: () => [],
 });
 
 type TEmits = {
@@ -82,8 +87,37 @@ type TEmits = {
 };
 defineEmits<TEmits>();
 
+// Stores
+const genericFilterStore = useGenericFilterStore();
+
+// Composables
+const { operadoresDisponiveis, tiposCampoAtual } = useOperadoresFiltro({
+  campoSelecionado: computed(() => genericFilterStore.campoSelecionado),
+});
+
 // Reativas
 const filterModel = defineModel<Partial<IFiltrosConsulta>>('filterModel', { required: true });
+
+// Funções
+function sincronizarOperadorDisponivel(): void {
+  const operadoresAtuais = operadoresDisponiveis.value;
+  const operadorAtual = filterModel.value.condicao;
+
+  if (operadoresAtuais.length === 0) {
+    return;
+  }
+
+  const operadorAtualDisponivel = operadoresAtuais.some((pOperador) => pOperador.valor === operadorAtual);
+
+  if (!operadorAtualDisponivel) {
+    filterModel.value = {
+      ...filterModel.value,
+      condicao: operadoresAtuais[0].valor,
+      valor: undefined,
+      valoresSelecionados: [],
+    };
+  }
+}
 
 // Computadas
 const controleTamanhoColunas = computed(() => {
@@ -96,8 +130,14 @@ const controleTamanhoColunas = computed(() => {
 const larguraOperador = computed(() => (controleTamanhoColunas.value ? 12 : 6));
 const larguraValor = computed(() => (controleTamanhoColunas.value ? 12 : 6));
 const iconeOperadorSelecionado = computed(
-  () => props.operadores.find((operador) => operador.valor === filterModel.value.condicao)?.icone,
+  () => operadoresDisponiveis.value.find((operador) => operador.valor === filterModel.value.condicao)?.icone,
 );
+
+// Observadores
+watch(() => [genericFilterStore.campoSelecionado?.valor, operadoresDisponiveis.value.map((pOperador) => pOperador.valor).join('|')], () => {
+  sincronizarOperadorDisponivel();
+}, { immediate: true });
+
 </script>
 
 <style scoped>

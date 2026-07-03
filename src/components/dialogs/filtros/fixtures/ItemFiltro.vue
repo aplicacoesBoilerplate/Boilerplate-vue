@@ -1,5 +1,9 @@
 <template>
-  <v-list-item :title="filtro.campo ?? ''">
+  <v-list-item
+    elevation="4"
+    rounded="te-xl bs-xl"
+    :title="filtro.campo ?? ''"
+  >
     <template #prepend>
       <div
         class="d-flex align-center"
@@ -24,7 +28,7 @@
       >
         <v-btn
           icon="mdi-pencil"
-          color="indigo-darken-4"
+          color="primary"
           variant="text"
           density="compact"
           @click="$emit('onEditar', index)"

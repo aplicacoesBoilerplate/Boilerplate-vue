@@ -1,13 +1,14 @@
 // Types e Interfaces
 import type { ETipoFiltro } from './enums/ETipoFiltro';
 import type { EOperadoresFiltro } from './enums/EOperadoresFiltro';
+import type { IConsultaRegistrosFiltro } from './IConsultaRegistrosFiltro';
 
 export interface IOpcaoFiltro {
   valor: any;
   descricao: string;
 }
 
-export interface ICampoFiltro<T> {
+export interface ICampoFiltro<T, TRegistroConsulta extends object = Record<string, unknown>> {
   /** O valor da opção do campo selecionado que será utilizado no filtro */
   valor: T;
   /** A descrição do campo que será exibida no filtro */
@@ -26,4 +27,6 @@ export interface ICampoFiltro<T> {
   pesquisaPadrao?: boolean;
   /** Operador utilizado pela busca rápida para o campo padrão (Ex: CONTEM, IGUAL) */
   operadorPesquisaPadrao?: EOperadoresFiltro;
+  /** Configuração da consulta auxiliar de registros disponível para este campo. */
+  consultaRegistros?: IConsultaRegistrosFiltro<TRegistroConsulta>;
 }

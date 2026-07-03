@@ -1,4 +1,4 @@
-export class ClassFormatters {
+export class CFormatters {
   static formatarGenerico(pValue: any): string {
     return String(pValue ?? "").trim() || "N/A";
   }
