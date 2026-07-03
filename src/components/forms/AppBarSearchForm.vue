@@ -10,6 +10,7 @@
       variant="solo"
       rounded="pill"
       loaderHeight="2"
+      autocomplete="off"
       hideDetails
       singleLine
       clearable
