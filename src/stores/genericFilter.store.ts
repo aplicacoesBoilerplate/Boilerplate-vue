@@ -12,20 +12,15 @@ import { useSnackbarStore } from './SnackbarStore';
 import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 
+/**
+ * @description Gerencia o estado de filtros aplicados em uma view específica (contexto).
+ * @property {IFiltrosConsulta[]} filtrosAplicados - Filtros aplicados no recurso atual.
+ * @property {Partial<IFiltrosConsulta>} modeloFiltro - Filtro em construção no formulário.
+ * @property {string} pesquisaDrawerLeft - Pesquisa do drawer esquerdo isolada por contexto.
+ */
 interface IEstadoFiltrosContexto {
-  /**
-   * Filtros aplicados no recurso atual.
-   */
   filtrosAplicados: IFiltrosConsulta[];
-
-  /**
-   * Filtro em construção no formulário.
-   */
   modeloFiltro: Partial<IFiltrosConsulta>;
-
-  /**
-   * Pesquisa do drawer esquerdo isolada por contexto.
-   */
   pesquisaDrawerLeft: string;
 }
 
@@ -53,6 +48,11 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   /** Campos disponíveis fornecidos pela view atual baseados nos metadados da rota. */
   const camposDisponiveis = computed(() => {
     return (route.meta.filterResource as ICampoFiltro<any>[]) || [];
+  });
+
+  /** Campos disponíveis para agrupamento na view atual baseados nos metadados da rota. */
+  const camposAgrupadoresDisponiveis = computed(() => {
+    return camposDisponiveis.value.filter(campo => campo.disponivelAgrupamento);
   });
 
   const contextoFiltroAtual = computed(() => {
@@ -308,6 +308,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     drawerFilterOpen,
     pesquisaDrawerLeft,
     camposDisponiveis,
+    camposAgrupadoresDisponiveis,
     campoSelecionado,
     appliedCount,
     syncToUrl,

@@ -1,74 +1,55 @@
+/**
+ * @description Type genérico responsável por configurar o payload da consulta auxiliar de registros disponível para um campo do filtro.
+ * @template TRegistro - O tipo do registro que será consultado.
+ * @property {keyof TRegistro & string} campo - O campo que será consultado.
+ * @property {EOperadoresFiltro} condicao - O operador que será utilizado na consulta.
+ * @property {number} limite - A quantidade de registros retornados por página.
+ * @property {unknown} proximaEntrada - Cursor usado para buscar a próxima página.
+ * @property {string} termoPesquisa - O termo de pesquisa utilizado na consulta.
+ */
 export interface IConsultaRegistrosFiltroPayload {
-  /**
-   * Campo atualmente selecionado no formulário de filtros.
-   */
   campo: string;
-
-  /**
-   * Condição escolhida no filtro, usada pelo backend para ajustar a consulta auxiliar.
-   */
   condicao?: string;
-
-  /**
-   * Quantidade máxima de registros retornados por página.
-   */
   limite: number;
-
-  /**
-   * Cursor usado para buscar a próxima página da consulta auxiliar.
-   */
   proximaEntrada?: unknown;
-
-  /**
-   * Termo digitado na barra de pesquisa da consulta auxiliar.
-   */
   termoPesquisa: string;
 }
 
+/**
+ * @description Interface genérica responsável por configurar o resultado da consulta auxiliar de registros disponível para um campo do filtro.
+ * @template TRegistro - O tipo do registro que será consultado.
+ * @property {TRegistro[]} registros - Registros retornados pela consulta auxiliar.
+ * @property {unknown} proximaEntrada - Cursor usado para buscar a próxima página.
+ * @property {boolean} possuiMais - Indica se ainda existem registros para paginação.
+ */
 export interface IResultadoConsultaRegistrosFiltro<TRegistro extends object = Record<string, unknown>> {
-  /**
-   * Registros retornados pela consulta auxiliar.
-   */
   registros: TRegistro[];
-
-  /**
-   * Cursor usado para buscar a próxima página.
-   */
   proximaEntrada?: unknown;
-
-  /**
-   * Indica se ainda existem registros para paginação.
-   */
   possuiMais?: boolean;
 }
 
+/**
+ * @description Type genérico responsável por configurar a função de busca de registros auxiliares disponível para um campo do filtro.
+ * @template TRegistro - O tipo do registro que será consultado.
+ * @property {IResultadoConsultaRegistrosFiltro<TRegistro> | TRegistro[]} buscarRegistros - A função responsável por consultar os registros auxiliares.
+ */
 export type TBuscarRegistrosFiltro<TRegistro extends object = Record<string, unknown>> = (
   pPayload: IConsultaRegistrosFiltroPayload,
 ) => Promise<IResultadoConsultaRegistrosFiltro<TRegistro> | TRegistro[]>;
 
+/**
+ * @description Interface genérica responsável por configurar a consulta auxiliar de registros disponível para um campo do filtro.
+ * @template TRegistro - O tipo do registro que será consultado.
+ * @property {keyof TRegistro & string} atributoValor - O atributo do registro usado como valor aplicado no filtro.
+ * @property {keyof TRegistro & string} atributoDescricao - O atributo do registro usado como descrição visual na lista.
+ * @property {TBuscarRegistrosFiltro<TRegistro>} buscarRegistros - A função responsável por consultar os registros auxiliares.
+ * @property {number} limiteInicial - A quantidade inicial carregada por página.
+ * @property {string} textoVazio - O texto exibido quando a consulta não retornar registros.
+ */
 export interface IConsultaRegistrosFiltro<TRegistro extends object = Record<string, unknown>> {
-  /**
-   * Atributo do registro usado como valor aplicado no filtro.
-   */
   atributoValor: keyof TRegistro & string;
-
-  /**
-   * Atributo do registro usado como descrição visual na lista.
-   */
   atributoDescricao: keyof TRegistro & string;
-
-  /**
-   * Função responsável por consultar os registros auxiliares.
-   */
   buscarRegistros: TBuscarRegistrosFiltro<TRegistro>;
-
-  /**
-   * Quantidade inicial carregada por página.
-   */
   limiteInicial?: number;
-
-  /**
-   * Texto exibido quando a consulta não retornar registros.
-   */
   textoVazio?: string;
 }

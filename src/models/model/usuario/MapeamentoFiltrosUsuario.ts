@@ -79,6 +79,11 @@ const CONSULTA_REGISTROS_FILTRO_USUARIO: Partial<Record<keyof TCamposFiltroUsuar
   },
 };
 
+export const DISPONIVEL_AGRUPAMENTO_CAMPOS_FILTRO_USUARIO: Partial<Record<keyof TCamposFiltroUsuario, boolean>> = {
+  papel: true,
+  ativo: true
+};
+
 export const MAPEAMENTO_CAMPOS_FILTRO_USUARIO: ICampoFiltro<keyof TCamposFiltroUsuario, IUsuario>[] = (
   Object.keys(DESCRICAO_CAMPOS_FILTRO_USUARIO) as Array<keyof TCamposFiltroUsuario>
 ).map((key) => ({
@@ -90,4 +95,5 @@ export const MAPEAMENTO_CAMPOS_FILTRO_USUARIO: ICampoFiltro<keyof TCamposFiltroU
   pesquisaPadrao: key === 'nome',
   operadorPesquisaPadrao: key === 'nome' ? EOperadoresFiltro.CONTEM : undefined,
   consultaRegistros: CONSULTA_REGISTROS_FILTRO_USUARIO[key],
+  disponivelAgrupamento: DISPONIVEL_AGRUPAMENTO_CAMPOS_FILTRO_USUARIO[key],
 }));

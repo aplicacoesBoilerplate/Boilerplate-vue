@@ -26,6 +26,7 @@
           :hint="t('forms.formUser.inputEmail.hint')"
           variant="outlined"
           density="compact"
+          autocomplete="=off"
         />
       </v-col>
 
@@ -42,8 +43,9 @@
           mask="(##) #####-####"
           placeholder="(##) #####-####"
           :label="t('forms.formUser.inputPhoneNumber.label')"
-          density="compact"
           variant="outlined"
+          density="compact"
+          autocomplete="=off"
         />
       </v-col>
 

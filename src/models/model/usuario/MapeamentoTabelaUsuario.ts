@@ -15,6 +15,13 @@ export function formatarBooleanoUsuario(pValor?: boolean): string {
   return pValor ? traduzir('messages.yes') : traduzir('messages.no');
 }
 
+export const MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO: Partial<Record<keyof IUsuario, Record<string, string>>> = {
+  ativo: {
+    true: 'success',
+    false: 'error',
+  },
+};
+
 export const MAPEAMENTO_TABELA_USUARIO: IHeadersDataTable[] = [
   {
     title: traduzir('dataTable.users.headers.id'),

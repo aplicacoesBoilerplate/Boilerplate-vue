@@ -34,59 +34,69 @@
     </template>
 
     <template v-else-if="tipoTemplate === 'RANGE'">
-      <div class="d-flex ga-2 align-center mt-2">
-        <v-number-input
-          v-if="htmlType === 'number'"
-          v-model="valorInicialIntervaloNumerico"
-          :rules="[rules.required()]"
-          :type="htmlType"
-          label="De"
-          controlVariant="stacked"
-          variant="outlined"
-          density="compact"
-          autocomplete="off"
-          hideDetails
-        />
+      <v-row
+        density="comfortable"
+        align="center"
+        class="mt-1"
+      >
+        <v-col cols="12" md="6">
+          <v-number-input
+            v-if="htmlType === 'number'"
+            v-model="valorInicialIntervaloNumerico"
+            :rules="[rules.required()]"
+            :type="htmlType"
+            label="De"
+            controlVariant="stacked"
+            variant="outlined"
+            density="compact"
+            autocomplete="off"
+            hideDetails
+            @keypress.enter="$emit('onEnter')"
+          />
 
-        <v-text-field
-          v-else
-          v-model="valorInicialIntervaloTexto"
-          :rules="[rules.required()]"
-          :type="htmlType"
-          label="De"
-          variant="outlined"
-          density="compact"
-          autocomplete="off"
-          hideDetails
-        />
+          <v-text-field
+            v-else
+            v-model="valorInicialIntervaloTexto"
+            :rules="[rules.required()]"
+            :type="htmlType"
+            label="De"
+            variant="outlined"
+            density="compact"
+            autocomplete="off"
+            hideDetails
+            @keypress.enter="$emit('onEnter')"
+          />
+        </v-col>
 
-        <v-number-input
-          v-if="htmlType === 'number'"
-          v-model="valorFinalIntervaloNumerico"
-          :rules="[rules.required()]"
-          :type="htmlType"
-          label="Até"
-          controlVariant="stacked"
-          variant="outlined"
-          density="compact"
-          autocomplete="off"
-          hideDetails
-          @keypress.enter="$emit('onEnter')"
-        />
+        <v-col cols="12" md="6">
+          <v-number-input
+            v-if="htmlType === 'number'"
+            v-model="valorFinalIntervaloNumerico"
+            :rules="[rules.required()]"
+            :type="htmlType"
+            label="Até"
+            controlVariant="stacked"
+            variant="outlined"
+            density="compact"
+            autocomplete="off"
+            hideDetails
+            @keypress.enter="$emit('onEnter')"
+          />
 
-        <v-text-field
-          v-else
-          v-model="valorFinalIntervaloTexto"
-          :rules="[rules.required()]"
-          :type="htmlType"
-          label="Até"
-          variant="outlined"
-          density="compact"
-          autocomplete="off"
-          hideDetails
-          @keypress.enter="$emit('onEnter')"
-        />
-      </div>
+          <v-text-field
+            v-else
+            v-model="valorFinalIntervaloTexto"
+            :rules="[rules.required()]"
+            :type="htmlType"
+            label="Até"
+            variant="outlined"
+            density="compact"
+            autocomplete="off"
+            hideDetails
+            @keypress.enter="$emit('onEnter')"
+          />
+        </v-col>
+      </v-row>
     </template>
 
     <template v-else>

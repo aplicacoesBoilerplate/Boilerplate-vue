@@ -1,38 +1,44 @@
-import type { ValueDataChart } from "@/classes/models/modelComponents/ModelGridDataChart";
-import { stringToColor } from "@/utils/generateColors";
+// Types e Interfaces
+import type { IValorGrafico } from '@/models/components/IValorGrafico';
 
 export function useChartHelpers(
   items: any[],
   campoAgrupamento: string,
   chartAgregacao: 'sum' | 'count' = 'count'
-): ValueDataChart[] {
+): IValorGrafico[] {
   if (!items || items.length === 0) {
     return [];
   }
 
-  const agrupado: Record<string, number> = {};
+  const agrupado = new Map<string, { valor: number; valorOriginal: unknown }>();
 
   items.forEach(item => {
-    const chave = String(item[campoAgrupamento]);
+    const valorOriginal = item[campoAgrupamento];
+    const chave = String(valorOriginal);
 
     let valorInicial = 1;
 
     if (chartAgregacao === 'sum') {
-        valorInicial = Number(item[campoAgrupamento]) || 0;
+      valorInicial = Number(item[campoAgrupamento]) || 0;
     }
 
-    if (!agrupado[chave]) {
-      agrupado[chave] = 0;
+    if (!agrupado.has(chave)) {
+      agrupado.set(chave, {
+        valor: 0,
+        valorOriginal,
+      });
     }
 
-    agrupado[chave] += valorInicial;
+    const grupo = agrupado.get(chave);
+    if (grupo) {
+      grupo.valor += valorInicial;
+    }
   });
 
-  return Object.keys(agrupado).map((key, index) => ({
-    key: key,
+  return Array.from(agrupado.entries()).map(([key, grupo], index) => ({
     id: index,
-    title: key,
-    value: agrupado[key],
-    color: stringToColor(key)
+    titulo: key,
+    valorOriginal: grupo.valorOriginal,
+    valor: grupo.valor,
   }));
 }

@@ -116,11 +116,12 @@
       </template>
 
       <template #dataChart>
-        <ChartPie
-          v-model:selectedFilter="selectedChartFilter"
-          :chartData="chartDataComputed"
-          :filterOptions="headersParaGrafico"
-          :activeConfig="activeHeaderConfig"
+        <BaseChart
+          v-model:filtroSelecionado="selectedChartFilter"
+          :dados="chartDataComputed"
+          :opcoesFiltro="camposAgrupamento"
+          :configuracaoAtiva="activeHeaderConfig"
+          :mapeamentoCores="mapeamentoCoresAgrupamento"
         />
       </template>
     </GridDataChart>
@@ -133,6 +134,7 @@ import { computed, ref } from 'vue';
 
 // Stores
 import { useGenericListStore } from '@/stores/genericList.store';
+import { useGenericFilterStore } from '@/stores/genericFilter.store';
 
 // Types e Interfaces
 import { criarUsuarioPadrao, type IUsuario } from '@/models/model/usuario/lUsuario';
@@ -142,27 +144,28 @@ import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/mode
 import { useChartHelpers } from '@/composables/useChartHelpers';
 
 // Mapeamentos
-import { MAPEAMENTO_TABELA_USUARIO } from '@/models/model/usuario/MapeamentoTabelaUsuario';
+import { MAPEAMENTO_TABELA_USUARIO, MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO } from '@/models/model/usuario/MapeamentoTabelaUsuario';
 
 // Componentes
 import GridDataChart from '@/components/layouts/GridDataChart.vue';
-import ChartPie from '@/components/ChartPie.vue';
+import BaseChart from '@/components/charts/BaseChart.vue';
 import GenericView from '@/components/layout/generic/GenericView.vue';
 import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
 import DialogFormUsuario from '@/components/dialogs/DialogFormUsuario.vue';
 
 // Composables
 const listStore = useGenericListStore();
+const genericFilterStore = useGenericFilterStore();
 
 // Constantes e Dados Base
 const CONTEXTO_LISTA_USUARIOS = 'lista-usuarios';
 const headers = MAPEAMENTO_TABELA_USUARIO;
-const headersParaGrafico = headers.filter((h) => h.key !== 'actions').map((h) => ({ title: h.title, value: h.key }));
+const camposAgrupamento = computed(() => genericFilterStore.camposAgrupadoresDisponiveis);
 
 // Reativas
 const genericViewRef = ref<InstanceType<typeof GenericView> | null>(null);
 const hiddenChart = ref(true);
-const selectedChartFilter = ref(headersParaGrafico[0]?.value);
+const selectedChartFilter = ref<string>(camposAgrupamento.value.length > 0 ? camposAgrupamento.value[0].valor : '');
 
 // Estados de Formulário
 const exibirDialogUsuario = ref(false);
@@ -243,6 +246,10 @@ async function deleteUser(pIdUsuario: number | undefined) {
 // Computadas
 const activeHeaderConfig = computed(() => {
   return headers.find((h) => h.key === selectedChartFilter.value);
+});
+
+const mapeamentoCoresAgrupamento = computed(() => {
+  return MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO[selectedChartFilter.value as keyof IUsuario] ?? {};
 });
 
 const chartDataComputed = computed(() => {

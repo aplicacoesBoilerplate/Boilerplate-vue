@@ -29,24 +29,24 @@
 
     <template v-slot:actions>
       <v-btn
-        prepend-icon="mdi-refresh"
         v-tooltip="t('tooltips.forms.reset')"
-        variant="text"
         color="amber"
-        @click="resetFormUser"
+        variant="text"
         text="Limpar"
+        prependIcon="mdi-refresh"
+        @click="resetarFormUsuario"
       />
 
       <v-spacer />
 
       <v-btn
-        prepend-icon="mdi-content-save"
-        v-tooltip="t('tooltips.forms.save')"
-        variant="flat"
-        color="success"
         :disabled="!isFormValid"
+        v-tooltip="t('tooltips.forms.save')"
+        color="success"
+        variant="flat"
         text="Salvar"
-        @click="saveUser"
+        prependIcon="mdi-content-save"
+        @click="salvarUsuario"
       />
     </template>
   </BaseDialog>
@@ -58,7 +58,7 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
-import type { IUsuario } from '@/models/model/usuario/lUsuario';
+import { criarUsuarioPadrao, type IUsuario } from '@/models/model/usuario/lUsuario';
 
 // Componentes
 import BaseDialog from './base/BaseDialog.vue';
@@ -81,21 +81,22 @@ const { t } = useI18n();
 const exibirDialog = defineModel<boolean>('exibirDialog', { required: true });
 const usuario = defineModel<IUsuario>('usuario', { required: false, default: {}});
 
-// Reativas - Ref
+// Reativas - ref
 const refFormUser = ref<InstanceType<typeof FormUsuario> | null>(null);
 const isFormValid = ref(false);
+
+// Funções
+function resetarFormUsuario(): void {
+  refFormUser.value?.reset();
+  usuario.value = criarUsuarioPadrao();
+}
+
+function salvarUsuario(): void {
+  emit('salvar');
+  exibirDialog.value = false;
+}
 
 // Computadas
 const titulo = computed(() => (props.modoEdicao ? `Editar usuário #${usuario.value?.id}` : 'Criar novo usuário'));
 const icon = computed(() => (props.modoEdicao ? `mdi-account-edit` : 'mdi-account-plus'));
-
-// Funções
-function resetFormUser(): void {
-  refFormUser.value?.reset();
-}
-
-function saveUser(): void {
-  emit('salvar');
-  exibirDialog.value = false;
-}
 </script>

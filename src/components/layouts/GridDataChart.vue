@@ -1,11 +1,16 @@
 <template>
-  <v-row dense class="prevent-jump-desktop">
+  <v-row
+    dense
+    class="prevent-jump-desktop align-stretch ma-0 w-100"
+  >
     <v-col
       cols="12"
       :md="hiddenChart ? 12 : 6"
-      class="col-transition overflow-hidden"
+      class="col-transition overflow-hidden d-flex"
     >
-      <slot name="dataTable" :toggleChart="() => emit('toggle-chart')" />
+      <div class="w-100 h-100">
+        <slot name="dataTable" :toggleChart="() => emit('toggle-chart')" />
+      </div>
     </v-col>
 
     <Transition name="expand-charts">
@@ -13,11 +18,11 @@
         v-show="!hiddenChart"
         cols="12"
         md="6"
-        class="scroll-offset overflow-hidden"
+        class="scroll-offset overflow-hidden d-flex"
         ref="refCharts"
         tabindex="-1"
       >
-        <div v-if="!hiddenChart" class="fill-height w-100">
+        <div v-if="!hiddenChart" class="fill-height w-100 d-flex">
           <slot name="dataChart" />
         </div>
       </v-col>
@@ -72,6 +77,7 @@ watch(() => props.hiddenChart, (isHidden) => {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-width: 0;
+  max-width: 100%;
   transition: flex-basis 300ms cubic-bezier(0.4, 0, 0.2, 1),
     max-width 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }

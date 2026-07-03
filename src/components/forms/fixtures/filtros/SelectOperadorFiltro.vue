@@ -53,6 +53,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, watch } from 'vue';
+import { useDisplay } from 'vuetify';
 
 // Stores
 import { useGenericFilterStore } from '@/stores/genericFilter.store';
@@ -95,6 +96,8 @@ const { operadoresDisponiveis, tiposCampoAtual } = useOperadoresFiltro({
   campoSelecionado: computed(() => genericFilterStore.campoSelecionado),
 });
 
+const { mdAndDown } = useDisplay();
+
 // Reativas
 const filterModel = defineModel<Partial<IFiltrosConsulta>>('filterModel', { required: true });
 
@@ -127,8 +130,8 @@ const controleTamanhoColunas = computed(() => {
   return operadoresComDoisInputs.includes(filterModel.value.condicao as EOperadoresFiltro);
 });
 
-const larguraOperador = computed(() => (controleTamanhoColunas.value ? 12 : 6));
-const larguraValor = computed(() => (controleTamanhoColunas.value ? 12 : 6));
+const larguraOperador = computed(() => (controleTamanhoColunas.value || mdAndDown.value ? 12 : 6));
+const larguraValor = computed(() => (controleTamanhoColunas.value || mdAndDown.value ? 12 : 6));
 const iconeOperadorSelecionado = computed(
   () => operadoresDisponiveis.value.find((operador) => operador.valor === filterModel.value.condicao)?.icone,
 );
@@ -137,7 +140,6 @@ const iconeOperadorSelecionado = computed(
 watch(() => [genericFilterStore.campoSelecionado?.valor, operadoresDisponiveis.value.map((pOperador) => pOperador.valor).join('|')], () => {
   sincronizarOperadorDisponivel();
 }, { immediate: true });
-
 </script>
 
 <style scoped>
