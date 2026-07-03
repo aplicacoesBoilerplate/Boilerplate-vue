@@ -15,6 +15,26 @@ export const ICONE_PAPEL: Record<TPapel, string> = {
   USER: 'mdi-account',
 };
 
+type TMapeamentoPapeis = {
+  valor: string;
+  label: string;
+  icone: string;
+}
+
+// Mapeamento para o autocomplete do SelectRole
+export const MAPEAMENTO_PAPEIS: Record<TPapel, TMapeamentoPapeis> = {
+  ADMIN: {
+    valor: 'ADMIN',
+    label: 'Administrador',
+    icone: 'mdi-account-tie',
+  },
+  USER: {
+    valor: 'USER',
+    label: 'Usuário',
+    icone: 'mdi-account',
+  },
+};
+
 // Extraído o tipo do papel para ser usado em input fixtures no form.
 export type TPapelUsuario = {
   papel: TPapel;
@@ -28,4 +48,22 @@ export interface IUsuario extends TPapelUsuario {
   telefone?: string;
   notificar?: boolean;
   ativo?: boolean;
+}
+
+/**
+ * @description
+ * Função para criar um objeto usuário com dados padrão.
+ * @param pDados - Objeto IUsuario com dados opcionais.
+ * @returns Objeto IUsuario com dados padrão.
+ */
+export function criarUsuarioPadrao(pDados: Partial<IUsuario> = {}): IUsuario {
+  return {
+    id: pDados.id,
+    nome: pDados.nome ?? '',
+    email: pDados.email ?? '',
+    papel: pDados.papel ?? 'USER',
+    telefone: pDados.telefone ?? '',
+    notificar: pDados.notificar ?? false,
+    ativo: pDados.ativo ?? true,
+  };
 }

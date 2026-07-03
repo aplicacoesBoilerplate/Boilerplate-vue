@@ -30,16 +30,24 @@
     >
       <slot
         name="titulo"
-        :title="title"
+        :title="titulo"
         :onFechar="close"
       >
         <v-toolbar
-          :title="title"
+          :title="titulo"
+          :iconePrependTitulo="iconePrependTitulo"
           color="primary"
         >
+          <template #prepend>
+            <v-icon
+              :icon="iconePrependTitulo"
+              class="px-5"
+            />
+          </template>
+
           <template #append>
             <v-btn
-              :aria-label="`Fechar ${title}`"
+              :aria-label="`Fechar ${titulo}`"
               icon="mdi-close"
               variant="text"
               @click="close"
@@ -47,7 +55,7 @@
           </template>
 
           <template
-            v-if="showExtension"
+            v-if="mostrarExtensao"
             #extension
           >
             <slot name="extension" />
@@ -62,13 +70,13 @@
         <slot name="content" />
       </v-card-text>
 
-      <template v-if="showActions">
+      <template v-if="mostrarAcoesDialog">
         <v-divider />
 
         <v-card-actions>
           <slot
             name="actions"
-            :title="title"
+            :title="titulo"
             :onFechar="close"
             :onSalvar="handleSalvar"
             :onCancelar="handleCancelar"
@@ -112,9 +120,9 @@ const props = withDefaults(defineProps<IPropsBaseDialog>(), {
   maxHeight: 650,
   zIndex: 2400,
 
-  title: 'Dialog',
-  showExtension: false,
-  showActions: true,
+  titulo: 'Dialog',
+  mostrarSlotExtension: false,
+  mostrarAcoes: true,
   loading: false,
   contentClass: '',
 });
@@ -160,6 +168,9 @@ const contentStyles = computed(() => {
     minHeight: props.minHeight,
   };
 });
+
+const mostrarExtensao = computed(() => props.mostrarSlotExtension ?? false);
+const mostrarAcoesDialog = computed(() => props.mostrarAcoes ?? true);
 
 // Expose
 defineExpose({

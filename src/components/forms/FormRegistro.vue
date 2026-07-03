@@ -1,24 +1,25 @@
 <template>
   <div>
-    <!-- Loading -->
     <div
-      class="d-flex justify-center mb-5"
       v-if="loading"
+      class="d-flex justify-center mb-5"
     >
       <v-progress-circular
         color="primary"
         indeterminate
       />
     </div>
+
     <v-card
       class="mx-auto"
       width="650"
     >
-      <v-card-title class="d-flex justify-center pt-5"> Dados de acesso </v-card-title>
-      <v-form
-        ref="formRef"
-        v-model="formIsValid"
-        @submit.prevent="solicitarAcesso()"
+      <v-card-title class="d-flex justify-center pt-5">Dados de acesso</v-card-title>
+
+      <BaseForm
+        ref="baseFormRef"
+        @onSubmit="solicitarAcesso"
+        @update:isValid="formIsValid = $event"
       >
         <v-container class="d-flex justify-center mb-6">
           <v-col cols="12">
@@ -49,7 +50,6 @@
 
               <v-col cols="6">
                 <v-text-field
-                  clearable
                   v-model="novoUsuario.senha"
                   :rules="[rules.required(), rules.minLength(8), rules.maxLength(100)]"
                   :type="mostrarSenha ? 'text' : 'password'"
@@ -57,12 +57,13 @@
                   label="Senha*"
                   variant="outlined"
                   counter
+                  clearable
                 >
-                  <template v-slot:append-inner>
+                  <template #append-inner>
                     <v-btn
                       :icon="mostrarSenha ? 'mdi-eye' : 'mdi-eye-off'"
-                      @click="mostrarSenha = !mostrarSenha"
                       variant="text"
+                      @click="mostrarSenha = !mostrarSenha"
                     />
                   </template>
                 </v-text-field>
@@ -70,19 +71,19 @@
 
               <v-col cols="6">
                 <v-text-field
-                  clearable
                   v-model="novoUsuario.confirmarSenha"
                   :rules="[rules.required(), rulesPersonalizadas.equals(() => novoUsuario.senha)]"
                   :type="mostrarConfirmacaoSenha ? 'text' : 'password'"
                   label="Confirmar sua senha*"
                   variant="outlined"
                   counter
+                  clearable
                 >
-                  <template v-slot:append-inner>
+                  <template #append-inner>
                     <v-btn
                       :icon="mostrarConfirmacaoSenha ? 'mdi-eye' : 'mdi-eye-off'"
-                      @click="mostrarConfirmacaoSenha = !mostrarConfirmacaoSenha"
                       variant="text"
+                      @click="mostrarConfirmacaoSenha = !mostrarConfirmacaoSenha"
                     />
                   </template>
                 </v-text-field>
@@ -102,7 +103,7 @@
             </v-row>
           </v-col>
         </v-container>
-      </v-form>
+      </BaseForm>
     </v-card>
   </div>
 </template>
@@ -125,14 +126,15 @@ import { CUsuarioService } from '@/services/CUsuarioService';
 import { rulesPersonalizadas } from '@/utils/rules';
 
 // Componentes
+import BaseForm from '@/components/forms/base/BaseForm.vue';
 import InputUpperCase from '@/components/forms/fixtures/InputUpperCase.vue';
 
 // Composables
 const rules = useRules();
 const requisicaoService = useRequisicaoService();
 
-// Reativas
-const formRef = ref();
+// Reativas - Ref
+const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
 const formIsValid = ref(false);
 const mostrarSenha = ref(false);
 const mostrarConfirmacaoSenha = ref(false);
@@ -143,12 +145,7 @@ const novoUsuario = ref<IUsuarioSolicitacaoAcesso>(criarUsuarioParaRegistroPadra
 const loading = computed(() => requisicaoService.carregando.value);
 
 // Funções
-
-/**
- * @description Método que cria um usuário padrão para o registro de novo acesso.
- * @returns IUsuarioSolicitacaoAcesso que contém os dados padrão do usuário.
- */
-export function criarUsuarioParaRegistroPadrao(): IUsuarioSolicitacaoAcesso {
+function criarUsuarioParaRegistroPadrao(): IUsuarioSolicitacaoAcesso {
   return {
     nome: '',
     email: dominioEmailPadrao,
@@ -157,9 +154,6 @@ export function criarUsuarioParaRegistroPadrao(): IUsuarioSolicitacaoAcesso {
   };
 }
 
-/**
- * @description Método que solicita o registro de um novo acesso.
- */
 async function solicitarAcesso(): Promise<void> {
   await requisicaoService.executar({
     metodo: CUsuarioService.solicitarAcesso,
@@ -172,6 +166,6 @@ async function solicitarAcesso(): Promise<void> {
 
   novoUsuario.value = criarUsuarioParaRegistroPadrao();
   await nextTick();
-  formRef.value?.resetValidation();
+  baseFormRef.value?.resetValidation();
 }
 </script>

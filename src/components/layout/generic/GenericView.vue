@@ -27,6 +27,7 @@
         :limite="limite"
         :ordemInicial="ordemInicial"
         :itemKey="itemKey"
+        :limitOptions="limitOptions"
         :serviceFetch="serviceFetch"
         :storage="storage"
       >
@@ -53,7 +54,7 @@
                     <template #activator="{ props }">
                       <slot
                         name="activator-novo-registro"
-                        :handleNovoRegistro="handleNovoRegistro({ modoEdicao: false })"
+                        :handleNovoRegistro="() => handleNovoRegistro({ modoEdicao: false })"
                       >
                         <v-btn
                           v-bind="props"
@@ -137,14 +138,13 @@ type TProps = {
 };
 withDefaults(defineProps<TProps>(), {
   cacheTtlMs: 15 * 60 * 1000,
-  emptyText: 'Nenhum registro encontrado.',
-  endText: 'Todos os registros foram carregados.',
-  errorText: 'Não foi possível carregar os registros.',
-  initialLimit: undefined,
-  initialOrder: undefined,
+  textoVazio: 'Nenhum registro encontrado.',
+  textoFinal: 'Todos os registros foram carregados.',
+  textoError: 'Não foi possível carregar os registros.',
+  limite: undefined,
+  ordemInicial: undefined,
   itemKey: undefined,
   limitOptions: () => [10, 25, 50, 100],
-  showLimitSelector: false,
   storage: 'session',
   title: '',
 });

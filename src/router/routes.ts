@@ -70,6 +70,7 @@ export const routes: Array<RouteRecordRaw> = [
       title: 'routes.users.title',
       icon: 'mdi-account-group',
       hotkey: 'cmd+shift+u',
+      filterContext: ERecursosFiltro.USUARIOS,
       filterResource: ClassMapeamentosFiltro.getMapeamento<TCamposFiltroUsuario>(ERecursosFiltro.USUARIOS),
     },
   },

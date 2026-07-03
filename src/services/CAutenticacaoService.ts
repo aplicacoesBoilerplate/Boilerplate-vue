@@ -1,5 +1,5 @@
 // Types e Interfaces
-import type { IAlterPassword, IConfirmPassword, ILogin } from '@/classes/models/ModelLogin';
+import type { IAlterPassword, IConfirmPassword, ILogin } from '@/models/model/autenticacao/autenticacao.models';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 
 // Services

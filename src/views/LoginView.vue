@@ -3,12 +3,13 @@
     <v-progress-circular color="primary" indeterminate />
   </div>
 
-  <LoginForm
+  <FormLogin
     ref="refFormLogin"
-    v-model:login="classLogin.model"
+    v-model:login="login"
     v-model:valid="isFormValid"
+    @onSubmit="authLogin"
   >
-    <template v-slot:actions>
+    <template #actions>
       <div class="d-flex flex-row">
         <v-icon-btn
           icon="mdi-refresh"
@@ -42,7 +43,7 @@
         />
       </div>
     </template>
-  </LoginForm>
+  </FormLogin>
 </template>
 
 <script lang="ts" setup>
@@ -54,28 +55,24 @@ import { useRouter } from 'vue-router';
 // Stores
 import { useAuthStore } from '@/stores/auth';
 
-// Classes
-import { ClassLogin } from '@/classes/ClassLogin';
-
 // Composables
 import { useSnackbar } from '@/composables/useSnackbar';
+import { useFormularioLogin } from '@/composables/useFormularioLogin';
 
 // Componentes
-import LoginForm from '@/components/forms/LoginForm.vue';
-
-// Classes
-const classLogin = new ClassLogin();
+import FormLogin from '@/components/forms/FormLogin.vue';
 
 // Composables
 const router = useRouter();
 const { t } = useI18n();
 const { notify } = useSnackbar();
+const { login, resetarLogin, salvarPreferenciaEmail } = useFormularioLogin();
 
 // Stores
 const authStore = useAuthStore();
 
 // Reativas
-const refFormLogin = ref<InstanceType<typeof LoginForm> | null>(null);
+const refFormLogin = ref<InstanceType<typeof FormLogin> | null>(null);
 const isFormValid = ref(false);
 
 // Computadas
@@ -83,17 +80,12 @@ const loading = computed(() => authStore.carregando);
 
 // Funções
 async function authLogin(): Promise<void> {
-  const isValid = await refFormLogin.value?.validate();
-  if (!isValid) {
-    return;
-  }
-
-  const usuarioLogado = await authStore.login(classLogin.model);
+  const usuarioLogado = await authStore.login(login);
   notify(`${t('messages.welcome')}, ${usuarioLogado.nome}!`, 'success');
 }
 
 async function handleReset(): Promise<void> {
-  classLogin.reset();
+  resetarLogin();
   await nextTick();
   refFormLogin.value?.reset();
 }
@@ -103,9 +95,9 @@ function forgotPassword(): void {
 }
 
 async function onSubmit(): Promise<void> {
-  classLogin.saveEmailPreference();
+  salvarPreferenciaEmail();
   await nextTick();
-  await authLogin();
+  await refFormLogin.value?.submit();
 }
 
 </script>

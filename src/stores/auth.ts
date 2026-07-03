@@ -8,7 +8,7 @@ import { ref, computed } from 'vue';
 import { useListCacheStore } from './listCache';
 
 // Types e Interfaces
-import type { ILogin } from '@/classes/models/ModelLogin';
+import type { ILogin } from '@/models/model/autenticacao/autenticacao.models';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 
 // Composables
