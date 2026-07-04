@@ -55,24 +55,24 @@ provide("drawerKeepOpen", (val: boolean) => {
   isForcedOpen.value = val;
 });
 
-// Types e Interfaces
+/**
+ * @property {string} icon - Ícone do botão principal.
+ * @property {string} color - Cor do botão principal.
+ * @property {string} width - Largura reservada para a expansão da gaveta.
+ * @property {boolean} absolute - Se deve ser posicionado absolutamente na tela.
+ * @property {string} top - Distância do topo (se absolute).
+ * @property {string} right - Distância da direita (se absolute).
+ * @property {string} left - Distância da esquerda (se absolute).
+ */
 export type TPropsBtnDrawer = {
-  /** Ícone do botão principal */
   icon?: string;
-  /** Cor do botão principal */
   color?: string;
-  /** Largura reservada para a expansão da gaveta */
   width?: string;
-  /** Se deve ser posicionado absolutamente na tela */
   absolute?: boolean;
-  /** Distância do topo (se absolute) */
   top?: string;
-  /** Distância da direita (se absolute) */
   right?: string;
-  /** Distância da esquerda (se absolute) */
   left?: string;
 };
-
 withDefaults(defineProps<TPropsBtnDrawer>(), {
   icon: "mdi-menu-open",
   color: "primary",

@@ -1,6 +1,6 @@
 <template>
   <v-tooltip
-    :text="t('tooltips.appBar.info')"
+    :text="t('routes.home.title')"
     location="bottom"
   >
     <template #activator="{ props }">
@@ -9,9 +9,9 @@
         class="mx-1"
         color="teal"
         variant="text"
-        icon="mdi-information"
+        icon="mdi-home"
         size="small"
-        @click="redirectToInfoSystem"
+        @click="redirectToHome"
       />
     </template>
   </v-tooltip>
@@ -26,8 +26,8 @@ const router = useRouter();
 const { t } = useI18n();
 
 // Funções
-function redirectToInfoSystem() {
-  router.push({ name: "SystemInfo" });
+function redirectToHome() {
+  router.push({ name: "Home" });
 }
 
 </script>
