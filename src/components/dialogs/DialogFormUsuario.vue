@@ -24,6 +24,7 @@
         ref="refFormUser"
         v-model:usuario="usuario"
         v-model:valido="isFormValid"
+        @onSubmit="salvarUsuario"
       />
     </template>
 
@@ -46,7 +47,7 @@
         variant="flat"
         text="Salvar"
         prependIcon="mdi-content-save"
-        @click="salvarUsuario"
+        @click="submeterFormUsuario"
       />
     </template>
   </BaseDialog>
@@ -89,6 +90,10 @@ const isFormValid = ref(false);
 function resetarFormUsuario(): void {
   refFormUser.value?.reset();
   usuario.value = criarUsuarioPadrao();
+}
+
+function submeterFormUsuario(): void {
+  refFormUser.value?.submit();
 }
 
 function salvarUsuario(): void {

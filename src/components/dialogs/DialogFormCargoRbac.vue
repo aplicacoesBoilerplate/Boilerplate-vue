@@ -26,29 +26,30 @@
         v-model:usuarios="usuarios"
         v-model:valido="formValido"
         :cargosDisponiveis="cargosDisponiveis"
+        @onSubmit="salvarCargo"
       />
     </template>
 
     <template #actions>
       <v-btn
         v-tooltip="'Limpar'"
-        color="amber"
-        prepend-icon="mdi-refresh"
         text="Limpar"
+        color="amber"
         variant="text"
+        prependIcon="mdi-refresh"
         @click="resetarFormCargo"
       />
 
       <v-spacer />
 
       <v-btn
-        v-tooltip="'Salvar'"
         :disabled="!formValido"
-        color="success"
-        prepend-icon="mdi-content-save"
+        v-tooltip="'Salvar'"
         text="Salvar"
+        color="success"
         variant="flat"
-        @click="salvarCargo"
+        prependIcon="mdi-content-save"
+        @click="submeterFormCargo"
       />
     </template>
   </BaseDialog>
@@ -59,47 +60,36 @@
 import { computed, ref } from 'vue';
 
 // Types e Interfaces
-import { criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/rbac/rbac.models';
+import { criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/rbac/ICargoRbac.ts';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 
 // Componentes
 import BaseDialog from './base/BaseDialog.vue';
 import FormCargoRbac from '@/components/forms/FormCargoRbac.vue';
 
+/**
+ * @property {boolean} modoEdicao - Define se o diálogo está criando ou editando um cargo.
+ * @property {ICargoRbac[]} cargosDisponiveis - Cargos disponíveis para vínculo de usuários.
+ */
 type TProps = {
-  /**
-   * Define se o diálogo está criando ou editando um cargo.
-   */
   modoEdicao: boolean;
-
-  /**
-   * Cargos disponíveis para vínculo de usuários.
-   */
   cargosDisponiveis: ICargoRbac[];
 };
-
-// Props
 const props = defineProps<TProps>();
 
 type TEmits = {
   salvar: [];
 };
-
-// Emits
-const emit = defineEmits<TEmits>();
+const emits = defineEmits<TEmits>();
 
 // Reativas - Model
 const exibirDialog = defineModel<boolean>('exibirDialog', { required: true });
 const cargo = defineModel<ICargoRbac>('cargo', { required: false, default: {} });
 const usuarios = defineModel<IUsuario[]>('usuarios', { required: true });
 
-// Reativas - Ref
+// Reativas - ref
 const refFormCargo = ref<InstanceType<typeof FormCargoRbac> | null>(null);
 const formValido = ref(false);
-
-// Computadas
-const titulo = computed(() => (props.modoEdicao ? `Editar cargo ${cargo.value.nome}` : 'Criar novo cargo'));
-const icone = computed(() => (props.modoEdicao ? 'mdi-shield-edit-outline' : 'mdi-shield-plus-outline'));
 
 // Funções
 function resetarFormCargo(): void {
@@ -107,8 +97,17 @@ function resetarFormCargo(): void {
   cargo.value = criarCargoRbacPadrao();
 }
 
+function submeterFormCargo(): void {
+  refFormCargo.value?.submit();
+}
+
 function salvarCargo(): void {
-  emit('salvar');
+  emits('salvar');
   exibirDialog.value = false;
 }
+
+// Computadas
+const titulo = computed(() => (props.modoEdicao ? `Editar cargo ${cargo.value.nome}` : 'Criar novo cargo'));
+const icone = computed(() => (props.modoEdicao ? 'mdi-shield-edit-outline' : 'mdi-shield-plus-outline'));
+
 </script>
