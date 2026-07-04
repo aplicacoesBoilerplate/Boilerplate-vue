@@ -31,7 +31,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: 'SystemInfo',
     component: () => import('@/views/SystemInfoView.vue'),
     meta: {
-      title: 'routes.home.title',
+      title: 'routes.systemInfo.title',
       hidden: true,
     },
   },

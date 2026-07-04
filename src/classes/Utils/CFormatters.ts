@@ -18,7 +18,7 @@ export class CFormatters {
    *
    * @param pData String da data no formato "YYYY-MM-DD HH:MM:SS"
    * @param pLocale Locale para formatação (ex: "pt-BR")
-   * @param pWithTime Se deve incluir hora e minutos
+   * @param pWithTime Se deve incluir hora e minutos, true por padrão
    * @returns Data formatada como string ou "-" se inválida
    */
   static formatarDataHora(pData: string | Date, pLocale: string = 'pt-BR', pWithTime: boolean = true): string {
