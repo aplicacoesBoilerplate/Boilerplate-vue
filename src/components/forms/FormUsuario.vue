@@ -14,6 +14,7 @@
           :hint="t('forms.formUser.inputUsername.hint')"
           variant="outlined"
           density="compact"
+          autocomplete="off"
         />
       </v-col>
 

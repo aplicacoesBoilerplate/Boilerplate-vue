@@ -25,7 +25,7 @@
             variant="text"
             density="comfortable"
             size="small"
-            @click="emit('fechar')"
+            @click="emits('fechar')"
           />
         </template>
       </v-tooltip>
@@ -41,9 +41,9 @@
         :contexto="contextoConsulta"
         :textoVazio="textoVazio"
         :limite="limiteConsulta"
-        :limitOptions="[limiteConsulta]"
+        :opcoesLimite="[limiteConsulta]"
         :serviceFetch="handleBuscarRegistros"
-        :showLimitSelector="false"
+        :exibirSeletorLimite="false"
         textoFinal="Todos os registros foram carregados."
         textoError="Não foi possível consultar os registros."
         storage="session"
@@ -101,14 +101,12 @@ type TRegistroConsulta = Record<string, unknown>;
 // Constantes
 const CACHE_TTL_CONSULTA_MS = 60 * 1000;
 
+/**
+ * @property {ICampoFiltro<T>} campoSelecionado - Campo selecionado no formulário de filtros.
+ * @property {string} condicao - Condição selecionada no formulário de filtros.
+ */
 type TProps = {
-  /**
-   * Campo selecionado no formulário de filtros.
-   */
   campoSelecionado: ICampoFiltro<unknown> | null;
-  /**
-   * Condição selecionada no formulário de filtros.
-   */
   condicao?: string;
 };
 const props = defineProps<TProps>();
@@ -116,7 +114,7 @@ const props = defineProps<TProps>();
 type TEmits = {
   fechar: [];
 };
-const emit = defineEmits<TEmits>();
+const emits = defineEmits<TEmits>();
 
 // Reativas - Model
 const valorFiltro = defineModel<unknown>('valorFiltro', { required: true });
@@ -127,6 +125,12 @@ const termoPesquisa = ref('');
 const pesquisaRegistros = ref<string | null>('');
 
 // Funções
+
+/**
+ * @description Normaliza o resultado da consulta auxiliar.
+ * @param pResultado Resultado da consulta auxiliar.
+ * @returns Resultado normalizado da consulta auxiliar.
+ */
 function normalizarResultadoConsulta(
   pResultado: IResultadoConsultaRegistrosFiltro<TRegistroConsulta> | TRegistroConsulta[],
 ): IResultadoConsultaRegistrosFiltro<TRegistroConsulta> {
@@ -140,14 +144,30 @@ function normalizarResultadoConsulta(
   return pResultado;
 }
 
+/**
+ * @description Resolve o valor do registro.
+ * @param pRegistro Registro retornado pela consulta auxiliar.
+ * @returns Valor do registro.
+ */
 function resolveValorRegistro(pRegistro: TRegistroConsulta): unknown {
   return pRegistro[configuracaoConsulta.value.atributoValor];
 }
 
+/**
+ * @description Verifica se dois valores são iguais.
+ * @param pPrimeiroValor Primeiro valor a ser comparado.
+ * @param pSegundoValor Segundo valor a ser comparado.
+ * @returns True se os valores forem iguais, false caso contrário.
+ */
 function isMesmoValor(pPrimeiroValor: unknown, pSegundoValor: unknown): boolean {
   return String(pPrimeiroValor) === String(pSegundoValor);
 }
 
+/**
+ * @description Verifica se um registro está selecionado.
+ * @param pRegistro Registro a ser verificado.
+ * @returns True se o registro estiver selecionado, false caso contrário.
+ */
 function isRegistroSelecionado(pRegistro: TRegistroConsulta): boolean {
   const valorRegistro = resolveValorRegistro(pRegistro);
 
@@ -158,6 +178,10 @@ function isRegistroSelecionado(pRegistro: TRegistroConsulta): boolean {
   return valorFiltro.value !== undefined && valorFiltro.value !== null && isMesmoValor(valorFiltro.value, valorRegistro);
 }
 
+/**
+ * @description Seleciona um registro na consulta auxiliar.
+ * @param pRegistro Registro a ser selecionado.
+ */
 function handleSelecionarRegistro(pRegistro: TRegistroConsulta): void {
   const valorRegistro = resolveValorRegistro(pRegistro);
 
@@ -178,10 +202,19 @@ function handleSelecionarRegistro(pRegistro: TRegistroConsulta): void {
   valoresSelecionados.value = novosValores;
 }
 
+/**
+ * @description Manipula a pesquisa de registros.
+ * @param pTermoPesquisa Termo de pesquisa.
+ */
 function handlePesquisarRegistros(pTermoPesquisa: string): void {
   termoPesquisa.value = pTermoPesquisa;
 }
 
+/**
+ * @description Busca registros na consulta auxiliar.
+ * @param pPayload Payload de busca.
+ * @returns Registros da consulta auxiliar.
+ */
 async function handleBuscarRegistros(
   pPayload: IGenericListFetchPayload,
 ): Promise<TGenericListFetchResponse<TRegistroConsulta>> {
@@ -220,4 +253,5 @@ const contextoConsulta = computed(() => {
 const permiteSelecaoMultipla = computed(() =>
   [EOperadoresFiltro.SELECAO, EOperadoresFiltro.EXCECAO].includes(props.condicao as EOperadoresFiltro),
 );
+
 </script>

@@ -6,6 +6,7 @@ import { ClassMapeamentosFiltro } from '@/classes/filters/ClassMapeamentosFiltro
 
 // Types e Interfaces
 import type { TCamposFiltroUsuario } from '@/models/model/usuario/MapeamentoFiltrosUsuario';
+import type { TCamposFiltroRbac } from '@/models/model/rbac/MapeamentoFiltrosRbac';
 
 // Enums
 import { ERecursosFiltro } from '@/models/filters/enums/ERecursosFiltro';
@@ -72,6 +73,18 @@ export const routes: Array<RouteRecordRaw> = [
       hotkey: 'cmd+shift+u',
       filterContext: ERecursosFiltro.USUARIOS,
       filterResource: ClassMapeamentosFiltro.getMapeamento<TCamposFiltroUsuario>(ERecursosFiltro.USUARIOS),
+    },
+  },
+  {
+    path: '/rbac',
+    name: 'Rbac',
+    component: () => import('@/views/RbacView.vue'),
+    meta: {
+      title: 'routes.rbac.title',
+      icon: 'mdi-shield-key',
+      hotkey: 'cmd+shift+r',
+      filterContext: ERecursosFiltro.RBAC,
+      filterResource: ClassMapeamentosFiltro.getMapeamento<TCamposFiltroRbac>(ERecursosFiltro.RBAC),
     },
   },
   {

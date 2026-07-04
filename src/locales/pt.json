@@ -25,6 +25,9 @@
     "users": {
       "title": "Usuários"
     },
+    "rbac": {
+      "title": "Controle de acesso"
+    },
     "adm": {
       "title": "Administrador",
       "children": {

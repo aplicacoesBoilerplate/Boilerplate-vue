@@ -25,6 +25,7 @@
           <template v-slot:activator="{ props }">
             <v-list-item
               v-bind="props"
+              :active="itemEstaAtivo(item)"
               :prependIcon="item.icon"
               :title="t(item.title || '')"
             />
@@ -77,6 +78,9 @@ import { usePreferencesStore } from "@/stores/preferences.store";
 // Composables
 import { useNavigation } from "@/composables/useNavigation";
 
+// Types e Interfaces
+import type { IRouteMeta } from "@/models/model/IRouteMeta";
+
 // Componentes
 import DrawerItemUsuario from "./fixtures/DrawerItemUsuario.vue";
 import DrawerItemNavigation from "@/components/layouts/base/navigation/fixtures/DrawerItemNavigation.vue";
@@ -86,7 +90,7 @@ const authStore = useAuthStore();
 const preferencesStore = usePreferencesStore();
 
 // Composables
-const { menuItems } = useNavigation();
+const { menuItems, rotaAtualCorrespondeItem } = useNavigation();
 const { mdAndUp } = useDisplay();
 const { t } = useI18n();
 const router = useRouter();
@@ -95,6 +99,16 @@ const router = useRouter();
 function handleLogout() {
   authStore.logout();
   router.push({ name: "Login" });
+}
+
+/**
+ * @description Verifica se o item de navegação está ativo.
+ * Trata quando existem filtros persistidos nos parâmetros da rota quando não tem mapeamento de parâmetros no routes.ts.
+ * @param {IRouteMeta} pItem - O item de navegação a ser verificado.
+ * @returns {boolean} - Retorna true se o item estiver ativo, false caso contrário.
+ */
+function itemEstaAtivo(pItem: IRouteMeta): boolean {
+  return rotaAtualCorrespondeItem(pItem) || Boolean(pItem.children?.some(itemEstaAtivo));
 }
 
 // Computadas

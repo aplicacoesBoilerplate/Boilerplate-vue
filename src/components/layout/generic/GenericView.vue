@@ -1,19 +1,19 @@
 <template>
   <v-card
-    class="mb-3 pa-3 bg-surface"
+    class="mb-3 pa-3 bg-surface w-100"
     elevation="4"
     rounded="te-xl bs-xl"
   >
     <section class="w-100">
       <header
-        v-if="title || $slots.header"
+        v-if="titulo || $slots.header"
         class="mb-4"
       >
         <slot
           name="header"
-          :title="title"
+          :titulo="titulo"
         >
-          <h1 class="text-h4 font-weight-bold">{{ title }}</h1>
+          <h1 class="text-h4 font-weight-bold">{{ titulo }}</h1>
         </slot>
       </header>
 
@@ -27,7 +27,7 @@
         :limite="limite"
         :ordemInicial="ordemInicial"
         :itemKey="itemKey"
-        :limitOptions="limitOptions"
+        :opcoesLimite="opcoesLimite"
         :serviceFetch="serviceFetch"
         :storage="storage"
       >
@@ -37,7 +37,23 @@
             name="list-header"
             v-bind="slotProps"
           >
-            <div class="mb-3">
+            <div class="mb-3 d-flex align-center justify-start">
+              <v-tooltip
+                :text="slotProps.ordemAtual === 'asc' ? 'Ordenar decrescente' : 'Ordenar crescente'"
+                location="bottom"
+              >
+                <template #activator="{ props: tooltipProps }">
+                  <v-btn
+                    v-bind="tooltipProps"
+                    :icon="slotProps.ordemAtual === 'asc' ? 'mdi-sort-ascending' : 'mdi-sort-descending'"
+                    color="primary"
+                    size="x-small"
+                    variant="tonal"
+                    @click="slotProps.toggleOrder"
+                  />
+                </template>
+              </v-tooltip>
+
               <BtnActionDrawer
                 top="28px"
                 right="6px"
@@ -65,6 +81,7 @@
                       <slot
                         name="activator-novo-registro"
                         :handleNovoRegistro="() => handleNovoRegistro({ modoEdicao: false })"
+                        :tooltipProps="props"
                       >
                         <v-btn
                           v-bind="props"
@@ -122,42 +139,43 @@ import GenericInfiniteList from './GenericInfiniteList/GenericInfiniteList.vue';
 import MenuExportacaoDados from './fixtures/MenuExportacaoDados.vue';
 import BtnActionDrawer from '@/components/layouts/base/appbar/fixtures/BtnActionDrawer.vue';
 
-// Types
+/**
+ * @property {number} cacheTtlMs - Tempo de vida do contexto salvo em storage antes de a lista precisar recarregar.
+ * @property {string} contexto - Identificador unico do contexto usado pela store e pela chave no storage.
+ * @property {string} textoVazio - Texto exibido quando a lista ainda nao possui itens.
+ * @property {string} textoFinal - Texto exibido quando todos os registros ja foram carregados.
+ * @property {string} textoError - Texto exibido quando o carregamento do infinite scroll falhar.
+ * @property {number} limite - Limite inicial de registros por requisicao.
+ * @property {TOrdem} ordemInicial - Ordenacao inicial padrão.
+ * @property {string} itemKey - Campo estavel do item usado para montar seletor de restauracao de scroll.
+ * @property {number[]} opcoesLimite - Opcoes disponiveis no seletor de limite da lista.
+ * @property {function} serviceFetch - Funcao responsavel por buscar a proxima pagina de registros.
+ * @property {function} serviceExportacao - Metodo usado para exportar todos os registros; quando ausente, usa o serviceFetch da lista.
+ * @property {object} parametrosExportacao - Parametros adicionais enviados somente durante a exportacao.
+ * @property {object} colunasExportacao - Colunas usadas para montar cabecalhos e valores dos arquivos exportados.
+ * @property {string} nomeArquivoExportacao - Nome base do arquivo exportado.
+ * @property {boolean} exibirExportacao - Controla se o menu de exportacao sera exibido no drawer de acoes.
+ * @property {string} storage - Define onde o contexto sera persistido; em listas temporarias o padrao e session.
+ * @property {string} titulo - Titulo simples exibido quando o slot header nao for informado.
+ */
 type TProps = {
-  /** Tempo de vida do contexto salvo em storage antes de a lista precisar recarregar. */
   cacheTtlMs?: number;
-  /** Identificador unico do contexto usado pela store e pela chave no storage. */
   contexto: string;
-  /** Texto exibido quando a lista ainda nao possui itens. */
   textoVazio?: string;
-  /** Texto exibido quando todos os registros ja foram carregados. */
   textoFinal?: string;
-  /** Texto exibido quando o carregamento do infinite scroll falhar. */
   textoError?: string;
-  /** Limite inicial de registros por requisicao. */
   limite?: number;
-  /** Ordenação inicial padrão. */
   ordemInicial?: TOrdem;
-  /** Campo estavel do item usado para montar seletor de restauracao de scroll. */
   itemKey?: string;
-  /** Opcoes disponiveis no seletor de limite da lista. */
-  limitOptions?: number[];
-  /** Funcao responsavel por buscar a proxima pagina de registros. */
+  opcoesLimite?: number[];
   serviceFetch: (payload: IGenericListFetchPayload) => Promise<TGenericListFetchResponse>;
-  /** Metodo usado para exportar todos os registros; quando ausente, usa o serviceFetch da lista. */
   serviceExportacao?: TMetodoExportacaoDados;
-  /** Parametros adicionais enviados somente durante a exportacao. */
   parametrosExportacao?: Record<string, unknown>;
-  /** Colunas usadas para montar cabecalhos e valores dos arquivos exportados. */
   colunasExportacao?: IHeadersDataTable[];
-  /** Nome base do arquivo exportado. */
   nomeArquivoExportacao?: string;
-  /** Controla se o menu de exportacao sera exibido no drawer de acoes. */
   exibirExportacao?: boolean;
-  /** Define onde o contexto sera persistido; em listas temporarias o padrao e session. */
   storage?: TManagerStorageLocation;
-  /** Titulo simples exibido quando o slot header nao for informado. */
-  title?: string;
+  titulo?: string;
 };
 const props = withDefaults(defineProps<TProps>(), {
   cacheTtlMs: 15 * 60 * 1000,
@@ -167,14 +185,14 @@ const props = withDefaults(defineProps<TProps>(), {
   limite: undefined,
   ordemInicial: undefined,
   itemKey: undefined,
-  limitOptions: () => [10, 25, 50, 100],
+  opcoesLimite: () => [10, 25, 50, 100],
   serviceExportacao: undefined,
   parametrosExportacao: () => ({}),
   colunasExportacao: () => [],
   nomeArquivoExportacao: '',
   exibirExportacao: true,
   storage: 'session',
-  title: '',
+  titulo: '',
 });
 
 type TEmits = {
@@ -185,13 +203,13 @@ const emits = defineEmits<TEmits>();
 // Reativas
 const infiniteListRef = ref<InstanceType<typeof GenericInfiniteList> | null>(null);
 
-// Computadas
-const metodoExportacao = computed<TMetodoExportacaoDados>(() => props.serviceExportacao ?? props.serviceFetch);
-
 // Funções
 function handleNovoRegistro(pParams: { modoEdicao: boolean }): void {
   emits('novoRegistro', pParams);
 }
+
+// Computadas
+const metodoExportacao = computed<TMetodoExportacaoDados>(() => props.serviceExportacao ?? props.serviceFetch);
 
 // Expose
 defineExpose({
@@ -199,5 +217,15 @@ defineExpose({
   loadMore: (...args: Parameters<InstanceType<typeof GenericInfiniteList>['loadMore']>) =>
     infiniteListRef.value?.loadMore(...args),
   resetAndLoad: () => infiniteListRef.value?.resetAndLoad(),
+  inserirItem: (pItem: unknown) => infiniteListRef.value?.inserirItem(pItem),
+  atualizarItem: <TItem extends object>(
+    pIdField: keyof TItem,
+    pIdValue: TItem[keyof TItem],
+    pNewValues: Partial<TItem>,
+  ) => infiniteListRef.value?.atualizarItem(pIdField, pIdValue, pNewValues),
+  removerItem: <TItem extends object>(
+    pIdField: keyof TItem,
+    pIdValue: TItem[keyof TItem],
+  ) => infiniteListRef.value?.removerItem(pIdField, pIdValue),
 });
 </script>

@@ -24,7 +24,7 @@
       <template #subtitle>
         <v-sheet class="d-flex align-center justify-center">
           <v-chip
-            :appendIcon="ICONE_PAPEL[authStore.user?.papel ?? 'USER']"
+            :appendIcon="iconePapel"
             class="ma-0"
             color="primary"
             size="x-small"
@@ -61,7 +61,7 @@ import { useAuthStore } from '@/stores/auth';
 import { usePreferencesStore } from '@/stores/preferences.store';
 
 // Constantes
-import { ICONE_PAPEL } from '@/models/model/usuario/lUsuario';
+import { ICONE_PAPEL, type TPapelPadrao } from '@/models/model/usuario/lUsuario';
 
 // Composables
 const { mdAndUp } = useDisplay();
@@ -81,5 +81,7 @@ const shortName = computed(() => authStore.user?.nome?.split(' ')[0] ?? '');
 const initialLetter = computed(() => (shortName.value ? shortName.value.charAt(0).toUpperCase() : ''));
 
 const isPinned = computed(() => preferencesStore.preferences.drawer.isDrawerPinned);
+
+const iconePapel = computed(() => ICONE_PAPEL[(authStore.user?.papel ?? 'USER') as TPapelPadrao] ?? 'mdi-account-key');
 
 </script>

@@ -20,6 +20,7 @@
       :title="campo.descricao"
       :prependIcon="campo.icone"
       :active="genericFilterStore.campoSelecionado?.valor === campo.valor"
+      v-tooltip="{ text: campo.descricao, location: 'bottom', openDelay: 300 }"
       class="mt-1 ma-1"
       color="primary"
       rounded="ts-xl be-xl"
