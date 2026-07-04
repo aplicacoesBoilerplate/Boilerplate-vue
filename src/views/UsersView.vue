@@ -176,7 +176,7 @@ const modoEdicaoUsuario = ref(false);
 const modelFormUsuario = ref<IUsuario>(criarUsuarioPadrao());
 
 // Funções
-const mockData: IUsuario[] = [
+const mockData = ref<IUsuario[]>([
   {
     id: 1,
     nome: 'BOILERPLATE',
@@ -204,7 +204,7 @@ const mockData: IUsuario[] = [
     notificar: true,
     ativo: false,
   },
-];
+]);
 
 function handleGerenciarRegistro(payload: { modoEdicao: boolean; item?: IUsuario }) {
   modoEdicaoUsuario.value = payload.modoEdicao;
@@ -224,26 +224,59 @@ async function fetchUsersMock(payload: IGenericListFetchPayload): Promise<TGener
 
   const start = (payload.proximaEntrada as number) || 0;
   const limit = payload.limite || 10;
-  const data = mockData.slice(start, start + limit);
+  const usuariosOrdenados = ordenarUsuarios(mockData.value, payload.ordem);
+  const data = usuariosOrdenados.slice(start, start + limit);
 
   return {
     items: data,
-    temMaisRegistros: start + data.length < mockData.length,
-    proximaEntrada: start + data.length < mockData.length ? start + data.length : undefined,
+    temMaisRegistros: start + data.length < usuariosOrdenados.length,
+    proximaEntrada: start + data.length < usuariosOrdenados.length ? start + data.length : undefined,
   };
 }
 
 async function salvarUsuario() {
   // Chamada simulada a service
+  const usuarioNormalizado = criarUsuarioPadrao(modelFormUsuario.value);
+
+  if (modoEdicaoUsuario.value && usuarioNormalizado.id) {
+    mockData.value = mockData.value.map((pUsuario) =>
+      pUsuario.id === usuarioNormalizado.id ? usuarioNormalizado : pUsuario,
+    );
+    genericViewRef.value?.atualizarItem<IUsuario>('id', usuarioNormalizado.id, usuarioNormalizado);
+  } else {
+    const usuarioCriado = {
+      ...usuarioNormalizado,
+      id: obterProximoIdUsuario(),
+    };
+
+    mockData.value = [usuarioCriado, ...mockData.value];
+    genericViewRef.value?.inserirItem(usuarioCriado);
+  }
+
   exibirDialogUsuario.value = false;
-  await genericViewRef.value?.resetAndLoad();
 }
 
 async function deleteUser(pIdUsuario: number | undefined) {
   // Chamada simulada a service
   if (!pIdUsuario) return;
 
-  await genericViewRef.value?.resetAndLoad();
+  mockData.value = mockData.value.filter((pUsuario) => pUsuario.id !== pIdUsuario);
+  genericViewRef.value?.removerItem<IUsuario>('id', pIdUsuario);
+}
+
+function obterProximoIdUsuario(): number {
+  return Math.max(0, ...mockData.value.map((pUsuario) => pUsuario.id ?? 0)) + 1;
+}
+
+function ordenarUsuarios(pUsuarios: IUsuario[], pOrdem: IGenericListFetchPayload['ordem']): IUsuario[] {
+  return [...pUsuarios].sort((pUsuarioAtual, pProximoUsuario) => {
+    const idUsuarioAtual = pUsuarioAtual.id ?? 0;
+    const idProximoUsuario = pProximoUsuario.id ?? 0;
+
+    return pOrdem === 'asc'
+      ? idUsuarioAtual - idProximoUsuario
+      : idProximoUsuario - idUsuarioAtual;
+  });
 }
 
 // Computadas

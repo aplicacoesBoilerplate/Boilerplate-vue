@@ -3,7 +3,7 @@ import type {
   IConsultaRegistrosFiltroPayload,
   IResultadoConsultaRegistrosFiltro,
 } from '@/models/filters/IConsultaRegistrosFiltro';
-import { CARGOS_RBAC_INICIAIS, type ICargoRbac } from '@/models/model/rbac/rbac.models';
+import { CARGOS_RBAC_INICIAIS, type ICargoRbac } from '@/models/model/rbac/ICargoRbac';
 
 const CARGOS_CONSULTA_FILTRO: ICargoRbac[] = CARGOS_RBAC_INICIAIS;
 
@@ -45,7 +45,7 @@ export class CConsultaCargosFiltroService {
     }
 
     const nome = CConsultaCargosFiltroService.normalizarTexto(pCargo.nome);
-    const codigo = CConsultaCargosFiltroService.normalizarTexto(pCargo.codigo);
+    const codigo = CConsultaCargosFiltroService.normalizarTexto(pCargo.papel);
     const descricao = CConsultaCargosFiltroService.normalizarTexto(pCargo.descricao);
 
     return nome.includes(pTermoPesquisa) || codigo.includes(pTermoPesquisa) || descricao.includes(pTermoPesquisa);

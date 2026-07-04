@@ -99,14 +99,14 @@ import { useI18n } from 'vue-i18n';
 import { useRouter, type RouteRecordRaw } from 'vue-router';
 
 // Types e Interfaces
-import type { IPermissaoCargoRbac, TComportamentoPadraoPermissao } from '@/models/model/rbac/rbac.models';
+import type { IPermissaoCargoRbac, TComportamentoPadraoPermissao } from '@/models/model/rbac/ICargoRbac';
 
 // Mapeamentos
 import {
   PERMISSOES_GERAIS_RBAC,
   RECURSO_PERMISSAO_GERAL_RBAC,
   RECURSO_PERMISSAO_ROTAS_RBAC,
-} from '@/models/model/rbac/rbac.models';
+} from '@/models/model/rbac/ICargoRbac';
 
 type TProps = {
   /**

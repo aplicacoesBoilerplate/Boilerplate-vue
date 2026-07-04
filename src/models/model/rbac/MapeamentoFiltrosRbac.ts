@@ -1,14 +1,14 @@
 // Types e Interfaces
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 import type { IConsultaRegistrosFiltro } from '@/models/filters/IConsultaRegistrosFiltro';
-import type { ICargoRbac } from '@/models/model/rbac/rbac.models';
+import type { ICargoRbac } from '@/models/model/rbac/ICargoRbac';
 
 // Enums
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 
 // Mapeamentos
-import { COMPORTAMENTOS_PADRAO_PERMISSAO } from '@/models/model/rbac/rbac.models';
+import { COMPORTAMENTOS_PADRAO_PERMISSAO } from '@/models/model/rbac/ICargoRbac';
 
 // Services
 import { CConsultaCargosFiltroService } from '@/services/filters/CConsultaCargosFiltroService';
