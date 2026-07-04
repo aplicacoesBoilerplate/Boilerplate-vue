@@ -3,7 +3,7 @@
     :prependIcon="item.icon"
     :title="t(item.title || '')"
     :to="item.name ? { name: item.name } : item.path"
-    exact
+    :active="itemAtivo"
   >
     <template
       v-slot:append
@@ -21,13 +21,21 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useDisplay, useHotkey } from 'vuetify';
 
 // Types e Interfaces
 import type { IRouteMeta } from '@/models/model/IRouteMeta';
 
+// Utils
+import { rotaAtualCorrespondeItem } from '../NavigationDrawer.vue';
+
+/**
+ * @property {IRouteMeta} item - O item de navegação a ser renderizado.
+ * @property {boolean} isPinned - Indica se o drawer está fixado.
+ */
 type TProps = {
   item: IRouteMeta;
   isPinned: boolean;
@@ -37,7 +45,11 @@ const props = defineProps<TProps>();
 // Composables
 const { mdAndUp } = useDisplay();
 const { t } = useI18n();
+const route = useRoute();
 const router = useRouter();
+
+// Computadas
+const itemAtivo = computed(() => rotaAtualCorrespondeItem(props.item));
 
 // Registra a hotkey acoplada ao ciclo de vida deste item específico
 if (props.item.hotkey && props.item.name) {
@@ -45,4 +57,5 @@ if (props.item.hotkey && props.item.name) {
     router.push({ name: props.item.name });
   });
 }
+
 </script>

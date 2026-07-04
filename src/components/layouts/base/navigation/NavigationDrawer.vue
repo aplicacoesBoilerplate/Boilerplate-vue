@@ -25,6 +25,7 @@
           <template v-slot:activator="{ props }">
             <v-list-item
               v-bind="props"
+              :active="itemEstaAtivo(item)"
               :prependIcon="item.icon"
               :title="t(item.title || '')"
             />
@@ -66,7 +67,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 
@@ -76,6 +77,9 @@ import { usePreferencesStore } from "@/stores/preferences.store";
 
 // Composables
 import { useNavigation } from "@/composables/useNavigation";
+
+// Types e Interfaces
+import type { IRouteMeta } from "@/models/model/IRouteMeta";
 
 // Componentes
 import DrawerItemUsuario from "./fixtures/DrawerItemUsuario.vue";
@@ -89,12 +93,44 @@ const preferencesStore = usePreferencesStore();
 const { menuItems } = useNavigation();
 const { mdAndUp } = useDisplay();
 const { t } = useI18n();
+const route = useRoute();
 const router = useRouter();
 
 // Funções
 function handleLogout() {
   authStore.logout();
   router.push({ name: "Login" });
+}
+
+/**
+ * @description Verifica se o item de navegação está ativo.
+ * Trata quando existem filtros persistidos nos parâmetros da rota quando não tem mapeamento de parâmetros no routes.ts.
+ * @param {IRouteMeta} pItem - O item de navegação a ser verificado.
+ * @returns {boolean} - Retorna true se o item estiver ativo, false caso contrário.
+ */
+function itemEstaAtivo(pItem: IRouteMeta): boolean {
+  return rotaAtualCorrespondeItem(pItem) || Boolean(pItem.children?.some(itemEstaAtivo));
+}
+
+/**
+ * @description Verifica se a rota atual corresponde ao item de navegação.
+ * @param {IRouteMeta} pItem - O item de navegação a ser verificado.
+ * @returns {boolean} - Retorna true se a rota atual corresponde ao item de navegação, false caso contrário.
+ */
+export function rotaAtualCorrespondeItem(pItem: IRouteMeta): boolean {
+  // Verifica se o item atual possui algum correspondente na árvore de rotas.
+  if (pItem.name && route.matched.some((pRota) => pRota.name === pItem.name)) {
+    return true;
+  }
+
+  if (pItem.path) {
+    const rotaResolvida = router.resolve(pItem.path);
+
+    // Se a rota atual for igual à rota resolvida ou se a rota atual começar com a rota resolvida, considera ativa.
+    return route.path === rotaResolvida.path || route.path.startsWith(`${rotaResolvida.path}/`);
+  }
+
+  return false;
 }
 
 // Computadas
