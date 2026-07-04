@@ -67,7 +67,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 
@@ -90,10 +90,9 @@ const authStore = useAuthStore();
 const preferencesStore = usePreferencesStore();
 
 // Composables
-const { menuItems } = useNavigation();
+const { menuItems, rotaAtualCorrespondeItem } = useNavigation();
 const { mdAndUp } = useDisplay();
 const { t } = useI18n();
-const route = useRoute();
 const router = useRouter();
 
 // Funções
@@ -110,27 +109,6 @@ function handleLogout() {
  */
 function itemEstaAtivo(pItem: IRouteMeta): boolean {
   return rotaAtualCorrespondeItem(pItem) || Boolean(pItem.children?.some(itemEstaAtivo));
-}
-
-/**
- * @description Verifica se a rota atual corresponde ao item de navegação.
- * @param {IRouteMeta} pItem - O item de navegação a ser verificado.
- * @returns {boolean} - Retorna true se a rota atual corresponde ao item de navegação, false caso contrário.
- */
-export function rotaAtualCorrespondeItem(pItem: IRouteMeta): boolean {
-  // Verifica se o item atual possui algum correspondente na árvore de rotas.
-  if (pItem.name && route.matched.some((pRota) => pRota.name === pItem.name)) {
-    return true;
-  }
-
-  if (pItem.path) {
-    const rotaResolvida = router.resolve(pItem.path);
-
-    // Se a rota atual for igual à rota resolvida ou se a rota atual começar com a rota resolvida, considera ativa.
-    return route.path === rotaResolvida.path || route.path.startsWith(`${rotaResolvida.path}/`);
-  }
-
-  return false;
 }
 
 // Computadas

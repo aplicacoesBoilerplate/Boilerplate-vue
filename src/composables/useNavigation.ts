@@ -1,6 +1,6 @@
 // Ecossistema Vue
 import { computed } from 'vue';
-import { useRouter, type RouteRecordRaw } from 'vue-router';
+import { useRoute, useRouter, type RouteRecordRaw } from 'vue-router';
 
 // Types e Interfaces
 import type { IRouteMeta } from '@/models/model/IRouteMeta';
@@ -15,6 +15,7 @@ import { useAuthStore } from '@/stores/auth';
 export function useNavigation() {
   // Composables
   const router = useRouter();
+  const route = useRoute();
   const authStore = useAuthStore();
 
   /**
@@ -75,5 +76,28 @@ export function useNavigation() {
     return filterRoutes(allRoutes).map(mapRouteToMenuItem);
   });
 
-  return { menuItems };
+  /**
+   * @description Verifica se a rota atual corresponde ao item de navegação.
+   * @param {IRouteMeta} pItem - O item de navegação a ser verificado.
+   * @returns {boolean} - Retorna true se a rota atual corresponde ao item de navegação, false caso contrário.
+   */
+  const rotaAtualCorrespondeItem = (pItem: IRouteMeta): boolean => {
+    // Verifica se o item atual possui algum correspondente na árvore de rotas.
+    if (pItem.name && route.matched.some((pRota) => pRota.name === pItem.name)) {
+      return true;
+    }
+
+    // Se a rota atual for igual à rota resolvida ou se a rota atual começar com a rota resolvida, considera ativa.
+    if (pItem.path) {
+      const rotaResolvida = router.resolve(pItem.path);
+      return route.path === rotaResolvida.path || route.path.startsWith(`${rotaResolvida.path}/`);
+    }
+
+    return false;
+  };
+
+  return {
+    menuItems,
+    rotaAtualCorrespondeItem,
+  };
 }

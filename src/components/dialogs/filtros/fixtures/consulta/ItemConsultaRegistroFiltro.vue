@@ -3,10 +3,10 @@
     :active="selecionado"
     class="border rounded mb-2 px-3 py-2"
     color="primary"
+    variant="tonal"
     lines="one"
     link
-    variant="tonal"
-    @click="emit('selecionar', registro)"
+    @click="emits('selecionar', registro)"
   >
     <template #prepend>
       <v-icon
@@ -31,22 +31,16 @@ import { CFormatters } from '@/classes/Utils/CFormatters';
 
 type TRegistroConsulta = Record<string, unknown>;
 
+/**
+ * @property {string} atributoDescricao - Atributo usado para exibir a descrição principal do registro.
+ * @property {string} atributoValor - Atributo usado como valor aplicado no filtro.
+ * @property {TRegistroConsulta} registro - Registro retornado pela consulta auxiliar.
+ * @property {boolean} selecionado - Define se o registro está selecionado no filtro atual.
+ */
 type TProps = {
-  /**
-   * Atributo usado para exibir a descrição principal do registro.
-   */
   atributoDescricao: string;
-  /**
-   * Atributo usado como valor aplicado no filtro.
-   */
   atributoValor: string;
-  /**
-   * Registro retornado pela consulta auxiliar.
-   */
   registro: TRegistroConsulta;
-  /**
-   * Define se o registro está selecionado no filtro atual.
-   */
   selecionado: boolean;
 };
 const props = defineProps<TProps>();
@@ -54,9 +48,10 @@ const props = defineProps<TProps>();
 type TEmits = {
   selecionar: [registro: TRegistroConsulta];
 };
-const emit = defineEmits<TEmits>();
+const emits = defineEmits<TEmits>();
 
 // Computadas
 const descricaoRegistro = computed(() => CFormatters.formatarGenerico(props.registro[props.atributoDescricao]));
 const valorRegistro = computed(() => CFormatters.formatarGenerico(props.registro[props.atributoValor]));
+
 </script>

@@ -23,14 +23,14 @@
 // Ecossistema Vue
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useDisplay, useHotkey } from 'vuetify';
 
 // Types e Interfaces
 import type { IRouteMeta } from '@/models/model/IRouteMeta';
 
-// Utils
-import { rotaAtualCorrespondeItem } from '../NavigationDrawer.vue';
+// Composables
+import { useNavigation } from '@/composables/useNavigation';
 
 /**
  * @property {IRouteMeta} item - O item de navegação a ser renderizado.
@@ -45,8 +45,8 @@ const props = defineProps<TProps>();
 // Composables
 const { mdAndUp } = useDisplay();
 const { t } = useI18n();
-const route = useRoute();
 const router = useRouter();
+const { rotaAtualCorrespondeItem } = useNavigation();
 
 // Computadas
 const itemAtivo = computed(() => rotaAtualCorrespondeItem(props.item));
