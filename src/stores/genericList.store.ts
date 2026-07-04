@@ -174,6 +174,13 @@ export const useGenericListStore = defineStore('genericList', () => {
    */
   function setLimit(pContextId: string, pLimit: number) {
     // O limite tambem e persistido para manter a lista coerente ao voltar para a rota.
+    const options = getOptions(pContextId);
+
+    contextOptions.set(pContextId, {
+      ...options,
+      limite: pLimit,
+    });
+
     getContext(pContextId).limite = pLimit;
     persistContext(pContextId);
   }
@@ -185,6 +192,13 @@ export const useGenericListStore = defineStore('genericList', () => {
    */
   function setOrder(pContextId: string, pOrder: TOrdem) {
     // A ordenacao tambem e persistida.
+    const options = getOptions(pContextId);
+
+    contextOptions.set(pContextId, {
+      ...options,
+      ordem: pOrder,
+    });
+
     getContext(pContextId).ordem = pOrder;
     persistContext(pContextId);
   }
@@ -286,13 +300,43 @@ export const useGenericListStore = defineStore('genericList', () => {
   }
 
   /**
+   * Adiciona um item no fim de um contexto de lista.
+   * @param pContextId O ID do contexto.
+   * @param pItem O item a ser adicionado.
+   */
+  function appendItem<TItem = unknown>(pContextId: string, pItem: TItem) {
+    const context = getContext<TItem>(pContextId);
+    context.items = [...context.items, pItem];
+    context.atualizadoEm = Date.now();
+    persistContext(pContextId);
+  }
+
+  /**
+   * Remove um item de um contexto de lista.
+   * @param pContextId O ID do contexto.
+   * @param pIdField O campo de identificacao.
+   * @param pIdValue O valor de identificacao.
+   */
+  function removeItem<TItem extends object>(
+    pContextId: string,
+    pIdField: keyof TItem,
+    pIdValue: TItem[keyof TItem],
+  ) {
+    const context = getContext<TItem>(pContextId);
+
+    context.items = context.items.filter((pItem) => pItem[pIdField] !== pIdValue);
+    context.atualizadoEm = Date.now();
+    persistContext(pContextId);
+  }
+
+  /**
    * Atualiza um item em um contexto de lista.
    * @param pContextId O ID do contexto.
    * @param pIdField O campo de identificacao.
    * @param pIdValue O valor de identificacao.
    * @param pNewValues Os novos valores.
    */
-  function updateItem<TItem extends Record<string, unknown>>(
+  function updateItem<TItem extends object>(
     pContextId: string,
     pIdField: keyof TItem,
     pIdValue: TItem[keyof TItem],
@@ -370,6 +414,8 @@ export const useGenericListStore = defineStore('genericList', () => {
     clearExpiredContexts,
     clearAllContexts,
     prependItem,
+    appendItem,
+    removeItem,
     updateItem,
   };
 });
