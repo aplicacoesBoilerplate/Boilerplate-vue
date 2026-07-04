@@ -26,17 +26,18 @@ import type { RouteLocationRaw } from "vue-router";
 // Contextos
 import { genericInfiniteListKey } from "@/components/layout/generic/genericInfiniteList.context";
 
-// Types
+/**
+ * @property {boolean} disabled - Desabilita comportamento de link mesmo quando a props 'to' estiver preenchida.
+ * @property {number} index - Indice do item na lista; usado como fallback quando itemKey nao estiver disponivel.
+ * @property {unknown} item - Registro renderizado pelo slot.
+ * @property {string | number} itemKey - Chave estavel do item usada para montar o seletor de retorno.
+ * @property {RouteLocationRaw} to - Rota de destino acionada pelo redirect inteligente.
+ */
 type TProps = {
-  /** Desabilita comportamento de link mesmo quando a prop to estiver preenchida. */
   disabled?: boolean;
-  /** Indice do item na lista; usado como fallback quando itemKey nao estiver disponivel. */
   index?: number;
-  /** Registro renderizado pelo slot. */
   item: unknown;
-  /** Chave estavel do item usada para montar o seletor de retorno. */
   itemKey?: string | number;
-  /** Rota de destino acionada pelo redirect inteligente. */
   to?: RouteLocationRaw;
 };
 const props = defineProps<TProps>();
@@ -44,7 +45,7 @@ const props = defineProps<TProps>();
 type TEmits = {
   click: [event: MouseEvent | KeyboardEvent];
 }
-const emit = defineEmits<TEmits>();
+const emits = defineEmits<TEmits>();
 
 // Injeção de dependências
 const injectedContext = inject(genericInfiniteListKey);
@@ -53,20 +54,20 @@ if (!injectedContext) {
     "GenericInfiniteListItem deve ser usado dentro de GenericInfiniteList.",
   );
 }
-
 const context = injectedContext;
 
 // Funções
+
 /**
- * Lida com o evento de clique no item.
- * @param event O evento de clique.
+ * @description Lida com o evento de clique no item.
+ * @param {MouseEvent | KeyboardEvent} pEvent - O evento de clique.
  */
-async function handleClick(event: MouseEvent | KeyboardEvent) {
-  emit("click", event);
+async function handleClick(pEvent: MouseEvent | KeyboardEvent) {
+  emits("click", pEvent);
 
   if (!props.to || props.disabled) return;
 
-  // O seletor do proprio item e gravado na rota atual antes de sair dela.
+  // O seletor do proprio item é gravado na rota atual antes de sair dela.
   await context.redirectTo(
     props.to,
     String(itemBindings.value["data-scroll-selector"] ?? ""),
@@ -83,6 +84,7 @@ const itemBindings = computed(() =>
 .generic-infinite-list-item {
   scroll-margin-block: calc(var(--layout-app-bar-height, 64px) + 16px);
 }
+
 .generic-infinite-list-item--clickable {
   cursor: pointer;
 }

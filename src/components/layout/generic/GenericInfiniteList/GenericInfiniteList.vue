@@ -4,25 +4,27 @@
     style="min-height: 0"
   >
     <div
-      v-if="$slots.header || showLimitSelector"
+      v-if="$slots.header && exibirSeletorLimite"
       class="d-flex align-center justify-space-between mb-4 flex-wrap ga-4 flex-shrink-0"
     >
       <slot
         name="header"
-        :contextId="contexto"
+        :contexto="contexto"
+        :ordemAtual="ordemAtual"
         :items="items"
         :loading="loading"
+        :toggleOrder="alternarOrdenacao"
       />
 
       <v-select
-        v-if="showLimitSelector"
+        v-if="exibirSeletorLimite"
         v-model="limiteAtual"
-        :items="limitOptions"
+        :items="opcoesLimite"
         label="Limite"
         variant="outlined"
         density="compact"
         autocomplete="off"
-        hide-details
+        hideDetails
         style="max-width: 140px; flex: 0 0 140px"
         @update:model-value="resetarECarregar"
       />
@@ -36,15 +38,17 @@
       style="min-height: 0"
     >
       <slot
-        :contextId="contexto"
-        :currentLimit="limiteAtual"
+        :contexto="contexto"
+        :limiteAtual="limiteAtual"
+        :ordemAtual="ordemAtual"
         :getItemBindings="getItemBindings"
-        :hasMore="hasMore"
+        :temMaisRegistros="temMaisRegistros"
         :items="items"
         :loadMore="carregarMaisRegistros"
         :loading="loading"
         :redirectTo="redirecionarPara"
-        :resetAndLoad="resetarECarregar"
+        :resetarECarregar="resetarECarregar"
+        :alterarOrdenacao="alternarOrdenacao"
       />
 
       <template #loading>
@@ -141,33 +145,37 @@ import { genericInfiniteListKey } from "@/components/layout/generic/genericInfin
 // Types
 type TLoadDone = (status: "ok" | "empty" | "error") => void;
 
+/**
+ * @property {string} contexto - Identificador unico do cache/contexto desta lista.
+ * @property {function(payload: IGenericListFetchPayload): Promise<TGenericListFetchResponse>} serviceFetch - Função que busca a próxima página usando limite e cursor atuais.
+ * @property {number} cacheTtlMs - Tempo de vida do contexto salvo no storage.
+ * @property {string} textoVazio - Texto exibido quando não existem registros.
+ * @property {string} textoFinal - Texto exibido quando não ha mais páginas para carregar.
+ * @property {string} textoError - Texto exibido quando a chamada do infinite scroll falha.
+ * @property {number} limite - Limite inicial de itens por página.
+ * @property {number[]} opcoesLimite - Opções disponíveis para seleção de limite em componentes que expõem esse controle.
+ * @property {TOrdem} ordemInicial - Order inicial da busca.
+ * @property {boolean} exibirSeletorLimite - Controla a exibição do seletor de limite quando a lista possui cabeçalho próprio.
+ * @property {string} itemKey - Campo estável do item usado para montar seletores de restauração de scroll.
+ * @property {TManagerStorageLocation} storage - Local de persistência do contexto; session evita cache permanente de respostas.
+ * @property {boolean} usarFiltrosGlobais - Define se os filtros globais devem ser enviados e observados por esta lista.
+ */
 type TProps = {
-  /** Identificador unico do cache/contexto desta lista. */
   contexto: string;
-  /** Funcao que busca a proxima pagina usando limite e cursor atuais. */
   serviceFetch: (
     payload: IGenericListFetchPayload,
   ) => Promise<TGenericListFetchResponse>;
-  /** Tempo de vida do contexto salvo no storage. */
   cacheTtlMs?: number;
-  /** Texto exibido quando não existem registros. */
   textoVazio?: string;
-  /** Texto exibido quando não ha mais páginas para carregar. */
   textoFinal?: string;
-  /** Texto exibido quando a chamada do infinite scroll falha. */
   textoError?: string;
-  /** Limite inicial de itens por página. */
   limite?: number;
-  /** Opções disponíveis para seleção de limite em componentes que expõem esse controle. */
-  limitOptions?: number[];
-  /** Order inicial da busca. */
+  opcoesLimite?: number[];
   ordemInicial?: TOrdem;
-  /** Controla a exibição do seletor de limite quando a lista possui cabeçalho próprio. */
-  showLimitSelector?: boolean;
-  /** Campo estável do item usado para montar seletores de restauração de scroll. */
+  exibirSeletorLimite?: boolean;
   itemKey?: string;
-  /** Local de persistência do contexto; session evita cache permanente de respostas. */
   storage?: TManagerStorageLocation;
+  usarFiltrosGlobais?: boolean;
 };
 const props = withDefaults(defineProps<TProps>(), {
   cacheTtlMs: 15 * 60 * 1000,
@@ -180,6 +188,7 @@ const props = withDefaults(defineProps<TProps>(), {
   showLimitSelector: false,
   itemKey: undefined,
   storage: "session",
+  usarFiltrosGlobais: true,
 });
 
 // Stores
@@ -195,6 +204,14 @@ const loading = ref(false);
 const limiteAtual = ref(props.limite);
 
 // Funções
+
+/**
+ * @description Resolve a chave do item, usada para montar seletores de restauração de scroll.
+ * @param pItem - Item a ser resolvido.
+ * @param pIndex - Índice do item.
+ * @param pItemKey - Chave do item.
+ * @returns Chave do item.
+ */
 function resolveItemKey(
   pItem: unknown,
   pIndex: number,
@@ -214,6 +231,13 @@ function resolveItemKey(
   return pIndex;
 }
 
+/**
+ * @description Retorna os bindings de restauração de scroll para um item específico.
+ * @param pItem - Item a ser resolvido.
+ * @param pIndex - Índice do item.
+ * @param pItemKey - Chave do item.
+ * @returns Bindings de restauração de scroll.
+ */
 function getItemBindings(
   pItem: unknown,
   pIndex: number,
@@ -225,6 +249,11 @@ function getItemBindings(
   );
 }
 
+/**
+ * @description Normaliza a resposta da requisição.
+ * @param pResponse - Resposta da requisição.
+ * @returns Resposta normalizada.
+ */
 function normalizarResposta(pResponse: TGenericListFetchResponse) {
   if (Array.isArray(pResponse)) {
     return {
@@ -237,10 +266,18 @@ function normalizarResposta(pResponse: TGenericListFetchResponse) {
   return pResponse;
 }
 
+/**
+ * @description Redireciona para uma rota específica com restauração de scroll.
+ * @param to - Rota para a qual redirecionar.
+ * @param pSelector - Seletor do item para restauração de scroll.
+ */
 async function redirecionarPara(to: RouteLocationRaw, pSelector?: string | null) {
   await routeScrollRedirect.redirectTo(to, pSelector);
 }
 
+/**
+ * @description Reseta e carrega os registros.
+ */
 async function resetarECarregar() {
   loading.value = true;
 
@@ -256,11 +293,27 @@ async function resetarECarregar() {
   }
 }
 
+/**
+ * @description Alterna a ordem da lista.
+ */
+async function alternarOrdenacao(): Promise<void> {
+  const proximaOrdem: TOrdem = ordemAtual.value === "asc" ? "desc" : "asc";
+
+  genericListStore.setOrder(props.contexto, proximaOrdem);
+
+  await resetarECarregar();
+}
+
+/**
+ * @description Carrega mais registros para a lista.
+ * @param done - Função para notificar o status do carregamento.
+ * @param force - Força o carregamento.
+ */
 async function carregarMaisRegistros({
   done,
   force,
 }: { done?: TLoadDone; force?: boolean } = {}) {
-  if (!hasMore.value || (loading.value && !force)) {
+  if (!temMaisRegistros.value || (loading.value && !force)) {
     done?.("empty");
     return;
   }
@@ -271,9 +324,9 @@ async function carregarMaisRegistros({
     const payloadRequisicao: IGenericListFetchPayload = {
       contexto: props.contexto,
       limite: limiteAtual.value,
-      proximaEntrada: nextEntry.value,
-      ordem: currentOrder.value,
-      filtros: genericFilterStore.filtersApplied,
+      proximaEntrada: proximaEntrada.value,
+      ordem: ordemAtual.value,
+      filtros: props.usarFiltrosGlobais ? genericFilterStore.filtersApplied : undefined,
     };
 
     const response = await requisicaoService.executar({
@@ -282,19 +335,19 @@ async function carregarMaisRegistros({
     });
 
     const normalizedResponse = normalizarResposta(response);
-    const newNextEntry = normalizedResponse.proximaEntrada;
-    const nextHasMore =
+    const novoCursorEntrada = normalizedResponse.proximaEntrada;
+    const novoControleTemMaisRegistros =
       normalizedResponse.temMaisRegistros ??
       normalizedResponse.items.length >= limiteAtual.value;
 
     genericListStore.addItems(
       props.contexto,
       normalizedResponse.items,
-      newNextEntry,
-      nextHasMore,
+      novoCursorEntrada,
+      novoControleTemMaisRegistros,
     );
 
-    done?.(nextHasMore ? "ok" : "empty");
+    done?.(novoControleTemMaisRegistros ? "ok" : "empty");
   } catch {
     done?.("error");
   } finally {
@@ -302,11 +355,51 @@ async function carregarMaisRegistros({
   }
 }
 
+/**
+ * @description Insere um item na lista em memória, discartando a necessidade de recarregar a lista para que o item seja exibido e, consequentemente, perdendo todo o progresso do scroll.
+ * @param pItem - Item a ser inserido.
+ */
+function inserirItem(pItem: unknown): void {
+  if (ordemAtual.value === "asc") {
+    genericListStore.appendItem(props.contexto, pItem);
+    return;
+  }
+
+  genericListStore.prependItem(props.contexto, pItem);
+}
+
+/**
+ * @description Atualiza os dados de um item existente na lista em memória.
+ * @param pIdField - Campo identificador do item.
+ * @param pIdValue - Valor do campo identificador.
+ * @param pNewValues - Novos valores para o item.
+ */
+function atualizarItem<TItem extends object>(
+  pIdField: keyof TItem,
+  pIdValue: TItem[keyof TItem],
+  pNewValues: Partial<TItem>,
+): void {
+  genericListStore.updateItem(props.contexto, pIdField, pIdValue, pNewValues);
+}
+
+/**
+ * @description Remove um item da lista em memória.
+ * @template {TItem} - Tipo do item que deve ser inferido a partir do pIdField.
+ * @param pIdField - Campo identificador do item.
+ * @param pIdValue - Valor do campo identificador.
+ */
+function removerItem<TItem extends object>(
+  pIdField: keyof TItem,
+  pIdValue: TItem[keyof TItem],
+): void {
+  genericListStore.removeItem(props.contexto, pIdField, pIdValue);
+}
+
 // Computadas
 const items = computed(() => genericListStore.getItems(props.contexto));
-const hasMore = computed(() => genericListStore.getHasMore(props.contexto));
-const nextEntry = computed(() => genericListStore.getNextEntry(props.contexto));
-const currentOrder = computed(() => genericListStore.getOrder(props.contexto));
+const temMaisRegistros = computed(() => genericListStore.getHasMore(props.contexto));
+const proximaEntrada = computed(() => genericListStore.getNextEntry(props.contexto));
+const ordemAtual = computed(() => genericListStore.getOrder(props.contexto));
 
 // Observadores
 watch(() => props.contexto, (pContextId) => {
@@ -319,6 +412,10 @@ watch(() => props.contexto, (pContextId) => {
 });
 
 watch(() => genericFilterStore.filtersApplied, () => {
+  if (!props.usarFiltrosGlobais) {
+    return;
+  }
+
   void resetarECarregar();
 }, { deep: true });
 
@@ -345,6 +442,9 @@ provide(genericInfiniteListKey, {
 defineExpose({
   loadMore: carregarMaisRegistros,
   resetAndLoad: resetarECarregar,
+  inserirItem,
+  atualizarItem,
+  removerItem,
   getItemBindings,
   redirectTo: redirecionarPara,
 });
