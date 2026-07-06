@@ -1,7 +1,7 @@
 <template>
   <v-main>
     <MenuOptionsDrawer
-      :hasDialogLicence="false"
+      :exibirDialogLicence="false"
       top="24px"
       right="16px"
       width="160px"

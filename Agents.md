@@ -126,25 +126,88 @@ export interface IUserResponse {
 
 Comentários devem explicar responsabilidades, contratos e decisões que não sejam imediatamente óbvias.
 
-Evitar comentários que apenas repetem o nome do atributo, método ou classe.
+Evitar comentários que apenas repetem o nome do atributo, método, função, classe, type ou interface.
 
-### Models, types, interfaces e DTOs
+A documentação de símbolos TypeScript deve usar JSDoc em bloco único imediatamente acima da declaração documentada.
 
-Atributos de models, types, interfaces e DTOs devem ter comentários quando a responsabilidade não for imediatamente evidente.
+Não documentar atributos individualmente dentro do corpo de `type`, `interface`, DTO, props, emits, models ou exposes. A descrição dos atributos deve ficar no bloco JSDoc do símbolo pai usando `@property`.
 
-O comentário deve ficar acima do atributo.
+### Types, interfaces, DTOs e contratos de objeto
+
+Types, interfaces, DTOs e contratos de objeto devem concentrar a documentação em um único bloco JSDoc acima da declaração.
+
+Para cada atributo documentado, usar `@property {TipoDoAtributo} nomeDoAtributo - Descrição objetiva do atributo.`
 
 ```ts
+/**
+ * @description Contrato de usuário retornado pelo backend.
+ * @property {number} id - Identificador único do usuário no backend.
+ * @property {string} name - Nome exibido na interface e usado em filtros textuais.
+ */
 export interface IUserResponse {
-  /**
-   * Identificador único do usuário no backend.
-   */
   id: number;
-
-  /**
-   * Nome exibido na interface e usado em filtros textuais.
-   */
   name: string;
+}
+```
+
+```ts
+/**
+ * @property {string} atributoDescricao - Atributo usado para exibir a descrição principal do registro.
+ * @property {string} atributoValor - Atributo usado como valor aplicado no filtro.
+ * @property {TRegistroConsulta} registro - Registro retornado pela consulta auxiliar.
+ * @property {boolean} selecionado - Define se o registro está selecionado no filtro atual.
+ */
+type TProps = {
+  atributoDescricao: string;
+  atributoValor: string;
+  registro: TRegistroConsulta;
+  selecionado: boolean;
+};
+```
+
+### Classes, funções e métodos
+
+Classes, funções e métodos devem ser documentados com JSDoc em bloco único acima da declaração quando representarem responsabilidade pública, contrato reutilizável, regra de negócio ou comportamento que precise ser entendido em revisões futuras.
+
+Usar:
+
+* `@description` para explicar a responsabilidade geral.
+* `@param nomeDoParametro Descrição do parâmetro.` para cada parâmetro.
+* `@returns Descrição do retorno.` quando a função ou método retornar valor diferente de `void`.
+
+```ts
+/**
+ * @description Serviço responsável por consultar usuários no backend.
+ */
+export class CUserService {
+  /**
+   * @description Busca usuários conforme os filtros informados.
+   * @param pFilters Filtros aplicados na consulta de usuários.
+   * @returns Lista de usuários retornada pelo backend.
+   */
+  public static async findAll(pFilters: TUserFilters): Promise<IUserResponse[]> {
+    // ...
+  }
+}
+```
+
+```ts
+/**
+ * @description Normaliza o resultado da consulta auxiliar.
+ * @param pResultado Resultado da consulta auxiliar.
+ * @returns Resultado normalizado da consulta auxiliar.
+ */
+function normalizarResultadoConsulta(
+  pResultado: IResultadoConsultaRegistrosFiltro<TRegistroConsulta> | TRegistroConsulta[],
+): IResultadoConsultaRegistrosFiltro<TRegistroConsulta> {
+  if (Array.isArray(pResultado)) {
+    return {
+      registros: pResultado,
+      possuiMais: false,
+    };
+  }
+
+  return pResultado;
 }
 ```
 
@@ -152,18 +215,29 @@ export interface IUserResponse {
 
 Em componentes, props, emits, models e exposes devem ter comentários quando representarem contrato público do componente.
 
+A documentação deve ficar no bloco JSDoc do type/interface correspondente, usando `@property`, e não acima de cada propriedade.
+
 ```ts
+/**
+ * @property {boolean} loading - Define se o botão será exibido em estado de carregamento.
+ */
 type TProps = {
-  /**
-   * Define se o botão será exibido em estado de carregamento.
-   */
   loading: boolean;
+};
+```
+
+```ts
+/**
+ * @property {[]} save - Emitido quando o usuário confirma a ação principal.
+ */
+type TEmits = {
+  save: [];
 };
 ```
 
 ### Decisões não óbvias
 
-Comentários devem ser usados para explicar regras de negócio, decisões arquiteturais, workarounds e comportamentos que podem gerar dúvida em revisões futuras.
+Comentários inline devem ser usados apenas para explicar regras de negócio pontuais, decisões arquiteturais, workarounds e comportamentos que podem gerar dúvida em revisões futuras.
 
 ```ts
 // Usa o último item como cursor porque a paginação do endpoint é invertida.
@@ -280,20 +354,15 @@ Estas regras se aplicam a arquivos TypeScript em qualquer camada do projeto.
 ```ts
 export type TOrderDirection = 'asc' | 'desc';
 
+/**
+ * @description Parâmetros usados para consultas paginadas.
+ * @property {string} nextEntry - Cursor usado para buscar a próxima página.
+ * @property {number} limit - Quantidade máxima de registros retornados.
+ * @property {TOrderDirection} order - Direção de ordenação aplicada na consulta.
+ */
 export interface IPaginatedRequest {
-  /**
-   * Cursor usado para buscar a próxima página.
-   */
   nextEntry?: string;
-
-  /**
-   * Quantidade máxima de registros retornados.
-   */
   limit: number;
-
-  /**
-   * Direção de ordenação aplicada na consulta.
-   */
   order: TOrderDirection;
 }
 ```
@@ -305,9 +374,17 @@ export interface IPaginatedRequest {
 Classes devem iniciar com `C`.
 
 ```ts
+/**
+ * @description Classe utilitária responsável por formatar valores para exibição.
+ */
 export class CFormatters {
-  public static boolean(value: boolean): string {
-    return value ? 'Sim' : 'Não';
+  /**
+   * @description Formata um valor booleano para texto legível na interface.
+   * @param pValue Valor booleano que será formatado.
+   * @returns Texto correspondente ao valor booleano informado.
+   */
+  public static boolean(pValue: boolean): string {
+    return pValue ? 'Sim' : 'Não';
   }
 }
 ```
@@ -344,10 +421,10 @@ Quando a classe de service for responsável por requisições, seus métodos dev
 
 ```ts
 export class CUserService {
-  public static async findAll(filters: TUserFilters): Promise<IUserResponse[]> {
+  public static async findAll(pFilters: TUserFilters): Promise<IUserResponse[]> {
     try {
       const response = await http.get<IUserResponse[]>('/users', {
-        params: filters,
+        params: pFilters,
       });
 
       return response.data;
@@ -375,25 +452,17 @@ Services devem:
 Métodos com muitos parâmetros devem receber um objeto tipado.
 
 ```ts
+/**
+ * @description Parâmetros usados para consultar usuários de forma paginada.
+ * @property {string} nextEntry - Cursor usado para buscar a próxima página.
+ * @property {number} limit - Quantidade máxima de usuários retornados.
+ * @property {TOrderDirection} order - Direção da ordenação.
+ * @property {string} filter - Filtro textual aplicado sobre os usuários.
+ */
 export interface IUserPaginatedRequest {
-  /**
-   * Cursor usado para buscar a próxima página.
-   */
   nextEntry?: string;
-
-  /**
-   * Quantidade máxima de usuários retornados.
-   */
   limit: number;
-
-  /**
-   * Direção da ordenação.
-   */
   order: TOrderDirection;
-
-  /**
-   * Filtro textual aplicado sobre os usuários.
-   */
   filter?: string;
 }
 ```
@@ -415,13 +484,26 @@ findAll(params: IUserPaginatedRequest);
 Formatadores de dados devem ser centralizados em uma classe própria.
 
 ```ts
+/**
+ * @description Classe utilitária responsável por formatar valores para exibição.
+ */
 export class CFormatters {
-  public static date(value: string): string {
+  /**
+   * @description Formata uma data para exibição.
+   * @param pValue Data que será formatada.
+   * @returns Data formatada para exibição.
+   */
+  public static date(pValue: string): string {
     // ...
   }
 
-  public static boolean(value: boolean): string {
-    return value ? 'Sim' : 'Não';
+  /**
+   * @description Formata um valor booleano para texto legível na interface.
+   * @param pValue Valor booleano que será formatado.
+   * @returns Texto correspondente ao valor booleano informado.
+   */
+  public static boolean(pValue: boolean): string {
+    return pValue ? 'Sim' : 'Não';
   }
 }
 ```
@@ -460,17 +542,17 @@ Ordem recomendada:
 
 ```ts
 // Types e Interfaces
+/**
+ * @property {boolean} loading - Define se o componente está em estado de carregamento.
+ */
 type TProps = {
-  /**
-   * Define se o componente está em estado de carregamento.
-   */
   loading: boolean;
 };
 
+/**
+ * @property {[]} save - Emitido quando o usuário confirma a ação principal.
+ */
 type TEmits = {
-  /**
-   * Emitido quando o usuário confirma a ação principal.
-   */
   save: [];
 };
 
@@ -539,19 +621,19 @@ const loading = ref(false);
 Props devem vir antes de emits.
 
 ```ts
+/**
+ * @property {string} label - Texto exibido no botão.
+ */
 type TProps = {
-  /**
-   * Texto exibido no botão.
-   */
   label: string;
 };
 
 const props = defineProps<TProps>();
 
+/**
+ * @property {[]} click - Emitido quando o usuário aciona o botão.
+ */
 type TEmits = {
-  /**
-   * Emitido quando o usuário aciona o botão.
-   */
   click: [];
 };
 

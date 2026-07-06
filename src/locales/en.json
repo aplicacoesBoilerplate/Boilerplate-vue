@@ -10,6 +10,9 @@
     "home": {
       "title": "Home"
     },
+    "systemInfo": {
+      "title": "System information"
+    },
     "login": {
       "title": "Login"
     },

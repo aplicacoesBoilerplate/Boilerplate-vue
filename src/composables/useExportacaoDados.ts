@@ -3,7 +3,7 @@ import { ref, type Ref } from 'vue';
 
 // Stores
 import { useGenericFilterStore } from '@/stores/genericFilter.store';
-import { useSnackbarStore } from '@/stores/SnackbarStore';
+import { useSnackbarStore } from '@/stores/Snackbar.store';
 
 // Types e Interfaces
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';

@@ -26,7 +26,7 @@
 import { storeToRefs } from "pinia";
 
 // Store
-import { useSnackbarStore } from "@/stores/SnackbarStore";
+import { useSnackbarStore } from "@/stores/Snackbar.store";
 
 const snackbarStore = useSnackbarStore();
 const { messages } = storeToRefs(snackbarStore);

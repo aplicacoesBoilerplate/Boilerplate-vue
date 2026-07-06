@@ -7,7 +7,7 @@ import type { IRouteMeta } from '@/models/model/IRouteMeta';
 import type { TPapel } from '@/models/model/usuario/lUsuario';
 
 // Stores
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/stores/auth.store';
 
 /**
  * Composable responsável por gerenciar o comportamento do componente de Navigation.

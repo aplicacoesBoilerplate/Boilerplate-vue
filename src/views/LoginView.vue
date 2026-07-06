@@ -1,49 +1,82 @@
 <template>
-  <div class="d-flex justify-center mb-5" v-if="loading">
-    <v-progress-circular color="primary" indeterminate />
-  </div>
-
-  <FormLogin
-    ref="refFormLogin"
-    v-model:login="login"
-    v-model:valid="isFormValid"
-    @onSubmit="authLogin"
+  <v-container
+    class="d-flex align-center justify-center py-8"
+    fluid
+    style="min-height: 90vh"
   >
-    <template #actions>
-      <div class="d-flex flex-row">
-        <v-icon-btn
-          icon="mdi-refresh"
-          v-tooltip="t('tooltips.forms.reset')"
-          variant="text"
-          color="amber"
-          class="ma-3"
-          @click="handleReset"
-        />
-
-        <v-spacer />
-
-        <v-icon-btn
-          icon="mdi-lock-reset"
-          v-tooltip="t('tooltips.forms.forgotPassword')"
-          variant="text"
+    <v-card
+      class="w-100"
+      maxWidth="720"
+      elevation="8"
+      rounded="lg"
+    >
+      <v-card-title class="d-flex align-center justify-center ga-2 pt-6">
+        <v-icon
+          icon="mdi-shield-key-outline"
           color="primary"
-          class="ma-3"
-          @click="forgotPassword"
         />
+        <span>{{ tituloAtual }}</span>
+      </v-card-title>
 
-        <v-spacer />
+      <v-card-text>
+        <v-tabs
+          v-model="abaAtual"
+          color="primary"
+          density="compact"
+          grow
+        >
+          <v-tab value="login">
+            <v-icon
+              icon="mdi-login-variant"
+              start
+            />
+            Login
+          </v-tab>
 
-        <v-icon-btn
-          icon="mdi-login-variant"
-          v-tooltip="t('tooltips.forms.submit')"
-          variant="text"
-          color="success"
-          class="ma-3"
-          @click="onSubmit"
-        />
-      </div>
-    </template>
-  </FormLogin>
+          <v-tab value="registro">
+            <v-icon
+              icon="mdi-account-plus-outline"
+              start
+            />
+            Registro
+          </v-tab>
+        </v-tabs>
+
+        <v-window
+          v-model="abaAtual"
+          class="pt-5"
+        >
+          <v-window-item value="login">
+            <PainelLogin
+              ref="painelLoginRef"
+              v-model:login="login"
+              v-model:valid="loginValido"
+              :carregando="carregandoLogin"
+              :carregandoGoogle="carregandoGoogle"
+              :tooltipResetar="t('tooltips.forms.reset')"
+              @autenticarGoogle="autenticarGoogle"
+              @entrar="entrar"
+              @erroGoogle="handleErroLoginGoogle"
+              @recuperarSenha="irParaRecuperacaoSenha"
+              @resetar="resetarFormularioLogin"
+            />
+          </v-window-item>
+
+          <v-window-item value="registro">
+            <PainelRegistro
+              ref="painelRegistroRef"
+              v-model:registro="registro"
+              v-model:valid="registroValido"
+              :carregando="carregandoRegistro"
+              :tooltipResetar="t('tooltips.forms.reset')"
+              @resetar="resetarFormularioRegistro"
+              @solicitarAcesso="solicitarAcesso"
+            />
+          </v-window-item>
+        </v-window>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <script lang="ts" setup>
@@ -52,15 +85,21 @@ import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-// Stores
-import { useAuthStore } from '@/stores/auth';
+// Types e Interfaces
+import type { IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
 
 // Composables
-import { useSnackbar } from '@/composables/useSnackbar';
 import { useFormularioLogin } from '@/composables/useFormularioLogin';
+import { useSnackbar } from '@/composables/useSnackbar';
+
+// Stores
+import { useAuthStore } from '@/stores/auth.store';
 
 // Componentes
-import FormLogin from '@/components/forms/FormLogin.vue';
+import PainelLogin from '@/components/forms/fixtures/autenticacao/PainelLogin.vue';
+import PainelRegistro from '@/components/forms/fixtures/autenticacao/PainelRegistro.vue';
+
+type TAbaAutenticacao = 'login' | 'registro';
 
 // Composables
 const router = useRouter();
@@ -72,32 +111,98 @@ const { login, resetarLogin, salvarPreferenciaEmail } = useFormularioLogin();
 const authStore = useAuthStore();
 
 // Reativas
-const refFormLogin = ref<InstanceType<typeof FormLogin> | null>(null);
-const isFormValid = ref(false);
+const painelLoginRef = ref<InstanceType<typeof PainelLogin> | null>(null);
+const painelRegistroRef = ref<InstanceType<typeof PainelRegistro> | null>(null);
+const abaAtual = ref<TAbaAutenticacao>('login');
+const loginValido = ref(false);
+const registroValido = ref(false);
+const carregandoLogin = ref(false);
+const carregandoGoogle = ref(false);
+const carregandoRegistro = ref(false);
+const registro = ref<IUsuarioSolicitacaoAcesso>(criarRegistroPadrao());
 
 // Computadas
-const loading = computed(() => authStore.carregando);
+const tituloAtual = computed(() => (abaAtual.value === 'login' ? 'Acessar sistema' : 'Solicitar acesso'));
 
 // Funções
-async function authLogin(): Promise<void> {
-  const usuarioLogado = await authStore.login(login);
-  notify(`${t('messages.welcome')}, ${usuarioLogado.nome}!`, 'success');
+function criarRegistroPadrao(): IUsuarioSolicitacaoAcesso {
+  return {
+    nome: '',
+    email: '',
+    senha: '',
+    confirmarSenha: '',
+  };
 }
 
-async function handleReset(): Promise<void> {
-  resetarLogin();
-  await nextTick();
-  refFormLogin.value?.reset();
+function handleErroLoginGoogle(pMensagem: string): void {
+  notify(pMensagem, 'warning');
 }
 
-function forgotPassword(): void {
+function irParaRecuperacaoSenha(): void {
   router.push({ name: 'ForgotPassword' });
 }
 
-async function onSubmit(): Promise<void> {
-  salvarPreferenciaEmail();
-  await nextTick();
-  await refFormLogin.value?.submit();
+async function autenticarGoogle(pCredential?: string): Promise<void> {
+  if (!pCredential) {
+    notify('Configure o VITE_GOOGLE_CLIENT_ID para habilitar o login com Google.', 'warning');
+    return;
+  }
+
+  carregandoGoogle.value = true;
+
+  try {
+    const usuarioAutenticado = await authStore.loginGoogle(pCredential);
+    notify(`${t('messages.welcome')}, ${usuarioAutenticado.nome}!`, 'success');
+    await redirecionarAposAutenticacao();
+  } finally {
+    carregandoGoogle.value = false;
+  }
 }
 
+async function entrar(): Promise<void> {
+  salvarPreferenciaEmail();
+  carregandoLogin.value = true;
+
+  try {
+    const usuarioAutenticado = await authStore.login(login);
+    notify(`${t('messages.welcome')}, ${usuarioAutenticado.nome}!`, 'success');
+    await redirecionarAposAutenticacao();
+  } finally {
+    carregandoLogin.value = false;
+  }
+}
+
+async function resetarFormularioLogin(): Promise<void> {
+  resetarLogin();
+  await nextTick();
+  await painelLoginRef.value?.reset();
+}
+
+async function resetarFormularioRegistro(): Promise<void> {
+  registro.value = criarRegistroPadrao();
+  await nextTick();
+  await painelRegistroRef.value?.reset();
+}
+
+async function solicitarAcesso(): Promise<void> {
+  carregandoRegistro.value = true;
+
+  try {
+    await authStore.solicitarAcesso(registro.value);
+    registro.value = criarRegistroPadrao();
+    await nextTick();
+    await painelRegistroRef.value?.reset();
+    abaAtual.value = 'login';
+  } finally {
+    carregandoRegistro.value = false;
+  }
+}
+
+async function redirecionarAposAutenticacao(): Promise<void> {
+  const destino = typeof router.currentRoute.value.query.redirect === 'string'
+    ? router.currentRoute.value.query.redirect
+    : '/';
+
+  await router.push(destino);
+}
 </script>

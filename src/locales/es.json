@@ -10,6 +10,9 @@
     "home": {
       "title": "Inicio"
     },
+    "systemInfo": {
+      "title": "Información del sistema"
+    },
     "login": {
       "title": "Acceder"
     },

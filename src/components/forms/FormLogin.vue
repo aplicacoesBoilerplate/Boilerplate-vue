@@ -1,64 +1,47 @@
 <template>
-  <div
-    class="d-flex justify-center align-center h-100"
-    style="min-height: 90vh"
+  <BaseForm
+    ref="baseFormRef"
+    @onSubmit="emits('onSubmit')"
+    @update:isValid="formIsValid = $event"
   >
-    <v-card
-      class="mx-auto"
-      width="600"
-      elevation="8"
-      rounded="lg"
-    >
-      <v-card-title class="d-flex justify-center pt-5 pb-5">
-        {{ t('routes.login.title') }}
-      </v-card-title>
+    <v-row dense>
+      <v-col cols="12">
+        <v-text-field
+          v-model="loginForm.email"
+          :rules="[rules.required(), rules.email()]"
+          :label="t('forms.formLogin.inputEmail.label')"
+          variant="outlined"
+          density="compact"
+          autocomplete="off"
+          clearable
+        />
+      </v-col>
 
-      <BaseForm
-        ref="baseFormRef"
-        @onSubmit="emit('onSubmit')"
-        @update:isValid="formIsValid = $event"
-      >
-        <v-row
-          dense
-          class="d-flex justify-center"
+      <v-col cols="12">
+        <v-text-field
+          v-model="loginForm.password"
+          :rules="[rules.required()]"
+          :type="mostrarSenha ? 'text' : 'password'"
+          :label="t('forms.formLogin.inputPassword.label')"
+          variant="outlined"
+          density="compact"
+          autocomplete="off"
+          clearable
         >
-          <v-col cols="11">
-            <v-text-field
-              v-model="loginForm.email"
-              :rules="[rules.required(), rules.email()]"
-              :label="t('forms.formLogin.inputEmail.label')"
+          <template #append-inner>
+            <v-btn
+              :icon="mostrarSenha ? 'mdi-eye' : 'mdi-eye-off'"
+              variant="text"
               density="compact"
-              variant="outlined"
-              clearable
+              @click="mostrarSenha = !mostrarSenha"
             />
-          </v-col>
+          </template>
+        </v-text-field>
+      </v-col>
+    </v-row>
 
-          <v-col cols="11">
-            <v-text-field
-              v-model="loginForm.password"
-              :rules="[rules.required()]"
-              :type="mostrarSenha ? 'text' : 'password'"
-              :label="t('forms.formLogin.inputPassword.label')"
-              density="compact"
-              variant="outlined"
-              clearable
-            >
-              <template #append-inner>
-                <v-icon-btn
-                  :icon="mostrarSenha ? 'mdi-eye' : 'mdi-eye-off'"
-                  density="compact"
-                  variant="text"
-                  @click="mostrarSenha = !mostrarSenha"
-                />
-              </template>
-            </v-text-field>
-          </v-col>
-        </v-row>
-
-        <slot name="actions" />
-      </BaseForm>
-    </v-card>
-  </div>
+    <slot name="actions" />
+  </BaseForm>
 </template>
 
 <script setup lang="ts">
@@ -76,7 +59,7 @@ import BaseForm from '@/components/forms/base/BaseForm.vue';
 type TEmits = {
   onSubmit: [];
 };
-const emit = defineEmits<TEmits>();
+const emits = defineEmits<TEmits>();
 
 // Composables
 const rules = useRules();
@@ -86,7 +69,7 @@ const { t } = useI18n();
 const loginForm = defineModel<ILogin>('login', { required: true });
 const formIsValid = defineModel<boolean>('valid', { default: false });
 
-// Reativas - Ref
+// Reativas - ref
 const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
 const mostrarSenha = ref(false);
 
