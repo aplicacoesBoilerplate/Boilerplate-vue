@@ -3,7 +3,7 @@ import { ref, type Ref } from 'vue';
 
 // Stores
 import { useGenericFilterStore } from '@/stores/genericFilter.store';
-import { useSnackbarStore } from '@/stores/SnackbarStore';
+import { useSnackbarStore } from '@/stores/Snackbar.store';
 
 // Types e Interfaces
 import type { IPropsSnackbarQueue } from '@/models/IPropsSnackbarQueue';
@@ -103,6 +103,12 @@ export function useRequisicaoService(): TUseRequisicaoServiceReturn {
   const carregando = ref(false);
   const erro = ref<unknown>(null);
 
+  /**
+   * @description Monta os parâmetros paginados, combinando payload e parâmetros.
+   * @param pPayload Payload emitido por componentes genéricos de listagem.
+   * @param pParametros Parâmetros específicos do endpoint, além de paginação e filtros.
+   * @returns TParametrosPaginados<TParametros, TFiltros>
+   */
   function montarParametrosPaginados<TParametros extends object, TFiltros = IFiltrosConsulta[]>(
     pPayload: IGenericListFetchPayload<TFiltros>,
     pParametros = {} as TParametros,
@@ -116,6 +122,11 @@ export function useRequisicaoService(): TUseRequisicaoServiceReturn {
     };
   }
 
+  /**
+   * @description Executa uma requisição com parâmetros já normalizados.
+   * @param pOptions Opções da requisição.
+   * @returns Promise<TResposta>
+   */
   async function executar<TParametros, TResposta>(
     pOptions: IExecutarRequisicaoOptions<TParametros, TResposta>,
   ): Promise<TResposta> {
@@ -143,6 +154,11 @@ export function useRequisicaoService(): TUseRequisicaoServiceReturn {
     }
   }
 
+  /**
+   * @description Executa uma requisição com paginação e filtros.
+   * @param pOptions Opções da requisição.
+   * @returns Promise<TResposta>
+   */
   async function executarConsultaPaginada<TParametros extends object, TResposta, TFiltros = IFiltrosConsulta[]>(
     pOptions: IExecutarConsultaPaginadaOptions<TParametros, TResposta, TFiltros>,
   ): Promise<TResposta> {

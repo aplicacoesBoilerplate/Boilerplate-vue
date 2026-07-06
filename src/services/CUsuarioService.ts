@@ -1,7 +1,6 @@
 // Types e Interfaces
 import type { IResponsePaginacao } from '@/models/services/IResponsePaginacao';
 import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
-import type { IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 import type { IParametrosPaginacaoRequisicao } from '@/models/services/IParametrosPaginacaoRequisicao';
 
@@ -64,15 +63,6 @@ export class CUsuarioService extends CBaseHttpService {
    */
   public static async criar(pUsuario: IUsuario): Promise<IUsuario> {
     return CUsuarioService.post<IUsuario, IUsuario>('/usuarios', pUsuario);
-  }
-
-  /**
-   * @description Método que cria um usuário.
-   * @param pUsuario Usuário a ser criado.
-   * @returns Promise<IUsuario> que contém o usuário criado.
-   */
-  public static async solicitarAcesso(pUsuario: IUsuarioSolicitacaoAcesso): Promise<IUsuario> {
-    return CUsuarioService.post<IUsuario, IUsuarioSolicitacaoAcesso>('/usuarios/registrar', pUsuario);
   }
 
   /**

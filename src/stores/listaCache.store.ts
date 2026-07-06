@@ -8,7 +8,7 @@ interface ListSnapshot {
   isFinished: boolean;
 }
 
-export const useListCacheStore = defineStore('listCache', () => {
+export const useListaCacheStore = defineStore('listaCache', () => {
   const snapshots = ref<Map<string, ListSnapshot>>(new Map());
 
   function saveSnapshot(key: string, data: ListSnapshot) {

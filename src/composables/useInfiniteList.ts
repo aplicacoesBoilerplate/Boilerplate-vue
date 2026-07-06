@@ -1,9 +1,9 @@
 import { ref, onMounted, nextTick } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
-import { useListCacheStore } from '@/stores/listCache';
+import { useListaCacheStore } from '@/stores/listaCache.store';
 
 export function useInfiniteList<T>(key: string, fetchData: Function, limit = 20) {
-  const store = useListCacheStore();
+  const store = useListaCacheStore();
   const items = ref<T[]>([]);
   const offset = ref(0);
   const loading = ref(false);

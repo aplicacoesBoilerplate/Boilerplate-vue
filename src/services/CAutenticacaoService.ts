@@ -1,44 +1,35 @@
 // Types e Interfaces
-import type { IAlterPassword, IConfirmPassword, ILogin } from '@/models/model/autenticacao/autenticacao.models';
+import type {
+  IAlterPassword,
+  IConfirmPassword,
+  ILogin,
+  ILoginGoogle,
+  IRedefinicaoSenhaRecuperacao,
+  IRespostaLogin,
+  IRespostaUsuarioAutenticado,
+  ISolicitacaoRecuperacaoSenha,
+  IVerificacaoCodigoRecuperacaoSenha,
+} from '@/models/model/autenticacao/autenticacao.models';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
+import type { IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
 
 // Services
 import { CBaseHttpService } from '@/services/base/CBaseHttpService';
 import { CUsuarioService } from '@/services/CUsuarioService';
 
-interface IRespostaLogin {
-  /**
-   * Token JWT emitido pelo backend.
-   */
-  tokenJWT: string;
-}
-
-interface IRespostaUsuarioAutenticado {
-  /**
-   * Identificador do usuário autenticado no backend.
-   */
-  idUsuario: number;
-}
-
 /**
- * @description
- * Classe responsável por métodos de autenticação com implementação própria de métodos herdados para lidar com requisições HTTP.
+ * Centraliza os contratos HTTP de autenticação.
  */
 export class CAutenticacaoService extends CBaseHttpService {
   /**
-   * @description
-   * Método que faz login no sistema.
-   * @param pLogin Interface que contém os dados de login.
-   * @returns Promise<string> que contém o token JWT.
+   * Altera a senha do usuário autenticado.
    */
-  public static async login(pLogin: ILogin): Promise<string> {
-    return (await CAutenticacaoService.post<IRespostaLogin, ILogin>('/auth/login', pLogin)).tokenJWT;
+  public static async alterarSenha(pAlteracao: IAlterPassword): Promise<boolean> {
+    return CAutenticacaoService.put<boolean, IAlterPassword>('/auth/senha', pAlteracao);
   }
 
   /**
-   * @description
-   * Método que busca o usuário autenticado no sistema.
-   * @returns Promise<IUsuario> que contém o usuário autenticado.
+   * Consulta os dados do usuário autenticado.
    */
   public static async buscarUsuarioAutenticado(): Promise<IUsuario> {
     const resposta = await CAutenticacaoService.get<IRespostaUsuarioAutenticado>('/auth/me');
@@ -47,39 +38,80 @@ export class CAutenticacaoService extends CBaseHttpService {
   }
 
   /**
-   * @description
-   * Método que confirma a senha do usuário autenticado no sistema.
-   * @param pConfirmacao Interface que contém os dados de confirmação de senha.
-   * @returns Promise<boolean> que contém true se a senha foi confirmada com sucesso.
+   * Confirma a senha do usuário autenticado.
    */
   public static async confirmarSenha(pConfirmacao: IConfirmPassword): Promise<boolean> {
     const usuario = await CAutenticacaoService.buscarUsuarioAutenticado();
 
-    return CAutenticacaoService.post<boolean, IConfirmPassword>('/auth/confirmar', {
+    return CAutenticacaoService.post<boolean, IConfirmPassword>('/auth/senha/confirmar', {
       ...pConfirmacao,
       email: usuario.email,
     });
   }
 
   /**
-   * @description
-   * Método que altera a senha do usuário autenticado no sistema.
-   * @param pAlteracao Interface que contém os dados de alteração de senha.
-   * @returns Promise<boolean> que contém true se a senha foi alterada com sucesso.
+   * Encerra a sessão no backend quando o projeto implementar invalidação remota.
    */
-  public static async alterarSenha(pAlteracao: IAlterPassword): Promise<boolean> {
-    return CAutenticacaoService.put<boolean, IAlterPassword>('/auth/alter', pAlteracao);
+  public static async logout(): Promise<void> {
+    return CAutenticacaoService.post<void>('/auth/logout');
   }
 
   /**
-   * @description
-   * Método para recuperação de senha, enviando token ao email do usuário.
-   * @param pEmailUsuario Email do usuário que deseja recuperar a senha.
-   * @returns Promise<boolean> Retorna true se o token foi enviado com sucesso.
+   * Autentica o usuário com e-mail e senha.
    */
-  public static async solicitarRecuperacaoDeSenha(pEmailUsuario: string): Promise<boolean> {
-    return await CAutenticacaoService.post<boolean>('/auth/recuperar-senha', {
-      emailUsuario: pEmailUsuario,
-    });
+  public static async login(pLogin: ILogin): Promise<string> {
+    const resposta = await CAutenticacaoService.post<IRespostaLogin, ILogin>('/auth/login', pLogin);
+
+    return resposta.tokenJWT;
+  }
+
+  /**
+   * Autentica o usuário usando a credencial retornada pelo Google.
+   */
+  public static async loginGoogle(pLoginGoogle: ILoginGoogle): Promise<string> {
+    const resposta = await CAutenticacaoService.post<IRespostaLogin, ILoginGoogle>('/auth/login/google', pLoginGoogle);
+
+    return resposta.tokenJWT;
+  }
+
+  /**
+   * Redefine a senha usando o código recebido por e-mail.
+   */
+  public static async redefinirSenhaRecuperacao(
+    pRedefinicao: IRedefinicaoSenhaRecuperacao,
+  ): Promise<boolean> {
+    return CAutenticacaoService.post<boolean, IRedefinicaoSenhaRecuperacao>(
+      '/auth/recuperacao-senha/redefinir',
+      pRedefinicao,
+    );
+  }
+
+  /**
+   * Solicita acesso para criação de uma nova conta.
+   */
+  public static async solicitarAcesso(pSolicitacao: IUsuarioSolicitacaoAcesso): Promise<boolean> {
+    return CAutenticacaoService.post<boolean, IUsuarioSolicitacaoAcesso>('/auth/solicitacoes-acesso', pSolicitacao);
+  }
+
+  /**
+   * Solicita o envio do código de recuperação de senha.
+   */
+  public static async solicitarRecuperacaoSenha(pSolicitacao: ISolicitacaoRecuperacaoSenha): Promise<boolean> {
+    return CAutenticacaoService.post<boolean, ISolicitacaoRecuperacaoSenha>(
+      '/auth/recuperacao-senha/solicitar',
+      pSolicitacao,
+    );
+  }
+
+  /**
+   * Verifica se o código de recuperação informado é válido.
+   */
+  public static async verificarCodigoRecuperacaoSenha(
+    pVerificacao: IVerificacaoCodigoRecuperacaoSenha,
+  ): Promise<boolean> {
+    return CAutenticacaoService.post<boolean, IVerificacaoCodigoRecuperacaoSenha>(
+      '/auth/recuperacao-senha/verificar',
+      pVerificacao,
+    );
   }
 }

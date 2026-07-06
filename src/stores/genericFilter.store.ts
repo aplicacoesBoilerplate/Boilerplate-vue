@@ -6,7 +6,7 @@ import { useRoute, useRouter, type LocationQueryRaw } from 'vue-router';
 import { defineStore } from 'pinia';
 
 // Stores
-import { useSnackbarStore } from './SnackbarStore';
+import { useSnackbarStore } from './Snackbar.store';
 
 // Types e Interfaces
 import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';

@@ -69,8 +69,8 @@ import { computed, nextTick, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-// Composables
-import { useSnackbar } from '@/composables/useSnackbar';
+// Stores
+import { useAuthStore } from '@/stores/auth.store';
 
 // Componentes
 import EtapaCodigoRecuperacaoSenha from '@/components/forms/fixtures/autenticacao/EtapaCodigoRecuperacaoSenha.vue';
@@ -99,7 +99,9 @@ const DURACAO_TIMER_SEGUNDOS = 120;
 // Composables
 const { t } = useI18n();
 const router = useRouter();
-const { notify } = useSnackbar();
+
+// Stores
+const authStore = useAuthStore();
 
 // Reativas
 const etapaEmailRef = ref<InstanceType<typeof EtapaEmailRecuperacaoSenha> | null>(null);
@@ -175,8 +177,12 @@ async function alterarSenha(): Promise<void> {
   carregando.value = true;
 
   try {
-    await simularRequisicao();
-    notify(t('forgotPassword.feedback.alterSuccess'), 'success');
+    await authStore.redefinirSenhaRecuperacao({
+      email: formulario.value.email,
+      codigo: codigoOtp.value,
+      senha: formulario.value.senha,
+      confirmarSenha: formulario.value.confirmarSenha,
+    });
     await router.push({ name: 'Login' });
   } finally {
     carregando.value = false;
@@ -187,10 +193,9 @@ async function enviarCodigo(): Promise<void> {
   carregando.value = true;
 
   try {
-    await simularRequisicao();
+    await authStore.solicitarRecuperacaoSenha(formulario.value.email);
     etapaAtual.value = 2;
     iniciarTimer();
-    notify(t('forgotPassword.feedback.sentSuccess'), 'success');
   } finally {
     carregando.value = false;
   }
@@ -200,10 +205,9 @@ async function reenviarCodigo(): Promise<void> {
   carregando.value = true;
 
   try {
-    await simularRequisicao(600);
+    await authStore.solicitarRecuperacaoSenha(formulario.value.email);
     codigoOtp.value = '';
     iniciarTimer();
-    notify(t('forgotPassword.feedback.resendInfo'), 'info');
   } finally {
     carregando.value = false;
   }
@@ -225,10 +229,6 @@ async function resetarSenhas(): Promise<void> {
   await etapaSenhaRef.value?.reset();
 }
 
-async function simularRequisicao(pDelay = 900): Promise<void> {
-  await new Promise((pResolve) => setTimeout(pResolve, pDelay));
-}
-
 async function verificarCodigo(): Promise<void> {
   if (codigoOtp.value.length < 6) {
     return;
@@ -237,9 +237,11 @@ async function verificarCodigo(): Promise<void> {
   carregando.value = true;
 
   try {
-    await simularRequisicao();
+    await authStore.verificarCodigoRecuperacaoSenha({
+      email: formulario.value.email,
+      codigo: codigoOtp.value,
+    });
     etapaAtual.value = 3;
-    notify(t('forgotPassword.feedback.verifySuccess'), 'success');
   } finally {
     carregando.value = false;
   }

@@ -72,7 +72,7 @@ import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 
 // Stores
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from '@/stores/auth.store';
 import { usePreferencesStore } from "@/stores/preferences.store";
 
 // Composables

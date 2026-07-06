@@ -92,6 +92,9 @@ import type { IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioS
 import { useFormularioLogin } from '@/composables/useFormularioLogin';
 import { useSnackbar } from '@/composables/useSnackbar';
 
+// Stores
+import { useAuthStore } from '@/stores/auth.store';
+
 // Componentes
 import PainelLogin from '@/components/forms/fixtures/autenticacao/PainelLogin.vue';
 import PainelRegistro from '@/components/forms/fixtures/autenticacao/PainelRegistro.vue';
@@ -103,6 +106,9 @@ const router = useRouter();
 const { t } = useI18n();
 const { notify } = useSnackbar();
 const { login, resetarLogin, salvarPreferenciaEmail } = useFormularioLogin();
+
+// Stores
+const authStore = useAuthStore();
 
 // Reativas
 const painelLoginRef = ref<InstanceType<typeof PainelLogin> | null>(null);
@@ -137,16 +143,17 @@ function irParaRecuperacaoSenha(): void {
 }
 
 async function autenticarGoogle(pCredential?: string): Promise<void> {
+  if (!pCredential) {
+    notify('Configure o VITE_GOOGLE_CLIENT_ID para habilitar o login com Google.', 'warning');
+    return;
+  }
+
   carregandoGoogle.value = true;
 
   try {
-    await simularRequisicao();
-    notify(
-      pCredential
-        ? 'Credencial do Google recebida. Autenticação com backend simulada com sucesso.'
-        : 'Autenticação com Google simulada com sucesso.',
-      'success',
-    );
+    const usuarioAutenticado = await authStore.loginGoogle(pCredential);
+    notify(`${t('messages.welcome')}, ${usuarioAutenticado.nome}!`, 'success');
+    await redirecionarAposAutenticacao();
   } finally {
     carregandoGoogle.value = false;
   }
@@ -157,8 +164,9 @@ async function entrar(): Promise<void> {
   carregandoLogin.value = true;
 
   try {
-    await simularRequisicao();
-    notify(`${t('messages.welcome')}, ${login.email}!`, 'success');
+    const usuarioAutenticado = await authStore.login(login);
+    notify(`${t('messages.welcome')}, ${usuarioAutenticado.nome}!`, 'success');
+    await redirecionarAposAutenticacao();
   } finally {
     carregandoLogin.value = false;
   }
@@ -180,8 +188,7 @@ async function solicitarAcesso(): Promise<void> {
   carregandoRegistro.value = true;
 
   try {
-    await simularRequisicao();
-    notify('Solicitação de acesso registrada. Aguarde a liberação de um administrador.', 'success');
+    await authStore.solicitarAcesso(registro.value);
     registro.value = criarRegistroPadrao();
     await nextTick();
     await painelRegistroRef.value?.reset();
@@ -191,7 +198,11 @@ async function solicitarAcesso(): Promise<void> {
   }
 }
 
-async function simularRequisicao(pDelay = 900): Promise<void> {
-  await new Promise((pResolve) => setTimeout(pResolve, pDelay));
+async function redirecionarAposAutenticacao(): Promise<void> {
+  const destino = typeof router.currentRoute.value.query.redirect === 'string'
+    ? router.currentRoute.value.query.redirect
+    : '/';
+
+  await router.push(destino);
 }
 </script>
