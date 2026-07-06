@@ -1,0 +1,27 @@
+// Estilização customizada para a extensão da toolbar do BaseDialog
+.base-dialog-toolbar {
+  :deep(.v-toolbar__extension) {
+    background-color: rgb(var(--v-theme-surface)) !important;
+    color: rgb(var(--v-theme-on-surface)) !important;
+    padding: 0 !important;
+
+    // Garante que textos puros e ícones genéricos herdem a cor on-surface correta
+    .v-icon {
+      color: inherit !important;
+    }
+
+    // Garante que botões comuns herdem o contraste do surface
+    .v-btn:not(.v-tab) {
+      color: rgba(var(--v-theme-on-surface), 0.87) !important;
+    }
+
+    // Corrige a cor dos textos e ícones das abas para respeitar o fundo surface
+    .v-tab {
+      color: rgba(var(--v-theme-on-surface), 0.6) !important;
+
+      &.v-tab--selected {
+        color: rgb(var(--v-theme-primary)) !important;
+      }
+    }
+  }
+}

@@ -36,6 +36,7 @@
         <v-toolbar
           :title="titulo"
           :iconePrependTitulo="iconePrependTitulo"
+          class="base-dialog-toolbar"
           color="primary"
         >
           <template #prepend>
@@ -55,7 +56,7 @@
           </template>
 
           <template
-            v-if="mostrarExtensao"
+            v-if="$slots['extension']"
             #extension
           >
             <slot name="extension" />
@@ -121,7 +122,6 @@ const props = withDefaults(defineProps<IPropsBaseDialog>(), {
   zIndex: 2400,
 
   titulo: 'Dialog',
-  mostrarSlotExtension: false,
   mostrarAcoes: true,
   loading: false,
   contentClass: '',
@@ -169,7 +169,6 @@ const contentStyles = computed(() => {
   };
 });
 
-const mostrarExtensao = computed(() => props.mostrarSlotExtension ?? false);
 const mostrarAcoesDialog = computed(() => props.mostrarAcoes ?? true);
 
 // Expose
@@ -181,3 +180,5 @@ defineExpose({
   handleSalvar,
 });
 </script>
+
+<style src="./BaseDialog.scss" scoped lang="scss"></style>

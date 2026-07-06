@@ -4,43 +4,6 @@
     @onSubmit="emits('onSubmit')"
     @update:isValid="formIsValid = $event"
   >
-    <v-tabs
-      v-model="abaAtual"
-      color="primary"
-      density="compact"
-    >
-      <v-tab
-        value="dados"
-        rounded="ts-xl be-xl"
-      >
-        <v-icon
-          icon="mdi-card-account-details-outline"
-          start
-        />
-        Dados
-      </v-tab>
-      <v-tab
-        value="permissoes"
-        rounded="ts-xl be-xl"
-      >
-        <v-icon
-          icon="mdi-shield-key-outline"
-          start
-        />
-        Permissões
-      </v-tab>
-      <v-tab
-        value="usuarios"
-        rounded="ts-xl be-xl"
-      >
-        <v-icon
-          icon="mdi-account-switch-outline"
-          start
-        />
-        Usuários
-      </v-tab>
-    </v-tabs>
-
     <v-window
       v-model="abaAtual"
       class="pt-4"
@@ -76,16 +39,9 @@
           </v-col>
 
           <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
-            <v-text-field
+            <SeletorIconeMaterialDesign
               v-model="cargo.icone"
-              :counter="60"
-              :prependInnerIcon="cargo.icone || 'mdi-shield-account-outline'"
               :rules="[rules.maxLength(60)]"
-              label="Ícone"
-              hint="Informe um ícone Material Design, como mdi-shield-account-outline"
-              variant="outlined"
-              density="compact"
-              autocomplete="off"
             />
           </v-col>
 
@@ -135,6 +91,10 @@
           </v-col>
 
           <v-col cols="12">
+            <ConfiguracaoRedirecionamentoCargo v-model:redirecionamento="redirecionamentoInicialCargo" />
+          </v-col>
+
+          <v-col cols="12">
             <v-checkbox
               v-model="cargo.ativo"
               class="pa-0"
@@ -166,25 +126,27 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
-import type { ICargoRbac } from '@/models/model/rbac/ICargoRbac';
+import type { ICargoRbac, IRedirecionamentoInicialRbac } from '@/models/model/rbac/ICargoRbac';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 
 // Mapeamentos
-import { COMPORTAMENTOS_PADRAO_PERMISSAO, normalizarPapelCargo } from '@/models/model/rbac/ICargoRbac';
+import { COMPORTAMENTOS_PADRAO_PERMISSAO, criarCargoRbacPadrao, normalizarPapelCargo } from '@/models/model/rbac/ICargoRbac';
 
 // Componentes
 import BaseForm from '@/components/forms/base/BaseForm.vue';
+import ConfiguracaoRedirecionamentoCargo from '@/components/forms/fixtures/rbac/ConfiguracaoRedirecionamentoCargo.vue';
 import ControlePermissoesCargo from '@/components/forms/fixtures/rbac/ControlePermissoesCargo.vue';
+import SeletorIconeMaterialDesign from '@/components/forms/fixtures/SeletorIconeMaterialDesign.vue';
 import UsuariosVinculadosCargo from '@/components/forms/fixtures/rbac/UsuariosVinculadosCargo.vue';
 
+/**
+ * @property {ICargoRbac[]} cargosDisponiveis - Cargos disponíveis para vínculo de usuários.
+ */
 type TProps = {
-  /**
-   * Cargos disponíveis para vínculo de usuários.
-   */
   cargosDisponiveis: ICargoRbac[];
 };
 defineProps<TProps>();
@@ -201,10 +163,10 @@ const rules = useRules();
 const formIsValid = defineModel<boolean>('valido', { default: false });
 const cargo = defineModel<ICargoRbac>('cargo', { required: true });
 const usuarios = defineModel<IUsuario[]>('usuarios', { required: true });
+const abaAtual = defineModel<string>('abaAtual', { required: true, default: 'dados' });
 
 // Reativas - ref
 const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
-const abaAtual = ref('dados');
 
 // Funções
 function atualizarNomeCargo(pValor: unknown): void {
@@ -213,6 +175,17 @@ function atualizarNomeCargo(pValor: unknown): void {
   cargo.value.nome = nome;
   cargo.value.papel = normalizarPapelCargo(nome);
 }
+
+// Computadas
+const redirecionamentoInicialCargo = computed<IRedirecionamentoInicialRbac>({
+  get: () => cargo.value.redirecionamentoInicial ?? criarCargoRbacPadrao(cargo.value).redirecionamentoInicial,
+  set: (pRedirecionamento) => {
+    cargo.value = criarCargoRbacPadrao({
+      ...cargo.value,
+      redirecionamentoInicial: pRedirecionamento,
+    });
+  },
+});
 
 // Expose
 defineExpose({

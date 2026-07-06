@@ -51,16 +51,12 @@
           </v-list-item-subtitle>
 
           <template #append>
-            <v-select
+            <SelectRole
               :model-value="obterPapelUsuario(usuario)"
-              :items="itensCargos"
-              itemTitle="nome"
-              itemValue="papel"
+              :itens="itensCargos"
+              hideDetails
               maxWidth="180"
               minWidth="160"
-              variant="outlined"
-              density="compact"
-              hideDetails
               @update:model-value="atualizarCargoUsuario(usuario, String($event))"
             />
           </template>
@@ -81,6 +77,7 @@ import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/mode
 
 // Componentes
 import ConsultaVinculosFormulario from '@/components/forms/fixtures/vinculos/ConsultaVinculosFormulario.vue';
+import SelectRole, { type IItemSelectPapel } from '@/components/forms/fixtures/SelectRole.vue';
 
 type TProps = {
   /**
@@ -190,12 +187,13 @@ function inicializarPapeisOriginaisUsuarios(): void {
 // Computadas
 const contextoConsultaUsuarios = computed(() => `usuarios-vinculados-cargo:${props.cargo.papel}`);
 
-const itensCargos = computed(() => {
+const itensCargos = computed<IItemSelectPapel[]>(() => {
   return props.cargos
     .filter((pCargo) => pCargo.ativo)
     .map((pCargo) => ({
-      papel: pCargo.papel,
-      nome: pCargo.nome,
+      valor: pCargo.papel,
+      label: pCargo.nome,
+      icone: pCargo.icone,
     }));
 });
 

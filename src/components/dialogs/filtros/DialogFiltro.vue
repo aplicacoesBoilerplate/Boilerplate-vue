@@ -168,6 +168,7 @@ import { useGenericFilterStore } from '@/stores/genericFilter.store';
 
 // Types e Interfaces
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 
 // Componentes
 import BaseDialog from '../base/BaseDialog.vue';
@@ -176,14 +177,29 @@ import DrawerFiltroRight from './fixtures/drawers/DrawerFiltroRight.vue';
 import ConsultaRegistrosFiltro from './fixtures/consulta/ConsultaRegistrosFiltro.vue';
 import FormFiltros from '../../forms/FormFiltros.vue';
 
+/**
+ * @property {object[]} registros - Registros para consulta auxiliar.
+ * @property {ICampoFiltro[]} camposDisponiveis - Campos disponíveis para filtro.
+ * @property {string} contextoLocal - Contexto local do filtro.
+ * @property {IFiltrosConsulta[]} filtrosIniciais - Filtros iniciais.
+ * @property {boolean} modoLocal - Modo local do filtro, usado quando não se deseja utilizar a store, como no helper para o rbac.
+ */
 type TProps = {
   registros?: object[];
   camposDisponiveis: ICampoFiltro<any>[];
+  contextoLocal?: string;
+  filtrosIniciais?: IFiltrosConsulta[];
+  modoLocal?: boolean;
 };
-defineProps<TProps>();
+const props = withDefaults(defineProps<TProps>(), {
+  contextoLocal: 'dialog-filtro-local',
+  filtrosIniciais: () => [],
+  modoLocal: false,
+  registros: () => [],
+});
 
 type TEmits = {
-  onAplicarFiltros: [];
+  onAplicarFiltros: [filtros: IFiltrosConsulta[]];
 };
 const emits = defineEmits<TEmits>();
 
@@ -211,8 +227,16 @@ function handleOnLimparFiltros() {
 }
 
 function handleOnAplicarFiltros() {
+  const filtros = genericFilterStore.filtersApplied.map((pFiltro) => ({ ...pFiltro }));
+
+  if (props.modoLocal) {
+    emits('onAplicarFiltros', filtros);
+    exibirFiltros.value = false;
+    return;
+  }
+
   genericFilterStore.syncToUrl();
-  emits('onAplicarFiltros');
+  emits('onAplicarFiltros', filtros);
   exibirFiltros.value = false;
 }
 
@@ -230,6 +254,19 @@ const tamanhoBotaoAcao = computed(() => (smAndDown.value ? 'small' : 'default'))
 // Observadores
 watch(() => genericFilterStore.appliedCount, (newValue) => {
   toggleRightDrawer.value = newValue > 0;
+}, { immediate: true });
+
+watch(exibirFiltros, (pExibir) => {
+  if (!props.modoLocal) {
+    return;
+  }
+
+  if (pExibir) {
+    genericFilterStore.ativarContextoTemporario(props.contextoLocal, props.camposDisponiveis, props.filtrosIniciais);
+    return;
+  }
+
+  genericFilterStore.desativarContextoTemporario();
 }, { immediate: true });
 </script>
 

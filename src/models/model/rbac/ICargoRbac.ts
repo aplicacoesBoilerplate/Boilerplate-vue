@@ -1,5 +1,6 @@
 // Types e Interfaces
 import { ICONE_PAPEL, type TPapel } from '@/models/model/usuario/lUsuario';
+import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 
 export type TComportamentoPadraoPermissao = 'bloquear' | 'liberar';
 
@@ -28,6 +29,18 @@ export interface IPermissaoCargoRbac {
 }
 
 /**
+ * @description Define a rota e os filtros usados no redirecionamento inicial do cargo.
+ * @property {string} path - Caminho da rota inicial.
+ * @property {string} name - Nome técnico da rota inicial.
+ * @property {IFiltrosConsulta[]} filtros - Filtros iniciais aplicados na URL da rota inicial.
+ */
+export interface IRedirecionamentoInicialRbac {
+  path: string;
+  name?: string;
+  filtros: IFiltrosConsulta[];
+}
+
+/**
  * @description Define um cargo com suas permissões.
  * @property {number} id - Identificador do cargo.
  * @property {TPapel} papel - Papel usado nas permissões e no vínculo com usuários.
@@ -36,6 +49,7 @@ export interface IPermissaoCargoRbac {
  * @property {string} descricao - Descrição curta para orientar administradores.
  * @property {TComportamentoPadraoPermissao} comportamentoPadrao - Comportamento usado quando uma permissão específica ainda não foi configurada.
  * @property {IPermissaoCargoRbac[]} permissoes - Permissões configuradas explicitamente para o cargo.
+ * @property {IRedirecionamentoInicialRbac} redirecionamentoInicial - Rota inicial e filtros aplicados após autenticação.
  * @property {boolean} ativo - Controla se o cargo pode ser atribuído a usuários.
  */
 export interface ICargoRbac {
@@ -46,6 +60,7 @@ export interface ICargoRbac {
   descricao?: string;
   comportamentoPadrao: TComportamentoPadraoPermissao;
   permissoes: IPermissaoCargoRbac[];
+  redirecionamentoInicial: IRedirecionamentoInicialRbac;
   ativo: boolean;
 }
 
@@ -133,6 +148,11 @@ export function criarCargoRbacPadrao(pDados: Partial<ICargoRbac> = {}): ICargoRb
     descricao: pDados.descricao ?? '',
     comportamentoPadrao: pDados.comportamentoPadrao ?? 'bloquear',
     permissoes: pDados.permissoes ? [...pDados.permissoes] : [],
+    redirecionamentoInicial: {
+      path: pDados.redirecionamentoInicial?.path ?? '',
+      name: pDados.redirecionamentoInicial?.name,
+      filtros: pDados.redirecionamentoInicial?.filtros ? [...pDados.redirecionamentoInicial.filtros] : [],
+    },
     ativo: pDados.ativo ?? true,
   };
 }
@@ -162,6 +182,11 @@ export const CARGOS_RBAC_INICIAIS: ICargoRbac[] = [
     icone: ICONE_PAPEL['ADMIN'],
     descricao: 'Acesso operacional completo ao boilerplate.',
     comportamentoPadrao: 'liberar',
+    redirecionamentoInicial: {
+      path: '/',
+      name: 'Home',
+      filtros: [],
+    },
     permissoes: [],
   }),
   criarCargoRbacPadrao({
@@ -171,6 +196,11 @@ export const CARGOS_RBAC_INICIAIS: ICargoRbac[] = [
     icone: ICONE_PAPEL['USER'],
     descricao: 'Acesso básico para uso diário do sistema.',
     comportamentoPadrao: 'bloquear',
+    redirecionamentoInicial: {
+      path: '/users',
+      name: 'Users',
+      filtros: [],
+    },
     permissoes: [
       { recurso: RECURSO_PERMISSAO_ROTAS_RBAC, acao: 'Home', liberado: true },
       { recurso: RECURSO_PERMISSAO_ROTAS_RBAC, acao: 'Users', liberado: true },

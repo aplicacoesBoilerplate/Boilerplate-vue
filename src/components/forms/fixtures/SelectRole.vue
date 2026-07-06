@@ -4,9 +4,13 @@
     :rules="rules"
     :items="itensSelect"
     :label="labelExibido"
+    :hideDetails="hideDetails"
+    :maxWidth="maxWidth"
+    :minWidth="minWidth"
     :prependInnerIcon="iconeSelecionado"
-    :density="density"
     :variant="variant"
+    :density="density"
+    class="mt-1"
     itemTitle="label"
     itemValue="valor"
     autocomplete="off"
@@ -32,6 +36,25 @@ import { useI18n } from 'vue-i18n';
 // Types e Interfaces
 import { MAPEAMENTO_PAPEIS, type TPapel, type TPapelPadrao } from '@/models/model/usuario/lUsuario';
 
+type TRegraValidacao = (pValor: unknown) => boolean | string;
+
+export interface IItemSelectPapel {
+  /**
+   * Valor persistido no vínculo do usuário.
+   */
+  valor: TPapel;
+
+  /**
+   * Texto exibido no select.
+   */
+  label: string;
+
+  /**
+   * Ícone exibido na seleção e na listagem.
+   */
+  icone: string;
+}
+
 type TProps = {
   /**
    * Mensagem de label para o input.
@@ -39,9 +62,29 @@ type TProps = {
   label?: string;
 
   /**
+   * Itens exibidos no select. Quando ausente, usa o mapeamento padrão de papéis.
+   */
+  itens?: IItemSelectPapel[];
+
+  /**
    * Regras de validação do Vuetify.
    */
-  rules?: readonly any[];
+  rules?: readonly TRegraValidacao[];
+
+  /**
+   * Controla a exibição dos detalhes do campo.
+   */
+  hideDetails?: boolean | 'auto';
+
+  /**
+   * Largura máxima aplicada ao campo.
+   */
+  maxWidth?: string | number;
+
+  /**
+   * Largura mínima aplicada ao campo.
+   */
+  minWidth?: string | number;
 
   /**
    * Densidade do componente.
@@ -54,7 +97,11 @@ type TProps = {
   variant?: 'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain';
 };
 const props = withDefaults(defineProps<TProps>(), {
+  hideDetails: false,
+  itens: undefined,
   label: undefined,
+  maxWidth: undefined,
+  minWidth: undefined,
   rules: () => [],
   density: 'compact',
   variant: 'outlined',
@@ -72,14 +119,15 @@ const labelExibido = computed((): string => {
 });
 
 const itensSelect = computed(() => {
-  return Object.values(MAPEAMENTO_PAPEIS);
+  return props.itens ?? Object.values(MAPEAMENTO_PAPEIS);
 });
 
 const iconeSelecionado = computed((): string | undefined => {
   if (!papelSelecionado.value) {
     return undefined;
   }
-  
-  return MAPEAMENTO_PAPEIS[papelSelecionado.value as TPapelPadrao]?.icone;
+
+  return itensSelect.value.find((pItem) => pItem.valor === papelSelecionado.value)?.icone
+    ?? MAPEAMENTO_PAPEIS[papelSelecionado.value as TPapelPadrao]?.icone;
 });
 </script>

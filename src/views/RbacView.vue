@@ -1,6 +1,7 @@
 <template>
   <v-container
-    class="w-50 pb-0 overflow-hidden"
+    :class="mdAndDown ? 'w-100' : 'w-50'"
+    class="pb-0 overflow-hidden"
     fluid
   >
     <GenericView
@@ -21,9 +22,9 @@
           :cargosDisponiveis="cargos"
           @salvar="salvarCargo"
         >
-          <template #activator="{ props }">
+          <template #activator="{ props: DialogProps }">
             <v-btn
-              v-bind="mergeProps(props, tooltipProps)"
+              v-bind="mergeProps(tooltipProps, DialogProps)"
               color="primary"
               icon="mdi-plus"
               size="x-small"
@@ -32,6 +33,7 @@
             />
           </template>
         </DialogFormCargoRbac>
+
       </template>
 
       <template #default="{ items }">
@@ -83,6 +85,7 @@
 // Ecossistema Vue
 import { mergeProps, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useDisplay } from 'vuetify';
 
 // Types e Interfaces
 import {
@@ -106,6 +109,7 @@ const CONTEXTO_LISTA_CARGOS = 'lista-cargos-rbac';
 
 // Composables
 const router = useRouter();
+const { mdAndDown } = useDisplay();
 
 // Reativas
 const genericViewRef = ref<InstanceType<typeof GenericView> | null>(null);

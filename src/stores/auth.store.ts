@@ -1,13 +1,15 @@
-// Pinia
-import { defineStore } from 'pinia';
-
 // Ecossistema Vue
 import { computed, ref } from 'vue';
+import type { LocationQueryRaw, RouteLocationRaw } from 'vue-router';
+
+// Pinia
+import { defineStore } from 'pinia';
 
 // Stores
 import { useListaCacheStore } from './listaCache.store';
 
 // Types e Interfaces
+import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 import type {
   ILogin,
   ILoginGoogle,
@@ -23,6 +25,7 @@ import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
 // Services
 import { CAutenticacaoService } from '@/services/CAutenticacaoService';
+import { CRbacMockService } from '@/services/CRbacMockService';
 
 // Constantes
 const TOKEN_STORAGE_KEY = 'token';
@@ -61,6 +64,56 @@ export const useAuthStore = defineStore('auth', () => {
 
   function logout(): void {
     limparSessaoLocal();
+  }
+
+  function resolverDestinoAposLogin(pRedirectPrioritario?: string): RouteLocationRaw {
+    if (pRedirectPrioritario) {
+      return pRedirectPrioritario;
+    }
+
+    const cargoUsuario = user.value?.papel
+      ? CRbacMockService.buscarCargoPorPapel(user.value.papel)
+      : undefined;
+    const redirecionamentoInicial = cargoUsuario?.redirecionamentoInicial;
+
+    if (!redirecionamentoInicial?.path) {
+      return '/';
+    }
+
+    return {
+      path: redirecionamentoInicial.path,
+      query: serializarFiltrosParaQuery(redirecionamentoInicial.filtros),
+    };
+  }
+
+  function serializarFiltrosParaQuery(pFiltros: IFiltrosConsulta[]): LocationQueryRaw {
+    return pFiltros.reduce<LocationQueryRaw>((pQuery, pFiltro) => {
+      if (!pFiltro.campo || !pFiltro.condicao) {
+        return pQuery;
+      }
+
+      const valoresSelecionados = pFiltro.valoresSelecionados ?? [];
+      const valoresFiltro = valoresSelecionados.length > 0
+        ? valoresSelecionados
+        : [pFiltro.valor ?? ''];
+      const valorSerializado = valoresFiltro.map((pValor) => String(pValor)).join(',');
+      const valorQuery = `${pFiltro.condicao}:${valorSerializado}`;
+      const valorAtual = pQuery[pFiltro.campo];
+
+      if (Array.isArray(valorAtual)) {
+        pQuery[pFiltro.campo] = [...valorAtual, valorQuery];
+        return pQuery;
+      }
+
+      if (valorAtual) {
+        pQuery[pFiltro.campo] = [String(valorAtual), valorQuery];
+        return pQuery;
+      }
+
+      pQuery[pFiltro.campo] = valorQuery;
+
+      return pQuery;
+    }, {});
   }
 
   async function carregarUsuarioAutenticado(): Promise<IUsuario> {
@@ -171,6 +224,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     loginGoogle,
     logout,
+    resolverDestinoAposLogin,
     redefinirSenhaRecuperacao,
     solicitarAcesso,
     solicitarRecuperacaoSenha,

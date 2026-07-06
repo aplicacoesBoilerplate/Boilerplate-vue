@@ -86,6 +86,12 @@ export class CRbacMockService {
     return CRbacMockService.usuarios.map((pUsuario) => ({ ...pUsuario }));
   }
 
+  public static buscarCargoPorPapel(pPapel: TPapel): ICargoRbac | undefined {
+    const cargo = CRbacMockService.cargos.find((pCargo) => pCargo.papel === pPapel);
+
+    return cargo ? criarCargoRbacPadrao(cargo) : undefined;
+  }
+
   public static async buscarCargos(
     pPayload: IGenericListFetchPayload,
   ): Promise<TGenericListFetchResponse<ICargoRbac>> {

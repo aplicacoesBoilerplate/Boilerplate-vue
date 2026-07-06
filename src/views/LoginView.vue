@@ -76,6 +76,18 @@
         </v-window>
       </v-card-text>
     </v-card>
+
+    <OverlayFullscream v-model:exibirOverlay="exibirOverlayAutenticacao">
+      <template #mensagem>
+        <div class="text-subtitle-1 font-weight-bold">
+          Preparando acesso
+        </div>
+
+        <div class="text-body-2 text-medium-emphasis text-center">
+          Validando credenciais e rota inicial.
+        </div>
+      </template>
+    </OverlayFullscream>
   </v-container>
 </template>
 
@@ -85,19 +97,20 @@ import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
+// Stores
+import { useAuthStore } from '@/stores/auth.store';
+
 // Types e Interfaces
-import type { IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
+import { criarRegistroPadrao, type IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
 
 // Composables
 import { useFormularioLogin } from '@/composables/useFormularioLogin';
 import { useSnackbar } from '@/composables/useSnackbar';
 
-// Stores
-import { useAuthStore } from '@/stores/auth.store';
-
 // Componentes
 import PainelLogin from '@/components/forms/fixtures/autenticacao/PainelLogin.vue';
 import PainelRegistro from '@/components/forms/fixtures/autenticacao/PainelRegistro.vue';
+import OverlayFullscream from '@/components/layout/OverlayFullscream.vue';
 
 type TAbaAutenticacao = 'login' | 'registro';
 
@@ -119,21 +132,10 @@ const registroValido = ref(false);
 const carregandoLogin = ref(false);
 const carregandoGoogle = ref(false);
 const carregandoRegistro = ref(false);
+const processandoRedirecionamento = ref(false);
 const registro = ref<IUsuarioSolicitacaoAcesso>(criarRegistroPadrao());
 
-// Computadas
-const tituloAtual = computed(() => (abaAtual.value === 'login' ? 'Acessar sistema' : 'Solicitar acesso'));
-
 // Funções
-function criarRegistroPadrao(): IUsuarioSolicitacaoAcesso {
-  return {
-    nome: '',
-    email: '',
-    senha: '',
-    confirmarSenha: '',
-  };
-}
-
 function handleErroLoginGoogle(pMensagem: string): void {
   notify(pMensagem, 'warning');
 }
@@ -199,10 +201,23 @@ async function solicitarAcesso(): Promise<void> {
 }
 
 async function redirecionarAposAutenticacao(): Promise<void> {
-  const destino = typeof router.currentRoute.value.query.redirect === 'string'
-    ? router.currentRoute.value.query.redirect
-    : '/';
+  processandoRedirecionamento.value = true;
 
-  await router.push(destino);
+  try {
+    const redirectPrioritario = typeof router.currentRoute.value.query.redirect === 'string'
+      ? router.currentRoute.value.query.redirect
+      : undefined;
+    const destino = authStore.resolverDestinoAposLogin(redirectPrioritario);
+
+    await router.push(destino);
+  } finally {
+    processandoRedirecionamento.value = false;
+  }
 }
+
+// Computadas
+const tituloAtual = computed(() => (abaAtual.value === 'login' ? 'Acessar sistema' : 'Solicitar acesso'));
+const exibirOverlayAutenticacao = computed(() => {
+  return carregandoLogin.value || carregandoGoogle.value || processandoRedirecionamento.value;
+});
 </script>

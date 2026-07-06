@@ -12,6 +12,9 @@ import { useSnackbarStore } from './Snackbar.store';
 import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 
+// Enums
+import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
+
 /**
  * @description Gerencia o estado de filtros aplicados em uma view específica (contexto).
  * @property {IFiltrosConsulta[]} filtrosAplicados - Filtros aplicados no recurso atual.
@@ -26,6 +29,7 @@ interface IEstadoFiltrosContexto {
 
 const STORAGE_PREFIX = 'boilerplate.generic-filter.context.';
 const CONTEXTO_FILTRO_PADRAO = 'global';
+const CONTEXTO_TEMPORARIO_PREFIX = '__temporario__.';
 
 /**
  * Store responsável por gerenciar os filtros aplicados na view atual.
@@ -41,12 +45,18 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
 
   // Reativas
   const estadosPorContexto = ref<Record<string, IEstadoFiltrosContexto>>({});
+  const camposDisponiveisTemporarios = ref<ICampoFiltro<any>[] | null>(null);
+  const contextoFiltroTemporario = ref<string | null>(null);
 
   /** Controle de abertura/fechamento do Drawer de filtros. */
   const drawerFilterOpen = ref(false);
 
   /** Campos disponíveis fornecidos pela view atual baseados nos metadados da rota. */
   const camposDisponiveis = computed(() => {
+    if (camposDisponiveisTemporarios.value) {
+      return camposDisponiveisTemporarios.value;
+    }
+
     return (route.meta.filterResource as ICampoFiltro<any>[]) || [];
   });
 
@@ -56,6 +66,10 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   });
 
   const contextoFiltroAtual = computed(() => {
+    if (contextoFiltroTemporario.value) {
+      return contextoFiltroTemporario.value;
+    }
+
     return String(route.meta.filterContext ?? route.name ?? route.path ?? CONTEXTO_FILTRO_PADRAO);
   });
 
@@ -112,6 +126,10 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     return `${STORAGE_PREFIX}${pContexto}`;
   }
 
+  function contextoEhTemporario(pContexto: string): boolean {
+    return pContexto.startsWith(CONTEXTO_TEMPORARIO_PREFIX);
+  }
+
   function carregarContextoPersistido(pContexto: string): IEstadoFiltrosContexto | null {
     const estadoSerializado = localStorage.getItem(obterStorageKey(pContexto));
 
@@ -136,6 +154,10 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   }
 
   function persistirContexto(pContexto: string): void {
+    if (contextoEhTemporario(pContexto)) {
+      return;
+    }
+
     const estado = estadosPorContexto.value[pContexto];
 
     if (!estado) {
@@ -169,6 +191,10 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   }
 
   function possuiFiltrosNaUrl(): boolean {
+    if (contextoFiltroTemporario.value) {
+      return false;
+    }
+
     const chavesFiltros = obterChavesCamposFiltro();
 
     return Object.keys(route.query).some((pCampo) => chavesFiltros.has(pCampo));
@@ -179,6 +205,10 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
    * em reloads ou compartilhamento de links. Ignora limit/nextEntry.
    */
   function syncToUrl(): void {
+    if (contextoFiltroTemporario.value) {
+      return;
+    }
+
     const query = removerFiltrosDaQueryAtual();
     persistirContextoAtual();
 
@@ -209,6 +239,10 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
    * Le a query da rota atual e recria o estado em `filtersApplied`.
    */
   function loadFromUrl(): void {
+    if (contextoFiltroTemporario.value) {
+      return;
+    }
+
     const novosFiltros: IFiltrosConsulta[] = [];
     const chavesFiltros = obterChavesCamposFiltro();
 
@@ -223,13 +257,20 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
           if (splitVal.length >= 2) {
             const condition = splitVal[0];
             const value = splitVal.slice(1).join(':');
+            const valoresSelecionados = [
+              EOperadoresFiltro.SELECAO,
+              EOperadoresFiltro.EXCECAO,
+            ].includes(condition as EOperadoresFiltro)
+              ? value.split(',').filter(Boolean)
+              : [];
+
             novosFiltros.push({
               campo: campo,
               condicao: condition,
               valor: value,
               dataInicio: '',
               dataFinal: '',
-              valoresSelecionados: [],
+              valoresSelecionados,
             });
           }
         }
@@ -287,6 +328,37 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     removerContextoPersistido(contextoFiltroAtual.value);
   }
 
+  /**
+   * Ativa um contexto descartável para montar filtros sem afetar a rota atual.
+   */
+  function ativarContextoTemporario(
+    pContexto: string,
+    pCamposDisponiveis: ICampoFiltro<any>[],
+    pFiltrosIniciais: IFiltrosConsulta[] = [],
+  ): void {
+    const contexto = `${CONTEXTO_TEMPORARIO_PREFIX}${pContexto}`;
+
+    camposDisponiveisTemporarios.value = pCamposDisponiveis;
+    contextoFiltroTemporario.value = contexto;
+    estadosPorContexto.value[contexto] = {
+      filtrosAplicados: pFiltrosIniciais.map((pFiltro) => ({ ...pFiltro })),
+      modeloFiltro: {},
+      pesquisaDrawerLeft: '',
+    };
+  }
+
+  /**
+   * Remove o contexto descartável usado por dialogs locais.
+   */
+  function desativarContextoTemporario(): void {
+    if (contextoFiltroTemporario.value) {
+      delete estadosPorContexto.value[contextoFiltroTemporario.value];
+    }
+
+    contextoFiltroTemporario.value = null;
+    camposDisponiveisTemporarios.value = null;
+  }
+
   // Computadas
   /** Indica a quantidade de filtros ativos para badgets e indicadores UI. */
   const appliedCount = computed(() => filtersApplied.value.length);
@@ -302,7 +374,9 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
 
   return {
     estadosPorContexto,
+    ativarContextoTemporario,
     contextoFiltroAtual,
+    desativarContextoTemporario,
     filtersApplied,
     filterModel,
     drawerFilterOpen,

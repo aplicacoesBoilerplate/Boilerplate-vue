@@ -1,0 +1,214 @@
+<template>
+  <v-card
+    class="border rounded-lg"
+    variant="flat"
+  >
+    <v-card-text>
+      <div class="d-flex align-center ga-2 mb-3">
+        <v-icon
+          color="primary"
+          icon="mdi-routes"
+        />
+        <span class="text-subtitle-2 font-weight-bold">Redirecionamento inicial</span>
+      </div>
+
+      <v-autocomplete
+        :model-value="redirecionamento.path"
+        :items="rotasDisponiveis"
+        itemTitle="titulo"
+        itemValue="path"
+        label="Rota inicial após login"
+        variant="outlined"
+        density="compact"
+        autocomplete="off"
+        clearable
+        @update:model-value="atualizarRotaInicial"
+      >
+        <template #selection="{ item }">
+          <div class="d-flex align-center ga-2">
+            <v-icon
+              :icon="item.raw.icone"
+              size="small"
+            />
+            <span>{{ item.raw.titulo }}</span>
+          </div>
+        </template>
+
+        <template #item="{ props: itemProps, item }">
+          <v-list-item
+            v-bind="itemProps"
+            :title="item.raw.titulo"
+            :subtitle="`${item.raw.name} • ${item.raw.path}`"
+            :prependIcon="item.raw.icone"
+          />
+        </template>
+
+        <template #append>
+          <v-tooltip
+            v-if="rotaSelecionada?.possuiFiltros"
+            text="Configurar filtros iniciais"
+            location="bottom"
+          >
+            <template #activator="{ props: tooltipProps }">
+              <v-btn
+                v-bind="tooltipProps"
+                color="primary"
+                variant="text"
+                size="small"
+                icon
+                @click.stop="abrirDialogFiltros"
+              >
+                <v-badge
+                  :content="redirecionamento.filtros.length"
+                  :model-value="redirecionamento.filtros.length > 0"
+                  color="indigo-darken-4"
+                >
+                  <v-icon icon="mdi-filter-cog-outline" />
+                </v-badge>
+              </v-btn>
+            </template>
+          </v-tooltip>
+        </template>
+      </v-autocomplete>
+
+      <v-alert
+        v-if="redirecionamento.path && !rotaSelecionada?.possuiFiltros"
+        class="mt-2"
+        type="info"
+        variant="tonal"
+        density="compact"
+      >
+        Esta rota não possui filtros configuráveis.
+      </v-alert>
+
+      <DialogFiltro
+        v-if="deveMontarDialogFiltros"
+        v-model:exibirFiltros="exibirDialogFiltros"
+        :camposDisponiveis="rotaSelecionada?.camposFiltro ?? []"
+        :contextoLocal="`redirecionamento-${rotaSelecionada?.name ?? 'rota'}`"
+        :filtrosIniciais="redirecionamento.filtros"
+        modoLocal
+        @onAplicarFiltros="atualizarFiltrosIniciais"
+      >
+        <template #activator>
+          <span class="d-none" />
+        </template>
+      </DialogFiltro>
+    </v-card-text>
+  </v-card>
+</template>
+
+<script setup lang="ts">
+// Ecossistema Vue
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter, type RouteRecordRaw } from 'vue-router';
+
+// Types e Interfaces
+import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+import type { IRedirecionamentoInicialRbac } from '@/models/model/rbac/ICargoRbac';
+
+// Componentes
+import DialogFiltro from '@/components/dialogs/filtros/DialogFiltro.vue';
+
+/**
+ * @property {ICampoFiltro<any>[]} camposFiltro - Campos de filtro aceitos pela rota selecionada.
+ * @property {string} icone - Ícone cadastrado no meta da rota.
+ * @property {string} name - Nome técnico usado pelo Vue Router.
+ * @property {string} path - Caminho absoluto usado no redirecionamento.
+ * @property {boolean} possuiFiltros - Indica se a rota permite montar filtros iniciais.
+ * @property {string} titulo - Texto amigável exibido no autocomplete.
+ */
+type TRotaRedirecionamentoRbac = {
+  camposFiltro: ICampoFiltro<any>[];
+  icone: string;
+  name: string;
+  path: string;
+  possuiFiltros: boolean;
+  titulo: string;
+};
+
+// Composables
+const router = useRouter();
+const { t } = useI18n();
+
+// Reativas - Model
+const redirecionamento = defineModel<IRedirecionamentoInicialRbac>('redirecionamento', { required: true });
+
+// Reativas - ref
+const exibirDialogFiltros = ref(false);
+const dialogFiltrosMontado = ref(false);
+
+// Funções
+function abrirDialogFiltros(): void {
+  dialogFiltrosMontado.value = true;
+  exibirDialogFiltros.value = true;
+}
+
+function atualizarFiltrosIniciais(pFiltros: IFiltrosConsulta[]): void {
+  redirecionamento.value = {
+    ...redirecionamento.value,
+    filtros: pFiltros,
+  };
+}
+
+function atualizarRotaInicial(pPath: unknown): void {
+  const pathAtual = redirecionamento.value.path;
+  const rota = rotasDisponiveis.value.find((pRota) => pRota.path === String(pPath ?? ''));
+
+  redirecionamento.value = {
+    path: rota?.path ?? '',
+    name: rota?.name,
+    filtros: rota?.path === pathAtual ? redirecionamento.value.filtros : [],
+  };
+}
+
+function mapearRotasRedirecionamento(
+  pRotas: readonly RouteRecordRaw[],
+  pCaminhoPai = '',
+): TRotaRedirecionamentoRbac[] {
+  return pRotas.flatMap((pRota) => {
+    const path = resolverPathRota(pCaminhoPai, pRota.path);
+    const rotasFilhas = mapearRotasRedirecionamento(pRota.children ?? [], path);
+
+    if (pRota.meta?.hidden || !pRota.name) {
+      return rotasFilhas;
+    }
+
+    const camposFiltro = (pRota.meta?.filterResource as ICampoFiltro<any>[] | undefined) ?? [];
+
+    return [
+      {
+        camposFiltro,
+        icone: String(pRota.meta?.icon ?? 'mdi-routes'),
+        name: String(pRota.name),
+        path,
+        possuiFiltros: camposFiltro.length > 0,
+        titulo: pRota.meta?.title ? t(String(pRota.meta.title)) : String(pRota.name),
+      },
+      ...rotasFilhas,
+    ];
+  });
+}
+
+function resolverPathRota(pCaminhoPai: string, pPath: string): string {
+  if (pPath.startsWith('/')) {
+    return pPath;
+  }
+
+  const caminhoPaiNormalizado = pCaminhoPai === '/' ? '' : pCaminhoPai;
+  const caminhoNormalizado = pPath ? `/${pPath}` : '';
+
+  return `${caminhoPaiNormalizado}${caminhoNormalizado}` || '/';
+}
+
+// Computadas
+const rotasDisponiveis = computed<TRotaRedirecionamentoRbac[]>(() => mapearRotasRedirecionamento(router.options.routes));
+
+const rotaSelecionada = computed(() => {
+  return rotasDisponiveis.value.find((pRota) => pRota.path === redirecionamento.value.path);
+});
+
+const deveMontarDialogFiltros = computed(() => dialogFiltrosMontado.value && !!rotaSelecionada.value?.possuiFiltros);
+</script>

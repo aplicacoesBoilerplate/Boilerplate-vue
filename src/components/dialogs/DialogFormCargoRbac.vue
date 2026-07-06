@@ -19,12 +19,17 @@
       </slot>
     </template>
 
+    <template #extension>
+      <TabsExtensionToolbar v-model:abaAtual="aba" />
+    </template>
+
     <template #content>
       <FormCargoRbac
         ref="refFormCargo"
         v-model:cargo="cargo"
         v-model:usuarios="usuarios"
         v-model:valido="formValido"
+        v-model:abaAtual="aba"
         :cargosDisponiveis="cargosDisponiveis"
         @onSubmit="salvarCargo"
       />
@@ -66,6 +71,7 @@ import type { IUsuario } from '@/models/model/usuario/lUsuario';
 // Componentes
 import BaseDialog from './base/BaseDialog.vue';
 import FormCargoRbac from '@/components/forms/FormCargoRbac.vue';
+import TabsExtensionToolbar, { type TAbas } from '../forms/fixtures/rbac/TabsExtensionToolbar.vue';
 
 /**
  * @property {boolean} modoEdicao - Define se o diálogo está criando ou editando um cargo.
@@ -90,6 +96,7 @@ const usuarios = defineModel<IUsuario[]>('usuarios', { required: true });
 // Reativas - ref
 const refFormCargo = ref<InstanceType<typeof FormCargoRbac> | null>(null);
 const formValido = ref(false);
+const aba = ref<TAbas>('dados');
 
 // Funções
 function resetarFormCargo(): void {

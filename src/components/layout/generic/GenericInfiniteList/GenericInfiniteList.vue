@@ -4,8 +4,8 @@
     style="min-height: 0"
   >
     <div
-      v-if="$slots.header && exibirSeletorLimite"
-      class="d-flex align-center justify-space-between mb-4 flex-wrap ga-4 flex-shrink-0"
+      v-if="$slots.header"
+      class="d-flex align-center justify-space-between flex-wrap ga-4 flex-shrink-0"
     >
       <slot
         name="header"
@@ -183,9 +183,9 @@ const props = withDefaults(defineProps<TProps>(), {
   textoFinal: "Todos os registros foram carregados.",
   textoError: "Não foi possível carregar os registros.",
   limite: 10,
-  limitOptions: () => [10, 25, 50, 100],
+  opcoesLimite: () => [10, 25, 50, 100],
   ordemInicial: undefined,
-  showLimitSelector: false,
+  exibirSeletorLimite: false,
   itemKey: undefined,
   storage: "session",
   usarFiltrosGlobais: true,

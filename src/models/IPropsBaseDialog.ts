@@ -14,8 +14,7 @@
  * @property {string|number} zIndex - Camada do eixo Z (z-index) do componente.
  * @property {string} titulo - Titulo exibido no cabecalho padrao do dialog.
  * @property {string} iconePrependTitulo - Icone que sera exibido no prepend do cabecalho padrao do dialog.
- * @property {boolean} mostrarSlotExtension - Controla a exibicao do slot extension abaixo do toolbar do cabecalho.
- * @property {boolean} mostrarAcoes - Controla a exibicao do card-actions no rodape (Botoes cancelar/salvar).
+ * @property {boolean} mostrarAcoes - Controla a exibicao do card-actions padrão no rodape (Botoes cancelar/salvar).
  * @property {boolean} loading - Estado de carregamento do botao Salvar e possivel interatividade.
  * @property {string} contentClass - Classe CSS customizada repassada diretamente para o slot de content (`v-card-text`).
  */
@@ -32,7 +31,6 @@ export interface IPropsBaseDialog {
   zIndex?: string | number;
   titulo?: string;
   iconePrependTitulo?: string;
-  mostrarSlotExtension?: boolean;
   mostrarAcoes?: boolean;
   loading?: boolean;
   contentClass?: string;
