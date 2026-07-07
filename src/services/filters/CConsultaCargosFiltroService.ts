@@ -3,51 +3,51 @@ import type {
   IConsultaRegistrosFiltroPayload,
   IResultadoConsultaRegistrosFiltro,
 } from '@/models/filters/IConsultaRegistrosFiltro';
-import { CARGOS_RBAC_INICIAIS, type ICargoRbac } from '@/models/model/rbac/ICargoRbac';
+import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+import type { ICargoRbac } from '@/models/model/rbac/ICargoRbac';
 
-const CARGOS_CONSULTA_FILTRO: ICargoRbac[] = CARGOS_RBAC_INICIAIS;
+// Enums
+import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 
-// Service temporário para simular a consulta auxiliar de cargos até o backend expor o endpoint definitivo.
+// Services
+import { CRbacService } from '@/services/CRbacService';
+
+/**
+ * @description Service de consulta auxiliar de cargos usado pelos filtros avançados.
+ */
 export class CConsultaCargosFiltroService {
   public static async buscarRegistros(
     pPayload: IConsultaRegistrosFiltroPayload,
   ): Promise<IResultadoConsultaRegistrosFiltro<ICargoRbac>> {
-    await new Promise((pResolver) => setTimeout(pResolver, 300));
-
-    const termoPesquisa = CConsultaCargosFiltroService.normalizarTexto(pPayload.termoPesquisa);
-    const proximaEntrada = Number(pPayload.proximaEntrada ?? 0);
-    const limite = pPayload.limite || 10;
-
-    const registrosFiltrados = CARGOS_CONSULTA_FILTRO.filter((pCargo) =>
-      CConsultaCargosFiltroService.cargoCorrespondePesquisa(pCargo, termoPesquisa),
-    );
-
-    const registros = registrosFiltrados.slice(proximaEntrada, proximaEntrada + limite);
-    const proximoIndice = proximaEntrada + registros.length;
+    const filtros = CConsultaCargosFiltroService.montarFiltrosPesquisa(pPayload);
+    const resposta = await CRbacService.consultar({
+      limite: pPayload.limite,
+      proximaEntrada: pPayload.proximaEntrada,
+      ordem: 'asc',
+      filtros,
+    });
 
     return {
-      registros,
-      proximaEntrada: proximoIndice < registrosFiltrados.length ? proximoIndice : undefined,
-      possuiMais: proximoIndice < registrosFiltrados.length,
+      registros: resposta.items,
+      proximaEntrada: resposta.proximaEntrada,
+      possuiMais: resposta.temMaisRegistros,
     };
   }
 
-  private static normalizarTexto(pValor: unknown): string {
-    return String(pValor ?? '')
-      .toUpperCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
-  }
-
-  private static cargoCorrespondePesquisa(pCargo: ICargoRbac, pTermoPesquisa: string): boolean {
-    if (!pTermoPesquisa) {
-      return true;
+  private static montarFiltrosPesquisa(pPayload: IConsultaRegistrosFiltroPayload): IFiltrosConsulta[] {
+    if (!pPayload.termoPesquisa) {
+      return [];
     }
 
-    const nome = CConsultaCargosFiltroService.normalizarTexto(pCargo.nome);
-    const codigo = CConsultaCargosFiltroService.normalizarTexto(pCargo.papel);
-    const descricao = CConsultaCargosFiltroService.normalizarTexto(pCargo.descricao);
-
-    return nome.includes(pTermoPesquisa) || codigo.includes(pTermoPesquisa) || descricao.includes(pTermoPesquisa);
+    return [
+      {
+        campo: pPayload.campo || 'nome',
+        condicao: EOperadoresFiltro.CONTEM,
+        valor: pPayload.termoPesquisa,
+        dataInicio: null,
+        dataFinal: null,
+        valoresSelecionados: [],
+      },
+    ];
   }
 }

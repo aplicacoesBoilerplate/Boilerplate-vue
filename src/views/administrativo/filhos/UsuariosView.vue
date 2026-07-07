@@ -11,7 +11,7 @@
         <GenericView
           ref="genericViewRef"
           :contexto="CONTEXTO_LISTA_USUARIOS"
-          :serviceFetch="buscarUsuariosMock"
+          :serviceFetch="buscarUsuarios"
           :colunasExportacao="headersExportacao"
           nomeArquivoExportacao="usuarios"
           @novoRegistro="gerenciarRegistro"
@@ -145,6 +145,10 @@ import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/mode
 
 // Composables
 import { useChartHelpers } from '@/composables/useChartHelpers';
+import { useRequisicaoService } from '@/composables/useRequisicaoService';
+
+// Services
+import { CUsuarioService } from '@/services/CUsuarioService';
 
 // Mapeamentos
 import { MAPEAMENTO_TABELA_USUARIO, MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO } from '@/models/model/usuario/MapeamentoTabelaUsuario';
@@ -159,6 +163,7 @@ import DialogFormUsuario from '@/components/dialogs/DialogFormUsuario.vue';
 // Composables
 const listStore = useGenericListStore();
 const genericFilterStore = useGenericFilterStore();
+const requisicaoService = useRequisicaoService();
 const { t } = useI18n();
 
 // Constantes e Dados Base
@@ -178,36 +183,6 @@ const modoEdicaoUsuario = ref(false);
 const modelFormUsuario = ref<IUsuario>(criarUsuarioPadrao());
 
 // Funções
-const mockData = ref<IUsuario[]>([
-  {
-    id: 1,
-    nome: 'BOILERPLATE',
-    email: 'boilerplate@gmail.com',
-    papel: 'ADMIN',
-    telefone: '(32) 99999-9999',
-    notificar: true,
-    ativo: true,
-  },
-  {
-    id: 2,
-    nome: 'GERSON',
-    email: 'gerson@gmail.com',
-    papel: 'USER',
-    telefone: '(32) 99999-9998',
-    notificar: false,
-    ativo: true,
-  },
-  {
-    id: 3,
-    nome: 'MARCOS',
-    email: 'marcos@gmail.com',
-    papel: 'USER',
-    telefone: '(32) 99999-9997',
-    notificar: true,
-    ativo: false,
-  },
-]);
-
 function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: IUsuario }): void {
   modoEdicaoUsuario.value = pPayload.modoEdicao;
 
@@ -220,38 +195,34 @@ function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: IUsuario }): 
   exibirDialogUsuario.value = true;
 }
 
-async function buscarUsuariosMock(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse> {
-  // Simula latência de rede
-  await new Promise((pResolver) => setTimeout(pResolver, 800));
-
-  const inicio = (pPayload.proximaEntrada as number) || 0;
-  const limite = pPayload.limite || 10;
-  const usuariosOrdenados = ordenarUsuarios(mockData.value, pPayload.ordem);
-  const dados = usuariosOrdenados.slice(inicio, inicio + limite);
-
-  return {
-    items: dados,
-    temMaisRegistros: inicio + dados.length < usuariosOrdenados.length,
-    proximaEntrada: inicio + dados.length < usuariosOrdenados.length ? inicio + dados.length : undefined,
-  };
+async function buscarUsuarios(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse<IUsuario>> {
+  return CUsuarioService.buscarTodos(pPayload);
 }
 
 async function salvarUsuario(): Promise<void> {
-  // Chamada simulada a service
   const usuarioNormalizado = criarUsuarioPadrao(modelFormUsuario.value);
 
   if (modoEdicaoUsuario.value && usuarioNormalizado.id) {
-    mockData.value = mockData.value.map((pUsuario) =>
-      pUsuario.id === usuarioNormalizado.id ? usuarioNormalizado : pUsuario,
-    );
-    genericViewRef.value?.atualizarItem<IUsuario>('id', usuarioNormalizado.id, usuarioNormalizado);
-  } else {
-    const usuarioCriado = {
-      ...usuarioNormalizado,
-      id: obterProximoIdUsuario(),
-    };
+    const usuarioAtualizado = await requisicaoService.executar({
+      metodo: CUsuarioService.atualizar,
+      parametros: usuarioNormalizado,
+      sucesso: {
+        mensagem: 'Usuário atualizado com sucesso.',
+        tipo: 'success',
+      },
+    });
 
-    mockData.value = [usuarioCriado, ...mockData.value];
+    genericViewRef.value?.atualizarItem<IUsuario>('id', usuarioAtualizado.id, usuarioAtualizado);
+  } else {
+    const usuarioCriado = await requisicaoService.executar({
+      metodo: CUsuarioService.criar,
+      parametros: usuarioNormalizado,
+      sucesso: {
+        mensagem: 'Usuário criado com sucesso.',
+        tipo: 'success',
+      },
+    });
+
     genericViewRef.value?.inserirItem(usuarioCriado);
   }
 
@@ -259,26 +230,18 @@ async function salvarUsuario(): Promise<void> {
 }
 
 async function excluirUsuario(pIdUsuario: number | undefined): Promise<void> {
-  // Chamada simulada a service
   if (!pIdUsuario) return;
 
-  mockData.value = mockData.value.filter((pUsuario) => pUsuario.id !== pIdUsuario);
-  genericViewRef.value?.removerItem<IUsuario>('id', pIdUsuario);
-}
-
-function obterProximoIdUsuario(): number {
-  return Math.max(0, ...mockData.value.map((pUsuario) => pUsuario.id ?? 0)) + 1;
-}
-
-function ordenarUsuarios(pUsuarios: IUsuario[], pOrdem: IGenericListFetchPayload['ordem']): IUsuario[] {
-  return [...pUsuarios].sort((pUsuarioAtual, pProximoUsuario) => {
-    const idUsuarioAtual = pUsuarioAtual.id ?? 0;
-    const idProximoUsuario = pProximoUsuario.id ?? 0;
-
-    return pOrdem === 'asc'
-      ? idUsuarioAtual - idProximoUsuario
-      : idProximoUsuario - idUsuarioAtual;
+  await requisicaoService.executar({
+    metodo: CUsuarioService.excluir,
+    parametros: pIdUsuario,
+    sucesso: {
+      mensagem: 'Usuário removido com sucesso.',
+      tipo: 'success',
+    },
   });
+
+  genericViewRef.value?.removerItem<IUsuario>('id', pIdUsuario);
 }
 
 // Computadas

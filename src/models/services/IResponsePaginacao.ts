@@ -3,15 +3,20 @@ export interface IResponsePaginacao<T> {
   /**
    * Quantidade máxima de registros solicitados na requisição.
    */
-  limite: number
+  limite: number;
 
   /**
    * Cursor usado para solicitar a próxima página.
    */
-  proximaEntrada: number
+  proximaEntrada?: unknown;
 
   /**
    * Lista de registros retornados na requisição.
    */
-  items?: Array<T>
+  items: T[];
+
+  /**
+   * Indica se existem registros adicionais para a próxima página.
+   */
+  temMaisRegistros: boolean;
 }

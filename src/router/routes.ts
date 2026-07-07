@@ -25,6 +25,7 @@ export const routes: Array<RouteRecordRaw> = [
       title: 'routes.home.title',
       icon: 'mdi-home',
       hotkey: 'cmd+shift+h',
+      requiresAuth: true,
     },
   },
   {
@@ -35,6 +36,7 @@ export const routes: Array<RouteRecordRaw> = [
       title: 'routes.dashboard.title',
       icon: 'mdi-view-dashboard',
       hotkey: 'cmd+shift+d',
+      requiresAuth: true,
     },
   },  
   {
@@ -73,7 +75,7 @@ export const routes: Array<RouteRecordRaw> = [
       title: 'routes.adm.title',
       icon: 'mdi-shield-crown',
       hotkey: 'cmd+shift+a',
-      requiresAuth: false,
+      requiresAuth: true,
       authorize: [],
     },
     children: [

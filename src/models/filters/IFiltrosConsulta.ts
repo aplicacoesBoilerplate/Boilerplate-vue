@@ -2,8 +2,8 @@
 export interface IFiltrosConsulta {
   campo: string;
   condicao: string;
-  valor: unknown;
-  dataInicio: Date | string;
-  dataFinal: Date | string;
-  valoresSelecionados: unknown[];
+  valor?: unknown;
+  dataInicio?: Date | string | null;
+  dataFinal?: Date | string | null;
+  valoresSelecionados?: unknown[];
 }

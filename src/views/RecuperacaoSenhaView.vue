@@ -77,24 +77,18 @@ import EtapaCodigoRecuperacaoSenha from '@/components/forms/fixtures/autenticaca
 import EtapaEmailRecuperacaoSenha from '@/components/forms/fixtures/autenticacao/EtapaEmailRecuperacaoSenha.vue';
 import EtapaSenhaRecuperacaoSenha from '@/components/forms/fixtures/autenticacao/EtapaSenhaRecuperacaoSenha.vue';
 
+/**
+ * @property {string} email - E-mail usado para solicitar o código de verificação.
+ * @property {string} senha - Nova senha escolhida pelo usuário.
+ * @property {string} confirmarSenha - Confirmação da nova senha escolhida pelo usuário.
+ */
 type TFormularioRecuperacaoSenha = {
-  /**
-   * E-mail usado para solicitar o código de verificação.
-   */
   email: string;
-
-  /**
-   * Nova senha escolhida pelo usuário.
-   */
   senha: string;
-
-  /**
-   * Confirmação da nova senha escolhida pelo usuário.
-   */
   confirmarSenha: string;
 };
 
-const DURACAO_TIMER_SEGUNDOS = 120;
+const DURACAO_TIMER_SEGUNDOS = 600;
 
 // Composables
 const { t } = useI18n();
@@ -114,26 +108,6 @@ const tempoRestante = ref(0);
 const emailValido = ref(false);
 const senhaValida = ref(false);
 const intervaloTimer = ref<ReturnType<typeof setInterval> | null>(null);
-
-// Computadas
-const tempoFormatado = computed(() => {
-  const minutos = Math.floor(tempoRestante.value / 60);
-  const segundos = tempoRestante.value % 60;
-
-  return `${minutos}:${segundos.toString().padStart(2, '0')}`;
-});
-
-const tituloAtual = computed(() => {
-  if (etapaAtual.value === 1) {
-    return t('forgotPassword.title');
-  }
-
-  if (etapaAtual.value === 2) {
-    return t('forgotPassword.titleVerify');
-  }
-
-  return t('forgotPassword.titleAlterPassword');
-});
 
 // Funções
 function alterarEmail(): void {
@@ -246,6 +220,25 @@ async function verificarCodigo(): Promise<void> {
     carregando.value = false;
   }
 }
+
+// Computadas
+const tempoFormatado = computed(() => {
+  const minutos = Math.floor(tempoRestante.value / 60);
+  const segundos = tempoRestante.value % 60;
+  return `${minutos}:${segundos.toString().padStart(2, '0')}`;
+});
+
+const tituloAtual = computed(() => {
+  if (etapaAtual.value === 1) {
+    return t('forgotPassword.title');
+  }
+
+  if (etapaAtual.value === 2) {
+    return t('forgotPassword.titleVerify');
+  }
+
+  return t('forgotPassword.titleAlterPassword');
+});
 
 // Lifecycle Hooks
 onUnmounted(() => {

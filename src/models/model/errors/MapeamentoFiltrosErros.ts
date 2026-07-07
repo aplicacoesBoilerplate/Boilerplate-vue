@@ -1,6 +1,5 @@
 // Types e Interfaces
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
-import type { IConsultaRegistrosFiltro } from '@/models/filters/IConsultaRegistrosFiltro';
 import type { IErros } from './IErros';
 
 // Enums
@@ -45,23 +44,6 @@ const TIPOS_CAMPOS_FILTRO_ERROS: Record<keyof TCamposFiltroErros, ETipoFiltro[]>
   dataHora: [ETipoFiltro.DATE],
 };
 
-const CONSULTA_REGISTROS_FILTRO_ERROS: Partial<Record<keyof TCamposFiltroErros, IConsultaRegistrosFiltro<IErros>>> = {
-  idUsuario: {
-    atributoValor: 'idUsuario',
-    atributoDescricao: 'idUsuario',
-    buscarRegistros: () => Promise.resolve([]),
-    limiteInicial: 5,
-    textoVazio: 'Nenhum usuário encontrado.',
-  },
-  usuarioReferencia: {
-    atributoValor: 'usuarioReferencia',
-    atributoDescricao: 'usuarioReferencia',
-    buscarRegistros: () => Promise.resolve([]),
-    limiteInicial: 5,
-    textoVazio: 'Nenhum usuário encontrado.',
-  },
-};
-
 export const MAPEAMENTO_CAMPOS_FILTRO_ERROS: ICampoFiltro<keyof TCamposFiltroErros, IErros>[] = (
   Object.keys(DESCRICAO_CAMPOS_FILTRO_ERROS) as Array<keyof TCamposFiltroErros>
 ).map((pCampo) => ({
@@ -72,5 +54,4 @@ export const MAPEAMENTO_CAMPOS_FILTRO_ERROS: ICampoFiltro<keyof TCamposFiltroErr
   opcoes: [],
   pesquisaPadrao: pCampo === 'mensagem',
   operadorPesquisaPadrao: pCampo === 'mensagem' ? EOperadoresFiltro.CONTEM : undefined,
-  consultaRegistros: CONSULTA_REGISTROS_FILTRO_ERROS[pCampo],
 }));

@@ -73,46 +73,30 @@
 // Ecossistema Vue
 import { useI18n } from 'vue-i18n';
 
+/**
+ * @property {boolean} carregando - Define se a etapa está em carregamento.
+ * @property {string} email - E-mail para o qual o código foi enviado.
+ * @property {string} tempoFormatado - Tempo restante já formatado para exibição.
+ * @property {number} tempoRestante - Tempo restante em segundos.
+ */
 type TProps = {
-  /**
-   * Define se a etapa está em carregamento.
-   */
   carregando?: boolean;
-
-  /**
-   * E-mail para o qual o código foi enviado.
-   */
   email: string;
-
-  /**
-   * Tempo restante já formatado para exibição.
-   */
   tempoFormatado: string;
-
-  /**
-   * Tempo restante em segundos.
-   */
   tempoRestante: number;
 };
-
 const props = withDefaults(defineProps<TProps>(), {
   carregando: false,
 });
 
+/**
+ * @property {function} alterarEmail - Emitido quando o usuário quer voltar para a etapa de e-mail.
+ * @property {function} reenviarCodigo - Emitido quando o usuário solicita reenvio do código.
+ * @property {function} verificarCodigo - Emitido quando o usuário solicita validação do código.
+ */
 type TEmits = {
-  /**
-   * Emitido quando o usuário quer voltar para a etapa de e-mail.
-   */
   alterarEmail: [];
-
-  /**
-   * Emitido quando o usuário solicita reenvio do código.
-   */
   reenviarCodigo: [];
-
-  /**
-   * Emitido quando o usuário solicita validação do código.
-   */
   verificarCodigo: [];
 };
 const emits = defineEmits<TEmits>();

@@ -141,7 +141,7 @@ function handleErroLoginGoogle(pMensagem: string): void {
 }
 
 function irParaRecuperacaoSenha(): void {
-  router.push({ name: 'ForgotPassword' });
+  router.push({ name: 'RecuperacaoSenha' });
 }
 
 async function autenticarGoogle(pCredential?: string): Promise<void> {

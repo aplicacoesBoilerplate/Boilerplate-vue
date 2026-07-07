@@ -7,6 +7,7 @@ import { defineStore } from 'pinia';
 
 // Stores
 import { useListaCacheStore } from './listaCache.store';
+import { usePreferencesStore } from '@/stores/preferences.store';
 
 // Types e Interfaces
 import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
@@ -19,13 +20,14 @@ import type {
 } from '@/models/model/autenticacao/autenticacao.models';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 import type { IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
+import type { ICargoRbac } from '@/models/model/rbac/ICargoRbac';
 
 // Composables
 import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
 // Services
 import { CAutenticacaoService } from '@/services/CAutenticacaoService';
-import { CRbacMockService } from '@/services/CRbacMockService';
+import { CRbacService } from '@/services/CRbacService';
 
 // Constantes
 const TOKEN_STORAGE_KEY = 'token';
@@ -33,12 +35,14 @@ const TOKEN_STORAGE_KEY = 'token';
 export const useAuthStore = defineStore('auth', () => {
   // Stores
   const listCacheStore = useListaCacheStore();
+  const preferencesStore = usePreferencesStore();
 
   // Composables
   const requisicaoService = useRequisicaoService();
 
   // Reativas
   const user = ref<IUsuario | undefined>();
+  const cargoAtual = ref<ICargoRbac | undefined>();
   const token = ref(sessionStorage.getItem(TOKEN_STORAGE_KEY) || localStorage.getItem(TOKEN_STORAGE_KEY) || null);
 
   // Computadas
@@ -51,6 +55,7 @@ export const useAuthStore = defineStore('auth', () => {
   function limparSessaoLocal(): void {
     token.value = null;
     user.value = undefined;
+    cargoAtual.value = undefined;
     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
     localStorage.removeItem(TOKEN_STORAGE_KEY);
     listCacheStore.clearAll();
@@ -71,10 +76,7 @@ export const useAuthStore = defineStore('auth', () => {
       return pRedirectPrioritario;
     }
 
-    const cargoUsuario = user.value?.papel
-      ? CRbacMockService.buscarCargoPorPapel(user.value.papel)
-      : undefined;
-    const redirecionamentoInicial = cargoUsuario?.redirecionamentoInicial;
+    const redirecionamentoInicial = cargoAtual.value?.redirecionamentoInicial;
 
     if (!redirecionamentoInicial?.path) {
       return '/';
@@ -123,6 +125,11 @@ export const useAuthStore = defineStore('auth', () => {
     });
 
     user.value = usuarioAutenticado;
+    cargoAtual.value = usuarioAutenticado.papel
+      ? await CRbacService.buscarPorPapel(usuarioAutenticado.papel)
+      : undefined;
+
+    await preferencesStore.carregarPreferenciasBackend();
 
     return usuarioAutenticado;
   }
@@ -215,6 +222,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     user,
+    cargoAtual,
     token,
     carregando,
     erro,

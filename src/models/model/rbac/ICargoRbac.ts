@@ -1,5 +1,5 @@
 // Types e Interfaces
-import { ICONE_PAPEL, type TPapel } from '@/models/model/usuario/lUsuario';
+import type { TPapel } from '@/models/model/usuario/lUsuario';
 import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 
 // Mapeamentos
@@ -239,40 +239,3 @@ export function permissaoEstaLiberada(
 
   return permissao?.liberado ?? pCargo.comportamentoPadrao === 'liberar';
 }
-
-export const CARGOS_RBAC_INICIAIS: ICargoRbac[] = [
-  criarCargoRbacPadrao({
-    id: 1,
-    papel: 'ADMIN',
-    nome: 'Administrador',
-    icone: ICONE_PAPEL['ADMIN'],
-    descricao: 'Acesso operacional completo ao boilerplate.',
-    comportamentoPadrao: 'liberar',
-    redirecionamentoInicial: {
-      path: '/',
-      name: 'Inicio',
-      filtros: [],
-    },
-    permissoes: [],
-  }),
-  criarCargoRbacPadrao({
-    id: 2,
-    papel: 'USER',
-    nome: 'Usuário',
-    icone: ICONE_PAPEL['USER'],
-    descricao: 'Acesso básico para uso diário do sistema.',
-    comportamentoPadrao: 'bloquear',
-    redirecionamentoInicial: {
-      path: '/usuarios',
-      name: 'Usuarios',
-      filtros: [],
-    },
-    permissoes: [
-      { recurso: RECURSO_PERMISSAO_ROTAS_RBAC, acao: 'Inicio', liberado: true },
-      { recurso: RECURSO_PERMISSAO_ROTAS_RBAC, acao: 'Usuarios', liberado: true },
-      { recurso: RECURSO_PERMISSAO_API_RBAC, acao: 'GET /usuarios/**', liberado: true },
-      { recurso: RECURSO_PERMISSAO_API_RBAC, acao: 'POST /usuarios/consulta', liberado: true },
-      { recurso: RECURSO_PERMISSAO_API_RBAC, acao: 'POST /usuarios/search', liberado: true },
-    ],
-  }),
-];

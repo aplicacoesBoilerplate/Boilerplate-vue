@@ -7,7 +7,7 @@
     <GenericView
       ref="genericViewRef"
       :contexto="CONTEXTO_LISTA_CARGOS"
-      :serviceFetch="buscarCargosMock"
+      :serviceFetch="buscarCargos"
       :exibirExportacao="false"
       :textoVazio="t('components.rbacView.textoVazioCargos')"
       :textoFinal="t('components.rbacView.textoFinalCargos')"
@@ -17,7 +17,7 @@
         <DialogFormCargoRbac
           v-model:exibirDialog="exibirDialogCargo"
           v-model:cargo="modelFormCargo"
-          v-model:usuarios="usuariosMock"
+          v-model:usuarios="usuarios"
           :modoEdicao="modoEdicaoCargo"
           :cargosDisponiveis="cargos"
           @salvar="salvarCargo"
@@ -83,9 +83,8 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { mergeProps, ref } from 'vue';
+import { mergeProps, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
 
 // Types e Interfaces
@@ -96,8 +95,12 @@ import {
 import type { IUsuario, TPapel } from '@/models/model/usuario/lUsuario';
 import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
 
+// Composables
+import { useRequisicaoService } from '@/composables/useRequisicaoService';
+
 // Services
-import { CRbacMockService } from '@/services/CRbacMockService';
+import { CRbacService } from '@/services/CRbacService';
+import { CUsuarioService } from '@/services/CUsuarioService';
 
 // Componentes
 import GenericView from '@/components/layout/generic/GenericView.vue';
@@ -109,25 +112,31 @@ import DetalhesCargo from '@/components/rbac/DetalhesCargo.vue';
 const CONTEXTO_LISTA_CARGOS = 'lista-cargos-rbac';
 
 // Composables
-const router = useRouter();
 const { mdAndDown } = useDisplay();
+const requisicaoService = useRequisicaoService();
 const { t } = useI18n();
 
 // Reativas
 const genericViewRef = ref<InstanceType<typeof GenericView> | null>(null);
-const cargos = ref<ICargoRbac[]>(CRbacMockService.listarCargos());
-const usuariosMock = ref<IUsuario[]>(CRbacMockService.listarUsuarios());
+const cargos = ref<ICargoRbac[]>([]);
+const usuarios = ref<IUsuario[]>([]);
 const exibirDialogCargo = ref(false);
 const modoEdicaoCargo = ref(false);
 const modelFormCargo = ref<ICargoRbac>(criarCargoRbacPadrao());
 const papelCargoAntesEdicao = ref<TPapel | null>(null);
+const papeisOriginaisUsuarios = ref(new Map<number, TPapel>());
 
 // Funções
-async function buscarCargosMock(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse<ICargoRbac>> {
-  return CRbacMockService.buscarCargos(pPayload);
+async function buscarCargos(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse<ICargoRbac>> {
+  return CRbacService.consultar(pPayload);
 }
 
-function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoRbac }): void {
+async function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoRbac }): Promise<void> {
+  await Promise.all([
+    carregarCargos(),
+    carregarUsuariosParaVinculo(),
+  ]);
+
   modoEdicaoCargo.value = pPayload.modoEdicao;
 
   if (pPayload.modoEdicao && pPayload.item) {
@@ -145,15 +154,21 @@ function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoRbac })
 }
 
 async function salvarCargo(): Promise<void> {
-  const cargoSalvo = CRbacMockService.salvarCargo(
-    modelFormCargo.value,
-    usuariosMock.value,
-    router.options.routes,
-    papelCargoAntesEdicao.value,
-  );
+  const cargoNormalizado = criarCargoRbacPadrao(modelFormCargo.value);
+  const cargoSalvo = await requisicaoService.executar({
+    metodo: modoEdicaoCargo.value && cargoNormalizado.id ? CRbacService.atualizar : CRbacService.salvar,
+    parametros: cargoNormalizado,
+    sucesso: {
+      mensagem: modoEdicaoCargo.value ? 'Cargo atualizado com sucesso.' : 'Cargo criado com sucesso.',
+      tipo: 'success',
+    },
+  });
 
-  cargos.value = CRbacMockService.listarCargos();
-  usuariosMock.value = CRbacMockService.listarUsuarios();
+  await salvarUsuariosComCargoAlterado(cargoSalvo);
+  await Promise.all([
+    carregarCargos(),
+    carregarUsuariosParaVinculo(),
+  ]);
 
   if (modoEdicaoCargo.value && cargoSalvo.id) {
     genericViewRef.value?.atualizarItem<ICargoRbac>('id', cargoSalvo.id, cargoSalvo);
@@ -169,23 +184,115 @@ async function excluirCargo(pIdCargo: number | undefined): Promise<void> {
     return;
   }
 
-  usuariosMock.value = CRbacMockService.excluirCargo(pIdCargo);
-  cargos.value = CRbacMockService.listarCargos();
+  const cargo = cargos.value.find((pCargo) => pCargo.id === pIdCargo) ?? await CRbacService.buscarPorId(pIdCargo);
+
+  await carregarUsuariosParaVinculo();
+  await reatribuirUsuariosDoCargoParaUsuarioPadrao(cargo.papel);
+
+  await requisicaoService.executar({
+    metodo: CRbacService.excluir,
+    parametros: pIdCargo,
+    sucesso: {
+      mensagem: 'Cargo removido com sucesso.',
+      tipo: 'success',
+    },
+  });
 
   genericViewRef.value?.removerItem<ICargoRbac>('id', pIdCargo);
+  await Promise.all([
+    carregarCargos(),
+    carregarUsuariosParaVinculo(),
+  ]);
 }
 
 function calcularPermissoesLiberadas(pCargo: ICargoRbac): number {
-  return CRbacMockService.calcularResumoCargo(pCargo, router.options.routes).quantidadePermissoesLiberadas;
+  return pCargo.permissoes.filter((pPermissao) => pPermissao.liberado).length;
 }
 
 function contarUsuariosCargo(pPapelCargo: TPapel): number {
-  const cargo = cargos.value.find((pCargo) => pCargo.papel === pPapelCargo);
+  return usuarios.value.filter((pUsuario) => pUsuario.papel === pPapelCargo).length;
+}
 
-  if (!cargo) {
-    return 0;
+async function carregarCargos(): Promise<void> {
+  cargos.value = await CRbacService.listarTodos();
+}
+
+async function carregarUsuariosParaVinculo(): Promise<void> {
+  const registros: IUsuario[] = [];
+  let proximaEntrada: unknown = undefined;
+  let temMaisRegistros = true;
+
+  while (temMaisRegistros) {
+    const pagina = await CUsuarioService.buscarTodos({
+      limite: 100,
+      ordem: 'asc',
+      proximaEntrada,
+      filtros: [],
+    });
+
+    registros.push(...pagina.items);
+    proximaEntrada = pagina.proximaEntrada;
+    temMaisRegistros = pagina.temMaisRegistros && pagina.items.length > 0;
   }
 
-  return CRbacMockService.calcularResumoCargo(cargo, router.options.routes).quantidadeUsuariosVinculados;
+  usuarios.value = registros;
+  papeisOriginaisUsuarios.value = new Map(
+    registros
+      .filter((pUsuario) => pUsuario.id)
+      .map((pUsuario) => [pUsuario.id as number, pUsuario.papel]),
+  );
 }
+
+async function salvarUsuariosComCargoAlterado(pCargoSalvo: ICargoRbac): Promise<void> {
+  const atualizacoes = usuarios.value
+    .filter((pUsuario) => pUsuario.id)
+    .map((pUsuario) => {
+      const papelOriginal = papeisOriginaisUsuarios.value.get(pUsuario.id as number);
+      const papelAtualizado = resolverPapelUsuarioAposSalvarCargo(pUsuario, papelOriginal, pCargoSalvo);
+
+      return {
+        usuario: {
+          ...pUsuario,
+          papel: papelAtualizado,
+        },
+        papelOriginal,
+      };
+    })
+    .filter((pAtualizacao) => pAtualizacao.papelOriginal && pAtualizacao.usuario.papel !== pAtualizacao.papelOriginal);
+
+  await Promise.all(atualizacoes.map((pAtualizacao) => CUsuarioService.atualizar(pAtualizacao.usuario)));
+}
+
+function resolverPapelUsuarioAposSalvarCargo(
+  pUsuario: IUsuario,
+  pPapelOriginal: TPapel | undefined,
+  pCargoSalvo: ICargoRbac,
+): TPapel {
+  if (papelCargoAntesEdicao.value && pPapelOriginal === papelCargoAntesEdicao.value) {
+    return pCargoSalvo.papel;
+  }
+
+  return pUsuario.papel;
+}
+
+async function reatribuirUsuariosDoCargoParaUsuarioPadrao(pPapelCargo: TPapel): Promise<void> {
+  const usuariosDoCargo = usuarios.value.filter((pUsuario) => pUsuario.papel === pPapelCargo);
+
+  await Promise.all(
+    usuariosDoCargo.map((pUsuario) =>
+      CUsuarioService.atualizar({
+        ...pUsuario,
+        papel: 'USER',
+      }),
+    ),
+  );
+}
+
+// Lifecycle Hooks
+onMounted(() => {
+  void Promise.all([
+    carregarCargos(),
+    carregarUsuariosParaVinculo(),
+  ]);
+});
 </script>

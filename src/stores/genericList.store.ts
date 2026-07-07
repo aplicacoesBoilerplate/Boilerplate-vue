@@ -380,7 +380,7 @@ export const useGenericListStore = defineStore('genericList', () => {
 
     const options = getOptions(pContextId);
 
-    // O TTL renova a cada alteracao relevante do contexto, simulando cache por atividade.
+    // O TTL renova a cada alteracao relevante do contexto para manter cache por atividade.
     ClassManagerStorage.set(
       getStorageKey(pContextId),
       toRaw(context),

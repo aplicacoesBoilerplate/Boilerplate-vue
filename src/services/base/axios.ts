@@ -1,5 +1,4 @@
 // Ecosssitema Vue
-import router from '@/router'
 import { i18n } from '@/plugins/i18n'
 
 // Axios
@@ -9,7 +8,7 @@ import axios, { AxiosError } from 'axios'
 import type { IErrorAPI } from '@/models/model/errors/IErrorAPI'
 
 const http = axios.create({
-  baseURL: window.env?.VITE_API_URL || import.meta.env.VITE_API_URL,
+  baseURL: window.env?.VITE_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:8080',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -39,7 +38,7 @@ http.interceptors.response.use(
 
     if (errorResponse?.status === 401) {
       sessionStorage.removeItem('token');
-      router.push({ name: 'Login' });
+      void import('@/router').then(({ default: router }) => router.push({ name: 'Login' }));
       return Promise.reject('Sessão expirada! faça login novamente.');
     }
 

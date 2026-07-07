@@ -6,6 +6,10 @@ import { defineStore } from 'pinia';
 
 // Types e Interfaces
 import type { IPreferences, IPreferencesTheme } from '@/models/components/IPreferences';
+import type { IPreferenciaUsuario } from '@/models/services/IPreferenciaUsuario';
+
+// Services
+import { CPreferenciaUsuarioService } from '@/services/CPreferenciaUsuarioService';
 
 // Utilitários
 import { ClassManagerStorage } from '@/utils/ManagerStorage';
@@ -13,6 +17,9 @@ import { ClassManagerStorage } from '@/utils/ManagerStorage';
 // Constantes
 const STORAGE_KEY = 'boilerplate.preferences';
 const STORAGE_OPTIONS = { storage: 'local' } as const;
+const CONTEXTO_PREFERENCIAS = 'global';
+const CHAVE_PREFERENCIAS = 'preferences';
+const TOKEN_STORAGE_KEY = 'token';
 
 // Default preferences
 const defaultPreferences: IPreferences = {
@@ -31,6 +38,8 @@ const defaultPreferences: IPreferences = {
 export const usePreferencesStore = defineStore('preferences', () => {
   // Reativas
   const preferences = ref<IPreferences>(ClassManagerStorage.get(STORAGE_KEY, defaultPreferences, STORAGE_OPTIONS));
+  const carregandoRemoto = ref(false);
+  const erroRemoto = ref<unknown>(null);
 
   // Observadores
   watch(preferences, (value) => {
@@ -38,28 +47,99 @@ export const usePreferencesStore = defineStore('preferences', () => {
   }, { deep: true });
 
   // Funções
-  function setDesktopDrawerVisible(value: boolean) {
-    preferences.value.drawer.isDesktopDrawerVisible = value;
+  function setDesktopDrawerVisible(pValue: boolean) {
+    preferences.value.drawer.isDesktopDrawerVisible = pValue;
+    void salvarPreferenciasBackend();
   }
 
-  function setDrawerPinned(value: boolean) {
-    preferences.value.drawer.isDrawerPinned = value;
+  function setDrawerPinned(pValue: boolean) {
+    preferences.value.drawer.isDrawerPinned = pValue;
+    void salvarPreferenciasBackend();
   }
 
-  function setTheme(value: IPreferencesTheme['currentTheme']) {
-    preferences.value.theme.currentTheme = value;
+  function setTheme(pValue: IPreferencesTheme['currentTheme']) {
+    preferences.value.theme.currentTheme = pValue;
+    void salvarPreferenciasBackend();
   }
 
-  function clearPreferences() {
+  function clearPreferences(): void {
     preferences.value = structuredClone(defaultPreferences);
     ClassManagerStorage.clear(STORAGE_KEY, STORAGE_OPTIONS);
+    void salvarPreferenciasBackend();
+  }
+
+  function usuarioPossuiToken(): boolean {
+    return Boolean(sessionStorage.getItem(TOKEN_STORAGE_KEY) || localStorage.getItem(TOKEN_STORAGE_KEY));
+  }
+
+  function montarPreferenciaBackend(): IPreferenciaUsuario {
+    return {
+      contexto: CONTEXTO_PREFERENCIAS,
+      chave: CHAVE_PREFERENCIAS,
+      valorJson: JSON.stringify(preferences.value),
+    };
+  }
+
+  function aplicarPreferenciaBackend(pPreferencia: IPreferenciaUsuario): void {
+    try {
+      preferences.value = {
+        ...structuredClone(defaultPreferences),
+        ...JSON.parse(pPreferencia.valorJson),
+      };
+    } catch (pErro) {
+      erroRemoto.value = pErro;
+    }
+  }
+
+  async function carregarPreferenciasBackend(): Promise<void> {
+    if (!usuarioPossuiToken()) {
+      return;
+    }
+
+    carregandoRemoto.value = true;
+    erroRemoto.value = null;
+
+    try {
+      const resposta = await CPreferenciaUsuarioService.buscarPreferenciasUsuarioAutenticado();
+      const preferencia = resposta.preferencias.find(
+        (pPreferencia) => pPreferencia.contexto === CONTEXTO_PREFERENCIAS
+          && pPreferencia.chave === CHAVE_PREFERENCIAS,
+      );
+
+      if (preferencia) {
+        aplicarPreferenciaBackend(preferencia);
+        return;
+      }
+
+      await salvarPreferenciasBackend();
+    } catch (pErro) {
+      erroRemoto.value = pErro;
+    } finally {
+      carregandoRemoto.value = false;
+    }
+  }
+
+  async function salvarPreferenciasBackend(): Promise<void> {
+    if (!usuarioPossuiToken()) {
+      return;
+    }
+
+    try {
+      await CPreferenciaUsuarioService.salvarPreferenciaUsuarioAutenticado(montarPreferenciaBackend());
+    } catch (pErro) {
+      erroRemoto.value = pErro;
+    }
   }
 
   return {
     preferences,
+    carregandoRemoto,
+    erroRemoto,
     setDesktopDrawerVisible,
     setDrawerPinned,
     setTheme,
     clearPreferences,
+    carregarPreferenciasBackend,
+    salvarPreferenciasBackend,
   };
 });

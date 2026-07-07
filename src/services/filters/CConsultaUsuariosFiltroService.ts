@@ -3,83 +3,51 @@ import type {
   IConsultaRegistrosFiltroPayload,
   IResultadoConsultaRegistrosFiltro,
 } from '@/models/filters/IConsultaRegistrosFiltro';
+import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 
-const USUARIOS_CONSULTA_FILTRO: IUsuario[] = [
-  {
-    id: 1,
-    nome: 'BOILERPLATE',
-    email: 'boilerplate@gmail.com',
-    papel: 'ADMIN',
-    telefone: '(32) 99999-9999',
-    notificar: true,
-    ativo: true,
-  },
-  {
-    id: 2,
-    nome: 'GERSON',
-    email: 'gerson@gmail.com',
-    papel: 'USER',
-    telefone: '(32) 99999-9998',
-    notificar: false,
-    ativo: true,
-  },
-  {
-    id: 3,
-    nome: 'MARCOS',
-    email: 'marcos@gmail.com',
-    papel: 'USER',
-    telefone: '(32) 99999-9997',
-    notificar: true,
-    ativo: false,
-  },
-];
+// Enums
+import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 
-// Service temporário para simular a consulta auxiliar de usuários até o backend expor o endpoint definitivo.
+// Services
+import { CUsuarioService } from '@/services/CUsuarioService';
+
+/**
+ * @description Service de consulta auxiliar de usuários usado pelos filtros avançados.
+ */
 export class CConsultaUsuariosFiltroService {
   public static async buscarRegistros(
     pPayload: IConsultaRegistrosFiltroPayload,
   ): Promise<IResultadoConsultaRegistrosFiltro<IUsuario>> {
-    await new Promise((pResolver) => setTimeout(pResolver, 300));
-
-    const termoPesquisa = CConsultaUsuariosFiltroService.normalizarTexto(pPayload.termoPesquisa);
-    const proximaEntrada = Number(pPayload.proximaEntrada ?? 0);
-    const limite = pPayload.limite || 10;
-
-    const registrosFiltrados = USUARIOS_CONSULTA_FILTRO.filter((pUsuario) =>
-      CConsultaUsuariosFiltroService.usuarioCorrespondePesquisa(pUsuario, pPayload.campo, termoPesquisa),
-    );
-
-    const registros = registrosFiltrados.slice(proximaEntrada, proximaEntrada + limite);
-    const proximoIndice = proximaEntrada + registros.length;
+    const filtros = CConsultaUsuariosFiltroService.montarFiltrosPesquisa(pPayload);
+    const resposta = await CUsuarioService.buscarTodos({
+      limite: pPayload.limite,
+      proximaEntrada: pPayload.proximaEntrada,
+      ordem: 'asc',
+      filtros,
+    });
 
     return {
-      registros,
-      proximaEntrada: proximoIndice < registrosFiltrados.length ? proximoIndice : undefined,
-      possuiMais: proximoIndice < registrosFiltrados.length,
+      registros: resposta.items,
+      proximaEntrada: resposta.proximaEntrada,
+      possuiMais: resposta.temMaisRegistros,
     };
   }
 
-  private static normalizarTexto(pValor: unknown): string {
-    return String(pValor ?? '')
-      .toUpperCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
-  }
-
-  private static usuarioCorrespondePesquisa(pUsuario: IUsuario, pCampo: string, pTermoPesquisa: string): boolean {
-    if (!pTermoPesquisa) {
-      return true;
+  private static montarFiltrosPesquisa(pPayload: IConsultaRegistrosFiltroPayload): IFiltrosConsulta[] {
+    if (!pPayload.termoPesquisa) {
+      return [];
     }
 
-    const valorCampo = CConsultaUsuariosFiltroService.normalizarTexto(pUsuario[pCampo as keyof IUsuario]);
-    const valorDescricao = CConsultaUsuariosFiltroService.normalizarTexto(pUsuario.nome);
-    const valorEmail = CConsultaUsuariosFiltroService.normalizarTexto(pUsuario.email);
-
-    return (
-      valorCampo.includes(pTermoPesquisa) ||
-      valorDescricao.includes(pTermoPesquisa) ||
-      valorEmail.includes(pTermoPesquisa)
-    );
+    return [
+      {
+        campo: pPayload.campo || 'nome',
+        condicao: EOperadoresFiltro.CONTEM,
+        valor: pPayload.termoPesquisa,
+        dataInicio: null,
+        dataFinal: null,
+        valoresSelecionados: [],
+      },
+    ];
   }
 }

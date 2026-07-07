@@ -27,9 +27,10 @@ export class CUsuarioService extends CBaseHttpService {
   public static async buscarTodos(
     pParametros: IParametrosPaginacaoRequisicao<IFiltrosConsulta[]> = {},
   ): Promise<IResponsePaginacao<IUsuario>> {
-    return CUsuarioService.get<IResponsePaginacao<IUsuario>>('/usuarios/consulta', {
-      params: pParametros,
-    });
+    return CUsuarioService.post<IResponsePaginacao<IUsuario>, IParametrosPaginacaoRequisicao<IFiltrosConsulta[]>>(
+      '/usuarios/consulta',
+      pParametros,
+    );
   }
 
   /**
@@ -40,9 +41,10 @@ export class CUsuarioService extends CBaseHttpService {
   public static async pesquisar(
     pParametros: IParametrosPaginacaoRequisicao<IFiltrosConsulta[]> = {},
   ): Promise<IUsuario[]> {
-    return CUsuarioService.post<IUsuario[]>('/usuarios/search', {
-      params: pParametros,
-    });
+    return CUsuarioService.post<IUsuario[], IParametrosPaginacaoRequisicao<IFiltrosConsulta[]>>(
+      '/usuarios/search',
+      pParametros,
+    );
   }
 
   /**
