@@ -27,7 +27,7 @@ const { t } = useI18n();
 
 // Funções
 function redirectToHome() {
-  router.push({ name: "Home" });
+  router.push({ name: "Inicio" });
 }
 
 </script>

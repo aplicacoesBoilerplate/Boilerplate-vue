@@ -40,7 +40,7 @@ const items = computed(() => {
     breadcrumbs.unshift({
       title: t("routes.home.title"),
       disabled: false,
-      to: { name: "Home" },
+      to: { name: "Inicio" },
       exact: true,
     });
   }
