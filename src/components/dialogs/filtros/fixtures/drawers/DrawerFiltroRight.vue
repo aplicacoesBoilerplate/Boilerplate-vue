@@ -7,7 +7,7 @@
   >
     <v-list-item
       v-if="genericFilterStore.appliedCount > 0"
-      title="Filtros aplicados"
+      :title="t('components.drawerFiltroRight.filtrosAplicados')"
     />
 
     <v-divider />
@@ -19,7 +19,7 @@
       :index="i"
       :camposDisponiveis="camposDisponiveis"
       class="ma-1"
-      @onEditar="onEditarFiltro"
+      @onEditar="editarFiltro"
       @onRemover="genericFilterStore.removeFilter($event)"
     />
   </v-navigation-drawer>
@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
+import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
 // Stores
@@ -48,13 +49,14 @@ const genericFilterStore = useGenericFilterStore();
 
 // Composables
 const { mdAndUp } = useDisplay();
+const { t } = useI18n();
 
 // Reativas
 const toggleRightDrawer = defineModel<boolean>('toggleRightDrawer', { required: true });
 
 // Funções
-function onEditarFiltro(index: number) {
-  genericFilterStore.editFilter(index);
+function editarFiltro(pIndex: number): void {
+  genericFilterStore.editFilter(pIndex);
 
   if (!mdAndUp.value) {
     toggleRightDrawer.value = false;

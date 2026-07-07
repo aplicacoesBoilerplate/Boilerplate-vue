@@ -1,22 +1,27 @@
 <template>
-  <v-list-item
-    :prependIcon="item.icon"
-    :title="t(item.title || '')"
-    :to="item.name ? { name: item.name } : item.path"
-    :active="itemAtivo"
-  >
-    <template
-      v-slot:append
-      v-if="item.hotkey && mdAndUp && isPinned"
-    >
-      <v-hotkey
-        :keys="item.hotkey"
-        displayMode="icon"
-        variant="contained"
-        platform="auto"
-      />
+  <v-tooltip :text="tituloItem">
+    <template #activator="{ props: tooltipProps }">
+      <v-list-item
+        v-bind="tooltipProps"
+        :prependIcon="item.icon"
+        :title="tituloItem"
+        :to="item.name ? { name: item.name } : item.path"
+        :active="itemAtivo"
+      >
+        <template
+          v-slot:append
+          v-if="item.hotkey && mdAndUp && isPinned"
+        >
+          <v-hotkey
+            :keys="item.hotkey"
+            displayMode="icon"
+            variant="contained"
+            platform="auto"
+          />
+        </template>
+      </v-list-item>
     </template>
-  </v-list-item>
+  </v-tooltip>
 </template>
 
 <script setup lang="ts">
@@ -35,12 +40,16 @@ import { useNavigation } from '@/composables/useNavigation';
 /**
  * @property {IRouteMeta} item - O item de navegação a ser renderizado.
  * @property {boolean} isPinned - Indica se o drawer está fixado.
+ * @property {boolean} drawerCompacto - Indica se o drawer está em modo rail sem hover.
  */
 type TProps = {
   item: IRouteMeta;
   isPinned: boolean;
+  drawerCompacto?: boolean;
 };
-const props = defineProps<TProps>();
+const props = withDefaults(defineProps<TProps>(), {
+  drawerCompacto: false,
+});
 
 // Composables
 const { mdAndUp } = useDisplay();
@@ -50,8 +59,11 @@ const { rotaAtualCorrespondeItem } = useNavigation();
 
 // Computadas
 const itemAtivo = computed(() => rotaAtualCorrespondeItem(props.item));
+const tituloItem = computed(() => t(props.item.title || ''));
 
-// Registra a hotkey acoplada ao ciclo de vida deste item específico
+/**
+ * Registra a hotkey acoplada ao ciclo de vida deste item específico.
+ */
 if (props.item.hotkey && props.item.name) {
   useHotkey(props.item.hotkey, () => {
     router.push({ name: props.item.name });

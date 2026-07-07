@@ -13,7 +13,7 @@
           v-model="registro.nome"
           :rules="[rules.required(), rules.maxLength(100)]"
           counter="100"
-          label="Nome"
+          :label="t('forms.formRegistro.inputNome.label')"
           variant="outlined"
           density="compact"
           autocomplete="off"
@@ -29,7 +29,7 @@
           v-model="registro.email"
           :rules="[rules.required(), rules.email(), rules.maxLength(100)]"
           counter="100"
-          label="E-mail"
+          :label="t('forms.formRegistro.inputEmail.label')"
           variant="outlined"
           density="compact"
           autocomplete="off"
@@ -46,7 +46,7 @@
           :rules="[rules.required(), rules.minLength(8), rules.maxLength(100)]"
           :type="mostrarSenha ? 'text' : 'password'"
           counter="100"
-          label="Senha"
+          :label="t('forms.formRegistro.inputSenha.label')"
           variant="outlined"
           density="compact"
           autocomplete="off"
@@ -71,7 +71,7 @@
           v-model="registro.confirmarSenha"
           :rules="[rules.required(), rulesPersonalizadas.equals(() => registro.senha)]"
           :type="mostrarSenha ? 'text' : 'password'"
-          label="Confirmar senha"
+          :label="t('forms.formRegistro.inputConfirmarSenha.label')"
           density="compact"
           variant="outlined"
           autocomplete="off"
@@ -96,6 +96,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
@@ -114,6 +115,7 @@ const emits = defineEmits<TEmits>();
 
 // Composables
 const rules = useRules();
+const { t } = useI18n();
 
 // Reativas - Model
 const registro = defineModel<IUsuarioSolicitacaoAcesso>('registro', { required: true });
@@ -125,6 +127,8 @@ const mostrarSenha = ref(false);
 
 // Expose
 defineExpose({
+  resetar: () => baseFormRef.value?.resetValidation(),
+  submeter: () => baseFormRef.value?.submit(),
   reset: () => baseFormRef.value?.resetValidation(),
   submit: () => baseFormRef.value?.submit(),
 });

@@ -1,3 +1,54 @@
+<template>
+  <v-container class="fill-height d-flex align-center justify-center text-center">
+    <v-sheet
+      elevation="0"
+      max-width="600"
+      class="bg-transparent"
+    >
+      <v-icon
+        :icon="errorContent.icon"
+        :color="errorContent.color"
+        size="120"
+        class="mb-6 animate-bounce"
+      ></v-icon>
+
+      <h1 class="text-h2 font-weight-bold mb-2 text-high-emphasis">
+        {{ errorContent.code }}
+      </h1>
+      <h2 class="text-h4 font-weight-medium mb-4 text-medium-emphasis">
+        {{ errorContent.title }}
+      </h2>
+
+      <p class="text-body-1 text-medium-emphasis mb-8">
+        {{ errorContent.message }}
+      </p>
+
+      <div class="d-flex justify-center gap-4">
+        <v-btn
+          variant="outlined"
+          color="primary"
+          size="large"
+          prepend-icon="mdi-arrow-left"
+          @click="goBack"
+          class="mr-4"
+        >
+          Voltar
+        </v-btn>
+
+        <v-btn
+          variant="flat"
+          color="primary"
+          size="large"
+          prepend-icon="mdi-home"
+          @click="goHome"
+        >
+          Ir para o Início
+        </v-btn>
+      </div>
+    </v-sheet>
+  </v-container>
+</template>
+
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
@@ -49,57 +100,6 @@ function goBack() {
   router.go(-1);
 }
 </script>
-
-<template>
-  <v-container class="fill-height d-flex align-center justify-center text-center">
-    <v-sheet
-      elevation="0"
-      max-width="600"
-      class="bg-transparent"
-    >
-      <v-icon
-        :icon="errorContent.icon"
-        :color="errorContent.color"
-        size="120"
-        class="mb-6 animate-bounce"
-      ></v-icon>
-
-      <h1 class="text-h2 font-weight-bold mb-2 text-high-emphasis">
-        {{ errorContent.code }}
-      </h1>
-      <h2 class="text-h4 font-weight-medium mb-4 text-medium-emphasis">
-        {{ errorContent.title }}
-      </h2>
-
-      <p class="text-body-1 text-medium-emphasis mb-8">
-        {{ errorContent.message }}
-      </p>
-
-      <div class="d-flex justify-center gap-4">
-        <v-btn
-          variant="outlined"
-          color="primary"
-          size="large"
-          prepend-icon="mdi-arrow-left"
-          @click="goBack"
-          class="mr-4"
-        >
-          Voltar
-        </v-btn>
-
-        <v-btn
-          variant="flat"
-          color="primary"
-          size="large"
-          prepend-icon="mdi-home"
-          @click="goHome"
-        >
-          Ir para o Início
-        </v-btn>
-      </div>
-    </v-sheet>
-  </v-container>
-</template>
 
 <style scoped>
 .animate-bounce {

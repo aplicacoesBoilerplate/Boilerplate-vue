@@ -2,11 +2,11 @@
   <ConsultaVinculosFormulario
     :contexto="contextoConsultaUsuarios"
     :buscarRegistros="buscarUsuarios"
-    titulo="Usuários vinculados"
-    subtitulo="Altere o cargo de um usuário diretamente por este facilitador."
-    rotuloPesquisa="Pesquisar usuários"
+    :titulo="t('forms.usuariosVinculadosCargo.titulo')"
+    :subtitulo="t('forms.usuariosVinculadosCargo.subtitulo')"
+    :rotuloPesquisa="t('forms.usuariosVinculadosCargo.rotuloPesquisa')"
     iconePesquisa="mdi-account-search-outline"
-    textoVazio="Nenhum usuário está vinculado a este cargo."
+    :textoVazio="t('forms.usuariosVinculadosCargo.textoVazio')"
     iconeVazio="mdi-account-off-outline"
     :limite="10"
     atributoChave="id"
@@ -45,7 +45,7 @@
                 size="x-small"
                 variant="tonal"
               >
-                Alteração pendente
+                {{ t('forms.usuariosVinculadosCargo.alteracaoPendente') }}
               </v-chip>
             </div>
           </v-list-item-subtitle>
@@ -69,6 +69,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
 import type { ICargoRbac } from '@/models/model/rbac/ICargoRbac';
@@ -92,12 +93,18 @@ type TProps = {
 };
 const props = defineProps<TProps>();
 
+// Composables
+const { t } = useI18n();
+
 // Reativas
 const usuarios = defineModel<IUsuario[]>('usuarios', { required: true });
 const chavesUsuariosAlterados = ref(new Set<string>());
 const papeisOriginaisUsuarios = ref(new Map<string, TPapel>());
 
 // Funções
+/**
+ * Busca usuários vinculados ao cargo atual ou com alteração pendente no formulário.
+ */
 async function buscarUsuarios(
   pPayload: IGenericListFetchPayload & { termoPesquisa: string },
 ): Promise<TGenericListFetchResponse<IUsuario>> {
@@ -113,6 +120,9 @@ async function buscarUsuarios(
   };
 }
 
+/**
+ * Atualiza o cargo do usuário em memória e controla se há alteração pendente.
+ */
 function atualizarCargoUsuario(pUsuario: IUsuario, pPapelCargo: string): void {
   const chaveUsuario = obterChaveUsuario(pUsuario);
   const papelOriginal = papeisOriginaisUsuarios.value.get(chaveUsuario) ?? pUsuario.papel;
@@ -135,6 +145,9 @@ function atualizarCargoUsuario(pUsuario: IUsuario, pPapelCargo: string): void {
   });
 }
 
+/**
+ * Filtra usuários pelo cargo aberto no formulário, mantendo os registros alterados até o submit.
+ */
 function filtrarUsuariosPorCargoEPesquisa(pTermoPesquisa: string): IUsuario[] {
   const termoPesquisa = normalizarTexto(pTermoPesquisa);
 
@@ -158,19 +171,31 @@ function filtrarUsuariosPorCargoEPesquisa(pTermoPesquisa: string): IUsuario[] {
   });
 }
 
+/**
+ * Indica se o usuário possui alteração de cargo ainda não salva.
+ */
 function usuarioComAlteracaoPendente(pUsuario: IUsuario): boolean {
   return chavesUsuariosAlterados.value.has(obterChaveUsuario(pUsuario));
 }
 
+/**
+ * Resolve o papel atual do usuário a partir do model editável do formulário.
+ */
 function obterPapelUsuario(pUsuario: IUsuario): TPapel {
   return usuarios.value.find((pUsuarioAtual) => obterChaveUsuario(pUsuarioAtual) === obterChaveUsuario(pUsuario))?.papel
     ?? pUsuario.papel;
 }
 
+/**
+ * Usa o id quando disponível e o e-mail como fallback estável para usuários mockados.
+ */
 function obterChaveUsuario(pUsuario: IUsuario): string {
   return String(pUsuario.id ?? pUsuario.email);
 }
 
+/**
+ * Normaliza valores textuais para comparação simples na busca local.
+ */
 function normalizarTexto(pValor: unknown): string {
   return String(pValor ?? '')
     .normalize('NFD')
@@ -178,6 +203,9 @@ function normalizarTexto(pValor: unknown): string {
     .toUpperCase();
 }
 
+/**
+ * Captura o papel original dos usuários para detectar quando uma alteração foi desfeita.
+ */
 function inicializarPapeisOriginaisUsuarios(): void {
   papeisOriginaisUsuarios.value = new Map(
     usuarios.value.map((pUsuario) => [obterChaveUsuario(pUsuario), pUsuario.papel]),

@@ -7,13 +7,13 @@
     <GenericView
       ref="genericViewRef"
       :contexto="CONTEXTO_LISTA_CARGOS"
-      :serviceFetch="fetchCargosMock"
+      :serviceFetch="buscarCargosMock"
       :exibirExportacao="false"
-      textoVazio="Nenhum cargo encontrado."
-      textoFinal="Todos os cargos foram carregados."
-      @novoRegistro="handleGerenciarRegistro"
+      :textoVazio="t('components.rbacView.textoVazioCargos')"
+      :textoFinal="t('components.rbacView.textoFinalCargos')"
+      @novoRegistro="gerenciarRegistro"
     >
-      <template #activator-novo-registro="{ handleNovoRegistro, tooltipProps }">
+      <template #activator-novo-registro="{ acionarNovoRegistro, tooltipProps }">
         <DialogFormCargoRbac
           v-model:exibirDialog="exibirDialogCargo"
           v-model:cargo="modelFormCargo"
@@ -29,7 +29,7 @@
               icon="mdi-plus"
               size="x-small"
               variant="tonal"
-              @click="handleNovoRegistro"
+              @click="acionarNovoRegistro"
             />
           </template>
         </DialogFormCargoRbac>
@@ -63,7 +63,7 @@
                   color="info"
                   size="small"
                   class="mr-2"
-                  @click.stop="handleGerenciarRegistro({ modoEdicao: true, item: cargo })"
+                  @click.stop="gerenciarRegistro({ modoEdicao: true, item: cargo })"
                 />
                 <v-btn
                   icon="mdi-delete"
@@ -84,6 +84,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { mergeProps, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
 
@@ -110,6 +111,7 @@ const CONTEXTO_LISTA_CARGOS = 'lista-cargos-rbac';
 // Composables
 const router = useRouter();
 const { mdAndDown } = useDisplay();
+const { t } = useI18n();
 
 // Reativas
 const genericViewRef = ref<InstanceType<typeof GenericView> | null>(null);
@@ -121,11 +123,11 @@ const modelFormCargo = ref<ICargoRbac>(criarCargoRbacPadrao());
 const papelCargoAntesEdicao = ref<TPapel | null>(null);
 
 // Funções
-async function fetchCargosMock(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse<ICargoRbac>> {
+async function buscarCargosMock(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse<ICargoRbac>> {
   return CRbacMockService.buscarCargos(pPayload);
 }
 
-function handleGerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoRbac }): void {
+function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoRbac }): void {
   modoEdicaoCargo.value = pPayload.modoEdicao;
 
   if (pPayload.modoEdicao && pPayload.item) {

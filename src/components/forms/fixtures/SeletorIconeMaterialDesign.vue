@@ -1,12 +1,12 @@
 <template>
   <v-combobox
-    v-model="sufixoIcone"
+    v-model="valorCombobox"
     :counter="counter"
     :density="density"
     :hideDetails="hideDetails"
-    :hint="hint"
-    :items="ICONES_MATERIAL_DESIGN"
-    :label="label"
+    :hint="hintPadrao"
+    :items="iconesMaterialDesign"
+    :label="labelPadrao"
     :prependInnerIcon="iconeNormalizadoAtual"
     :returnObject="false"
     :rules="rules"
@@ -20,7 +20,7 @@
   >
     <template #append>
       <v-tooltip
-        text="Visitar a página com todos os ícones aceitos"
+        :text="t('forms.seletorIconeMaterialDesign.tooltipPaginaIcones')"
         location="bottom"
       >
         <template #activator="{ props }">
@@ -53,6 +53,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { ValidationRule } from 'vuetify';
 
 /**
@@ -85,54 +86,38 @@ type TItemIconeMaterialDesign = {
   valor: string;
 };
 
+type TValorSeletorIcone = string | TItemIconeMaterialDesign | null;
+
 const props = withDefaults(defineProps<TProps>(), {
   counter: 60,
   density: 'compact',
   hideDetails: false,
-  hint: 'Selecione ou pesquise um ícone.',
-  label: 'Ícone',
+  hint: undefined,
+  label: undefined,
   rules: () => [],
   variant: 'outlined',
 });
+
+// Composables
+const { t } = useI18n();
 
 // Reativas - Model
 const icone = defineModel<string>({ default: '' });
 
 // Constantes
 const ICONE_PADRAO = 'mdi-shield-account-outline';
-const ICONES_MATERIAL_DESIGN: TItemIconeMaterialDesign[] = [
-  criarItemIcone('shield-account-outline', 'Escudo de conta'),
-  criarItemIcone('shield-key-outline', 'Escudo com chave'),
-  criarItemIcone('shield-crown-outline', 'Escudo administrativo'),
-  criarItemIcone('account', 'Conta'),
-  criarItemIcone('account-tie', 'Conta executiva'),
-  criarItemIcone('account-key-outline', 'Conta com chave'),
-  criarItemIcone('account-cog-outline', 'Conta com configurações'),
-  criarItemIcone('account-group-outline', 'Grupo de contas'),
-  criarItemIcone('account-supervisor-outline', 'Supervisor'),
-  criarItemIcone('badge-account-outline', 'Crachá de conta'),
-  criarItemIcone('card-account-details-outline', 'Detalhes de conta'),
-  criarItemIcone('briefcase-account-outline', 'Conta profissional'),
-  criarItemIcone('lock-outline', 'Bloqueio'),
-  criarItemIcone('lock-open-outline', 'Bloqueio aberto'),
-  criarItemIcone('key-outline', 'Chave'),
-  criarItemIcone('cog-outline', 'Configuração'),
-  criarItemIcone('view-dashboard-outline', 'Painel'),
-  criarItemIcone('database-outline', 'Banco de dados'),
-  criarItemIcone('chart-box-outline', 'Gráfico'),
-  criarItemIcone('file-document-outline', 'Documento'),
-  criarItemIcone('package-variant-closed', 'Pacote'),
-  criarItemIcone('cart-outline', 'Carrinho'),
-  criarItemIcone('cash-multiple', 'Financeiro'),
-  criarItemIcone('email-outline', 'E-mail'),
-  criarItemIcone('phone-outline', 'Telefone'),
-];
 
 // Funções
-function consultarPaginaIcones() {
+/**
+ * Abre a documentação oficial de ícones MDI em uma nova aba.
+ */
+function consultarPaginaIcones(): void {
   window.open('https://pictogrammers.com/library/mdi/', '_blank');
 }
 
+/**
+ * Monta a estrutura visual consumida pelo combobox a partir do sufixo do ícone.
+ */
 function criarItemIcone(pSufixo: string, pTitulo: string): TItemIconeMaterialDesign {
   return {
     sufixo: pSufixo,
@@ -141,11 +126,17 @@ function criarItemIcone(pSufixo: string, pTitulo: string): TItemIconeMaterialDes
   };
 }
 
+/**
+ * Garante que qualquer valor digitado ou selecionado seja salvo no formato aceito pelo v-icon.
+ */
 function normalizarIcone(pValor: unknown): string {
   const sufixo = obterSufixoIcone(pValor);
   return sufixo ? `mdi-${sufixo}` : '';
 }
 
+/**
+ * Remove prefixos e caracteres incompatíveis para manter somente o nome do ícone.
+ */
 function obterSufixoIcone(pValor: unknown): string {
   return String(obterValorIcone(pValor) ?? '')
     .trim()
@@ -156,6 +147,9 @@ function obterSufixoIcone(pValor: unknown): string {
     .toLowerCase();
 }
 
+/**
+ * Extrai o valor útil quando o Vuetify retorna um item completo em vez de texto puro.
+ */
 function obterValorIcone(pValor: unknown): unknown {
   if (typeof pValor !== 'object' || pValor === null) {
     return pValor;
@@ -167,12 +161,44 @@ function obterValorIcone(pValor: unknown): unknown {
 }
 
 // Computadas
-const sufixoIcone = computed<string | null>({
+const valorCombobox = computed<TValorSeletorIcone>({
   get: () => obterSufixoIcone(icone.value),
   set: (pValor) => {
     icone.value = normalizarIcone(pValor);
   },
 });
 
-const iconeNormalizadoAtual = computed(() => normalizarIcone(sufixoIcone.value) || ICONE_PADRAO);
+const hintPadrao = computed(() => props.hint ?? t('forms.seletorIconeMaterialDesign.hint'));
+
+const labelPadrao = computed(() => props.label ?? t('forms.seletorIconeMaterialDesign.label'));
+
+const iconeNormalizadoAtual = computed(() => normalizarIcone(valorCombobox.value) || ICONE_PADRAO);
+
+const iconesMaterialDesign = computed<TItemIconeMaterialDesign[]>(() => [
+  criarItemIcone('shield-account-outline', t('forms.seletorIconeMaterialDesign.icones.escudoConta')),
+  criarItemIcone('shield-key-outline', t('forms.seletorIconeMaterialDesign.icones.escudoChave')),
+  criarItemIcone('shield-crown-outline', t('forms.seletorIconeMaterialDesign.icones.escudoAdministrativo')),
+  criarItemIcone('account', t('forms.seletorIconeMaterialDesign.icones.conta')),
+  criarItemIcone('account-tie', t('forms.seletorIconeMaterialDesign.icones.contaExecutiva')),
+  criarItemIcone('account-key-outline', t('forms.seletorIconeMaterialDesign.icones.contaChave')),
+  criarItemIcone('account-cog-outline', t('forms.seletorIconeMaterialDesign.icones.contaConfiguracoes')),
+  criarItemIcone('account-group-outline', t('forms.seletorIconeMaterialDesign.icones.grupoContas')),
+  criarItemIcone('account-supervisor-outline', t('forms.seletorIconeMaterialDesign.icones.supervisor')),
+  criarItemIcone('badge-account-outline', t('forms.seletorIconeMaterialDesign.icones.crachaConta')),
+  criarItemIcone('card-account-details-outline', t('forms.seletorIconeMaterialDesign.icones.detalhesConta')),
+  criarItemIcone('briefcase-account-outline', t('forms.seletorIconeMaterialDesign.icones.contaProfissional')),
+  criarItemIcone('lock-outline', t('forms.seletorIconeMaterialDesign.icones.bloqueio')),
+  criarItemIcone('lock-open-outline', t('forms.seletorIconeMaterialDesign.icones.bloqueioAberto')),
+  criarItemIcone('key-outline', t('forms.seletorIconeMaterialDesign.icones.chave')),
+  criarItemIcone('cog-outline', t('forms.seletorIconeMaterialDesign.icones.configuracao')),
+  criarItemIcone('view-dashboard-outline', t('forms.seletorIconeMaterialDesign.icones.painel')),
+  criarItemIcone('database-outline', t('forms.seletorIconeMaterialDesign.icones.bancoDados')),
+  criarItemIcone('chart-box-outline', t('forms.seletorIconeMaterialDesign.icones.grafico')),
+  criarItemIcone('file-document-outline', t('forms.seletorIconeMaterialDesign.icones.documento')),
+  criarItemIcone('package-variant-closed', t('forms.seletorIconeMaterialDesign.icones.pacote')),
+  criarItemIcone('cart-outline', t('forms.seletorIconeMaterialDesign.icones.carrinho')),
+  criarItemIcone('cash-multiple', t('forms.seletorIconeMaterialDesign.icones.financeiro')),
+  criarItemIcone('email-outline', t('forms.seletorIconeMaterialDesign.icones.email')),
+  criarItemIcone('phone-outline', t('forms.seletorIconeMaterialDesign.icones.telefone')),
+]);
 </script>

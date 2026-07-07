@@ -13,13 +13,10 @@
     :maxHeight="maxHeight"
     :zIndex="zIndex"
   >
-    <!-- Slot para renderizar o componente que abre o dialog (ativador) -->
-    <template #activator="{ props: activatorProps, isActive }">
+    <template #activator="{ props }">
       <slot
         name="activator"
-        :props="activatorProps"
-        :isOpen="isActive"
-        :open="open"
+        :props="props"
       />
     </template>
 
@@ -30,16 +27,19 @@
     >
       <slot
         name="titulo"
-        :title="titulo"
-        :onFechar="close"
+        :title="tituloDialog"
+        :titulo="tituloDialog"
+        :onFechar="fechar"
       >
         <v-toolbar
-          :title="titulo"
-          :iconePrependTitulo="iconePrependTitulo"
+          :title="tituloDialog"
           class="base-dialog-toolbar"
           color="primary"
         >
-          <template #prepend>
+          <template
+            v-if="iconePrependTitulo"
+            #prepend
+          >
             <v-icon
               :icon="iconePrependTitulo"
               class="px-5"
@@ -48,10 +48,10 @@
 
           <template #append>
             <v-btn
-              :aria-label="`Fechar ${titulo}`"
+              :aria-label="t('components.baseDialog.fecharAriaLabel', { titulo: tituloDialog })"
               icon="mdi-close"
               variant="text"
-              @click="close"
+              @click="fechar"
             />
           </template>
 
@@ -77,16 +77,17 @@
         <v-card-actions>
           <slot
             name="actions"
-            :title="titulo"
-            :onFechar="close"
-            :onSalvar="handleSalvar"
-            :onCancelar="handleCancelar"
+            :title="tituloDialog"
+            :titulo="tituloDialog"
+            :onFechar="fechar"
+            :onSalvar="salvar"
+            :onCancelar="cancelar"
           >
             <v-btn
               color="error"
               variant="tonal"
-              text="CANCELAR"
-              @click="handleCancelar"
+              :text="t('tooltips.forms.cancel')"
+              @click="cancelar"
             />
 
             <v-spacer />
@@ -94,9 +95,9 @@
             <v-btn
               color="primary"
               variant="flat"
-              text="SALVAR"
+              :text="t('tooltips.forms.save')"
               :loading="loading"
-              @click="handleSalvar"
+              @click="salvar"
             />
           </slot>
         </v-card-actions>
@@ -108,6 +109,7 @@
 <script setup lang="ts">
 // Ecossistema vue
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
 import type { IPropsBaseDialog } from '@/models/IPropsBaseDialog';
@@ -134,29 +136,32 @@ type TEmits = {
 };
 const emits = defineEmits<TEmits>();
 
-// Reativas - Model
+// Composables
+const { t } = useI18n();
+
+// Reativas
 const dialogModel = defineModel<boolean>('exibirDialog', { default: false });
 
 // Funções
-function setOpen(value: boolean) {
-  dialogModel.value = value;
+function definirAbertura(pAberto: boolean): void {
+  dialogModel.value = pAberto;
 }
 
-function open() {
-  setOpen(true);
+function abrir(): void {
+  definirAbertura(true);
 }
 
-function close() {
+function fechar(): void {
   emits('fechar');
-  setOpen(false);
+  definirAbertura(false);
 }
 
-function handleCancelar() {
+function cancelar(): void {
   emits('cancelar');
-  close();
+  fechar();
 }
 
-function handleSalvar() {
+function salvar(): void {
   emits('salvar');
 }
 
@@ -170,14 +175,20 @@ const contentStyles = computed(() => {
 });
 
 const mostrarAcoesDialog = computed(() => props.mostrarAcoes ?? true);
+const tituloDialog = computed(() => props.titulo === 'Dialog' ? t('components.baseDialog.tituloPadrao') : props.titulo);
 
 // Expose
 defineExpose({
-  open,
-  close,
-  setOpen,
-  handleCancelar,
-  handleSalvar,
+  abrir,
+  fechar,
+  definirAbertura,
+  cancelar,
+  salvar,
+  open: abrir,
+  close: fechar,
+  setOpen: definirAbertura,
+  handleCancelar: cancelar,
+  handleSalvar: salvar,
 });
 </script>
 

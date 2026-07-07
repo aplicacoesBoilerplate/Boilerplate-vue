@@ -14,7 +14,7 @@
           icon="mdi-information-outline"
           color="primary"
         />
-        <span>Informações do sistema</span>
+        <span>{{ t('components.systemInfoView.titulo') }}</span>
 
         <v-chip
           color="primary"
@@ -39,7 +39,7 @@
               icon="mdi-view-dashboard-outline"
               start
             />
-            Geral
+            {{ t('components.systemInfoView.abas.geral') }}
           </v-tab>
 
           <v-tab
@@ -50,7 +50,7 @@
               icon="mdi-source-branch"
               start
             />
-            Versões
+            {{ t('components.systemInfoView.abas.versoes') }}
           </v-tab>
         </v-tabs>
 
@@ -79,6 +79,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Dados locais
 import changelog from '../../CHANGELOG.md?raw';
@@ -97,6 +98,9 @@ import Versoes from '@/components/informacoes/versoes/Versoes.vue';
 // Reativas
 const abaAtual = ref<TAbaSistema>('geral');
 
+// Composables
+const { locale, t } = useI18n();
+
 // Funções
 
 /**
@@ -113,7 +117,7 @@ function extrairVersoesChangelog(pConteudo: string): TVersaoChangelog[] {
 
     return {
       numero: pSecao[1],
-      data: CFormatters.formatarDataHora(pSecao[2]),
+      data: CFormatters.formatarDataHora(pSecao[2], locale.value),
       secoes,
       totalItens: secoes.reduce((pTotal, pSecaoChangelog) => pTotal + pSecaoChangelog.itens.length, 0),
     };
@@ -164,7 +168,7 @@ function mapearSecaoChangelog(pTitulo: string): TMetadadosSecaoChangelog {
 
   if (tituloNormalizado.includes('breaking')) {
     return {
-      titulo: 'Mudanças incompatíveis',
+      titulo: t('components.systemInfoView.secoesChangelog.mudancasIncompativeis'),
       icone: 'mdi-alert-outline',
       cor: 'warning',
     };
@@ -172,7 +176,7 @@ function mapearSecaoChangelog(pTitulo: string): TMetadadosSecaoChangelog {
 
   if (tituloNormalizado.includes('feature')) {
     return {
-      titulo: 'Funcionalidades',
+      titulo: t('components.systemInfoView.secoesChangelog.funcionalidades'),
       icone: 'mdi-star-plus-outline',
       cor: 'primary',
     };
@@ -180,7 +184,7 @@ function mapearSecaoChangelog(pTitulo: string): TMetadadosSecaoChangelog {
 
   if (tituloNormalizado.includes('bug')) {
     return {
-      titulo: 'Correções',
+      titulo: t('components.systemInfoView.secoesChangelog.correcoes'),
       icone: 'mdi-bug-check-outline',
       cor: 'error',
     };

@@ -10,6 +10,9 @@
     "home": {
       "title": "Página Inícial"
     },
+    "dashboard": {
+      "title": "Painel"
+    },    
     "systemInfo": {
       "title": "Informações do sistema"
     },
@@ -22,23 +25,20 @@
     "forgotPassword": {
       "title": "Recuperar senha"
     },
-    "dashboard": {
-      "title": "Painel"
-    },
-    "users": {
-      "title": "Usuários"
-    },
-    "rbac": {
-      "title": "Controle de acesso"
-    },
     "adm": {
       "title": "Administrador",
       "children": {
         "users": {
           "title": "Gestão de usuários"
         },
-        "settings": {
-          "title": "Configurações"
+        "rbac": {
+          "title": "Controle de acesso"
+        },
+        "errors": {
+          "title": "Registro de falhas"
+        },
+        "healthCheck": {
+          "title": "Verificação de integridade"
         }
       }
     },
@@ -94,6 +94,129 @@
       "inputPassword": {
         "label": "Senha"
       }
+    },
+    "formRegistro": {
+      "inputNome": {
+        "label": "Nome"
+      },
+      "inputEmail": {
+        "label": "E-mail"
+      },
+      "inputSenha": {
+        "label": "Senha"
+      },
+      "inputConfirmarSenha": {
+        "label": "Confirmar senha"
+      }
+    },
+    "formCargoRbac": {
+      "inputNome": {
+        "label": "Nome do cargo"
+      },
+      "inputPapel": {
+        "label": "Papel",
+        "hint": "Usado no vínculo com usuários e nas políticas"
+      },
+      "inputComportamentoPadrao": {
+        "label": "Quando não houver permissão específica"
+      },
+      "inputDescricao": {
+        "label": "Descrição"
+      },
+      "inputAtivo": {
+        "label": "Cargo ativo"
+      },
+      "comportamentosPadrao": {
+        "bloquear": "Bloquear por padrão",
+        "liberar": "Liberar por padrão"
+      }
+    },
+    "seletorIconeMaterialDesign": {
+      "label": "Ícone",
+      "hint": "Selecione ou pesquise um ícone.",
+      "tooltipPaginaIcones": "Visitar a página com todos os ícones aceitos",
+      "icones": {
+        "escudoConta": "Escudo de conta",
+        "escudoChave": "Escudo com chave",
+        "escudoAdministrativo": "Escudo administrativo",
+        "conta": "Conta",
+        "contaExecutiva": "Conta executiva",
+        "contaChave": "Conta com chave",
+        "contaConfiguracoes": "Conta com configurações",
+        "grupoContas": "Grupo de contas",
+        "supervisor": "Supervisor",
+        "crachaConta": "Crachá de conta",
+        "detalhesConta": "Detalhes de conta",
+        "contaProfissional": "Conta profissional",
+        "bloqueio": "Bloqueio",
+        "bloqueioAberto": "Bloqueio aberto",
+        "chave": "Chave",
+        "configuracao": "Configuração",
+        "painel": "Painel",
+        "bancoDados": "Banco de dados",
+        "grafico": "Gráfico",
+        "documento": "Documento",
+        "pacote": "Pacote",
+        "carrinho": "Carrinho",
+        "financeiro": "Financeiro",
+        "email": "E-mail",
+        "telefone": "Telefone"
+      }
+    },
+    "consultaVinculosFormulario": {
+      "rotuloPesquisa": "Pesquisar registros",
+      "textoVazio": "Nenhum registro encontrado.",
+      "textoFinal": "Todos os registros foram carregados."
+    },
+    "usuariosVinculadosCargo": {
+      "titulo": "Usuários vinculados",
+      "subtitulo": "Altere o cargo de um usuário diretamente por este facilitador.",
+      "rotuloPesquisa": "Pesquisar usuários",
+      "textoVazio": "Nenhum usuário está vinculado a este cargo.",
+      "alteracaoPendente": "Alteração pendente"
+    },
+    "controlePermissoesCargo": {
+      "rotas": {
+        "titulo": "Rotas liberadas",
+        "subtitulo": "Rotas filhas mantêm a rota pai liberada para preservar a navegação.",
+        "colunaAcoes": "Ações liberadas",
+        "semAcoes": "-",
+        "acoes": {
+          "consultar": "Consultar",
+          "gravar": "Gravar",
+          "editar": "Editar",
+          "remover": "Remover"
+        }
+      },
+      "comportamentoPadrao": {
+        "bloquear": "Bloqueia por padrão",
+        "liberar": "Libera por padrão"
+      },
+      "permissoesGerais": {
+        "titulo": "Permissões gerais",
+        "subtitulo": "Ações transversais que podem ser usadas por vários recursos.",
+        "itens": {
+          "exportarDados": "Exportar dados",
+          "visualizarGraficos": "Visualizar gráficos",
+          "gerenciarRegistros": "Gerenciar registros"
+        }
+      }
+    },
+    "configuracaoRedirecionamentoCargo": {
+      "titulo": "Redirecionamento inicial",
+      "inputRota": {
+        "label": "Rota inicial após login"
+      },
+      "tooltipFiltros": "Configurar filtros iniciais",
+      "rotaSemFiltros": "Esta rota não possui filtros configuráveis."
+    },
+    "consultaRegistrosFiltro": {
+      "registros": "registros",
+      "rotuloPesquisa": "Pesquisar {campo}",
+      "tooltipFechar": "Fechar consulta auxiliar",
+      "textoVazio": "Nenhum registro encontrado.",
+      "textoFinal": "Todos os registros foram carregados.",
+      "textoErro": "Não foi possível consultar os registros."
     }
   },
   "tooltips": {
@@ -115,6 +238,7 @@
       "create": "Novo registro",
       "edit": "Editar",
       "delete": "Excluir",
+      "cancel": "Cancelar",
       "submit": "Confirmar",
       "forgotPassword": "Esqueci minha senha"
     },
@@ -137,16 +261,19 @@
     "value": "Valor",
     "from": "De",
     "until": "Até",
+    "active": "Ativo",
+    "inactive": "Inativo",
     "welcome": "Bem-vindo(a)",
     "errors": {
       "reqGenerics": "Ocorreu um erro na requisição!"
     },
     "forms": {
-      "formUsers": {
-        "createUser": "Criar usuário",
-        "editingUser": "Editar usuário"
-      }
-    },
+        "formUsers": {
+          "createUser": "Criar usuário",
+          "editingUser": "Editar usuário",
+          "editingUserId": "Editar usuário #{id}"
+        }
+      },
     "components": {
       "dataTable": {
         "titleDefault": "Resultados",
@@ -156,6 +283,166 @@
         "title": "Filtrar recursos de:",
         "alertDuplicate": "Esse filtro já foi adicionado!"
       }
+    }
+  },
+  "components": {
+    "genericView": {
+      "ordenarCrescente": "Ordenar crescente",
+      "ordenarDecrescente": "Ordenar decrescente"
+    },
+    "genericInfiniteList": {
+      "limite": "Limite",
+      "textoVazio": "Nenhum registro encontrado.",
+      "textoFinal": "Todos os registros foram carregados.",
+      "textoErro": "Não foi possível carregar os registros."
+    },
+    "usersView": {
+      "verGraficos": "Ver gráficos",
+      "esconderGraficos": "Esconder gráficos"
+    },
+    "rbacView": {
+      "textoVazioCargos": "Nenhum cargo encontrado.",
+      "textoFinalCargos": "Todos os cargos foram carregados."
+    },
+    "baseChart": {
+      "inputAgrupamento": {
+        "label": "Agrupar por"
+      },
+      "tooltipConfiguracao": "Configurar gráfico",
+      "secoes": {
+        "visualizacao": "Visualização",
+        "controles": "Controles"
+      },
+      "controles": {
+        "legenda": "Legenda",
+        "rotulos": "Rótulos"
+      },
+      "tipos": {
+        "donut": "Donut",
+        "pizza": "Pizza",
+        "colunas": "Colunas",
+        "barras": "Barras"
+      },
+      "semDados": "Sem dados para exibir",
+      "totalAcumulado": "Total acumulado",
+      "registrosTotais": "Registros totais",
+      "categoria": "categoria",
+      "tituloAgrupamento": "Agrupamento por {campo}"
+    },
+    "dialogFiltro": {
+      "titulo": "Filtros",
+      "consultaRegistrosAriaLabel": "Consulta auxiliar de registros",
+      "limparFiltros": "Limpar filtros",
+      "aplicar": "Aplicar"
+    },
+    "baseDialog": {
+      "tituloPadrao": "Diálogo",
+      "fecharAriaLabel": "Fechar {titulo}"
+    },
+    "menuExportacaoDados": {
+      "tooltip": "Exportar dados",
+      "titulo": "Exportar",
+      "formatos": {
+        "txt": {
+          "titulo": "TXT",
+          "descricao": "Texto tabulado"
+        },
+        "pdf": {
+          "titulo": "PDF",
+          "descricao": "Documento para leitura"
+        },
+        "excel": {
+          "titulo": "Excel",
+          "descricao": "Planilha .xlsx"
+        }
+      }
+    },
+    "detalhesCargo": {
+      "tooltip": "Detalhes",
+      "liberacoes": "{quantidade} liberações",
+      "usuarios": "{quantidade} usuário(s)",
+      "semDescricao": "Sem descrição cadastrada."
+    },
+    "drawerFiltroRight": {
+      "filtrosAplicados": "Filtros aplicados"
+    },
+    "campoSelecionado": {
+      "nenhumCampoSelecionado": "Nenhum campo selecionado",
+      "tipoDado": "Tipo de Dado",
+      "ocultarConsultaAuxiliar": "Ocultar consulta auxiliar",
+      "consultarRegistros": "Consultar registros",
+      "tiposDados": {
+        "texto": "Texto",
+        "numerico": "Numérico",
+        "logico": "Lógico (Sim/Não)",
+        "dataHora": "Data/Hora",
+        "selecao": "Seleção"
+      }
+    },
+    "inputValorFiltro": {
+      "valorNaoNecessario": "Nenhum valor necessário para esta condição.",
+      "selecioneValores": "Selecione os valores",
+      "selecioneAoMenosUmValor": "Selecione ao menos um valor"
+    },
+    "drawerItemUsuario": {
+      "fixarMenu": "Fixar menu",
+      "desafixarMenu": "Desafixar menu"
+    },
+    "btnInstalarPwa": {
+      "instalarAplicativo": "Instalar aplicativo",
+      "instalacaoIndisponivel": "Instalação indisponível neste navegador",
+      "instalacaoIniciada": "Instalação do aplicativo iniciada."
+    },
+    "systemInfoView": {
+      "titulo": "Informações do sistema",
+      "abas": {
+        "geral": "Geral",
+        "versoes": "Versões"
+      },
+      "secoesChangelog": {
+        "mudancasIncompativeis": "Mudanças incompatíveis",
+        "funcionalidades": "Funcionalidades",
+        "correcoes": "Correções"
+      }
+    },
+    "infoGeral": {
+      "cards": {
+        "frontend": {
+          "titulo": "Frontend",
+          "descricao": "Vue {vue}, Vuetify {vuetify} e TypeScript {typescript}."
+        },
+        "pwa": {
+          "titulo": "PWA",
+          "descricao": "Aplicação preparada para instalação, service worker e experiência responsiva em dispositivos móveis."
+        },
+        "boilerplate": {
+          "titulo": "Boilerplate",
+          "descricao": "Base com autenticação visual, filtros globais, RBAC, listas genéricas, exportação e componentes reutilizáveis."
+        }
+      }
+    },
+    "resumoVersoes": {
+      "titulo": "Resumo",
+      "alteracoes": "{quantidade} alterações",
+      "pacote": "Pacote",
+      "changelog": "Changelog",
+      "versoes": "Versões",
+      "tooltipPacote": "Pacote: v{versao}",
+      "tooltipChangelog": "Changelog: v{versao} - {data}",
+      "tooltipVersoes": "Versões: {quantidade} registradas",
+      "versoesRegistradas": "{quantidade} registrada(s)"
+    },
+    "listaRealizadosVersoes": {
+      "atual": "Atual",
+      "registrada": "Registrada",
+      "itens": "{quantidade} item(ns)",
+      "nenhumItemDetalhado": "Nenhum item detalhado foi encontrado para esta versão."
+    }
+  },
+  "dialogs": {
+    "cargoRbac": {
+      "criar": "Criar novo cargo",
+      "editar": "Editar cargo {nome}"
     }
   },
   "dataTable": {

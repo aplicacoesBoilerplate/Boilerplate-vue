@@ -15,11 +15,11 @@
 
     <InputDebouncer
       v-model:pesquisaCampo="pesquisa"
-      :label="rotuloPesquisa"
+      :label="rotuloPesquisaPadrao"
       :icon="iconePesquisa"
       variant="outlined"
       density="compact"
-      @onSearch="handlePesquisar"
+      @onSearch="pesquisar"
     />
 
     <GenericInfiniteList
@@ -28,9 +28,9 @@
       :contexto="contextoConsulta"
       :limite="limite"
       :opcoesLimite="[limite]"
-      :serviceFetch="handleBuscarRegistros"
-      :textoVazio="textoVazio"
-      :textoFinal="textoFinal"
+      :serviceFetch="buscarRegistros"
+      :textoVazio="textoVazioPadrao"
+      :textoFinal="textoFinalPadrao"
       :usarFiltrosGlobais="false"
       storage="session"
       class="flex-grow-1"
@@ -80,7 +80,7 @@
               size="40"
               class="mb-2"
             />
-            <span>{{ items.length ? textoFinal : textoVazio }}</span>
+            <span>{{ items.length ? textoFinalPadrao : textoVazioPadrao }}</span>
           </div>
         </slot>
       </template>
@@ -91,6 +91,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
 import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
@@ -177,16 +178,19 @@ type TProps = {
 
 const props = withDefaults(defineProps<TProps>(), {
   subtitulo: '',
-  rotuloPesquisa: 'Pesquisar registros',
+  rotuloPesquisa: undefined,
   iconePesquisa: 'mdi-database-search',
-  textoVazio: 'Nenhum registro encontrado.',
-  textoFinal: 'Todos os registros foram carregados.',
+  textoVazio: undefined,
+  textoFinal: undefined,
   iconeVazio: 'mdi-database-off-outline',
   limite: 10,
   atributoChave: 'id',
   atributoTitulo: 'nome',
   atributoSubtitulo: 'descricao',
 });
+
+// Composables
+const { t } = useI18n();
 
 // Constantes
 const CACHE_TTL_CONSULTA_MS = 60 * 1000;
@@ -196,11 +200,17 @@ const pesquisa = ref<string | null>('');
 const termoPesquisa = ref('');
 
 // Funções
-function handlePesquisar(pTermoPesquisa: string): void {
+/**
+ * Atualiza o termo que será enviado para a próxima consulta paginada.
+ */
+function pesquisar(pTermoPesquisa: string): void {
   termoPesquisa.value = pTermoPesquisa;
 }
 
-async function handleBuscarRegistros(
+/**
+ * Encapsula o payload da lista genérica adicionando o termo digitado no facilitador.
+ */
+async function buscarRegistros(
   pPayload: IGenericListFetchPayload,
 ): Promise<TGenericListFetchResponse<TRegistroVinculo>> {
   return props.buscarRegistros({
@@ -209,14 +219,23 @@ async function handleBuscarRegistros(
   });
 }
 
+/**
+ * Obtém a chave do registro para o fallback de renderização da lista.
+ */
 function obterChaveRegistro(pRegistro: TRegistroVinculo): unknown {
   return (pRegistro as Record<string, unknown>)[props.atributoChave];
 }
 
+/**
+ * Obtém o título do registro para o fallback de renderização da lista.
+ */
 function obterTituloRegistro(pRegistro: TRegistroVinculo): string {
   return String((pRegistro as Record<string, unknown>)[props.atributoTitulo] ?? '');
 }
 
+/**
+ * Obtém o subtítulo do registro para o fallback de renderização da lista.
+ */
 function obterSubtituloRegistro(pRegistro: TRegistroVinculo): string {
   return String((pRegistro as Record<string, unknown>)[props.atributoSubtitulo] ?? '');
 }
@@ -228,4 +247,10 @@ const contextoConsulta = computed(() => {
     termoPesquisa.value || 'sem-pesquisa',
   ].join(':');
 });
+
+const rotuloPesquisaPadrao = computed(() => props.rotuloPesquisa ?? t('forms.consultaVinculosFormulario.rotuloPesquisa'));
+
+const textoVazioPadrao = computed(() => props.textoVazio ?? t('forms.consultaVinculosFormulario.textoVazio'));
+
+const textoFinalPadrao = computed(() => props.textoFinal ?? t('forms.consultaVinculosFormulario.textoFinal'));
 </script>

@@ -15,7 +15,7 @@
               :model-value="cargo.nome"
               :counter="60"
               :rules="[rules.required(), rules.maxLength(60)]"
-              label="Nome do cargo"
+              :label="t('forms.formCargoRbac.inputNome.label')"
               variant="outlined"
               density="compact"
               autocomplete="off"
@@ -28,8 +28,8 @@
               :model-value="cargo.papel"
               :counter="40"
               :rules="[rules.required(), rules.maxLength(40)]"
-              label="Papel"
-              hint="Usado no vínculo com usuários e nas políticas"
+              :label="t('forms.formCargoRbac.inputPapel.label')"
+              :hint="t('forms.formCargoRbac.inputPapel.hint')"
               variant="outlined"
               density="compact"
               autocomplete="off"
@@ -48,10 +48,10 @@
           <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
             <v-select
               v-model="cargo.comportamentoPadrao"
-              :items="COMPORTAMENTOS_PADRAO_PERMISSAO"
+              :items="itensComportamentoPadrao"
               itemTitle="descricao"
               itemValue="valor"
-              label="Quando não houver permissão específica"
+              :label="t('forms.formCargoRbac.inputComportamentoPadrao.label')"
               variant="outlined"
               density="compact"
               autocomplete="off"
@@ -81,7 +81,7 @@
               v-model="cargo.descricao"
               :rules="[rules.maxLength(180)]"
               :counter="180"
-              label="Descrição"
+              :label="t('forms.formCargoRbac.inputDescricao.label')"
               rows="2"
               variant="outlined"
               density="compact"
@@ -98,7 +98,7 @@
             <v-checkbox
               v-model="cargo.ativo"
               class="pa-0"
-              label="Cargo ativo"
+              :label="t('forms.formCargoRbac.inputAtivo.label')"
               color="success"
               hideDetails
             />
@@ -126,15 +126,21 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter, type RouteRecordRaw } from 'vue-router';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
-import type { ICargoRbac, IRedirecionamentoInicialRbac } from '@/models/model/rbac/ICargoRbac';
+import type { ICargoRbac, IPermissaoCargoRbac, IRedirecionamentoInicialRbac } from '@/models/model/rbac/ICargoRbac';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 
 // Mapeamentos
-import { COMPORTAMENTOS_PADRAO_PERMISSAO, criarCargoRbacPadrao, normalizarPapelCargo } from '@/models/model/rbac/ICargoRbac';
+import {
+  COMPORTAMENTOS_PADRAO_PERMISSAO,
+  criarCargoRbacPadrao,
+  normalizarPapelCargo,
+} from '@/models/model/rbac/ICargoRbac';
 
 // Componentes
 import BaseForm from '@/components/forms/base/BaseForm.vue';
@@ -142,6 +148,9 @@ import ConfiguracaoRedirecionamentoCargo from '@/components/forms/fixtures/rbac/
 import ControlePermissoesCargo from '@/components/forms/fixtures/rbac/ControlePermissoesCargo.vue';
 import SeletorIconeMaterialDesign from '@/components/forms/fixtures/SeletorIconeMaterialDesign.vue';
 import UsuariosVinculadosCargo from '@/components/forms/fixtures/rbac/UsuariosVinculadosCargo.vue';
+
+// Composables
+import { useControlePermissoesCargo } from '@/composables/useControlePermissoesCargo';
 
 /**
  * @property {ICargoRbac[]} cargosDisponiveis - Cargos disponíveis para vínculo de usuários.
@@ -156,8 +165,12 @@ type TEmits = {
 };
 const emits = defineEmits<TEmits>();
 
+
+
 // Composables
 const rules = useRules();
+const router = useRouter();
+const { t } = useI18n();
 
 // Reativas - Model
 const formIsValid = defineModel<boolean>('valido', { default: false });
@@ -176,19 +189,80 @@ function atualizarNomeCargo(pValor: unknown): void {
   cargo.value.papel = normalizarPapelCargo(nome);
 }
 
+// Computadas de permissões
+const permissoesCargo = computed({
+  get: () => cargo.value.permissoes,
+  set: (pValor) => {
+    cargo.value.permissoes = pValor;
+  },
+});
+
+// Composables
+const { obterPermissoesComRedirecionamentoInicialLiberado } = useControlePermissoesCargo(
+  permissoesCargo,
+  computed(() => cargo.value.comportamentoPadrao)
+);
+
+/**
+ * @description Sincroniza as permissões com o redirecionamento inicial.
+ */
+function sincronizarPermissoesRedirecionamentoInicial(): void {
+  const permissoes = obterPermissoesComRedirecionamentoInicialLiberado(
+    cargo.value.permissoes,
+    redirecionamentoInicialCargo.value
+  );
+
+  if (permissoes === cargo.value.permissoes) {
+    return;
+  }
+
+  cargo.value = criarCargoRbacPadrao({
+    ...cargo.value,
+    permissoes,
+  });
+}
+
 // Computadas
 const redirecionamentoInicialCargo = computed<IRedirecionamentoInicialRbac>({
   get: () => cargo.value.redirecionamentoInicial ?? criarCargoRbacPadrao(cargo.value).redirecionamentoInicial,
   set: (pRedirecionamento) => {
+    const permissoes = obterPermissoesComRedirecionamentoInicialLiberado(
+      cargo.value.permissoes,
+      pRedirecionamento
+    );
+
     cargo.value = criarCargoRbacPadrao({
       ...cargo.value,
+      permissoes,
       redirecionamentoInicial: pRedirecionamento,
     });
   },
 });
 
+const itensComportamentoPadrao = computed(() => {
+  return COMPORTAMENTOS_PADRAO_PERMISSAO.map((pComportamento) => ({
+    ...pComportamento,
+    descricao: t(`forms.formCargoRbac.comportamentosPadrao.${pComportamento.valor}`),
+  }));
+});
+
+const assinaturaPermissoesCargo = computed(() => {
+  return cargo.value.permissoes
+    .map((pPermissao) => `${pPermissao.recurso}:${pPermissao.acao}:${pPermissao.liberado}`)
+    .join('|');
+});
+
+// Observadores
+watch(
+  [() => redirecionamentoInicialCargo.value.name, assinaturaPermissoesCargo],
+  sincronizarPermissoesRedirecionamentoInicial,
+  { immediate: true },
+);
+
 // Expose
 defineExpose({
+  resetar: () => baseFormRef.value?.resetValidation(),
+  submeter: () => baseFormRef.value?.submit(),
   reset: () => baseFormRef.value?.resetValidation(),
   submit: () => baseFormRef.value?.submit(),
 });

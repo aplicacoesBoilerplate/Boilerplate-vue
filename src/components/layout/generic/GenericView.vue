@@ -21,9 +21,9 @@
         ref="infiniteListRef"
         :cacheTtlMs="cacheTtlMs"
         :contexto="contexto"
-        :textoVazio="textoVazio"
-        :textoFinal="textoFinal"
-        :textoError="textoError"
+        :textoVazio="textoVazioPadrao"
+        :textoFinal="textoFinalPadrao"
+        :textoError="textoErrorPadrao"
         :limite="limite"
         :ordemInicial="ordemInicial"
         :itemKey="itemKey"
@@ -39,7 +39,9 @@
           >
             <div class="mb-3 d-flex align-center justify-start">
               <v-tooltip
-                :text="slotProps.ordemAtual === 'asc' ? 'Ordenar decrescente' : 'Ordenar crescente'"
+                :text="slotProps.ordemAtual === 'asc'
+                  ? t('components.genericView.ordenarDecrescente')
+                  : t('components.genericView.ordenarCrescente')"
                 location="bottom"
               >
                 <template #activator="{ props: tooltipProps }">
@@ -49,7 +51,7 @@
                     color="primary"
                     size="x-small"
                     variant="tonal"
-                    @click="slotProps.toggleOrder"
+                    @click="slotProps.alternarOrdenacao"
                   />
                 </template>
               </v-tooltip>
@@ -74,13 +76,13 @@
                   />
 
                   <v-tooltip
-                    :text="'Novo Registro'"
+                    :text="t('tooltips.forms.create')"
                     location="bottom"
                   >
                     <template #activator="{ props }">
                       <slot
                         name="activator-novo-registro"
-                        :handleNovoRegistro="() => handleNovoRegistro({ modoEdicao: false })"
+                        :acionarNovoRegistro="() => emitirNovoRegistro({ modoEdicao: false })"
                         :tooltipProps="props"
                       >
                         <v-btn
@@ -88,7 +90,7 @@
                           color="primary"
                           icon="mdi-plus"
                           size="x-small"
-                          @click="handleNovoRegistro({ modoEdicao: false })"
+                          @click="emitirNovoRegistro({ modoEdicao: false })"
                         />
                       </slot>
                     </template>
@@ -127,6 +129,7 @@
 <script setup lang="ts">
 // Ecossistema vue
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
 import type { IGenericListFetchPayload, TGenericListFetchResponse, TOrdem } from '@/models/components/IGenericListContext';
@@ -179,9 +182,9 @@ type TProps = {
 };
 const props = withDefaults(defineProps<TProps>(), {
   cacheTtlMs: 15 * 60 * 1000,
-  textoVazio: 'Nenhum registro encontrado.',
-  textoFinal: 'Todos os registros foram carregados.',
-  textoError: 'Não foi possível carregar os registros.',
+  textoVazio: undefined,
+  textoFinal: undefined,
+  textoError: undefined,
   limite: undefined,
   ordemInicial: undefined,
   itemKey: undefined,
@@ -200,23 +203,35 @@ type TEmits = {
 };
 const emits = defineEmits<TEmits>();
 
+// Composables
+const { t } = useI18n();
+
 // Reativas
 const infiniteListRef = ref<InstanceType<typeof GenericInfiniteList> | null>(null);
 
 // Funções
-function handleNovoRegistro(pParams: { modoEdicao: boolean }): void {
+function emitirNovoRegistro(pParams: { modoEdicao: boolean }): void {
   emits('novoRegistro', pParams);
 }
 
 // Computadas
 const metodoExportacao = computed<TMetodoExportacaoDados>(() => props.serviceExportacao ?? props.serviceFetch);
+const textoVazioPadrao = computed(() => props.textoVazio ?? t('components.genericInfiniteList.textoVazio'));
+const textoFinalPadrao = computed(() => props.textoFinal ?? t('components.genericInfiniteList.textoFinal'));
+const textoErrorPadrao = computed(() => props.textoError ?? t('components.genericInfiniteList.textoErro'));
 
 // Expose
 defineExpose({
-  infiniteListRef, // Expõe a lista para pages especificas acionarem reload apos filtros ou ações externas.
+  /**
+   * Expõe a lista para pages específicas acionarem reload após filtros ou ações externas.
+   */
+  infiniteListRef,
   loadMore: (...args: Parameters<InstanceType<typeof GenericInfiniteList>['loadMore']>) =>
     infiniteListRef.value?.loadMore(...args),
   resetAndLoad: () => infiniteListRef.value?.resetAndLoad(),
+  carregarMaisRegistros: (...args: Parameters<InstanceType<typeof GenericInfiniteList>['carregarMaisRegistros']>) =>
+    infiniteListRef.value?.carregarMaisRegistros(...args),
+  resetarECarregar: () => infiniteListRef.value?.resetarECarregar(),
   inserirItem: (pItem: unknown) => infiniteListRef.value?.inserirItem(pItem),
   atualizarItem: <TItem extends object>(
     pIdField: keyof TItem,

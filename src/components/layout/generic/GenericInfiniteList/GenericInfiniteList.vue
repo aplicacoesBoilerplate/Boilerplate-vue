@@ -13,6 +13,7 @@
         :ordemAtual="ordemAtual"
         :items="items"
         :loading="loading"
+        :alternarOrdenacao="alternarOrdenacao"
         :toggleOrder="alternarOrdenacao"
       />
 
@@ -20,7 +21,7 @@
         v-if="exibirSeletorLimite"
         v-model="limiteAtual"
         :items="opcoesLimite"
-        label="Limite"
+        :label="t('components.genericInfiniteList.limite')"
         variant="outlined"
         density="compact"
         autocomplete="off"
@@ -33,7 +34,7 @@
     <v-infinite-scroll
       :items="items"
       :onLoad="carregarMaisRegistros"
-      :emptyText="textoVazio"
+      :emptyText="textoVazioPadrao"
       class="w-100 flex-grow-1 overflow-y-auto overflow-x-hidden align-stretch"
       style="min-height: 0"
     >
@@ -41,7 +42,8 @@
         :contexto="contexto"
         :limiteAtual="limiteAtual"
         :ordemAtual="ordemAtual"
-        :getItemBindings="getItemBindings"
+        :obterVinculosItem="obterVinculosItem"
+        :getItemBindings="obterVinculosItem"
         :temMaisRegistros="temMaisRegistros"
         :items="items"
         :loadMore="carregarMaisRegistros"
@@ -91,7 +93,7 @@
               size="40"
               class="mb-2"
             />
-            <span>{{ items.length ? textoFinal : textoVazio }}</span>
+            <span>{{ items.length ? textoFinalPadrao : textoVazioPadrao }}</span>
           </div>
         </slot>
       </template>
@@ -107,7 +109,7 @@
               size="40"
               class="mb-2"
             />
-            <span>{{ textoError }}</span>
+            <span>{{ textoErrorPadrao }}</span>
           </div>
         </slot>
       </template>
@@ -118,6 +120,7 @@
 <script setup lang="ts">
 // Ecossistema vue
 import { computed, onMounted, provide, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import type { RouteLocationRaw } from "vue-router";
 
 // Stores
@@ -179,9 +182,9 @@ type TProps = {
 };
 const props = withDefaults(defineProps<TProps>(), {
   cacheTtlMs: 15 * 60 * 1000,
-  textoVazio: "Nenhum registro encontrado.",
-  textoFinal: "Todos os registros foram carregados.",
-  textoError: "Não foi possível carregar os registros.",
+  textoVazio: undefined,
+  textoFinal: undefined,
+  textoError: undefined,
   limite: 10,
   opcoesLimite: () => [10, 25, 50, 100],
   ordemInicial: undefined,
@@ -198,6 +201,7 @@ const genericFilterStore = useGenericFilterStore();
 // Composables
 const routeScrollRedirect = useRouteScrollRedirect();
 const requisicaoService = useRequisicaoService();
+const { t } = useI18n();
 
 // Reativas
 const loading = ref(false);
@@ -212,7 +216,7 @@ const limiteAtual = ref(props.limite);
  * @param pItemKey - Chave do item.
  * @returns Chave do item.
  */
-function resolveItemKey(
+function resolverChaveItem(
   pItem: unknown,
   pIndex: number,
   pItemKey?: string | number,
@@ -238,14 +242,14 @@ function resolveItemKey(
  * @param pItemKey - Chave do item.
  * @returns Bindings de restauração de scroll.
  */
-function getItemBindings(
+function obterVinculosItem(
   pItem: unknown,
   pIndex: number,
   pItemKey?: string | number,
 ) {
   return createRouteScrollItemBindings(
     props.contexto,
-    resolveItemKey(pItem, pIndex, pItemKey),
+    resolverChaveItem(pItem, pIndex, pItemKey),
   );
 }
 
@@ -400,6 +404,9 @@ const items = computed(() => genericListStore.getItems(props.contexto));
 const temMaisRegistros = computed(() => genericListStore.getHasMore(props.contexto));
 const proximaEntrada = computed(() => genericListStore.getNextEntry(props.contexto));
 const ordemAtual = computed(() => genericListStore.getOrder(props.contexto));
+const textoVazioPadrao = computed(() => props.textoVazio ?? t('components.genericInfiniteList.textoVazio'));
+const textoFinalPadrao = computed(() => props.textoFinal ?? t('components.genericInfiniteList.textoFinal'));
+const textoErrorPadrao = computed(() => props.textoError ?? t('components.genericInfiniteList.textoErro'));
 
 // Observadores
 watch(() => props.contexto, (pContextId) => {
@@ -434,7 +441,9 @@ onMounted(() => {
 // Provide
 provide(genericInfiniteListKey, {
   contexto: props.contexto,
-  getItemBindings,
+  obterVinculosItem,
+  redirecionarPara,
+  getItemBindings: obterVinculosItem,
   redirectTo: redirecionarPara,
 });
 
@@ -442,10 +451,14 @@ provide(genericInfiniteListKey, {
 defineExpose({
   loadMore: carregarMaisRegistros,
   resetAndLoad: resetarECarregar,
+  carregarMaisRegistros,
+  resetarECarregar,
   inserirItem,
   atualizarItem,
   removerItem,
-  getItemBindings,
+  obterVinculosItem,
+  getItemBindings: obterVinculosItem,
   redirectTo: redirecionarPara,
+  redirecionarPara,
 });
 </script>

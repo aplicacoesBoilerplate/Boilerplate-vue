@@ -29,25 +29,33 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Dados locais
 import packageJson from '../../../package.json';
 
+// Composables
+const { t } = useI18n();
+
 const cardsInformacoesSistema = computed(() => [
   {
-    titulo: 'Frontend',
+    titulo: t('components.infoGeral.cards.frontend.titulo'),
     icone: 'mdi-vuejs',
-    descricao: `Vue ${packageJson.dependencies.vue}, Vuetify ${packageJson.dependencies.vuetify} e TypeScript ${packageJson.devDependencies.typescript}.`,
+    descricao: t('components.infoGeral.cards.frontend.descricao', {
+      vue: packageJson.dependencies.vue,
+      vuetify: packageJson.dependencies.vuetify,
+      typescript: packageJson.devDependencies.typescript,
+    }),
   },
   {
-    titulo: 'PWA',
+    titulo: t('components.infoGeral.cards.pwa.titulo'),
     icone: 'mdi-cellphone-link',
-    descricao: 'Aplicação preparada para instalação, service worker e experiência responsiva em dispositivos móveis.',
+    descricao: t('components.infoGeral.cards.pwa.descricao'),
   },
   {
-    titulo: 'Boilerplate',
+    titulo: t('components.infoGeral.cards.boilerplate.titulo'),
     icone: 'mdi-package-variant-closed',
-    descricao: 'Base com autenticação visual, filtros globais, RBAC, listas genéricas, exportação e componentes reutilizáveis.',
+    descricao: t('components.infoGeral.cards.boilerplate.descricao'),
   },
 ]);
 </script>

@@ -33,7 +33,7 @@
         v-tooltip="t('tooltips.forms.reset')"
         color="amber"
         variant="text"
-        text="Limpar"
+        :text="t('tooltips.forms.reset')"
         prependIcon="mdi-refresh"
         @click="resetarFormUsuario"
       />
@@ -45,7 +45,7 @@
         v-tooltip="t('tooltips.forms.save')"
         color="success"
         variant="flat"
-        text="Salvar"
+        :text="t('tooltips.forms.save')"
         prependIcon="mdi-content-save"
         @click="submeterFormUsuario"
       />
@@ -102,6 +102,10 @@ function salvarUsuario(): void {
 }
 
 // Computadas
-const titulo = computed(() => (props.modoEdicao ? `Editar usuário #${usuario.value?.id}` : 'Criar novo usuário'));
+const titulo = computed(() => (
+  props.modoEdicao
+    ? t('messages.forms.formUsers.editingUserId', { id: usuario.value?.id })
+    : t('messages.forms.formUsers.createUser')
+));
 const icon = computed(() => (props.modoEdicao ? `mdi-account-edit` : 'mdi-account-plus'));
 </script>

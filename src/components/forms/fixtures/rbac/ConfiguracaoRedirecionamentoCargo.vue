@@ -9,7 +9,9 @@
           color="primary"
           icon="mdi-routes"
         />
-        <span class="text-subtitle-2 font-weight-bold">Redirecionamento inicial</span>
+        <span class="text-subtitle-2 font-weight-bold">
+          {{ t('forms.configuracaoRedirecionamentoCargo.titulo') }}
+        </span>
       </div>
 
       <v-autocomplete
@@ -17,10 +19,11 @@
         :items="rotasDisponiveis"
         itemTitle="titulo"
         itemValue="path"
-        label="Rota inicial após login"
+        :label="t('forms.configuracaoRedirecionamentoCargo.inputRota.label')"
         variant="outlined"
         density="compact"
         autocomplete="off"
+        hideDetails
         clearable
         @update:model-value="atualizarRotaInicial"
       >
@@ -43,31 +46,41 @@
           />
         </template>
 
-        <template #append>
-          <v-tooltip
-            v-if="rotaSelecionada?.possuiFiltros"
-            text="Configurar filtros iniciais"
-            location="bottom"
+        <template #append v-if="deveMontarDialogFiltros">
+          <DialogFiltro
+            v-model:exibirFiltros="exibirDialogFiltros"
+            :camposDisponiveis="rotaSelecionada?.camposFiltro ?? []"
+            :contextoLocal="`redirecionamento-${rotaSelecionada?.name ?? 'rota'}`"
+            :filtrosIniciais="redirecionamento.filtros"
+            modoLocal
+            @onAplicarFiltros="atualizarFiltrosIniciais"
           >
-            <template #activator="{ props: tooltipProps }">
-              <v-btn
-                v-bind="tooltipProps"
-                color="primary"
-                variant="text"
-                size="small"
-                icon
-                @click.stop="abrirDialogFiltros"
+            <template #activator="{ props: dialogProps }">
+              <v-tooltip
+                v-if="rotaSelecionada?.possuiFiltros"
+                :text="t('forms.configuracaoRedirecionamentoCargo.tooltipFiltros')"
+                location="bottom"
               >
-                <v-badge
-                  :content="redirecionamento.filtros.length"
-                  :model-value="redirecionamento.filtros.length > 0"
-                  color="indigo-darken-4"
-                >
-                  <v-icon icon="mdi-filter-cog-outline" />
-                </v-badge>
-              </v-btn>
+                <template #activator="{ props: tooltipProps }">
+                  <v-btn
+                    v-bind="mergeProps(tooltipProps, dialogProps)"
+                    color="primary"
+                    variant="text"
+                    size="small"
+                    icon
+                  >
+                    <v-badge
+                      :model-value="redirecionamento.filtros.length > 0"
+                      :content="redirecionamento.filtros.length"
+                      color="indigo-darken-4"
+                    >
+                      <v-icon icon="mdi-filter-cog-outline" />
+                    </v-badge>
+                  </v-btn>
+                </template>
+              </v-tooltip>
             </template>
-          </v-tooltip>
+          </DialogFiltro>
         </template>
       </v-autocomplete>
 
@@ -78,29 +91,15 @@
         variant="tonal"
         density="compact"
       >
-        Esta rota não possui filtros configuráveis.
+        {{ t('forms.configuracaoRedirecionamentoCargo.rotaSemFiltros') }}
       </v-alert>
-
-      <DialogFiltro
-        v-if="deveMontarDialogFiltros"
-        v-model:exibirFiltros="exibirDialogFiltros"
-        :camposDisponiveis="rotaSelecionada?.camposFiltro ?? []"
-        :contextoLocal="`redirecionamento-${rotaSelecionada?.name ?? 'rota'}`"
-        :filtrosIniciais="redirecionamento.filtros"
-        modoLocal
-        @onAplicarFiltros="atualizarFiltrosIniciais"
-      >
-        <template #activator>
-          <span class="d-none" />
-        </template>
-      </DialogFiltro>
     </v-card-text>
   </v-card>
 </template>
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed, ref } from 'vue';
+import { computed, ref, mergeProps } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter, type RouteRecordRaw } from 'vue-router';
 
@@ -138,13 +137,6 @@ const redirecionamento = defineModel<IRedirecionamentoInicialRbac>('redirecionam
 
 // Reativas - ref
 const exibirDialogFiltros = ref(false);
-const dialogFiltrosMontado = ref(false);
-
-// Funções
-function abrirDialogFiltros(): void {
-  dialogFiltrosMontado.value = true;
-  exibirDialogFiltros.value = true;
-}
 
 function atualizarFiltrosIniciais(pFiltros: IFiltrosConsulta[]): void {
   redirecionamento.value = {
@@ -210,5 +202,6 @@ const rotaSelecionada = computed(() => {
   return rotasDisponiveis.value.find((pRota) => pRota.path === redirecionamento.value.path);
 });
 
-const deveMontarDialogFiltros = computed(() => dialogFiltrosMontado.value && !!rotaSelecionada.value?.possuiFiltros);
+const deveMontarDialogFiltros = computed(() => !!rotaSelecionada.value?.possuiFiltros);
+
 </script>

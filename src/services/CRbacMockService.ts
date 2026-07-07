@@ -15,11 +15,16 @@ import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 
 // Mapeamentos
 import {
+  ACOES_API_RBAC,
   CARGOS_RBAC_INICIAIS,
+  ENDPOINTS_API_RBAC,
   PERMISSOES_GERAIS_RBAC,
+  RECURSOS_API_RBAC,
+  RECURSO_PERMISSAO_API_RBAC,
   RECURSO_PERMISSAO_GERAL_RBAC,
   RECURSO_PERMISSAO_ROTAS_RBAC,
   criarCargoRbacPadrao,
+  montarAcaoEndpointApiRbac,
   permissaoEstaLiberada,
 } from '@/models/model/rbac/ICargoRbac';
 
@@ -28,15 +33,13 @@ type TItemRotaVisivelRbac = {
   pais: string[];
 };
 
+/**
+ * Interface que define o resumo de um cargo.
+ * @property {number} quantidadePermissoesLiberadas - Quantidade de permissões liberadas para o cargo.
+ * @property {number} quantidadeUsuariosVinculados - Quantidade de usuários vinculados ao cargo.
+ */
 export interface IResumoCargoRbac {
-  /**
-   * Quantidade de permissões liberadas para o cargo.
-   */
   quantidadePermissoesLiberadas: number;
-
-  /**
-   * Quantidade de usuários vinculados ao cargo.
-   */
   quantidadeUsuariosVinculados: number;
 }
 
@@ -187,9 +190,20 @@ export class CRbacMockService {
     const permissoesGeraisLiberadas = PERMISSOES_GERAIS_RBAC.filter((pPermissao) =>
       permissaoEstaLiberada(pCargo, RECURSO_PERMISSAO_GERAL_RBAC, pPermissao.valor),
     );
+    const quantidadePermissoesApiLiberadas = RECURSOS_API_RBAC.reduce((pTotal, pRecursoApi) => {
+      const quantidadeAcoesLiberadas = ACOES_API_RBAC.filter((pAcao) => {
+        const endpoints = pRecursoApi.acoes[pAcao] ?? [];
+
+        return endpoints.length > 0 && endpoints.every((pEndpoint) =>
+          permissaoEstaLiberada(pCargo, RECURSO_PERMISSAO_API_RBAC, montarAcaoEndpointApiRbac(pEndpoint)),
+        );
+      }).length;
+
+      return pTotal + quantidadeAcoesLiberadas;
+    }, 0);
 
     return {
-      quantidadePermissoesLiberadas: rotasLiberadas.length + permissoesGeraisLiberadas.length,
+      quantidadePermissoesLiberadas: rotasLiberadas.length + permissoesGeraisLiberadas.length + quantidadePermissoesApiLiberadas,
       quantidadeUsuariosVinculados: CRbacMockService.usuarios.filter((pUsuario) => pUsuario.papel === pCargo.papel).length,
     };
   }
@@ -249,10 +263,25 @@ export class CRbacMockService {
         permissaoLiberadaPadrao,
       ),
     );
+    const permissoesApi = ENDPOINTS_API_RBAC.map((pEndpoint) =>
+      CRbacMockService.obterPermissaoNormalizada(
+        mapaPermissoes,
+        RECURSO_PERMISSAO_API_RBAC,
+        montarAcaoEndpointApiRbac(pEndpoint),
+        permissaoLiberadaPadrao,
+      ),
+    );
+    const permissoesNormalizadas = [...permissoesRotas, ...permissoesGerais, ...permissoesApi];
+    const chavesPermissoesNormalizadas = new Set(
+      permissoesNormalizadas.map((pPermissao) => CRbacMockService.obterChavePermissao(pPermissao.recurso, pPermissao.acao)),
+    );
+    const permissoesExternas = pCargo.permissoes.filter((pPermissao) =>
+      !chavesPermissoesNormalizadas.has(CRbacMockService.obterChavePermissao(pPermissao.recurso, pPermissao.acao)),
+    );
 
     return {
       ...pCargo,
-      permissoes: [...permissoesRotas, ...permissoesGerais],
+      permissoes: [...permissoesNormalizadas, ...permissoesExternas],
     };
   }
 

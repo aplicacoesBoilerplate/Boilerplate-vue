@@ -4,4 +4,6 @@ export enum ERecursosFiltro {
   USUARIOS = 'usuarios',
   /** Recurso do model ICargoRbac. */
   RBAC = 'rbac',
+  /** Recurso do model IErros. */
+  ERROS = 'erros',
 }

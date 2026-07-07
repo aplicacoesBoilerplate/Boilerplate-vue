@@ -37,8 +37,8 @@
 
     <template #actions>
       <v-btn
-        v-tooltip="'Limpar'"
-        text="Limpar"
+        v-tooltip="t('tooltips.forms.reset')"
+        :text="t('tooltips.forms.reset')"
         color="amber"
         variant="text"
         prependIcon="mdi-refresh"
@@ -49,8 +49,8 @@
 
       <v-btn
         :disabled="!formValido"
-        v-tooltip="'Salvar'"
-        text="Salvar"
+        v-tooltip="t('tooltips.forms.save')"
+        :text="t('tooltips.forms.save')"
         color="success"
         variant="flat"
         prependIcon="mdi-content-save"
@@ -63,6 +63,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
 import { criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/rbac/ICargoRbac.ts';
@@ -88,6 +89,9 @@ type TEmits = {
 };
 const emits = defineEmits<TEmits>();
 
+// Composables
+const { t } = useI18n();
+
 // Reativas - Model
 const exibirDialog = defineModel<boolean>('exibirDialog', { required: true });
 const cargo = defineModel<ICargoRbac>('cargo', { required: false, default: {} });
@@ -100,12 +104,12 @@ const aba = ref<TAbas>('dados');
 
 // Funções
 function resetarFormCargo(): void {
-  refFormCargo.value?.reset();
+  refFormCargo.value?.resetar();
   cargo.value = criarCargoRbacPadrao();
 }
 
 function submeterFormCargo(): void {
-  refFormCargo.value?.submit();
+  refFormCargo.value?.submeter();
 }
 
 function salvarCargo(): void {
@@ -114,7 +118,11 @@ function salvarCargo(): void {
 }
 
 // Computadas
-const titulo = computed(() => (props.modoEdicao ? `Editar cargo ${cargo.value.nome}` : 'Criar novo cargo'));
+const titulo = computed(() => (
+  props.modoEdicao
+    ? t('dialogs.cargoRbac.editar', { nome: cargo.value.nome })
+    : t('dialogs.cargoRbac.criar')
+));
 const icone = computed(() => (props.modoEdicao ? 'mdi-shield-edit-outline' : 'mdi-shield-plus-outline'));
 
 </script>

@@ -16,7 +16,7 @@
         :items="opcoesFiltro"
         itemTitle="descricao"
         itemValue="valor"
-        label="Agrupar por"
+        :label="t('components.baseChart.inputAgrupamento.label')"
         maxWidth="220"
         variant="solo-filled"
         density="compact"
@@ -52,7 +52,7 @@
       >
         <template #activator="{ props: menuProps }">
           <v-tooltip
-            text="Configurar gráfico"
+            :text="t('components.baseChart.tooltipConfiguracao')"
             location="bottom"
           >
             <template #activator="{ props: tooltipProps }">
@@ -75,10 +75,10 @@
             density="compact"
             nav
           >
-            <v-list-subheader>Visualização</v-list-subheader>
+            <v-list-subheader>{{ t('components.baseChart.secoes.visualizacao') }}</v-list-subheader>
 
             <v-list-item
-              v-for="opcao in TIPOS_GRAFICO"
+              v-for="opcao in tiposGrafico"
               :key="opcao.valor"
               :active="tipoGrafico === opcao.valor"
               :prepend-icon="opcao.icone"
@@ -90,9 +90,9 @@
 
             <v-divider class="my-2" />
 
-            <v-list-subheader>Controles</v-list-subheader>
+            <v-list-subheader>{{ t('components.baseChart.secoes.controles') }}</v-list-subheader>
 
-            <v-list-item title="Legenda">
+            <v-list-item :title="t('components.baseChart.controles.legenda')">
               <template #prepend>
                 <v-icon icon="mdi-format-list-bulleted-square" />
               </template>
@@ -106,7 +106,7 @@
               </template>
             </v-list-item>
 
-            <v-list-item title="Rótulos">
+            <v-list-item :title="t('components.baseChart.controles.rotulos')">
               <template #prepend>
                 <v-icon icon="mdi-label-percent-outline" />
               </template>
@@ -147,7 +147,7 @@
           size="40"
           class="mb-2"
         />
-        <span class="text-caption">Sem dados para exibir</span>
+        <span class="text-caption">{{ t('components.baseChart.semDados') }}</span>
       </div>
     </v-card-text>
   </v-card>
@@ -156,6 +156,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, defineAsyncComponent, mergeProps, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useTheme } from 'vuetify';
 
 // ApexCharts
@@ -197,15 +198,9 @@ const props = withDefaults(defineProps<TProps>(), {
 });
 
 // Constantes
-const TIPOS_GRAFICO: { label: string; valor: TTipoGrafico; icone: string }[] = [
-  { label: 'Donut', valor: 'donut', icone: 'mdi-chart-donut' },
-  { label: 'Pizza', valor: 'pie', icone: 'mdi-chart-pie' },
-  { label: 'Colunas', valor: 'bar', icone: 'mdi-chart-bar' },
-  { label: 'Barras', valor: 'barHorizontal', icone: 'mdi-chart-bar-stacked' },
-];
-
 // Composables
 const theme = useTheme();
+const { t } = useI18n();
 
 // Componentes
 const VueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'));
@@ -226,11 +221,15 @@ const tipoGraficoApex = computed<TTipoGraficoApex>(() => resolverTipoGraficoApex
 const totalValor = computed(() => props.dados.reduce((pTotal, pItem) => pTotal + pItem.valor, 0));
 
 const labelCentro = computed(() => {
-  return props.configuracaoAtiva?.chartAggregator === 'sum' ? 'Total acumulado' : 'Registros totais';
+  return props.configuracaoAtiva?.chartAggregator === 'sum'
+    ? t('components.baseChart.totalAcumulado')
+    : t('components.baseChart.registrosTotais');
 });
 
 const tituloAgrupamento = computed(() => {
-  return `Agrupamento por ${props.configuracaoAtiva?.title.toLocaleLowerCase() || 'categoria'}`;
+  const campo = props.configuracaoAtiva?.title.toLocaleLowerCase() ?? t('components.baseChart.categoria');
+
+  return t('components.baseChart.tituloAgrupamento', { campo });
 });
 
 const labelsGrafico = computed(() => props.dados.map((pItem) => formatarAgrupador(pItem)));
@@ -241,7 +240,7 @@ const seriesGrafico = computed<number[] | { name: string; data: number[] }[]>(()
   if (tipoGrafico.value === 'bar' || graficoBarrasHorizontais.value) {
     return [
       {
-        name: props.configuracaoAtiva?.title ?? 'Valor',
+        name: props.configuracaoAtiva?.title ?? t('messages.value'),
         data: props.dados.map((pItem) => pItem.valor),
       },
     ];
@@ -326,12 +325,22 @@ const opcoesGrafico = computed<ApexOptions>(() => {
       borderColor: theme.current.value.dark ? '#3A3A3A' : '#E0E0E0',
     },
     noData: {
-      text: 'Sem dados para exibir',
+      text: t('components.baseChart.semDados'),
     },
   };
 });
 
+const tiposGrafico = computed(() => [
+  { label: t('components.baseChart.tipos.donut'), valor: 'donut' as const, icone: 'mdi-chart-donut' },
+  { label: t('components.baseChart.tipos.pizza'), valor: 'pie' as const, icone: 'mdi-chart-pie' },
+  { label: t('components.baseChart.tipos.colunas'), valor: 'bar' as const, icone: 'mdi-chart-bar' },
+  { label: t('components.baseChart.tipos.barras'), valor: 'barHorizontal' as const, icone: 'mdi-chart-bar-stacked' },
+]);
+
 // Funções
+/**
+ * Converte o tipo visual interno para o tipo aceito pelo ApexCharts.
+ */
 function resolverTipoGraficoApex(pTipoGrafico: TTipoGrafico): TTipoGraficoApex {
   if (pTipoGrafico === 'barHorizontal') {
     return 'bar';
@@ -340,6 +349,9 @@ function resolverTipoGraficoApex(pTipoGrafico: TTipoGrafico): TTipoGraficoApex {
   return pTipoGrafico;
 }
 
+/**
+ * Resolve o texto exibido para cada agrupador, respeitando formatadores específicos da coluna.
+ */
 function formatarAgrupador(pItem: IValorGrafico): string {
   const valorAgrupador = pItem.valorOriginal ?? pItem.titulo;
 
@@ -356,7 +368,7 @@ function formatarNumero(pValor: number): string {
 
 function formatarNumeroOuTexto(pValor: unknown): string {
   if (typeof pValor === 'boolean') {
-    return pValor ? 'Sim' : 'Não';
+    return pValor ? t('messages.yes') : t('messages.no');
   }
 
   if (typeof pValor === 'number') {
@@ -382,6 +394,9 @@ function calcularPorcentagem(pValor: number): string {
   return ((pValor / totalValor.value) * 100).toFixed(1);
 }
 
+/**
+ * Prioriza cores mapeadas e gera uma cor estável quando o item não possuir cor própria.
+ */
 function resolverCorItem(pItem: IValorGrafico): string {
   const corMapeada = resolverCorMapeada(pItem);
 
@@ -396,6 +411,9 @@ function resolverCorItem(pItem: IValorGrafico): string {
   return gerarCorGrafico(pItem.valorOriginal ?? pItem.titulo);
 }
 
+/**
+ * Consulta o mapeamento de cores usando as variações de chave que podem vir da agregação.
+ */
 function resolverCorMapeada(pItem: IValorGrafico): string | undefined {
   const chaves = [
     String(pItem.valorOriginal),
@@ -416,6 +434,9 @@ function resolverCorTema(pCor: string): string {
   return theme.current.value.colors[pCor] ?? pCor;
 }
 
+/**
+ * Gera uma cor determinística para o valor, mantendo contraste aceitável entre temas.
+ */
 function gerarCorGrafico(pValor: unknown): string {
   const texto = String(pValor);
   let hash = 0;
@@ -431,6 +452,9 @@ function gerarCorGrafico(pValor: unknown): string {
   return converterHslParaHex(matiz, saturacao, luminosidade);
 }
 
+/**
+ * Converte HSL para HEX para alimentar a API de cores do ApexCharts.
+ */
 function converterHslParaHex(pMatiz: number, pSaturacao: number, pLuminosidade: number): string {
   const saturacao = pSaturacao / 100;
   const luminosidade = pLuminosidade / 100;
