@@ -2,6 +2,7 @@
   <BaseDialog
     v-model:exibirDialog="dialogLicenceOpen"
     :maxWidth="400"
+    :titulo="t('tooltips.appBar.licence')"
   >
     <template #activator="{ props: dialogProps }">
       <v-tooltip

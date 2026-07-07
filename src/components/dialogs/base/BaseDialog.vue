@@ -33,11 +33,13 @@
       >
         <v-toolbar
           :title="tituloDialog"
-          :iconePrependTitulo="iconePrependTitulo"
           class="base-dialog-toolbar"
           color="primary"
         >
-          <template #prepend>
+          <template
+            v-if="iconePrependTitulo"
+            #prepend
+          >
             <v-icon
               :icon="iconePrependTitulo"
               class="px-5"
