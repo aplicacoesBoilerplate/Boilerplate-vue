@@ -16,10 +16,16 @@
         size="small"
         variant="tonal"
       >
-        {{ padraoLiberado
+        {{
+          padraoLiberado
           ? t('forms.controlePermissoesCargo.comportamentoPadrao.liberar')
-          : t('forms.controlePermissoesCargo.comportamentoPadrao.bloquear') }}
+          : t('forms.controlePermissoesCargo.comportamentoPadrao.bloquear')
+        }}
       </v-chip>
+    </div>
+
+    <div class="d-flex justify-end pr-2 text-caption text-medium-emphasis">
+      {{ t('forms.controlePermissoesCargo.rotas.colunaAcoes') }}
     </div>
 
     <v-list
@@ -30,28 +36,65 @@
         v-for="rota in rotasPermissao"
         :key="rota.chave"
         :style="{ paddingLeft: `${16 + rota.nivel * 24}px` }"
+        class="py-1"
       >
         <template #prepend>
           <v-checkbox-btn
-            :model-value="permissaoRotaLiberada(rota)"
-            color="success"
+            :model-value="isRotaCheckboxSelecionado(rota)"
+            :color="padraoLiberado ? 'error' : 'success'"
             density="compact"
-            @update:model-value="atualizarPermissaoRota(rota, Boolean($event))"
+            @update:model-value="alternarPermissaoRota(rota, Boolean($event))"
           />
         </template>
 
         <template #title>
-          <div class="d-flex align-center ga-2">
-            <v-icon
-              :icon="rota.icone"
-              size="small"
-            />
-            <span>{{ rota.titulo }}</span>
-          </div>
-        </template>
+          <div class="d-flex flex-column flex-md-row align-md-center ga-2 w-100">
+            <div class="d-flex align-center ga-2 flex-grow-1">
+              <v-icon
+                :icon="rota.icone"
+                size="small"
+              />
+              <div>
+                <div>{{ rota.titulo }}</div>
+                <div class="text-caption text-medium-emphasis">
+                  {{ rota.chave }}
+                </div>
+              </div>
+            </div>
 
-        <template #subtitle>
-          {{ rota.chave }}
+            <div class="d-flex align-center justify-end ga-1 flex-shrink-0">
+              <template v-if="rota.recursoApi">
+                <v-tooltip
+                  v-for="acaoApi in ACOES_API_RBAC"
+                  :key="acaoApi"
+                  location="top"
+                  :text="obterDescricaoAcaoApi(acaoApi)"
+                >
+                  <template #activator="{ props: tooltipProps }">
+                    <v-btn
+                      v-bind="tooltipProps"
+                      :class="{ 'acao-indisponivel': !acaoApiDisponivel(rota, acaoApi) }"
+                      :aria-label="obterDescricaoAcaoApi(acaoApi)"
+                      :color="isAcaoApiCheckboxSelecionado(rota, acaoApi) ? (padraoLiberado ? 'error' : 'success') : undefined"
+                      :disabled="isAcaoApiDesabilitada(rota, acaoApi)"
+                      :text="obterSiglaAcaoApi(acaoApi)"
+                      :variant="isAcaoApiCheckboxSelecionado(rota, acaoApi) ? 'flat' : 'tonal'"
+                      min-width="32"
+                      size="x-small"
+                      @click.stop="alternarPermissaoAcaoRota(rota, acaoApi)"
+                    />
+                  </template>
+                </v-tooltip>
+              </template>
+
+              <span
+                v-else
+                class="text-caption text-disabled px-2"
+              >
+                {{ t('forms.controlePermissoesCargo.rotas.semAcoes') }}
+              </span>
+            </div>
+          </div>
         </template>
       </v-list-item>
     </v-list>
@@ -77,10 +120,10 @@
       >
         <template #prepend>
           <v-checkbox-btn
-            :model-value="permissaoLiberada(RECURSO_PERMISSAO_GERAL_RBAC, permissao.valor)"
-            color="success"
+            :model-value="isPermissaoGeralSelecionada(permissao.valor)"
+            :color="padraoLiberado ? 'error' : 'success'"
             density="compact"
-            @update:model-value="definirPermissao(RECURSO_PERMISSAO_GERAL_RBAC, permissao.valor, Boolean($event))"
+            @update:model-value="alternarPermissaoGeral(permissao.valor, Boolean($event))"
           />
         </template>
 
@@ -102,229 +145,85 @@
 // Ecossistema Vue
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter, type RouteRecordRaw } from 'vue-router';
 
 // Types e Interfaces
-import type { IPermissaoCargoRbac, TComportamentoPadraoPermissao } from '@/models/model/rbac/ICargoRbac';
+import type {
+  TAcaoApiRbac,
+  IPermissaoCargoRbac,
+  TComportamentoPadraoPermissao,
+} from '@/models/model/rbac/ICargoRbac';
 
 // Mapeamentos
 import {
+  ACOES_API_RBAC,
   PERMISSOES_GERAIS_RBAC,
   RECURSO_PERMISSAO_GERAL_RBAC,
-  RECURSO_PERMISSAO_ROTAS_RBAC,
 } from '@/models/model/rbac/ICargoRbac';
 
+// Composables
+import { useControlePermissoesCargo } from '@/composables/useControlePermissoesCargo';
+
+/**
+ * @property {TComportamentoPadraoPermissao} comportamentoPadrao Regra aplicada quando uma permissão ainda não foi configurada explicitamente.
+ */
 type TProps = {
-  /**
-   * Regra aplicada quando uma permissão ainda não foi configurada explicitamente.
-   */
   comportamentoPadrao: TComportamentoPadraoPermissao;
 };
-
-type TItemPermissaoRota = {
-  chave: string;
-  titulo: string;
-  icone: string;
-  nivel: number;
-  pais: string[];
-  filhos: string[];
-  descendentes: string[];
-};
-
-type TNoRota = Omit<TItemPermissaoRota, 'filhos' | 'descendentes'> & {
-  filhos: TNoRota[];
-};
-
-// Props
 const props = defineProps<TProps>();
 
-// Composables
-const router = useRouter();
-const { t } = useI18n();
-
-// Reativas - Model
+// Reativas
 const permissoes = defineModel<IPermissaoCargoRbac[]>('permissoes', { required: true });
 
-// Constantes
-const SEPARADOR_CHAVE_PERMISSAO = '::';
+// Composables
+const { t } = useI18n();
+const {
+  rotasPermissao,
+  permissaoRotaLiberada,
+  acaoApiDisponivel,
+  acaoApiLiberada,
+  isAcaoApiDesabilitada,
+  obterDescricaoAcaoApi,
+  obterSiglaAcaoApi,
+  obterDescricaoPermissaoGeral,
+  definirPermissao,
+  atualizarPermissaoRota,
+  atualizarPermissaoAcaoRota,
+  permissaoLiberada,
+} = useControlePermissoesCargo(permissoes, computed(() => props.comportamentoPadrao));
 
 // Computadas
 const padraoLiberado = computed(() => props.comportamentoPadrao === 'liberar');
 
-const rotasPermissao = computed<TItemPermissaoRota[]>(() => {
-  return achatarNosRotas(montarNosRotas(router.options.routes));
-});
+// Funções de Alternância Visual/Lógica para Checkboxes
 
-const mapaRotas = computed(() => {
-  return new Map(rotasPermissao.value.map((pRota) => [pRota.chave, pRota]));
-});
-
-// Funções
-function montarNosRotas(
-  pRotas: readonly RouteRecordRaw[],
-  pNivel = 0,
-  pPais: string[] = [],
-): TNoRota[] {
-  return pRotas
-    .filter((pRota) => !pRota.meta?.hidden)
-    .map((pRota) => {
-      const chave = obterChaveRota(pRota);
-      const filhos = montarNosRotas(pRota.children ?? [], pNivel + 1, [...pPais, chave]);
-
-      return {
-        chave,
-        titulo: obterTituloRota(pRota),
-        icone: String(pRota.meta?.icon ?? 'mdi-routes'),
-        nivel: pNivel,
-        pais: pPais,
-        filhos,
-      };
-    });
+function isRotaCheckboxSelecionado(pRota: any): boolean {
+  return padraoLiberado.value ? !permissaoRotaLiberada(pRota) : permissaoRotaLiberada(pRota);
 }
 
-function achatarNosRotas(pNos: TNoRota[]): TItemPermissaoRota[] {
-  return pNos.flatMap((pNo) => {
-    const filhos = achatarNosRotas(pNo.filhos);
-
-    return [
-      {
-        chave: pNo.chave,
-        titulo: pNo.titulo,
-        icone: pNo.icone,
-        nivel: pNo.nivel,
-        pais: pNo.pais,
-        filhos: pNo.filhos.map((pFilho) => pFilho.chave),
-        descendentes: filhos.map((pFilho) => pFilho.chave),
-      },
-      ...filhos,
-    ];
-  });
+function alternarPermissaoRota(pRota: any, pMarcado: boolean): void {
+  atualizarPermissaoRota(pRota, padraoLiberado.value ? !pMarcado : pMarcado);
 }
 
-function obterChaveRota(pRota: RouteRecordRaw): string {
-  return String(pRota.name ?? pRota.path);
-}
-
-function obterTituloRota(pRota: RouteRecordRaw): string {
-  const titulo = pRota.meta?.title;
-
-  if (typeof titulo === 'string') {
-    return t(titulo);
+function isAcaoApiCheckboxSelecionado(pRota: any, pAcao: TAcaoApiRbac): boolean {
+  if (!acaoApiDisponivel(pRota, pAcao)) {
+    return false;
   }
-
-  return String(pRota.name ?? pRota.path);
+  return padraoLiberado.value ? !acaoApiLiberada(pRota, pAcao) : acaoApiLiberada(pRota, pAcao);
 }
 
-function obterDescricaoPermissaoGeral(pPermissao: string): string {
-  return t(`forms.controlePermissoesCargo.permissoesGerais.itens.${pPermissao}`);
+function alternarPermissaoAcaoRota(pRota: any, pAcao: TAcaoApiRbac): void {
+  atualizarPermissaoAcaoRota(pRota, pAcao, !acaoApiLiberada(pRota, pAcao));
 }
 
-function obterPermissao(pRecurso: string, pAcao: string): IPermissaoCargoRbac | undefined {
-  return permissoes.value.find((pPermissao) => pPermissao.recurso === pRecurso && pPermissao.acao === pAcao);
+function isPermissaoGeralSelecionada(pValor: string): boolean {
+  return padraoLiberado.value
+    ? !permissaoLiberada(RECURSO_PERMISSAO_GERAL_RBAC, pValor)
+    : permissaoLiberada(RECURSO_PERMISSAO_GERAL_RBAC, pValor);
 }
 
-function permissaoLiberada(pRecurso: string, pAcao: string): boolean {
-  return obterPermissao(pRecurso, pAcao)?.liberado ?? padraoLiberado.value;
-}
-
-function permissaoRotaLiberada(pRota: TItemPermissaoRota): boolean {
-  if (permissaoLiberada(RECURSO_PERMISSAO_ROTAS_RBAC, pRota.chave)) {
-    return true;
-  }
-
-  return pRota.descendentes.some((pDescendente) => permissaoLiberada(RECURSO_PERMISSAO_ROTAS_RBAC, pDescendente));
-}
-
-function definirPermissao(pRecurso: string, pAcao: string, pLiberado: boolean): void {
-  const permissoesAtualizadas = permissoes.value.filter(
-    (pPermissao) => !(pPermissao.recurso === pRecurso && pPermissao.acao === pAcao),
-  );
-
-  permissoesAtualizadas.push({
-    recurso: pRecurso,
-    acao: pAcao,
-    liberado: pLiberado,
-  });
-
-  permissoes.value = permissoesAtualizadas;
-}
-
-function atualizarPermissaoRota(pRota: TItemPermissaoRota, pLiberado: boolean): void {
-  const mapaPermissoes = criarMapaPermissoes();
-
-  [pRota.chave, ...pRota.descendentes].forEach((pChave) => {
-    definirPermissaoNoMapa(mapaPermissoes, RECURSO_PERMISSAO_ROTAS_RBAC, pChave, pLiberado);
-  });
-
-  if (pLiberado) {
-    pRota.pais.forEach((pPai) => {
-      definirPermissaoNoMapa(mapaPermissoes, RECURSO_PERMISSAO_ROTAS_RBAC, pPai, true);
-    });
-  } else {
-    sincronizarPaisPeloEstadoDosFilhos(mapaPermissoes, pRota.pais);
-  }
-
-  aplicarMapaPermissoes(mapaPermissoes);
-}
-
-function criarMapaPermissoes(): Map<string, boolean> {
-  return new Map(
-    permissoes.value.map((pPermissao) => [
-      obterChavePermissao(pPermissao.recurso, pPermissao.acao),
-      pPermissao.liberado,
-    ]),
-  );
-}
-
-function obterChavePermissao(pRecurso: string, pAcao: string): string {
-  return `${pRecurso}${SEPARADOR_CHAVE_PERMISSAO}${pAcao}`;
-}
-
-function definirPermissaoNoMapa(
-  pMapaPermissoes: Map<string, boolean>,
-  pRecurso: string,
-  pAcao: string,
-  pLiberado: boolean,
-): void {
-  pMapaPermissoes.set(obterChavePermissao(pRecurso, pAcao), pLiberado);
-}
-
-function permissaoLiberadaNoMapa(
-  pMapaPermissoes: Map<string, boolean>,
-  pRecurso: string,
-  pAcao: string,
-): boolean {
-  return pMapaPermissoes.get(obterChavePermissao(pRecurso, pAcao)) ?? padraoLiberado.value;
-}
-
-function sincronizarPaisPeloEstadoDosFilhos(
-  pMapaPermissoes: Map<string, boolean>,
-  pPais: string[],
-): void {
-  [...pPais].reverse().forEach((pPai) => {
-    const rotaPai = mapaRotas.value.get(pPai);
-
-    if (!rotaPai) {
-      return;
-    }
-
-    const possuiFilhoLiberado = rotaPai.descendentes.some((pDescendente) =>
-      permissaoLiberadaNoMapa(pMapaPermissoes, RECURSO_PERMISSAO_ROTAS_RBAC, pDescendente),
-    );
-
-    definirPermissaoNoMapa(pMapaPermissoes, RECURSO_PERMISSAO_ROTAS_RBAC, pPai, possuiFilhoLiberado);
-  });
-}
-
-function aplicarMapaPermissoes(pMapaPermissoes: Map<string, boolean>): void {
-  permissoes.value = Array.from(pMapaPermissoes.entries()).map(([pChave, pLiberado]) => {
-    const [recurso, acao] = pChave.split(SEPARADOR_CHAVE_PERMISSAO);
-
-    return {
-      recurso,
-      acao,
-      liberado: pLiberado,
-    };
-  });
+function alternarPermissaoGeral(pValor: string, pMarcado: boolean): void {
+  definirPermissao(RECURSO_PERMISSAO_GERAL_RBAC, pValor, padraoLiberado.value ? !pMarcado : pMarcado);
 }
 </script>
+
+<style src="./ControlePermissoesCargo.scss" scoped lang="scss"></style>

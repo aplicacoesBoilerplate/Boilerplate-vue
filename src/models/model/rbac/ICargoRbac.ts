@@ -2,6 +2,9 @@
 import { ICONE_PAPEL, type TPapel } from '@/models/model/usuario/lUsuario';
 import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 
+// Mapeamentos
+import { MAPEAMENTO_ROTAS_API_RBAC } from './MapeamentoAcoesRotasRbac';
+
 export type TComportamentoPadraoPermissao = 'bloquear' | 'liberar';
 
 export const METODOS_HTTP_PERMISSAO_API_RBAC = ['GET', 'POST', 'PUT', 'DELETE'] as const;
@@ -13,7 +16,7 @@ export type TAcaoApiRbac = (typeof ACOES_API_RBAC)[number];
 /**
  * @description Ações de API liberadas automaticamente para a rota inicial do cargo.
  */
-export const ACOES_API_REDIRECIONAMENTO_INICIAL_RBAC = ['consultar', 'gravar'] as const;
+export const ACOES_API_REDIRECIONAMENTO_INICIAL_RBAC = ['consultar'] as const;
 
 /**
  * @description Define o mapeamento para as permissões gerais do RBAC
@@ -149,44 +152,6 @@ export const PERMISSOES_GERAIS_RBAC: IAcaoRecursoRbac[] = [
   },
 ];
 
-export const MAPEAMENTO_ROTAS_API_RBAC: Partial<Record<string, IMapeamentoRotaApiRbac>> = {
-  Usuarios: {
-    acoes: {
-      consultar: [
-        { metodo: 'GET', path: '/usuarios/**' },
-        { metodo: 'POST', path: '/usuarios/consulta' },
-        { metodo: 'POST', path: '/usuarios/search' },
-      ],
-      gravar: [
-        { metodo: 'POST', path: '/usuarios' },
-      ],
-      editar: [
-        { metodo: 'PUT', path: '/usuarios/**' },
-      ],
-      remover: [
-        { metodo: 'DELETE', path: '/usuarios/**' },
-      ],
-    },
-  },
-  Rbac: {
-    acoes: {
-      consultar: [
-        { metodo: 'GET', path: '/rbac/cargos/**' },
-        { metodo: 'POST', path: '/rbac/cargos/consulta' },
-      ],
-      gravar: [
-        { metodo: 'POST', path: '/rbac/cargos' },
-      ],
-      editar: [
-        { metodo: 'PUT', path: '/rbac/cargos/**' },
-      ],
-      remover: [
-        { metodo: 'DELETE', path: '/rbac/cargos/**' },
-      ],
-    },
-  },
-};
-
 /**
  * @description Recursos da API com tratamento de validação contra undefined.
  */
@@ -285,7 +250,7 @@ export const CARGOS_RBAC_INICIAIS: ICargoRbac[] = [
     comportamentoPadrao: 'liberar',
     redirecionamentoInicial: {
       path: '/',
-      name: 'Home',
+      name: 'Inicio',
       filtros: [],
     },
     permissoes: [],
@@ -298,13 +263,13 @@ export const CARGOS_RBAC_INICIAIS: ICargoRbac[] = [
     descricao: 'Acesso básico para uso diário do sistema.',
     comportamentoPadrao: 'bloquear',
     redirecionamentoInicial: {
-      path: '/users',
-      name: 'Users',
+      path: '/usuarios',
+      name: 'Usuarios',
       filtros: [],
     },
     permissoes: [
-      { recurso: RECURSO_PERMISSAO_ROTAS_RBAC, acao: 'Home', liberado: true },
-      { recurso: RECURSO_PERMISSAO_ROTAS_RBAC, acao: 'Users', liberado: true },
+      { recurso: RECURSO_PERMISSAO_ROTAS_RBAC, acao: 'Inicio', liberado: true },
+      { recurso: RECURSO_PERMISSAO_ROTAS_RBAC, acao: 'Usuarios', liberado: true },
       { recurso: RECURSO_PERMISSAO_API_RBAC, acao: 'GET /usuarios/**', liberado: true },
       { recurso: RECURSO_PERMISSAO_API_RBAC, acao: 'POST /usuarios/consulta', liberado: true },
       { recurso: RECURSO_PERMISSAO_API_RBAC, acao: 'POST /usuarios/search', liberado: true },

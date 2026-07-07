@@ -1,0 +1,17 @@
+.acao-indisponivel {
+  position: relative;
+  overflow: hidden;
+  cursor: not-allowed !important;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 80%;
+    height: 1.5px;
+    background-color: rgba(var(--v-theme-on-surface), 0.35) !important;
+    transform: rotate(-45deg);
+    transform-origin: center;
+  }
+}

@@ -126,16 +126,21 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter, type RouteRecordRaw } from 'vue-router';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
-import type { ICargoRbac, IRedirecionamentoInicialRbac } from '@/models/model/rbac/ICargoRbac';
+import type { ICargoRbac, IPermissaoCargoRbac, IRedirecionamentoInicialRbac } from '@/models/model/rbac/ICargoRbac';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 
 // Mapeamentos
-import { COMPORTAMENTOS_PADRAO_PERMISSAO, criarCargoRbacPadrao, normalizarPapelCargo } from '@/models/model/rbac/ICargoRbac';
+import {
+  COMPORTAMENTOS_PADRAO_PERMISSAO,
+  criarCargoRbacPadrao,
+  normalizarPapelCargo,
+} from '@/models/model/rbac/ICargoRbac';
 
 // Componentes
 import BaseForm from '@/components/forms/base/BaseForm.vue';
@@ -143,6 +148,9 @@ import ConfiguracaoRedirecionamentoCargo from '@/components/forms/fixtures/rbac/
 import ControlePermissoesCargo from '@/components/forms/fixtures/rbac/ControlePermissoesCargo.vue';
 import SeletorIconeMaterialDesign from '@/components/forms/fixtures/SeletorIconeMaterialDesign.vue';
 import UsuariosVinculadosCargo from '@/components/forms/fixtures/rbac/UsuariosVinculadosCargo.vue';
+
+// Composables
+import { useControlePermissoesCargo } from '@/composables/useControlePermissoesCargo';
 
 /**
  * @property {ICargoRbac[]} cargosDisponiveis - Cargos disponíveis para vínculo de usuários.
@@ -157,8 +165,11 @@ type TEmits = {
 };
 const emits = defineEmits<TEmits>();
 
+
+
 // Composables
 const rules = useRules();
+const router = useRouter();
 const { t } = useI18n();
 
 // Reativas - Model
@@ -178,12 +189,51 @@ function atualizarNomeCargo(pValor: unknown): void {
   cargo.value.papel = normalizarPapelCargo(nome);
 }
 
+// Computadas de permissões
+const permissoesCargo = computed({
+  get: () => cargo.value.permissoes,
+  set: (pValor) => {
+    cargo.value.permissoes = pValor;
+  },
+});
+
+// Composables
+const { obterPermissoesComRedirecionamentoInicialLiberado } = useControlePermissoesCargo(
+  permissoesCargo,
+  computed(() => cargo.value.comportamentoPadrao)
+);
+
+/**
+ * @description Sincroniza as permissões com o redirecionamento inicial.
+ */
+function sincronizarPermissoesRedirecionamentoInicial(): void {
+  const permissoes = obterPermissoesComRedirecionamentoInicialLiberado(
+    cargo.value.permissoes,
+    redirecionamentoInicialCargo.value
+  );
+
+  if (permissoes === cargo.value.permissoes) {
+    return;
+  }
+
+  cargo.value = criarCargoRbacPadrao({
+    ...cargo.value,
+    permissoes,
+  });
+}
+
 // Computadas
 const redirecionamentoInicialCargo = computed<IRedirecionamentoInicialRbac>({
   get: () => cargo.value.redirecionamentoInicial ?? criarCargoRbacPadrao(cargo.value).redirecionamentoInicial,
   set: (pRedirecionamento) => {
+    const permissoes = obterPermissoesComRedirecionamentoInicialLiberado(
+      cargo.value.permissoes,
+      pRedirecionamento
+    );
+
     cargo.value = criarCargoRbacPadrao({
       ...cargo.value,
+      permissoes,
       redirecionamentoInicial: pRedirecionamento,
     });
   },
@@ -195,6 +245,19 @@ const itensComportamentoPadrao = computed(() => {
     descricao: t(`forms.formCargoRbac.comportamentosPadrao.${pComportamento.valor}`),
   }));
 });
+
+const assinaturaPermissoesCargo = computed(() => {
+  return cargo.value.permissoes
+    .map((pPermissao) => `${pPermissao.recurso}:${pPermissao.acao}:${pPermissao.liberado}`)
+    .join('|');
+});
+
+// Observadores
+watch(
+  [() => redirecionamentoInicialCargo.value.name, assinaturaPermissoesCargo],
+  sincronizarPermissoesRedirecionamentoInicial,
+  { immediate: true },
+);
 
 // Expose
 defineExpose({
