@@ -4,6 +4,17 @@ import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 
 export type TComportamentoPadraoPermissao = 'bloquear' | 'liberar';
 
+export const METODOS_HTTP_PERMISSAO_API_RBAC = ['GET', 'POST', 'PUT', 'DELETE'] as const;
+export type TMetodoHttpPermissaoApi = (typeof METODOS_HTTP_PERMISSAO_API_RBAC)[number];
+
+export const ACOES_API_RBAC = ['consultar', 'gravar', 'editar', 'remover'] as const;
+export type TAcaoApiRbac = (typeof ACOES_API_RBAC)[number];
+
+/**
+ * @description Ações de API liberadas automaticamente para a rota inicial do cargo.
+ */
+export const ACOES_API_REDIRECIONAMENTO_INICIAL_RBAC = ['consultar', 'gravar'] as const;
+
 /**
  * @description Define o mapeamento para as permissões gerais do RBAC
  * @property {string} valor - Identificador estável da ação dentro do recurso.
@@ -26,6 +37,24 @@ export interface IPermissaoCargoRbac {
   recurso: string;
   acao: string;
   liberado: boolean;
+}
+
+/**
+ * @description Define um endpoint técnico usado por uma ação semântica do RBAC.
+ * @property {TMetodoHttpPermissaoApi} metodo - Método HTTP do endpoint protegido.
+ * @property {string} path - Padrão de caminho usado pelo backend para comparar a requisição.
+ */
+export interface IEndpointApiRbac {
+  metodo: TMetodoHttpPermissaoApi;
+  path: string;
+}
+
+/**
+ * @description Define quais ações variáveis da API pertencem a uma rota do frontend.
+ * @property {Partial<Record<TAcaoApiRbac, IEndpointApiRbac[]>>} acoes - Endpoints técnicos agrupados por ação de negócio.
+ */
+export interface IMapeamentoRotaApiRbac {
+  acoes: Partial<Record<TAcaoApiRbac, IEndpointApiRbac[]>>;
 }
 
 /**
@@ -94,6 +123,7 @@ export const COMPORTAMENTOS_PADRAO_PERMISSAO: IComportamentoPadrao[] = [
 
 export const RECURSO_PERMISSAO_ROTAS_RBAC = 'rotas';
 export const RECURSO_PERMISSAO_GERAL_RBAC = 'geral';
+export const RECURSO_PERMISSAO_API_RBAC = 'api';
 
 /**
  * @description Mapeamento das ações que podem ser concedidas a um cargo.
@@ -118,6 +148,77 @@ export const PERMISSOES_GERAIS_RBAC: IAcaoRecursoRbac[] = [
     icone: 'mdi-database-edit-outline',
   },
 ];
+
+export const MAPEAMENTO_ROTAS_API_RBAC: Partial<Record<string, IMapeamentoRotaApiRbac>> = {
+  Users: {
+    acoes: {
+      consultar: [
+        { metodo: 'GET', path: '/usuarios/**' },
+        { metodo: 'POST', path: '/usuarios/consulta' },
+        { metodo: 'POST', path: '/usuarios/search' },
+      ],
+      gravar: [
+        { metodo: 'POST', path: '/usuarios' },
+      ],
+      editar: [
+        { metodo: 'PUT', path: '/usuarios/**' },
+      ],
+      remover: [
+        { metodo: 'DELETE', path: '/usuarios/**' },
+      ],
+    },
+  },
+  Rbac: {
+    acoes: {
+      consultar: [
+        { metodo: 'GET', path: '/rbac/cargos/**' },
+        { metodo: 'POST', path: '/rbac/cargos/consulta' },
+      ],
+      gravar: [
+        { metodo: 'POST', path: '/rbac/cargos' },
+      ],
+      editar: [
+        { metodo: 'PUT', path: '/rbac/cargos/**' },
+      ],
+      remover: [
+        { metodo: 'DELETE', path: '/rbac/cargos/**' },
+      ],
+    },
+  },
+};
+
+/**
+ * @description Recursos da API com tratamento de validação contra undefined.
+ */
+export const RECURSOS_API_RBAC: IMapeamentoRotaApiRbac[] = Object
+  .values(MAPEAMENTO_ROTAS_API_RBAC)
+  .filter((pRecursoApi): pRecursoApi is IMapeamentoRotaApiRbac => Boolean(pRecursoApi));
+
+/**
+ * @description Achatamento dos endpoints aninhados em uma única lista plana.
+ */
+export const ENDPOINTS_API_RBAC: IEndpointApiRbac[] = RECURSOS_API_RBAC.flatMap((pRecursoApi) =>
+  Object.values(pRecursoApi.acoes).flatMap((pEndpoints) => pEndpoints ?? []),
+);
+
+/**
+ * @description Monta a ação técnica usada para armazenar permissões de API.
+ * @param pEndpoint - Endpoint protegido pelo RBAC.
+ * @returns Ação técnica da permissão esperada pelo backend no formato: metodo rota.
+ */
+export function montarAcaoEndpointApiRbac(pEndpoint: Pick<IEndpointApiRbac, 'metodo' | 'path'>): string {
+  return `${pEndpoint.metodo} ${pEndpoint.path}`;
+}
+
+/**
+ * @description Monta a chave estável usada para comparar permissões.
+ * @param pRecurso - Recurso controlado pela permissão.
+ * @param pAcao - Ação controlada pela permissão.
+ * @returns Chave estável da permissão.
+ */
+export function montarChavePermissaoRbac(pRecurso: string, pAcao: string): string {
+  return `${pRecurso}::${pAcao}`;
+}
 
 /**
  * @description Normaliza um valor string para ser usado como papel de cargo.
@@ -204,6 +305,9 @@ export const CARGOS_RBAC_INICIAIS: ICargoRbac[] = [
     permissoes: [
       { recurso: RECURSO_PERMISSAO_ROTAS_RBAC, acao: 'Home', liberado: true },
       { recurso: RECURSO_PERMISSAO_ROTAS_RBAC, acao: 'Users', liberado: true },
+      { recurso: RECURSO_PERMISSAO_API_RBAC, acao: 'GET /usuarios/**', liberado: true },
+      { recurso: RECURSO_PERMISSAO_API_RBAC, acao: 'POST /usuarios/consulta', liberado: true },
+      { recurso: RECURSO_PERMISSAO_API_RBAC, acao: 'POST /usuarios/search', liberado: true },
     ],
   }),
 ];
