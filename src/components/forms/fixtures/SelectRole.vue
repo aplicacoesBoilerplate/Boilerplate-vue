@@ -34,9 +34,8 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
+import type { ValidationRule } from 'vuetify';
 import { MAPEAMENTO_PAPEIS, type TPapel, type TPapelPadrao } from '@/models/model/usuario/lUsuario';
-
-type TRegraValidacao = (pValor: unknown) => boolean | string;
 
 export interface IItemSelectPapel {
   /**
@@ -69,7 +68,7 @@ type TProps = {
   /**
    * Regras de validação do Vuetify.
    */
-  rules?: readonly TRegraValidacao[];
+  rules?: readonly ValidationRule[];
 
   /**
    * Controla a exibição dos detalhes do campo.

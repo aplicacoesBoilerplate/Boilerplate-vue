@@ -150,7 +150,7 @@ export const PERMISSOES_GERAIS_RBAC: IAcaoRecursoRbac[] = [
 ];
 
 export const MAPEAMENTO_ROTAS_API_RBAC: Partial<Record<string, IMapeamentoRotaApiRbac>> = {
-  Users: {
+  Usuarios: {
     acoes: {
       consultar: [
         { metodo: 'GET', path: '/usuarios/**' },
