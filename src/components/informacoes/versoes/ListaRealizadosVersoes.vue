@@ -20,7 +20,7 @@
             size="small"
             variant="tonal"
           >
-            {{ versao.numero === versaoAtual ? 'Atual' : versao.data }}
+            {{ versao.numero === versaoAtual ? t('components.listaRealizadosVersoes.atual') : versao.data }}
           </v-chip>
         </template>
 
@@ -46,7 +46,7 @@
                   size="x-small"
                   variant="tonal"
                 >
-                  {{ versao.totalItens }} item(ns)
+                  {{ t('components.listaRealizadosVersoes.itens', { quantidade: versao.totalItens }) }}
                 </v-chip>
 
                 <v-chip
@@ -54,7 +54,9 @@
                   size="x-small"
                   variant="tonal"
                 >
-                  {{ versao.numero === versaoAtual ? 'Atual' : 'Registrada' }}
+                  {{ versao.numero === versaoAtual
+                    ? t('components.listaRealizadosVersoes.atual')
+                    : t('components.listaRealizadosVersoes.registrada') }}
                 </v-chip>
               </div>
             </v-expansion-panel-title>
@@ -126,7 +128,7 @@
                   v-else
                   class="text-body-2 text-medium-emphasis"
                 >
-                  Nenhum item detalhado foi encontrado para esta versão.
+                  {{ t('components.listaRealizadosVersoes.nenhumItemDetalhado') }}
                 </div>
               </v-sheet>
             </v-expansion-panel-text>
@@ -140,12 +142,16 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
 import type { TPropsListaRealizadosVersoes } from '@/models/components/IVersaoChangelog';
 
 // Props
 const props = defineProps<TPropsListaRealizadosVersoes>();
+
+// Composables
+const { t } = useI18n();
 
 // Reativas - Model
 const paineisAbertos = defineModel<string[]>('paineisAbertos', {
@@ -155,7 +161,9 @@ const paineisAbertos = defineModel<string[]>('paineisAbertos', {
 // Computadas
 const versaoMaisRecente = computed(() => props.versoes[0]?.numero);
 
-// Inicializa somente a versão mais recente aberta sem sobrescrever escolhas futuras do usuário.
+/**
+ * Inicializa somente a versão mais recente aberta sem sobrescrever escolhas futuras do usuário.
+ */
 if (paineisAbertos.value.length === 0 && versaoMaisRecente.value) {
   paineisAbertos.value = [versaoMaisRecente.value];
 }

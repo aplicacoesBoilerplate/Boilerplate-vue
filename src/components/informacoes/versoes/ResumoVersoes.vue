@@ -8,11 +8,11 @@
       color="surface"
     >
       <div class="text-overline text-medium-emphasis">
-        Resumo
+        {{ t('components.resumoVersoes.titulo') }}
       </div>
 
       <div class="text-h5 font-weight-bold mb-4">
-        {{ totalAlteracoes }} alterações
+        {{ t('components.resumoVersoes.alteracoes', { quantidade: totalAlteracoes }) }}
       </div>
 
       <v-list
@@ -21,7 +21,7 @@
         density="compact"
       >
         <v-list-item
-          v-tooltip="{ text: `Package: v${versaoAtual}` }"
+          v-tooltip="{ text: t('components.resumoVersoes.tooltipPacote', { versao: versaoAtual }) }"
           class="bg-blue-grey-lighten-4"
           variant="elevated"
           rounded="ts-xl be-xl"
@@ -33,13 +33,16 @@
             />
           </template>
 
-          <v-list-item-title>Package</v-list-item-title>
+          <v-list-item-title>{{ t('components.resumoVersoes.pacote') }}</v-list-item-title>
           <v-list-item-subtitle>v{{ versaoAtual }}</v-list-item-subtitle>
         </v-list-item>
 
         <v-list-item
           v-if="versaoMaisRecenteChangelog"
-          v-tooltip="{ text: `Changelog: v${versaoMaisRecenteChangelog.numero} - ${versaoMaisRecenteChangelog.data}` }"
+          v-tooltip="{ text: t('components.resumoVersoes.tooltipChangelog', {
+            versao: versaoMaisRecenteChangelog.numero,
+            data: versaoMaisRecenteChangelog.data,
+          }) }"
           class="bg-blue-grey-lighten-4"
           variant="elevated"
           rounded="ts-xl be-xl"
@@ -51,14 +54,14 @@
             />
           </template>
 
-          <v-list-item-title>Changelog</v-list-item-title>
+          <v-list-item-title>{{ t('components.resumoVersoes.changelog') }}</v-list-item-title>
           <v-list-item-subtitle>
             v{{ versaoMaisRecenteChangelog.numero }} - {{ versaoMaisRecenteChangelog.data }}
           </v-list-item-subtitle>
         </v-list-item>
 
         <v-list-item
-          v-tooltip="{ text: `Versões: ${versoes.length} registradas` }"
+          v-tooltip="{ text: t('components.resumoVersoes.tooltipVersoes', { quantidade: versoes.length }) }"
           class="bg-blue-grey-lighten-4"
           variant="elevated"
           rounded="ts-xl be-xl"        
@@ -70,8 +73,10 @@
             />
           </template>
 
-          <v-list-item-title>Versões</v-list-item-title>
-          <v-list-item-subtitle>{{ versoes.length }} registrada(s)</v-list-item-subtitle>
+          <v-list-item-title>{{ t('components.resumoVersoes.versoes') }}</v-list-item-title>
+          <v-list-item-subtitle>
+            {{ t('components.resumoVersoes.versoesRegistradas', { quantidade: versoes.length }) }}
+          </v-list-item-subtitle>
         </v-list-item>
       </v-list>
     </v-sheet>
@@ -79,8 +84,13 @@
 </template>
 
 <script setup lang="ts">
+// Ecossistema Vue
+import { useI18n } from 'vue-i18n';
+
 // Types e Interfaces
 import type { TPropsResumoVersoes } from '@/models/components/IVersaoChangelog'
 defineProps<TPropsResumoVersoes>();
 
+// Composables
+const { t } = useI18n();
 </script>
