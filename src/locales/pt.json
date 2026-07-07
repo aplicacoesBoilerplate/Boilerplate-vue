@@ -10,6 +10,9 @@
     "home": {
       "title": "Página Inícial"
     },
+    "dashboard": {
+      "title": "Painel"
+    },    
     "systemInfo": {
       "title": "Informações do sistema"
     },
@@ -22,23 +25,20 @@
     "forgotPassword": {
       "title": "Recuperar senha"
     },
-    "dashboard": {
-      "title": "Painel"
-    },
-    "users": {
-      "title": "Usuários"
-    },
-    "rbac": {
-      "title": "Controle de acesso"
-    },
     "adm": {
       "title": "Administrador",
       "children": {
         "users": {
           "title": "Gestão de usuários"
         },
-        "settings": {
-          "title": "Configurações"
+        "rbac": {
+          "title": "Controle de acesso"
+        },
+        "errors": {
+          "title": "Registro de falhas"
+        },
+        "healthCheck": {
+          "title": "Verificação de integridade"
         }
       }
     },
@@ -178,7 +178,15 @@
     "controlePermissoesCargo": {
       "rotas": {
         "titulo": "Rotas liberadas",
-        "subtitulo": "Rotas filhas mantêm a rota pai liberada para preservar a navegação."
+        "subtitulo": "Rotas filhas mantêm a rota pai liberada para preservar a navegação.",
+        "colunaAcoes": "Ações liberadas",
+        "semAcoes": "-",
+        "acoes": {
+          "consultar": "Consultar",
+          "gravar": "Gravar",
+          "editar": "Editar",
+          "remover": "Remover"
+        }
       },
       "comportamentoPadrao": {
         "bloquear": "Bloqueia por padrão",
@@ -375,6 +383,60 @@
       "valorNaoNecessario": "Nenhum valor necessário para esta condição.",
       "selecioneValores": "Selecione os valores",
       "selecioneAoMenosUmValor": "Selecione ao menos um valor"
+    },
+    "drawerItemUsuario": {
+      "fixarMenu": "Fixar menu",
+      "desafixarMenu": "Desafixar menu"
+    },
+    "btnInstalarPwa": {
+      "instalarAplicativo": "Instalar aplicativo",
+      "instalacaoIndisponivel": "Instalação indisponível neste navegador",
+      "instalacaoIniciada": "Instalação do aplicativo iniciada."
+    },
+    "systemInfoView": {
+      "titulo": "Informações do sistema",
+      "abas": {
+        "geral": "Geral",
+        "versoes": "Versões"
+      },
+      "secoesChangelog": {
+        "mudancasIncompativeis": "Mudanças incompatíveis",
+        "funcionalidades": "Funcionalidades",
+        "correcoes": "Correções"
+      }
+    },
+    "infoGeral": {
+      "cards": {
+        "frontend": {
+          "titulo": "Frontend",
+          "descricao": "Vue {vue}, Vuetify {vuetify} e TypeScript {typescript}."
+        },
+        "pwa": {
+          "titulo": "PWA",
+          "descricao": "Aplicação preparada para instalação, service worker e experiência responsiva em dispositivos móveis."
+        },
+        "boilerplate": {
+          "titulo": "Boilerplate",
+          "descricao": "Base com autenticação visual, filtros globais, RBAC, listas genéricas, exportação e componentes reutilizáveis."
+        }
+      }
+    },
+    "resumoVersoes": {
+      "titulo": "Resumo",
+      "alteracoes": "{quantidade} alterações",
+      "pacote": "Pacote",
+      "changelog": "Changelog",
+      "versoes": "Versões",
+      "tooltipPacote": "Pacote: v{versao}",
+      "tooltipChangelog": "Changelog: v{versao} - {data}",
+      "tooltipVersoes": "Versões: {quantidade} registradas",
+      "versoesRegistradas": "{quantidade} registrada(s)"
+    },
+    "listaRealizadosVersoes": {
+      "atual": "Atual",
+      "registrada": "Registrada",
+      "itens": "{quantidade} item(ns)",
+      "nenhumItemDetalhado": "Nenhum item detalhado foi encontrado para esta versão."
     }
   },
   "dialogs": {

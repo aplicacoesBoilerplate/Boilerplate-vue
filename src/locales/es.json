@@ -10,6 +10,9 @@
     "home": {
       "title": "Inicio"
     },
+    "dashboard": {
+      "title": "Panel"
+    },    
     "systemInfo": {
       "title": "Información del sistema"
     },
@@ -22,23 +25,20 @@
     "forgotPassword": {
       "title": "Recuperar contraseña"
     },
-    "dashboard": {
-      "title": "Panel"
-    },
-    "users": {
-      "title": "Usuarios"
-    },
-    "rbac": {
-      "title": "Control de acceso"
-    },
     "adm": {
       "title": "Administrador",
       "children": {
         "users": {
           "title": "Gestión de usuarios"
         },
-        "settings": {
-          "title": "Configuraciones"
+        "rbac": {
+          "title": "Control de acceso"
+        },
+        "errors": {
+          "title": "Errores"
+        },
+        "healthCheck": {
+          "title": "Verificación de integridad"
         }
       }
     },
@@ -178,7 +178,15 @@
     "controlePermissoesCargo": {
       "rotas": {
         "titulo": "Rutas permitidas",
-        "subtitulo": "Las rutas hijas mantienen la ruta padre permitida para preservar la navegación."
+        "subtitulo": "Las rutas hijas mantienen la ruta padre permitida para preservar la navegación.",
+        "colunaAcoes": "Acciones permitidas",
+        "semAcoes": "-",
+        "acoes": {
+          "consultar": "Consultar",
+          "gravar": "Guardar",
+          "editar": "Editar",
+          "remover": "Eliminar"
+        }
       },
       "comportamentoPadrao": {
         "bloquear": "Bloquea por defecto",
@@ -375,6 +383,60 @@
       "valorNaoNecessario": "No se requiere ningún valor para esta condición.",
       "selecioneValores": "Seleccione los valores",
       "selecioneAoMenosUmValor": "Seleccione al menos un valor"
+    },
+    "drawerItemUsuario": {
+      "fixarMenu": "Fijar menú",
+      "desafixarMenu": "Desfijar menú"
+    },
+    "btnInstalarPwa": {
+      "instalarAplicativo": "Instalar aplicación",
+      "instalacaoIndisponivel": "Instalación no disponible en este navegador",
+      "instalacaoIniciada": "Instalación de la aplicación iniciada."
+    },
+    "systemInfoView": {
+      "titulo": "Información del sistema",
+      "abas": {
+        "geral": "General",
+        "versoes": "Versiones"
+      },
+      "secoesChangelog": {
+        "mudancasIncompativeis": "Cambios incompatibles",
+        "funcionalidades": "Funcionalidades",
+        "correcoes": "Correcciones"
+      }
+    },
+    "infoGeral": {
+      "cards": {
+        "frontend": {
+          "titulo": "Frontend",
+          "descricao": "Vue {vue}, Vuetify {vuetify} y TypeScript {typescript}."
+        },
+        "pwa": {
+          "titulo": "PWA",
+          "descricao": "Aplicación preparada para instalación, service worker y experiencia responsiva en dispositivos móviles."
+        },
+        "boilerplate": {
+          "titulo": "Boilerplate",
+          "descricao": "Base con autenticación visual, filtros globales, RBAC, listas genéricas, exportación y componentes reutilizables."
+        }
+      }
+    },
+    "resumoVersoes": {
+      "titulo": "Resumen",
+      "alteracoes": "{quantidade} cambios",
+      "pacote": "Paquete",
+      "changelog": "Changelog",
+      "versoes": "Versiones",
+      "tooltipPacote": "Paquete: v{versao}",
+      "tooltipChangelog": "Changelog: v{versao} - {data}",
+      "tooltipVersoes": "Versiones: {quantidade} registradas",
+      "versoesRegistradas": "{quantidade} registrada(s)"
+    },
+    "listaRealizadosVersoes": {
+      "atual": "Actual",
+      "registrada": "Registrada",
+      "itens": "{quantidade} elemento(s)",
+      "nenhumItemDetalhado": "No se encontró ningún elemento detallado para esta versión."
     }
   },
   "dialogs": {

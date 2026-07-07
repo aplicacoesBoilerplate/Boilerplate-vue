@@ -10,6 +10,9 @@
     "home": {
       "title": "Home"
     },
+    "dashboard": {
+      "title": "Dashboard"
+    },
     "systemInfo": {
       "title": "System information"
     },
@@ -22,23 +25,20 @@
     "forgotPassword": {
       "title": "Forgot Password"
     },
-    "dashboard": {
-      "title": "Dashboard"
-    },
-    "users": {
-      "title": "Users"
-    },
-    "rbac": {
-      "title": "Access control"
-    },
     "adm": {
       "title": "Administrator",
       "children": {
         "users": {
           "title": "User Management"
         },
-        "settings": {
-          "title": "Settings"
+        "rbac": {
+          "title": "Access control"
+        },
+        "errors": {
+          "title": "Errors"
+        },
+        "healthCheck": {
+          "title": "Health check"
         }
       }
     },
@@ -178,7 +178,15 @@
     "controlePermissoesCargo": {
       "rotas": {
         "titulo": "Allowed routes",
-        "subtitulo": "Child routes keep the parent route allowed to preserve navigation."
+        "subtitulo": "Child routes keep the parent route allowed to preserve navigation.",
+        "colunaAcoes": "Allowed actions",
+        "semAcoes": "-",
+        "acoes": {
+          "consultar": "Read",
+          "gravar": "Create",
+          "editar": "Edit",
+          "remover": "Remove"
+        }
       },
       "comportamentoPadrao": {
         "bloquear": "Blocks by default",
@@ -375,6 +383,60 @@
       "valorNaoNecessario": "No value required for this condition.",
       "selecioneValores": "Select values",
       "selecioneAoMenosUmValor": "Select at least one value"
+    },
+    "drawerItemUsuario": {
+      "fixarMenu": "Pin menu",
+      "desafixarMenu": "Unpin menu"
+    },
+    "btnInstalarPwa": {
+      "instalarAplicativo": "Install application",
+      "instalacaoIndisponivel": "Installation unavailable in this browser",
+      "instalacaoIniciada": "Application installation started."
+    },
+    "systemInfoView": {
+      "titulo": "System information",
+      "abas": {
+        "geral": "General",
+        "versoes": "Versions"
+      },
+      "secoesChangelog": {
+        "mudancasIncompativeis": "Breaking changes",
+        "funcionalidades": "Features",
+        "correcoes": "Bug fixes"
+      }
+    },
+    "infoGeral": {
+      "cards": {
+        "frontend": {
+          "titulo": "Frontend",
+          "descricao": "Vue {vue}, Vuetify {vuetify}, and TypeScript {typescript}."
+        },
+        "pwa": {
+          "titulo": "PWA",
+          "descricao": "Application prepared for installation, service worker, and responsive experience on mobile devices."
+        },
+        "boilerplate": {
+          "titulo": "Boilerplate",
+          "descricao": "Base with visual authentication, global filters, RBAC, generic lists, export, and reusable components."
+        }
+      }
+    },
+    "resumoVersoes": {
+      "titulo": "Summary",
+      "alteracoes": "{quantidade} changes",
+      "pacote": "Package",
+      "changelog": "Changelog",
+      "versoes": "Versions",
+      "tooltipPacote": "Package: v{versao}",
+      "tooltipChangelog": "Changelog: v{versao} - {data}",
+      "tooltipVersoes": "Versions: {quantidade} registered",
+      "versoesRegistradas": "{quantidade} registered"
+    },
+    "listaRealizadosVersoes": {
+      "atual": "Current",
+      "registrada": "Registered",
+      "itens": "{quantidade} item(s)",
+      "nenhumItemDetalhado": "No detailed item was found for this version."
     }
   },
   "dialogs": {

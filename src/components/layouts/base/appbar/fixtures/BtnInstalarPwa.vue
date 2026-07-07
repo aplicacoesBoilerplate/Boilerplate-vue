@@ -21,6 +21,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Composables
 import { useSnackbar } from '@/composables/useSnackbar';
@@ -36,15 +37,16 @@ interface IEscolhaUsuarioPwa {
 
 /**
  * @property {Function} prompt - Exibe o prompt nativo de instalação do navegador.
- * @property {Promise<IEscolhaUsuarioPwa>} escolhaUsuario - Resultado da escolha feita pelo usuário no prompt nativo.
+ * @property {Promise<IEscolhaUsuarioPwa>} userChoice - Resultado da escolha feita pelo usuário no prompt nativo.
  */
 interface IEventoInstalacaoPwa extends Event {
   prompt: () => Promise<void>;
-  escolhaUsuario: Promise<IEscolhaUsuarioPwa>;
+  userChoice: Promise<IEscolhaUsuarioPwa>;
 }
 
 // Composables
 const { notify } = useSnackbar();
+const { t } = useI18n();
 
 // Reativas
 const eventoInstalacao = ref<IEventoInstalacaoPwa | null>(null);
@@ -52,7 +54,9 @@ const eventoInstalacao = ref<IEventoInstalacaoPwa | null>(null);
 // Computadas
 const instalacaoDisponivel = computed(() => !!eventoInstalacao.value);
 const textoTooltip = computed(() =>
-  instalacaoDisponivel.value ? 'Instalar aplicativo' : 'Instalação indisponível neste navegador',
+  instalacaoDisponivel.value
+    ? t('components.btnInstalarPwa.instalarAplicativo')
+    : t('components.btnInstalarPwa.instalacaoIndisponivel'),
 );
 
 // Funções
@@ -61,7 +65,7 @@ const textoTooltip = computed(() =>
  * Lida com o evento 'beforeinstallprompt', armazenando-o caso a instalação esteja disponível.
  * @param pEvento - Evento que dispara a instalação do aplicativo.
  */
-function handleBeforeInstallPrompt(pEvento: Event): void {
+function prepararInstalacaoPwa(pEvento: Event): void {
   pEvento.preventDefault();
   eventoInstalacao.value = pEvento as IEventoInstalacaoPwa;
 }
@@ -77,10 +81,10 @@ async function instalarPwa(): Promise<void> {
   const eventoAtual = eventoInstalacao.value;
 
   await eventoAtual.prompt();
-  const escolha = await eventoAtual.escolhaUsuario;
+  const escolha = await eventoAtual.userChoice;
 
   if (escolha.outcome === 'accepted') {
-    notify('Instalação do aplicativo iniciada.', 'success');
+    notify(t('components.btnInstalarPwa.instalacaoIniciada'), 'success');
   }
 
   eventoInstalacao.value = null;
@@ -88,10 +92,10 @@ async function instalarPwa(): Promise<void> {
 
 // Lifecycle Hooks
 onMounted(() => {
-  window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  window.addEventListener('beforeinstallprompt', prepararInstalacaoPwa);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  window.removeEventListener('beforeinstallprompt', prepararInstalacaoPwa);
 });
 </script>
