@@ -128,11 +128,11 @@
 // Ecossistema Vue
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter, type RouteRecordRaw } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
-import type { ICargoRbac, IPermissaoCargoRbac, IRedirecionamentoInicialRbac } from '@/models/model/rbac/ICargoRbac';
+import type { ICargoRbac, IRedirecionamentoInicialRbac } from '@/models/model/rbac/ICargoRbac';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 
 // Mapeamentos
