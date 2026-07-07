@@ -7,18 +7,19 @@ import { ClassMapeamentosFiltro } from '@/classes/filters/ClassMapeamentosFiltro
 // Types e Interfaces
 import type { TCamposFiltroUsuario } from '@/models/model/usuario/MapeamentoFiltrosUsuario';
 import type { TCamposFiltroRbac } from '@/models/model/rbac/MapeamentoFiltrosRbac';
+import type { TCamposFiltroErros } from '@/models/model/errors/MapeamentoFiltrosErros';
 
 // Enums
 import { ERecursosFiltro } from '@/models/filters/enums/ERecursosFiltro';
 
 // Views
 import HomeView from '@/views/HomeView.vue';
-import ErrorsView from '@/views/ErrorsView.vue';
+import PaginaFallbackView from '@/views/PaginaFallbackView.vue';
 
 export const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'Home',
+    name: 'Inicio',
     component: HomeView,
     meta: {
       title: 'routes.home.title',
@@ -27,9 +28,19 @@ export const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: '/system-info',
-    name: 'SystemInfo',
-    component: () => import('@/views/SystemInfoView.vue'),
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('@/views/DashboardView.vue'),
+    meta: {
+      title: 'routes.dashboard.title',
+      icon: 'mdi-view-dashboard',
+      hotkey: 'cmd+shift+d',
+    },
+  },  
+  {
+    path: '/info-sistema',
+    name: 'InformacoesSistema',
+    component: () => import('@/views/InformacoesSistemaView.vue'),
     meta: {
       title: 'routes.systemInfo.title',
       hidden: true,
@@ -45,43 +56,33 @@ export const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: '/forgot-password',
-    name: 'ForgotPassword',
-    component: () => import('@/views/ForgotPasswordView.vue'),
+    path: '/recuperacao-senha',
+    name: 'RecuperacaoSenha',
+    component: () => import('@/views/RecuperacaoSenhaView.vue'),
     meta: {
       title: 'routes.forgotPassword.title',
       hidden: true,
     },
   },
   {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: () => import('@/views/DashboardView.vue'),
-    meta: {
-      title: 'routes.dashboard.title',
-      icon: 'mdi-view-dashboard',
-      hotkey: 'cmd+shift+d',
-    },
-  },
-  {
     path: '/admin',
     name: 'Admin',
-    component: () => import('@/views/DashboardView.vue'),
-    redirect: { name: 'AdminUsers' },
+    component: () => import('@/views/administrativo/AdministrativoView.vue'),
+    redirect: { name: 'Usuarios' },
     meta: {
       title: 'routes.adm.title',
       icon: 'mdi-shield-crown',
       hotkey: 'cmd+shift+a',
-      requiresAuth: true,
-      authorize: ['admin'],
+      requiresAuth: false,
+      authorize: [],
     },
     children: [
       {
-        path: '/users',
-        name: 'Users',
-        component: () => import('@/views/UsersView.vue'),
+        path: '/usuarios',
+        name: 'Usuarios',
+        component: () => import('@/views/administrativo/filhos/UsuariosView.vue'),
         meta: {
-          title: 'routes.users.title',
+          title: 'routes.adm.children.users.title',
           icon: 'mdi-account-group',
           hotkey: 'cmd+shift+u',
           filterContext: ERecursosFiltro.USUARIOS,
@@ -91,13 +92,35 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: '/rbac',
         name: 'Rbac',
-        component: () => import('@/views/RbacView.vue'),
+        component: () => import('@/views/administrativo/filhos/RbacView.vue'),
         meta: {
-          title: 'routes.rbac.title',
+          title: 'routes.adm.children.rbac.title',
           icon: 'mdi-shield-key',
           hotkey: 'cmd+shift+r',
           filterContext: ERecursosFiltro.RBAC,
           filterResource: ClassMapeamentosFiltro.getMapeamento<TCamposFiltroRbac>(ERecursosFiltro.RBAC),
+        },
+      },
+      {
+        path: '/erros',
+        name: 'Erros',
+        component: () => import('@/views/administrativo/filhos/ErrosView.vue'),
+        meta: {
+          title: 'routes.adm.children.errors.title',
+          icon: 'mdi-sync-alert',
+          hotkey: 'cmd+shift+e',
+          filterContext: ERecursosFiltro.ERROS,
+          filterResource: ClassMapeamentosFiltro.getMapeamento<TCamposFiltroErros>(ERecursosFiltro.ERROS),
+        },
+      },
+      {
+        path: '/health-check',
+        name: 'HealthCheck',
+        component: () => import('@/views/administrativo/filhos/HealthCheckView.vue'),
+        meta: {
+          title: 'routes.adm.children.healthCheck.title',
+          icon: 'mdi-heart-pulse',
+          hotkey: 'cmd+shift+c',
         },
       },
     ],
@@ -105,7 +128,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: '/forbidden',
     name: 'forbidden',
-    component: ErrorsView,
+    component: PaginaFallbackView,
     props: { type: '403' },
     meta: {
       hidden: true,
@@ -115,7 +138,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: '/server-error',
     name: 'ServerError',
-    component: ErrorsView,
+    component: PaginaFallbackView,
     props: { type: '500' },
     meta: {
       hidden: true,
@@ -125,7 +148,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: ErrorsView,
+    component: PaginaFallbackView,
     props: { type: '404' },
     meta: {
       hidden: true,
