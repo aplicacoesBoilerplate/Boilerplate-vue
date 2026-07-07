@@ -1,10 +1,12 @@
 <template>
   <v-navigation-drawer
-    v-model="isDrawerVisible"
-    :rail="!isPinned && mdAndUp"
-    :expandOnHover="!isPinned && mdAndUp"
+    v-model="drawerVisivel"
+    :rail="!menuFixado && mdAndUp"
+    :expandOnHover="!menuFixado && mdAndUp"
     :temporary="!mdAndUp"
     app
+    @mouseenter="drawerEmHover = true"
+    @mouseleave="drawerEmHover = false"
   >
     <DrawerItemUsuario />
 
@@ -15,34 +17,62 @@
       nav
     >
       <template
-        v-for="item in navItems"
+        v-for="item in itensNavegacao"
         :key="item.title"
       >
-        <v-list-group
-          v-if="item.children && item.children.length > 0"
-          :value="item.title"
-        >
-          <template v-slot:activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              :active="itemEstaAtivo(item)"
-              :prependIcon="item.icon"
-              :title="t(item.title || '')"
+        <template v-if="item.children && item.children.length > 0">
+          <template v-if="drawerCompacto">
+            <DrawerItemNavigation
+              :item="item"
+              :isPinned="menuFixado"
+              :drawerCompacto="drawerCompacto"
+            />
+
+            <DrawerItemNavigation
+              v-for="child in item.children"
+              :key="child.title"
+              :item="child"
+              :isPinned="menuFixado"
+              :drawerCompacto="drawerCompacto"
             />
           </template>
 
-          <DrawerItemNavigation
-            v-for="child in item.children"
-            :key="child.title"
-            :item="child"
-            :isPinned="isPinned"
-          />
-        </v-list-group>
+          <v-list-group
+            v-else
+            :value="item.title"
+          >
+            <template v-slot:activator="{ props }">
+              <v-tooltip
+                :disabled="!deveExibirTooltipItem(item)"
+                :text="obterTituloItem(item)"
+                location="end"
+              >
+                <template #activator="{ props: tooltipProps }">
+                  <v-list-item
+                    v-bind="mergeProps(props, tooltipProps)"
+                    :active="itemEstaAtivo(item)"
+                    :prependIcon="item.icon"
+                    :title="obterTituloItem(item)"
+                  />
+                </template>
+              </v-tooltip>
+            </template>
+
+            <DrawerItemNavigation
+              v-for="child in item.children"
+              :key="child.title"
+              :item="child"
+              :isPinned="menuFixado"
+              :drawerCompacto="drawerCompacto"
+            />
+          </v-list-group>
+        </template>
 
         <DrawerItemNavigation
           v-else
           :item="item"
-          :isPinned="isPinned"
+          :isPinned="menuFixado"
+          :drawerCompacto="drawerCompacto"
         />
       </template>
     </v-list>
@@ -57,7 +87,7 @@
           :to="{ name: 'Login' }"
           prependIcon="mdi-logout"
           exact
-          @click="handleLogout"
+          @click="sair"
         />
       </v-list>
     </template>
@@ -66,7 +96,7 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed } from "vue";
+import { computed, mergeProps, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
@@ -95,8 +125,14 @@ const { mdAndUp } = useDisplay();
 const { t } = useI18n();
 const router = useRouter();
 
+// Constantes
+const LIMITE_CARACTERES_TOOLTIP = 22;
+
+// Reativas
+const drawerEmHover = ref(false);
+
 // Funções
-function handleLogout() {
+function sair(): void {
   authStore.logout();
   router.push({ name: "Login" });
 }
@@ -111,15 +147,30 @@ function itemEstaAtivo(pItem: IRouteMeta): boolean {
   return rotaAtualCorrespondeItem(pItem) || Boolean(pItem.children?.some(itemEstaAtivo));
 }
 
+/**
+ * Resolve o título traduzido do item antes de renderizar ou exibir tooltip.
+ */
+function obterTituloItem(pItem: IRouteMeta): string {
+  return t(pItem.title || '');
+}
+
+/**
+ * Exibe tooltip quando o drawer está compacto ou quando o texto tende a truncar.
+ */
+function deveExibirTooltipItem(pItem: IRouteMeta): boolean {
+  return drawerCompacto.value || obterTituloItem(pItem).length > LIMITE_CARACTERES_TOOLTIP;
+}
+
 // Computadas
-const isDrawerVisible = computed({
+const drawerVisivel = computed({
   get: () => preferencesStore.preferences.drawer.isDesktopDrawerVisible,
-  set: (val) => preferencesStore.setDesktopDrawerVisible(val),
+  set: (pValor) => preferencesStore.setDesktopDrawerVisible(pValor),
 });
 
-const isPinned = computed(
+const menuFixado = computed(
   () => preferencesStore.preferences.drawer.isDrawerPinned,
 );
 
-const navItems = computed(() => menuItems.value);
+const itensNavegacao = computed(() => menuItems.value);
+const drawerCompacto = computed(() => !menuFixado.value && mdAndUp.value && !drawerEmHover.value);
 </script>
