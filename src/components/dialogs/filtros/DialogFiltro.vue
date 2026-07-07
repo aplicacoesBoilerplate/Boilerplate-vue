@@ -1,15 +1,15 @@
 <template>
   <BaseDialog
     v-model:exibirDialog="exibirFiltros"
-    titulo="Filtros"
+    :titulo="t('components.dialogFiltro.titulo')"
     maxWidth="1050px"
     height="600px"
     contentClass="pa-0"
   >
-    <template #activator="{ props: activatorProps }">
+    <template #activator="{ props: dialogProps }">
       <slot
         name="activator"
-        v-bind="activatorProps"
+        v-bind="dialogProps"
       >
         <v-tooltip
           :text="t('tooltips.appBar.filter')"
@@ -17,7 +17,7 @@
         >
           <template #activator="{ props: tooltipProps }">
             <v-btn
-              v-bind="mergeProps(tooltipProps, activatorProps)"
+              v-bind="mergeProps(tooltipProps, dialogProps)"
               icon="mdi-filter-cog"
               size="small"
             >
@@ -104,7 +104,7 @@
             <section
               v-if="deveExibirConsultaRegistros"
               class="dialog-filtro-main__consulta pa-1"
-              aria-label="Consulta auxiliar de registros"
+              :aria-label="t('components.dialogFiltro.consultaRegistrosAriaLabel')"
             >
               <ConsultaRegistrosFiltro
                 v-model:valorFiltro="genericFilterStore.filterModel.valor"
@@ -126,7 +126,7 @@
         :minWidth="larguraMinimaBotaoAcao"
         :size="tamanhoBotaoAcao"
         variant="tonal"
-        text="CANCELAR"
+        :text="t('tooltips.forms.cancel')"
         @click="slotProps.onCancelar"
       />
 
@@ -138,9 +138,9 @@
         :minWidth="larguraMinimaBotaoAcao"
         :size="tamanhoBotaoAcao"
         variant="tonal"
-        :text="smAndDown ? 'LIMPAR' : 'LIMPAR FILTROS'"
+        :text="smAndDown ? t('tooltips.forms.reset') : t('components.dialogFiltro.limparFiltros')"
         :loading="loading"
-        @click="handleOnLimparFiltros"
+        @click="limparFiltros"
       />
 
       <v-btn
@@ -149,9 +149,9 @@
         :minWidth="larguraMinimaBotaoAcao"
         :size="tamanhoBotaoAcao"
         variant="flat"
-        text="APLICAR"
+        :text="t('components.dialogFiltro.aplicar')"
         :loading="loading"
-        @click="handleOnAplicarFiltros"
+        @click="aplicarFiltros"
       />
     </template>
   </BaseDialog>
@@ -220,13 +220,13 @@ const exibirConsultaRegistros = ref<boolean>(false);
 const loading = ref<boolean>(false);
 
 // Funções
-function handleOnLimparFiltros() {
+function limparFiltros(): void {
   genericFilterStore.clearAll();
-  handleOnAplicarFiltros();
+  aplicarFiltros();
   toggleLeftDrawer.value = true;
 }
 
-function handleOnAplicarFiltros() {
+function aplicarFiltros(): void {
   const filtros = genericFilterStore.filtersApplied.map((pFiltro) => ({ ...pFiltro }));
 
   if (props.modoLocal) {

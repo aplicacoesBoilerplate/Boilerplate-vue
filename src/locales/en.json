@@ -94,6 +94,121 @@
       "inputPassword": {
         "label": "Password"
       }
+    },
+    "formRegistro": {
+      "inputNome": {
+        "label": "Name"
+      },
+      "inputEmail": {
+        "label": "Email"
+      },
+      "inputSenha": {
+        "label": "Password"
+      },
+      "inputConfirmarSenha": {
+        "label": "Confirm password"
+      }
+    },
+    "formCargoRbac": {
+      "inputNome": {
+        "label": "Role name"
+      },
+      "inputPapel": {
+        "label": "Role code",
+        "hint": "Used in user links and policies"
+      },
+      "inputComportamentoPadrao": {
+        "label": "When there is no specific permission"
+      },
+      "inputDescricao": {
+        "label": "Description"
+      },
+      "inputAtivo": {
+        "label": "Active role"
+      },
+      "comportamentosPadrao": {
+        "bloquear": "Block by default",
+        "liberar": "Allow by default"
+      }
+    },
+    "seletorIconeMaterialDesign": {
+      "label": "Icon",
+      "hint": "Select or search for an icon.",
+      "tooltipPaginaIcones": "Open the page with all accepted icons",
+      "icones": {
+        "escudoConta": "Account shield",
+        "escudoChave": "Key shield",
+        "escudoAdministrativo": "Administrative shield",
+        "conta": "Account",
+        "contaExecutiva": "Executive account",
+        "contaChave": "Account with key",
+        "contaConfiguracoes": "Account settings",
+        "grupoContas": "Account group",
+        "supervisor": "Supervisor",
+        "crachaConta": "Account badge",
+        "detalhesConta": "Account details",
+        "contaProfissional": "Professional account",
+        "bloqueio": "Lock",
+        "bloqueioAberto": "Open lock",
+        "chave": "Key",
+        "configuracao": "Settings",
+        "painel": "Dashboard",
+        "bancoDados": "Database",
+        "grafico": "Chart",
+        "documento": "Document",
+        "pacote": "Package",
+        "carrinho": "Cart",
+        "financeiro": "Finance",
+        "email": "Email",
+        "telefone": "Phone"
+      }
+    },
+    "consultaVinculosFormulario": {
+      "rotuloPesquisa": "Search records",
+      "textoVazio": "No records found.",
+      "textoFinal": "All records have been loaded."
+    },
+    "usuariosVinculadosCargo": {
+      "titulo": "Linked users",
+      "subtitulo": "Change a user's role directly from this helper.",
+      "rotuloPesquisa": "Search users",
+      "textoVazio": "No user is linked to this role.",
+      "alteracaoPendente": "Pending change"
+    },
+    "controlePermissoesCargo": {
+      "rotas": {
+        "titulo": "Allowed routes",
+        "subtitulo": "Child routes keep the parent route allowed to preserve navigation."
+      },
+      "comportamentoPadrao": {
+        "bloquear": "Blocks by default",
+        "liberar": "Allows by default"
+      },
+      "permissoesGerais": {
+        "titulo": "General permissions",
+        "subtitulo": "Cross-cutting actions that can be used by multiple resources.",
+        "itens": {
+          "exportarDados": "Export data",
+          "visualizarGraficos": "View charts",
+          "gerenciarRegistros": "Manage records"
+        }
+      }
+    },
+    "configuracaoRedirecionamentoCargo": {
+      "titulo": "Initial redirect",
+      "inputRota": {
+        "label": "Initial route after login"
+      },
+      "tooltipFiltros": "Configure initial filters",
+      "rotaSemFiltros": "This route has no configurable filters."
+    },
+    "consultaRegistrosFiltro": {
+      "registros": "records",
+      "rotuloPesquisa": "Search {campo}",
+      "tooltipFechar": "Close helper search",
+      "textoVazio": "No records found.",
+      "textoFinal": "All records have been loaded.",
+      "textoErro": "Unable to query records."
     }
   },
   "tooltips": {
@@ -115,6 +230,7 @@
       "create": "New record",
       "edit": "Edit",
       "delete": "Delete",
+      "cancel": "Cancel",
       "submit": "Confirm",
       "forgotPassword": "I forgot my password"
     },
@@ -137,16 +253,19 @@
     "value": "Value",
     "from": "From",
     "until": "Until",
+    "active": "Active",
+    "inactive": "Inactive",
     "welcome": "Welcome",
     "errors": {
       "reqGenerics": "An error occurred in the request!"
     },
     "forms": {
-      "formUsers": {
-        "createUser": "Create user",
-        "editingUser": "Edit user"
-      }
-    },
+        "formUsers": {
+          "createUser": "Create user",
+          "editingUser": "Edit user",
+          "editingUserId": "Edit user #{id}"
+        }
+      },
     "components": {
       "dataTable": {
         "titleDefault": "Results",
@@ -156,6 +275,112 @@
         "title": "Filter resources by:",
         "alertDuplicate": "This filter has already been added!"
       }
+    }
+  },
+  "components": {
+    "genericView": {
+      "ordenarCrescente": "Sort ascending",
+      "ordenarDecrescente": "Sort descending"
+    },
+    "genericInfiniteList": {
+      "limite": "Limit",
+      "textoVazio": "No records found.",
+      "textoFinal": "All records have been loaded.",
+      "textoErro": "Unable to load records."
+    },
+    "usersView": {
+      "verGraficos": "Show charts",
+      "esconderGraficos": "Hide charts"
+    },
+    "rbacView": {
+      "textoVazioCargos": "No roles found.",
+      "textoFinalCargos": "All roles have been loaded."
+    },
+    "baseChart": {
+      "inputAgrupamento": {
+        "label": "Group by"
+      },
+      "tooltipConfiguracao": "Configure chart",
+      "secoes": {
+        "visualizacao": "View",
+        "controles": "Controls"
+      },
+      "controles": {
+        "legenda": "Legend",
+        "rotulos": "Labels"
+      },
+      "tipos": {
+        "donut": "Donut",
+        "pizza": "Pie",
+        "colunas": "Columns",
+        "barras": "Bars"
+      },
+      "semDados": "No data to display",
+      "totalAcumulado": "Accumulated total",
+      "registrosTotais": "Total records",
+      "categoria": "category",
+      "tituloAgrupamento": "Grouped by {campo}"
+    },
+    "dialogFiltro": {
+      "titulo": "Filters",
+      "consultaRegistrosAriaLabel": "Record helper query",
+      "limparFiltros": "Clear filters",
+      "aplicar": "Apply"
+    },
+    "baseDialog": {
+      "tituloPadrao": "Dialog",
+      "fecharAriaLabel": "Close {titulo}"
+    },
+    "menuExportacaoDados": {
+      "tooltip": "Export data",
+      "titulo": "Export",
+      "formatos": {
+        "txt": {
+          "titulo": "TXT",
+          "descricao": "Tabbed text"
+        },
+        "pdf": {
+          "titulo": "PDF",
+          "descricao": "Document for reading"
+        },
+        "excel": {
+          "titulo": "Excel",
+          "descricao": ".xlsx spreadsheet"
+        }
+      }
+    },
+    "detalhesCargo": {
+      "tooltip": "Details",
+      "liberacoes": "{quantidade} permissions",
+      "usuarios": "{quantidade} user(s)",
+      "semDescricao": "No description registered."
+    },
+    "drawerFiltroRight": {
+      "filtrosAplicados": "Applied filters"
+    },
+    "campoSelecionado": {
+      "nenhumCampoSelecionado": "No field selected",
+      "tipoDado": "Data type",
+      "ocultarConsultaAuxiliar": "Hide helper query",
+      "consultarRegistros": "Query records",
+      "tiposDados": {
+        "texto": "Text",
+        "numerico": "Numeric",
+        "logico": "Logical (Yes/No)",
+        "dataHora": "Date/Time",
+        "selecao": "Selection"
+      }
+    },
+    "inputValorFiltro": {
+      "valorNaoNecessario": "No value required for this condition.",
+      "selecioneValores": "Select values",
+      "selecioneAoMenosUmValor": "Select at least one value"
+    }
+  },
+  "dialogs": {
+    "cargoRbac": {
+      "criar": "Create new role",
+      "editar": "Edit role {nome}"
     }
   },
   "dataTable": {

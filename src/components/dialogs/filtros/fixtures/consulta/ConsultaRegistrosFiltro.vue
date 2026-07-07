@@ -7,15 +7,15 @@
     <v-card-title class="d-flex align-center pa-1">
       <InputDebouncer
         v-model:pesquisaCampo="pesquisaRegistros"
-        :label="`Pesquisar ${campoSelecionado?.descricao ?? 'registros'}`"
+        :label="rotuloPesquisa"
         variant="outlined"
         density="compact"
         icon="mdi-database-search"
-        @onSearch="handlePesquisarRegistros"
+        @onSearch="pesquisarRegistros"
       />
 
       <v-tooltip
-        text="Fechar consulta auxiliar"
+        :text="t('forms.consultaRegistrosFiltro.tooltipFechar')"
         location="bottom"
       >
         <template #activator="{ props: tooltipProps }">
@@ -42,22 +42,22 @@
         :textoVazio="textoVazio"
         :limite="limiteConsulta"
         :opcoesLimite="[limiteConsulta]"
-        :serviceFetch="handleBuscarRegistros"
+        :serviceFetch="buscarRegistros"
         :exibirSeletorLimite="false"
-        textoFinal="Todos os registros foram carregados."
-        textoError="Não foi possível consultar os registros."
+        :textoFinal="t('forms.consultaRegistrosFiltro.textoFinal')"
+        :textoError="t('forms.consultaRegistrosFiltro.textoErro')"
         storage="session"
         class="flex-grow-1"
       >
         <template #default="{ items }">
           <ItemConsultaRegistroFiltro
             v-for="registro in (items as TRegistroConsulta[])"
-            :key="String(resolveValorRegistro(registro))"
+            :key="String(resolverValorRegistro(registro))"
             :atributoDescricao="configuracaoConsulta.atributoDescricao"
             :atributoValor="configuracaoConsulta.atributoValor"
             :registro="registro"
-            :selecionado="isRegistroSelecionado(registro)"
-            @selecionar="handleSelecionarRegistro"
+            :selecionado="registroSelecionado(registro)"
+            @selecionar="selecionarRegistro"
           />
         </template>
 
@@ -68,7 +68,7 @@
               size="28"
               class="mb-1"
             />
-            <span>Não foi possível consultar os registros.</span>
+            <span>{{ t('forms.consultaRegistrosFiltro.textoErro') }}</span>
           </div>
         </template>
       </GenericInfiniteList>
@@ -79,6 +79,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
 import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
@@ -116,6 +117,9 @@ type TEmits = {
 };
 const emits = defineEmits<TEmits>();
 
+// Composables
+const { t } = useI18n();
+
 // Reativas - Model
 const valorFiltro = defineModel<unknown>('valorFiltro', { required: true });
 const valoresSelecionados = defineModel<unknown[]>('valoresSelecionados', { default: () => [] });
@@ -149,7 +153,7 @@ function normalizarResultadoConsulta(
  * @param pRegistro Registro retornado pela consulta auxiliar.
  * @returns Valor do registro.
  */
-function resolveValorRegistro(pRegistro: TRegistroConsulta): unknown {
+function resolverValorRegistro(pRegistro: TRegistroConsulta): unknown {
   return pRegistro[configuracaoConsulta.value.atributoValor];
 }
 
@@ -159,7 +163,7 @@ function resolveValorRegistro(pRegistro: TRegistroConsulta): unknown {
  * @param pSegundoValor Segundo valor a ser comparado.
  * @returns True se os valores forem iguais, false caso contrário.
  */
-function isMesmoValor(pPrimeiroValor: unknown, pSegundoValor: unknown): boolean {
+function valoresIguais(pPrimeiroValor: unknown, pSegundoValor: unknown): boolean {
   return String(pPrimeiroValor) === String(pSegundoValor);
 }
 
@@ -168,22 +172,22 @@ function isMesmoValor(pPrimeiroValor: unknown, pSegundoValor: unknown): boolean 
  * @param pRegistro Registro a ser verificado.
  * @returns True se o registro estiver selecionado, false caso contrário.
  */
-function isRegistroSelecionado(pRegistro: TRegistroConsulta): boolean {
-  const valorRegistro = resolveValorRegistro(pRegistro);
+function registroSelecionado(pRegistro: TRegistroConsulta): boolean {
+  const valorRegistro = resolverValorRegistro(pRegistro);
 
   if (Array.isArray(valorFiltro.value)) {
-    return valorFiltro.value.some((pValor) => isMesmoValor(pValor, valorRegistro));
+    return valorFiltro.value.some((pValor) => valoresIguais(pValor, valorRegistro));
   }
 
-  return valorFiltro.value !== undefined && valorFiltro.value !== null && isMesmoValor(valorFiltro.value, valorRegistro);
+  return valorFiltro.value !== undefined && valorFiltro.value !== null && valoresIguais(valorFiltro.value, valorRegistro);
 }
 
 /**
  * @description Seleciona um registro na consulta auxiliar.
  * @param pRegistro Registro a ser selecionado.
  */
-function handleSelecionarRegistro(pRegistro: TRegistroConsulta): void {
-  const valorRegistro = resolveValorRegistro(pRegistro);
+function selecionarRegistro(pRegistro: TRegistroConsulta): void {
+  const valorRegistro = resolverValorRegistro(pRegistro);
 
   if (!permiteSelecaoMultipla.value) {
     valorFiltro.value = valorRegistro;
@@ -192,10 +196,10 @@ function handleSelecionarRegistro(pRegistro: TRegistroConsulta): void {
   }
 
   const valoresAtuais = Array.isArray(valorFiltro.value) ? [...valorFiltro.value] : [];
-  const registroJaSelecionado = valoresAtuais.some((pValor) => isMesmoValor(pValor, valorRegistro));
+  const registroJaSelecionado = valoresAtuais.some((pValor) => valoresIguais(pValor, valorRegistro));
 
   const novosValores = registroJaSelecionado
-    ? valoresAtuais.filter((pValor) => !isMesmoValor(pValor, valorRegistro))
+    ? valoresAtuais.filter((pValor) => !valoresIguais(pValor, valorRegistro))
     : [...valoresAtuais, valorRegistro];
 
   valorFiltro.value = novosValores;
@@ -206,7 +210,7 @@ function handleSelecionarRegistro(pRegistro: TRegistroConsulta): void {
  * @description Manipula a pesquisa de registros.
  * @param pTermoPesquisa Termo de pesquisa.
  */
-function handlePesquisarRegistros(pTermoPesquisa: string): void {
+function pesquisarRegistros(pTermoPesquisa: string): void {
   termoPesquisa.value = pTermoPesquisa;
 }
 
@@ -215,7 +219,7 @@ function handlePesquisarRegistros(pTermoPesquisa: string): void {
  * @param pPayload Payload de busca.
  * @returns Registros da consulta auxiliar.
  */
-async function handleBuscarRegistros(
+async function buscarRegistros(
   pPayload: IGenericListFetchPayload,
 ): Promise<TGenericListFetchResponse<TRegistroConsulta>> {
   const resultado = await configuracaoConsulta.value.buscarRegistros({
@@ -241,7 +245,12 @@ const configuracaoConsulta = computed<IConsultaRegistrosFiltro<TRegistroConsulta
 });
 
 const limiteConsulta = computed(() => configuracaoConsulta.value?.limiteInicial ?? 10);
-const textoVazio = computed(() => configuracaoConsulta.value?.textoVazio ?? 'Nenhum registro encontrado.');
+const textoVazio = computed(() => configuracaoConsulta.value?.textoVazio ?? t('forms.consultaRegistrosFiltro.textoVazio'));
+const rotuloPesquisa = computed(() => {
+  const campo = props.campoSelecionado?.descricao ?? t('forms.consultaRegistrosFiltro.registros');
+
+  return t('forms.consultaRegistrosFiltro.rotuloPesquisa', { campo });
+});
 const contextoConsulta = computed(() => {
   return [
     'consulta-registros-filtro',

@@ -10,7 +10,7 @@
             icon="mdi-information-outline"
             class="mr-2"
           />
-          Nenhum valor necessário para esta condição.
+          {{ t('components.inputValorFiltro.valorNaoNecessario') }}
         </div>
       </div>
     </template>
@@ -22,7 +22,7 @@
         :items="opcoesDisponiveis"
         itemTitle="title"
         itemValue="value"
-        label="Selecione os valores"
+        :label="t('components.inputValorFiltro.selecioneValores')"
         variant="outlined"
         density="compact"
         autocomplete="off"
@@ -45,7 +45,7 @@
             v-model="valorInicialIntervaloNumerico"
             :rules="[rules.required()]"
             :type="htmlType"
-            label="De"
+            :label="t('messages.from')"
             controlVariant="stacked"
             variant="outlined"
             density="compact"
@@ -59,7 +59,7 @@
             v-model="valorInicialIntervaloTexto"
             :rules="[rules.required()]"
             :type="htmlType"
-            label="De"
+            :label="t('messages.from')"
             variant="outlined"
             density="compact"
             autocomplete="off"
@@ -74,7 +74,7 @@
             v-model="valorFinalIntervaloNumerico"
             :rules="[rules.required()]"
             :type="htmlType"
-            label="Até"
+            :label="t('messages.until')"
             controlVariant="stacked"
             variant="outlined"
             density="compact"
@@ -88,7 +88,7 @@
             v-model="valorFinalIntervaloTexto"
             :rules="[rules.required()]"
             :type="htmlType"
-            label="Até"
+            :label="t('messages.until')"
             variant="outlined"
             density="compact"
             autocomplete="off"
@@ -105,7 +105,7 @@
         v-model="valorNumerico"
         :rules="computedRules"
         :type="htmlType"
-        label="Valor"
+        :label="t('messages.value')"
         controlVariant="stacked"
         variant="outlined"
         density="compact"
@@ -120,7 +120,7 @@
         v-model="valorTexto"
         :rules="computedRules"
         :type="htmlType"
-        label="Valor"
+        :label="t('messages.value')"
         variant="outlined"
         density="compact"
         autocomplete="off"
@@ -135,6 +135,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
@@ -160,6 +161,7 @@ defineEmits<TEmits>();
 
 // Composables
 const rules = useRules();
+const { t } = useI18n();
 
 // Reativas
 const valor = defineModel<unknown>('valor', { required: true });
@@ -172,10 +174,12 @@ const computedRules = computed(() => {
 
 const computedRulesMultiple = computed(() => {
   if (props.campo === 'RECURSO') return [];
-  return [(pValor: unknown) => (Array.isArray(pValor) && pValor.length > 0) || 'Selecione ao menos um valor'];
+  return [(pValor: unknown) => (Array.isArray(pValor) && pValor.length > 0) || t('components.inputValorFiltro.selecioneAoMenosUmValor')];
 });
 
-// Descobre qual template renderizar baseado no operador e no tipo
+/**
+ * Define qual controle deve ser renderizado a partir do operador e dos tipos do campo.
+ */
 const tipoTemplate = computed<TTemplateValorFiltro>(() => {
   if (!props.operador) return 'NONE';
 
@@ -186,7 +190,9 @@ const tipoTemplate = computed<TTemplateValorFiltro>(() => {
   return 'DEFAULT';
 });
 
-// Define o type="" nativo do HTML (texto, numero, data)
+/**
+ * Resolve o type nativo do input HTML a partir do tipo de dado selecionado.
+ */
 const htmlType = computed(() => {
   if (props.tiposCampo.includes('date' as ETipoFiltro)) return 'date';
   if (props.tiposCampo.includes('number' as ETipoFiltro) && !props.tiposCampo.includes('string' as ETipoFiltro)) return 'number';
@@ -325,7 +331,9 @@ function montarValorInicialPorTemplate(pTemplate: TTemplateValorFiltro): unknown
 }
 
 // Observadores
-// Sempre que mudar o template, reseta o valor para não dar crash de tipos
+/**
+ * Sempre que o template muda, o valor é reiniciado para evitar inconsistências de tipo.
+ */
 watch(() => [tipoTemplate.value, props.operador, htmlType.value], ([novoTemplate, novoOperador]) => {
   if (atualizarValorBooleanoPorOperador(novoOperador)) return;
 

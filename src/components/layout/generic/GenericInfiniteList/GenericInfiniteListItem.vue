@@ -1,19 +1,19 @@
 <template>
   <div
-    v-bind="itemBindings"
+    v-bind="vinculosItem"
     :class="[
-      itemBindings.class,
+      vinculosItem.class,
       'generic-infinite-list-item',
       { 'generic-infinite-list-item--clickable': !!to && !disabled },
     ]"
     :role="to && !disabled ? 'link' : undefined"
     :tabindex="to && !disabled ? 0 : undefined"
-    @keydown.enter="handleClick"
-    @click="handleClick"
+    @keydown.enter="clicar"
+    @click="clicar"
   >
     <slot
       :item="item"
-      :selector="itemBindings['data-scroll-selector']"
+      :selector="vinculosItem['data-scroll-selector']"
     />
   </div>
 </template>
@@ -62,21 +62,21 @@ const context = injectedContext;
  * @description Lida com o evento de clique no item.
  * @param {MouseEvent | KeyboardEvent} pEvent - O evento de clique.
  */
-async function handleClick(pEvent: MouseEvent | KeyboardEvent) {
+async function clicar(pEvent: MouseEvent | KeyboardEvent): Promise<void> {
   emits("click", pEvent);
 
   if (!props.to || props.disabled) return;
 
   // O seletor do proprio item é gravado na rota atual antes de sair dela.
-  await context.redirectTo(
+  await context.redirecionarPara(
     props.to,
-    String(itemBindings.value["data-scroll-selector"] ?? ""),
+    String(vinculosItem.value["data-scroll-selector"] ?? ""),
   );
 }
 
 // Computadas
-const itemBindings = computed(() =>
-  context.getItemBindings(props.item, props.index ?? 0, props.itemKey),
+const vinculosItem = computed(() =>
+  context.obterVinculosItem(props.item, props.index ?? 0, props.itemKey),
 );
 </script>
 

@@ -14,17 +14,19 @@
         size="small"
         class="mr-2 text-primary"
       />
-      {{ campoSelecionado?.descricao || 'Nenhum campo selecionado' }}
+      {{ campoSelecionado?.descricao || t('components.campoSelecionado.nenhumCampoSelecionado') }}
     </v-card-title>
 
     <v-card-subtitle class="mt-1 text-body-2">
-      Tipo de Dado: {{ formatarTiposDados(tiposCampoAtual) }}
+      {{ t('components.campoSelecionado.tipoDado') }}: {{ formatarTiposDados(tiposCampoAtual) }}
     </v-card-subtitle>
 
     <template #append>
       <v-tooltip
         v-if="possuiConsultaRegistros"
-        :text="exibirConsultaRegistros ? 'Ocultar consulta auxiliar' : 'Consultar registros'"
+        :text="exibirConsultaRegistros
+          ? t('components.campoSelecionado.ocultarConsultaAuxiliar')
+          : t('components.campoSelecionado.consultarRegistros')"
         location="bottom"
       >
         <template #activator="{ props: tooltipProps }">
@@ -48,6 +50,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
@@ -58,17 +61,20 @@ type TProps = {
 };
 const props = defineProps<TProps>();
 
+// Composables
+const { t } = useI18n();
+
 // Reativas - Model
 const exibirConsultaRegistros = defineModel<boolean>('exibirConsultaRegistros', { default: false });
 
 // Funções
 function formatarTiposDados(pTipos: ETipoFiltro[]): string {
   const mapaTraducao: Record<string, string> = {
-    string: 'Texto',
-    number: 'Numérico',
-    boolean: 'Lógico (Sim/Não)',
-    date: 'Data/Hora',
-    select: 'Seleção',
+    string: t('components.campoSelecionado.tiposDados.texto'),
+    number: t('components.campoSelecionado.tiposDados.numerico'),
+    boolean: t('components.campoSelecionado.tiposDados.logico'),
+    date: t('components.campoSelecionado.tiposDados.dataHora'),
+    select: t('components.campoSelecionado.tiposDados.selecao'),
   };
   return pTipos.map((pTipo) => mapaTraducao[pTipo as string] || pTipo).join(', ');
 }

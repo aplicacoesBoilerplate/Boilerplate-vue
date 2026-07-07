@@ -6,7 +6,7 @@
   >
     <template #activator="{ props: menuProps }">
       <v-tooltip
-        text="Exportar dados"
+        :text="t('components.menuExportacaoDados.tooltip')"
         location="bottom"
       >
         <template #activator="{ props: tooltipProps }">
@@ -31,10 +31,10 @@
         density="compact"
         nav
       >
-        <v-list-subheader>Exportar</v-list-subheader>
+        <v-list-subheader>{{ t('components.menuExportacaoDados.titulo') }}</v-list-subheader>
 
         <v-list-item
-          v-for="opcao in OPCOES_EXPORTACAO"
+          v-for="opcao in opcoesExportacao"
           :key="opcao.formato"
           :disabled="exportando"
           :prepend-icon="opcao.icone"
@@ -42,7 +42,7 @@
           :title="opcao.titulo"
           color="primary"
           rounded="lg"
-          @click="handleExportar(opcao.formato)"
+          @click="exportar(opcao.formato)"
         >
           <template
             v-if="formatoCarregando === opcao.formato"
@@ -64,6 +64,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, inject, mergeProps, onBeforeUnmount, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
@@ -113,30 +114,9 @@ const props = withDefaults(defineProps<TProps>(), {
   ordem: 'asc',
 });
 
-// Constantes
-const OPCOES_EXPORTACAO: { formato: TFormatoExportacaoDados; titulo: string; descricao: string; icone: string }[] = [
-  {
-    formato: 'txt',
-    titulo: 'TXT',
-    descricao: 'Texto tabulado',
-    icone: 'mdi-file-document-outline',
-  },
-  {
-    formato: 'pdf',
-    titulo: 'PDF',
-    descricao: 'Documento para leitura',
-    icone: 'mdi-file-pdf-box',
-  },
-  {
-    formato: 'excel',
-    titulo: 'Excel',
-    descricao: 'Planilha .xlsx',
-    icone: 'mdi-file-excel-outline',
-  },
-];
-
 // Composables
 const { exportando, exportarDados } = useExportacaoDados();
+const { t } = useI18n();
 
 // Injeções
 const manterDrawerAberto = inject<((pValor: boolean) => void) | undefined>('drawerKeepOpen', undefined);
@@ -147,9 +127,29 @@ const formatoCarregando = ref<TFormatoExportacaoDados | null>(null);
 
 // Computadas
 const manterAberto = computed(() => exibirMenu.value);
+const opcoesExportacao = computed<{ formato: TFormatoExportacaoDados; titulo: string; descricao: string; icone: string }[]>(() => [
+  {
+    formato: 'txt',
+    titulo: t('components.menuExportacaoDados.formatos.txt.titulo'),
+    descricao: t('components.menuExportacaoDados.formatos.txt.descricao'),
+    icone: 'mdi-file-document-outline',
+  },
+  {
+    formato: 'pdf',
+    titulo: t('components.menuExportacaoDados.formatos.pdf.titulo'),
+    descricao: t('components.menuExportacaoDados.formatos.pdf.descricao'),
+    icone: 'mdi-file-pdf-box',
+  },
+  {
+    formato: 'excel',
+    titulo: t('components.menuExportacaoDados.formatos.excel.titulo'),
+    descricao: t('components.menuExportacaoDados.formatos.excel.descricao'),
+    icone: 'mdi-file-excel-outline',
+  },
+]);
 
 // Funções
-async function handleExportar(pFormato: TFormatoExportacaoDados): Promise<void> {
+async function exportar(pFormato: TFormatoExportacaoDados): Promise<void> {
   formatoCarregando.value = pFormato;
 
   try {

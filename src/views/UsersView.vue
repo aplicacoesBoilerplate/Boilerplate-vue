@@ -11,14 +11,14 @@
         <GenericView
           ref="genericViewRef"
           :contexto="CONTEXTO_LISTA_USUARIOS"
-          :serviceFetch="fetchUsersMock"
+          :serviceFetch="buscarUsuariosMock"
           :colunasExportacao="headersExportacao"
           nomeArquivoExportacao="usuarios"
-          @novoRegistro="handleGerenciarRegistro"
+          @novoRegistro="gerenciarRegistro"
         >
           <template #list-header-actions>
             <v-tooltip
-              :text="hiddenChart ? 'Ver Gráficos' : 'Esconder Gráficos'"
+              :text="hiddenChart ? t('components.usersView.verGraficos') : t('components.usersView.esconderGraficos')"
               location="bottom"
             >
               <template #activator="{ props }">
@@ -34,7 +34,7 @@
             </v-tooltip>
           </template>
 
-          <template #activator-novo-registro="{ handleNovoRegistro, tooltipProps }">
+          <template #activator-novo-registro="{ acionarNovoRegistro, tooltipProps }">
             <DialogFormUsuario
               v-model:exibirDialog="exibirDialogUsuario"
               v-model:usuario="modelFormUsuario"
@@ -48,7 +48,7 @@
                   variant="tonal"
                   size="x-small"
                   icon="mdi-plus"
-                  @click="handleNovoRegistro"
+                  @click="acionarNovoRegistro"
                 />
               </template>
             </DialogFormUsuario>
@@ -56,9 +56,9 @@
 
           <template #default="{ items }">
             <GenericInfiniteListItem
-              v-for="user in items as IUsuario[]"
-              :key="user.id"
-              :item="user"
+              v-for="usuario in items as IUsuario[]"
+              :key="usuario.id"
+              :item="usuario"
               itemKey="id"
             >
               <v-list-item
@@ -70,23 +70,23 @@
                     color="primary"
                     class="text-white"
                   >
-                    {{ user.nome.charAt(0).toUpperCase() }}
+                    {{ usuario.nome.charAt(0).toUpperCase() }}
                   </v-avatar>
                 </template>
 
                 <v-list-item-title class="font-weight-bold text-primary">
-                  {{ user.nome }}
+                  {{ usuario.nome }}
                 </v-list-item-title>
-                <v-list-item-subtitle> {{ user.email }} • {{ user.papel }} </v-list-item-subtitle>
+                <v-list-item-subtitle> {{ usuario.email }} • {{ usuario.papel }} </v-list-item-subtitle>
 
                 <template #append>
                   <div class="d-flex align-center">
                     <v-chip
-                      :color="user.ativo ? 'success' : 'error'"
+                      :color="usuario.ativo ? 'success' : 'error'"
                       size="small"
                       class="mr-4"
                     >
-                      {{ user.ativo ? 'Ativo' : 'Inativo' }}
+                      {{ usuario.ativo ? t('messages.active') : t('messages.inactive') }}
                     </v-chip>
 
                     <v-btn
@@ -96,9 +96,9 @@
                       size="small"
                       class="mr-2"
                       @click.stop="
-                        handleGerenciarRegistro({
+                          gerenciarRegistro({
                           modoEdicao: true,
-                          item: user,
+                          item: usuario,
                         })
                       "
                     />
@@ -107,7 +107,7 @@
                       variant="text"
                       color="error"
                       size="small"
-                      @click.stop="deleteUser(user.id)"
+                      @click.stop="excluirUsuario(usuario.id)"
                     />
                   </div>
                 </template>
@@ -133,6 +133,7 @@
 <script setup lang="ts">
 // Ecossistema vue
 import { computed, mergeProps, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Stores
 import { useGenericListStore } from '@/stores/genericList.store';
@@ -158,6 +159,7 @@ import DialogFormUsuario from '@/components/dialogs/DialogFormUsuario.vue';
 // Composables
 const listStore = useGenericListStore();
 const genericFilterStore = useGenericFilterStore();
+const { t } = useI18n();
 
 // Constantes e Dados Base
 const CONTEXTO_LISTA_USUARIOS = 'lista-usuarios';
@@ -206,11 +208,11 @@ const mockData = ref<IUsuario[]>([
   },
 ]);
 
-function handleGerenciarRegistro(payload: { modoEdicao: boolean; item?: IUsuario }) {
-  modoEdicaoUsuario.value = payload.modoEdicao;
+function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: IUsuario }): void {
+  modoEdicaoUsuario.value = pPayload.modoEdicao;
 
-  if (payload.modoEdicao && payload.item) {
-    modelFormUsuario.value = { ...payload.item };
+  if (pPayload.modoEdicao && pPayload.item) {
+    modelFormUsuario.value = { ...pPayload.item };
   } else {
     modelFormUsuario.value = criarUsuarioPadrao();
   }
@@ -218,23 +220,23 @@ function handleGerenciarRegistro(payload: { modoEdicao: boolean; item?: IUsuario
   exibirDialogUsuario.value = true;
 }
 
-async function fetchUsersMock(payload: IGenericListFetchPayload): Promise<TGenericListFetchResponse> {
+async function buscarUsuariosMock(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse> {
   // Simula latência de rede
-  await new Promise((resolve) => setTimeout(resolve, 800));
+  await new Promise((pResolver) => setTimeout(pResolver, 800));
 
-  const start = (payload.proximaEntrada as number) || 0;
-  const limit = payload.limite || 10;
-  const usuariosOrdenados = ordenarUsuarios(mockData.value, payload.ordem);
-  const data = usuariosOrdenados.slice(start, start + limit);
+  const inicio = (pPayload.proximaEntrada as number) || 0;
+  const limite = pPayload.limite || 10;
+  const usuariosOrdenados = ordenarUsuarios(mockData.value, pPayload.ordem);
+  const dados = usuariosOrdenados.slice(inicio, inicio + limite);
 
   return {
-    items: data,
-    temMaisRegistros: start + data.length < usuariosOrdenados.length,
-    proximaEntrada: start + data.length < usuariosOrdenados.length ? start + data.length : undefined,
+    items: dados,
+    temMaisRegistros: inicio + dados.length < usuariosOrdenados.length,
+    proximaEntrada: inicio + dados.length < usuariosOrdenados.length ? inicio + dados.length : undefined,
   };
 }
 
-async function salvarUsuario() {
+async function salvarUsuario(): Promise<void> {
   // Chamada simulada a service
   const usuarioNormalizado = criarUsuarioPadrao(modelFormUsuario.value);
 
@@ -256,7 +258,7 @@ async function salvarUsuario() {
   exibirDialogUsuario.value = false;
 }
 
-async function deleteUser(pIdUsuario: number | undefined) {
+async function excluirUsuario(pIdUsuario: number | undefined): Promise<void> {
   // Chamada simulada a service
   if (!pIdUsuario) return;
 

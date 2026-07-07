@@ -94,6 +94,121 @@
       "inputPassword": {
         "label": "Contraseña"
       }
+    },
+    "formRegistro": {
+      "inputNome": {
+        "label": "Nombre"
+      },
+      "inputEmail": {
+        "label": "Correo electrónico"
+      },
+      "inputSenha": {
+        "label": "Contraseña"
+      },
+      "inputConfirmarSenha": {
+        "label": "Confirmar contraseña"
+      }
+    },
+    "formCargoRbac": {
+      "inputNome": {
+        "label": "Nombre del cargo"
+      },
+      "inputPapel": {
+        "label": "Código del cargo",
+        "hint": "Usado en el vínculo con usuarios y políticas"
+      },
+      "inputComportamentoPadrao": {
+        "label": "Cuando no exista permiso específico"
+      },
+      "inputDescricao": {
+        "label": "Descripción"
+      },
+      "inputAtivo": {
+        "label": "Cargo activo"
+      },
+      "comportamentosPadrao": {
+        "bloquear": "Bloquear por defecto",
+        "liberar": "Permitir por defecto"
+      }
+    },
+    "seletorIconeMaterialDesign": {
+      "label": "Ícono",
+      "hint": "Seleccione o busque un ícono.",
+      "tooltipPaginaIcones": "Abrir la página con todos los íconos aceptados",
+      "icones": {
+        "escudoConta": "Escudo de cuenta",
+        "escudoChave": "Escudo con llave",
+        "escudoAdministrativo": "Escudo administrativo",
+        "conta": "Cuenta",
+        "contaExecutiva": "Cuenta ejecutiva",
+        "contaChave": "Cuenta con llave",
+        "contaConfiguracoes": "Cuenta con configuraciones",
+        "grupoContas": "Grupo de cuentas",
+        "supervisor": "Supervisor",
+        "crachaConta": "Credencial de cuenta",
+        "detalhesConta": "Detalles de cuenta",
+        "contaProfissional": "Cuenta profesional",
+        "bloqueio": "Bloqueo",
+        "bloqueioAberto": "Bloqueo abierto",
+        "chave": "Llave",
+        "configuracao": "Configuración",
+        "painel": "Panel",
+        "bancoDados": "Base de datos",
+        "grafico": "Gráfico",
+        "documento": "Documento",
+        "pacote": "Paquete",
+        "carrinho": "Carrito",
+        "financeiro": "Finanzas",
+        "email": "Correo electrónico",
+        "telefone": "Teléfono"
+      }
+    },
+    "consultaVinculosFormulario": {
+      "rotuloPesquisa": "Buscar registros",
+      "textoVazio": "No se encontraron registros.",
+      "textoFinal": "Todos los registros fueron cargados."
+    },
+    "usuariosVinculadosCargo": {
+      "titulo": "Usuarios vinculados",
+      "subtitulo": "Cambie el cargo de un usuario directamente desde este facilitador.",
+      "rotuloPesquisa": "Buscar usuarios",
+      "textoVazio": "Ningún usuario está vinculado a este cargo.",
+      "alteracaoPendente": "Cambio pendiente"
+    },
+    "controlePermissoesCargo": {
+      "rotas": {
+        "titulo": "Rutas permitidas",
+        "subtitulo": "Las rutas hijas mantienen la ruta padre permitida para preservar la navegación."
+      },
+      "comportamentoPadrao": {
+        "bloquear": "Bloquea por defecto",
+        "liberar": "Permite por defecto"
+      },
+      "permissoesGerais": {
+        "titulo": "Permisos generales",
+        "subtitulo": "Acciones transversales que pueden ser usadas por varios recursos.",
+        "itens": {
+          "exportarDados": "Exportar datos",
+          "visualizarGraficos": "Ver gráficos",
+          "gerenciarRegistros": "Gestionar registros"
+        }
+      }
+    },
+    "configuracaoRedirecionamentoCargo": {
+      "titulo": "Redirección inicial",
+      "inputRota": {
+        "label": "Ruta inicial después del login"
+      },
+      "tooltipFiltros": "Configurar filtros iniciales",
+      "rotaSemFiltros": "Esta ruta no tiene filtros configurables."
+    },
+    "consultaRegistrosFiltro": {
+      "registros": "registros",
+      "rotuloPesquisa": "Buscar {campo}",
+      "tooltipFechar": "Cerrar consulta auxiliar",
+      "textoVazio": "No se encontraron registros.",
+      "textoFinal": "Todos los registros fueron cargados.",
+      "textoErro": "No fue posible consultar los registros."
     }
   },
   "tooltips": {
@@ -115,6 +230,7 @@
       "create": "Nuevo registro",
       "edit": "Editar",
       "delete": "Eliminar",
+      "cancel": "Cancelar",
       "submit": "Confirmar",
       "forgotPassword": "Olvidé mi contraseña"
     },
@@ -137,16 +253,19 @@
     "value": "Valor",
     "from": "De",
     "until": "Hasta",
+    "active": "Activo",
+    "inactive": "Inactivo",
     "welcome": "Bien-vindo(a)",
     "errors": {
       "reqGenerics": "¡Se produjo un error en la solicitud!"
     },
     "forms": {
-      "formUsers": {
-        "createUser": "Crear usuario",
-        "editingUser": "Editar usuario"
-      }
-    },
+        "formUsers": {
+          "createUser": "Crear usuario",
+          "editingUser": "Editar usuario",
+          "editingUserId": "Editar usuario #{id}"
+        }
+      },
     "components": {
       "dataTable": {
         "titleDefault": "Resultados",
@@ -156,6 +275,112 @@
         "title": "Filtrar recursos por:",
         "alertDuplicate": "¡Este filtro ya ha sido añadido!"
       }
+    }
+  },
+  "components": {
+    "genericView": {
+      "ordenarCrescente": "Ordenar ascendente",
+      "ordenarDecrescente": "Ordenar descendente"
+    },
+    "genericInfiniteList": {
+      "limite": "Límite",
+      "textoVazio": "No se encontraron registros.",
+      "textoFinal": "Todos los registros fueron cargados.",
+      "textoErro": "No fue posible cargar los registros."
+    },
+    "usersView": {
+      "verGraficos": "Ver gráficos",
+      "esconderGraficos": "Ocultar gráficos"
+    },
+    "rbacView": {
+      "textoVazioCargos": "No se encontraron cargos.",
+      "textoFinalCargos": "Todos los cargos fueron cargados."
+    },
+    "baseChart": {
+      "inputAgrupamento": {
+        "label": "Agrupar por"
+      },
+      "tooltipConfiguracao": "Configurar gráfico",
+      "secoes": {
+        "visualizacao": "Visualización",
+        "controles": "Controles"
+      },
+      "controles": {
+        "legenda": "Leyenda",
+        "rotulos": "Etiquetas"
+      },
+      "tipos": {
+        "donut": "Donut",
+        "pizza": "Circular",
+        "colunas": "Columnas",
+        "barras": "Barras"
+      },
+      "semDados": "Sin datos para mostrar",
+      "totalAcumulado": "Total acumulado",
+      "registrosTotais": "Registros totales",
+      "categoria": "categoría",
+      "tituloAgrupamento": "Agrupamiento por {campo}"
+    },
+    "dialogFiltro": {
+      "titulo": "Filtros",
+      "consultaRegistrosAriaLabel": "Consulta auxiliar de registros",
+      "limparFiltros": "Limpiar filtros",
+      "aplicar": "Aplicar"
+    },
+    "baseDialog": {
+      "tituloPadrao": "Diálogo",
+      "fecharAriaLabel": "Cerrar {titulo}"
+    },
+    "menuExportacaoDados": {
+      "tooltip": "Exportar datos",
+      "titulo": "Exportar",
+      "formatos": {
+        "txt": {
+          "titulo": "TXT",
+          "descricao": "Texto tabulado"
+        },
+        "pdf": {
+          "titulo": "PDF",
+          "descricao": "Documento para lectura"
+        },
+        "excel": {
+          "titulo": "Excel",
+          "descricao": "Hoja de cálculo .xlsx"
+        }
+      }
+    },
+    "detalhesCargo": {
+      "tooltip": "Detalles",
+      "liberacoes": "{quantidade} permisos",
+      "usuarios": "{quantidade} usuario(s)",
+      "semDescricao": "Sin descripción registrada."
+    },
+    "drawerFiltroRight": {
+      "filtrosAplicados": "Filtros aplicados"
+    },
+    "campoSelecionado": {
+      "nenhumCampoSelecionado": "Ningún campo seleccionado",
+      "tipoDado": "Tipo de dato",
+      "ocultarConsultaAuxiliar": "Ocultar consulta auxiliar",
+      "consultarRegistros": "Consultar registros",
+      "tiposDados": {
+        "texto": "Texto",
+        "numerico": "Numérico",
+        "logico": "Lógico (Sí/No)",
+        "dataHora": "Fecha/Hora",
+        "selecao": "Selección"
+      }
+    },
+    "inputValorFiltro": {
+      "valorNaoNecessario": "No se requiere ningún valor para esta condición.",
+      "selecioneValores": "Seleccione los valores",
+      "selecioneAoMenosUmValor": "Seleccione al menos un valor"
+    }
+  },
+  "dialogs": {
+    "cargoRbac": {
+      "criar": "Crear nuevo cargo",
+      "editar": "Editar cargo {nome}"
     }
   },
   "dataTable": {

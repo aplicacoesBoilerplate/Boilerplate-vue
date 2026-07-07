@@ -15,7 +15,6 @@
             variant="text"
             icon="mdi-license"
             size="small"
-            @click="dialogProps.open"
           />
         </template>
       </v-tooltip>

@@ -15,7 +15,7 @@
               :model-value="cargo.nome"
               :counter="60"
               :rules="[rules.required(), rules.maxLength(60)]"
-              label="Nome do cargo"
+              :label="t('forms.formCargoRbac.inputNome.label')"
               variant="outlined"
               density="compact"
               autocomplete="off"
@@ -28,8 +28,8 @@
               :model-value="cargo.papel"
               :counter="40"
               :rules="[rules.required(), rules.maxLength(40)]"
-              label="Papel"
-              hint="Usado no vínculo com usuários e nas políticas"
+              :label="t('forms.formCargoRbac.inputPapel.label')"
+              :hint="t('forms.formCargoRbac.inputPapel.hint')"
               variant="outlined"
               density="compact"
               autocomplete="off"
@@ -48,10 +48,10 @@
           <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
             <v-select
               v-model="cargo.comportamentoPadrao"
-              :items="COMPORTAMENTOS_PADRAO_PERMISSAO"
+              :items="itensComportamentoPadrao"
               itemTitle="descricao"
               itemValue="valor"
-              label="Quando não houver permissão específica"
+              :label="t('forms.formCargoRbac.inputComportamentoPadrao.label')"
               variant="outlined"
               density="compact"
               autocomplete="off"
@@ -81,7 +81,7 @@
               v-model="cargo.descricao"
               :rules="[rules.maxLength(180)]"
               :counter="180"
-              label="Descrição"
+              :label="t('forms.formCargoRbac.inputDescricao.label')"
               rows="2"
               variant="outlined"
               density="compact"
@@ -98,7 +98,7 @@
             <v-checkbox
               v-model="cargo.ativo"
               class="pa-0"
-              label="Cargo ativo"
+              :label="t('forms.formCargoRbac.inputAtivo.label')"
               color="success"
               hideDetails
             />
@@ -127,6 +127,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
@@ -158,6 +159,7 @@ const emits = defineEmits<TEmits>();
 
 // Composables
 const rules = useRules();
+const { t } = useI18n();
 
 // Reativas - Model
 const formIsValid = defineModel<boolean>('valido', { default: false });
@@ -187,8 +189,17 @@ const redirecionamentoInicialCargo = computed<IRedirecionamentoInicialRbac>({
   },
 });
 
+const itensComportamentoPadrao = computed(() => {
+  return COMPORTAMENTOS_PADRAO_PERMISSAO.map((pComportamento) => ({
+    ...pComportamento,
+    descricao: t(`forms.formCargoRbac.comportamentosPadrao.${pComportamento.valor}`),
+  }));
+});
+
 // Expose
 defineExpose({
+  resetar: () => baseFormRef.value?.resetValidation(),
+  submeter: () => baseFormRef.value?.submit(),
   reset: () => baseFormRef.value?.resetValidation(),
   submit: () => baseFormRef.value?.submit(),
 });

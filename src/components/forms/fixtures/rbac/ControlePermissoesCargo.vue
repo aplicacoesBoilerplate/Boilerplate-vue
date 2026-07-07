@@ -2,9 +2,11 @@
   <div class="d-flex flex-column ga-4">
     <div class="d-flex align-center justify-space-between flex-wrap ga-2">
       <div>
-        <div class="text-subtitle-1 font-weight-bold">Rotas liberadas</div>
+        <div class="text-subtitle-1 font-weight-bold">
+          {{ t('forms.controlePermissoesCargo.rotas.titulo') }}
+        </div>
         <div class="text-caption text-medium-emphasis">
-          Rotas filhas mantêm a rota pai liberada para preservar a navegação.
+          {{ t('forms.controlePermissoesCargo.rotas.subtitulo') }}
         </div>
       </div>
 
@@ -14,7 +16,9 @@
         size="small"
         variant="tonal"
       >
-        {{ padraoLiberado ? 'Libera por padrão' : 'Bloqueia por padrão' }}
+        {{ padraoLiberado
+          ? t('forms.controlePermissoesCargo.comportamentoPadrao.liberar')
+          : t('forms.controlePermissoesCargo.comportamentoPadrao.bloquear') }}
       </v-chip>
     </div>
 
@@ -55,9 +59,11 @@
     <v-divider />
 
     <div>
-      <div class="text-subtitle-1 font-weight-bold">Permissões gerais</div>
+      <div class="text-subtitle-1 font-weight-bold">
+        {{ t('forms.controlePermissoesCargo.permissoesGerais.titulo') }}
+      </div>
       <div class="text-caption text-medium-emphasis">
-        Ações transversais que podem ser usadas por vários recursos.
+        {{ t('forms.controlePermissoesCargo.permissoesGerais.subtitulo') }}
       </div>
     </div>
 
@@ -84,7 +90,7 @@
               :icon="permissao.icone"
               size="small"
             />
-            <span>{{ permissao.descricao }}</span>
+            <span>{{ obterDescricaoPermissaoGeral(permissao.valor) }}</span>
           </div>
         </template>
       </v-list-item>
@@ -207,6 +213,10 @@ function obterTituloRota(pRota: RouteRecordRaw): string {
   }
 
   return String(pRota.name ?? pRota.path);
+}
+
+function obterDescricaoPermissaoGeral(pPermissao: string): string {
+  return t(`forms.controlePermissoesCargo.permissoesGerais.itens.${pPermissao}`);
 }
 
 function obterPermissao(pRecurso: string, pAcao: string): IPermissaoCargoRbac | undefined {

@@ -4,7 +4,7 @@
     :subtitulo="cargo.papel"
   >
     <template #activator="{ props: menuProps }">
-      <v-tooltip text="Detalhes">
+      <v-tooltip :text="t('components.detalhesCargo.tooltip')">
         <template #activator="{ props: tooltipProps }">
           <v-chip
             v-bind="mergeProps(menuProps, tooltipProps)"
@@ -43,7 +43,9 @@
               size="small"
               variant="tonal"
             >
-              {{ cargo.comportamentoPadrao === 'liberar' ? 'Libera por padrão' : 'Bloqueia por padrão' }}
+              {{ cargo.comportamentoPadrao === 'liberar'
+                ? t('forms.controlePermissoesCargo.comportamentoPadrao.liberar')
+                : t('forms.controlePermissoesCargo.comportamentoPadrao.bloquear') }}
             </v-chip>
 
             <v-chip
@@ -52,7 +54,7 @@
               size="small"
               variant="tonal"
             >
-              {{ quantidadePermissoesLiberadas }} liberações
+              {{ t('components.detalhesCargo.liberacoes', { quantidade: quantidadePermissoesLiberadas }) }}
             </v-chip>
 
             <v-chip
@@ -61,13 +63,13 @@
               size="small"
               variant="tonal"
             >
-              {{ quantidadeUsuariosVinculados }} usuário(s)
+              {{ t('components.detalhesCargo.usuarios', { quantidade: quantidadeUsuariosVinculados }) }}
             </v-chip>
           </div>
         </v-list-item-subtitle>
 
         <v-list-item-subtitle class="mt-2">
-          {{ cargo.descricao || 'Sem descrição cadastrada.' }}
+          {{ cargo.descricao || t('components.detalhesCargo.semDescricao') }}
         </v-list-item-subtitle>
       </v-card-text>
     </template>
@@ -75,12 +77,15 @@
 </template>
 
 <script setup lang="ts">
+// Ecossistema Vue
+import { mergeProps } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 // Types e Interfaces
 import type { ICargoRbac } from '@/models/model/rbac/ICargoRbac.ts';
 
 // Componentes
 import BaseDetalhesCargo from './BaseDetalhesCargo.vue';
-import { mergeProps } from 'vue';
 
 type TProps = {
   /**
@@ -99,4 +104,7 @@ type TProps = {
   quantidadeUsuariosVinculados: number;
 };
 defineProps<TProps>();
+
+// Composables
+const { t } = useI18n();
 </script>

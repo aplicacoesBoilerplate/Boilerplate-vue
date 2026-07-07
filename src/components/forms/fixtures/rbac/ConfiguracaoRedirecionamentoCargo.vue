@@ -9,7 +9,9 @@
           color="primary"
           icon="mdi-routes"
         />
-        <span class="text-subtitle-2 font-weight-bold">Redirecionamento inicial</span>
+        <span class="text-subtitle-2 font-weight-bold">
+          {{ t('forms.configuracaoRedirecionamentoCargo.titulo') }}
+        </span>
       </div>
 
       <v-autocomplete
@@ -17,7 +19,7 @@
         :items="rotasDisponiveis"
         itemTitle="titulo"
         itemValue="path"
-        label="Rota inicial após login"
+        :label="t('forms.configuracaoRedirecionamentoCargo.inputRota.label')"
         variant="outlined"
         density="compact"
         autocomplete="off"
@@ -46,7 +48,7 @@
         <template #append>
           <v-tooltip
             v-if="rotaSelecionada?.possuiFiltros"
-            text="Configurar filtros iniciais"
+            :text="t('forms.configuracaoRedirecionamentoCargo.tooltipFiltros')"
             location="bottom"
           >
             <template #activator="{ props: tooltipProps }">
@@ -78,7 +80,7 @@
         variant="tonal"
         density="compact"
       >
-        Esta rota não possui filtros configuráveis.
+        {{ t('forms.configuracaoRedirecionamentoCargo.rotaSemFiltros') }}
       </v-alert>
 
       <DialogFiltro
