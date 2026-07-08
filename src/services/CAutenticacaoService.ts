@@ -12,6 +12,7 @@ import type {
 } from '@/models/model/autenticacao/autenticacao.models';
 import type { IUsuario } from '@/models/model/usuario/lUsuario';
 import type { IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
+import type { ICargoRbac } from '@/models/model/rbac/ICargoRbac';
 
 // Services
 import { CBaseHttpService } from '@/services/base/CBaseHttpService';
@@ -35,6 +36,13 @@ export class CAutenticacaoService extends CBaseHttpService {
     const resposta = await CAutenticacaoService.get<IRespostaUsuarioAutenticado>('/auth/me');
 
     return CUsuarioService.buscarPorId(resposta.idUsuario);
+  }
+
+  /**
+   * Consulta o cargo e as permissões do usuário autenticado sem exigir acesso administrativo ao RBAC.
+   */
+  public static async buscarCargoUsuarioAutenticado(): Promise<ICargoRbac> {
+    return CAutenticacaoService.get<ICargoRbac>('/auth/me/cargo');
   }
 
   /**

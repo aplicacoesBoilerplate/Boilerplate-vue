@@ -235,7 +235,7 @@ function aplicarFiltros(): void {
     return;
   }
 
-  genericFilterStore.syncToUrl();
+  genericFilterStore.confirmarAplicacaoFiltros();
   emits('onAplicarFiltros', filtros);
   exibirFiltros.value = false;
 }

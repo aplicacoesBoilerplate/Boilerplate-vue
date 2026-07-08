@@ -6,12 +6,12 @@
     >
       <v-autocomplete
         v-model="filterModel.condicao"
-        :label="label"
+        :label="props.label === 'Operador' ? t('selectOperadorFiltro.label', 'Condição') : props.label"
         :variant="variant"
         :density="density"
         :appendInnerIcon="iconeOperadorSelecionado"
         :menuProps="{ closeOnContentClick: true }"
-        :items="operadoresDisponiveis"
+        :items="operadoresTraduzidos"
         itemTitle="descricao"
         itemValue="valor"
         autocomplete="off"
@@ -53,6 +53,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
 // Stores
@@ -97,6 +98,7 @@ const { operadoresDisponiveis, tiposCampoAtual } = useOperadoresFiltro({
 });
 
 const { mdAndDown } = useDisplay();
+const { t, te } = useI18n();
 
 // Reativas
 const filterModel = defineModel<Partial<IFiltrosConsulta>>('filterModel', { required: true });
@@ -123,6 +125,16 @@ function sincronizarOperadorDisponivel(): void {
 }
 
 // Computadas
+const operadoresTraduzidos = computed(() => {
+  return operadoresDisponiveis.value.map((operador) => {
+    const chave = `components.dialogFiltro.operadores.${operador.valor}`;
+    return {
+      ...operador,
+      descricao: te(chave) ? t(chave) : operador.descricao,
+    };
+  });
+});
+
 const controleTamanhoColunas = computed(() => {
   if (!filterModel.value.condicao) return false;
   const operadoresComDoisInputs = [EOperadoresFiltro.ENTRE];

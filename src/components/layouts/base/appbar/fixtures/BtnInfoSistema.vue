@@ -27,7 +27,7 @@ const { t } = useI18n();
 
 // Funções
 function redirectToInfoSystem() {
-  router.push({ name: "SystemInfo" });
+  router.push({ name: "InformacoesSistema" });
 }
 
 </script>

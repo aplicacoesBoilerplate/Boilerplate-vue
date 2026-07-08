@@ -16,8 +16,8 @@
     <BtnAlterLanguage />
     <BtnInstalarPwa />
 
-    <BtnInfoSystem v-if="route.path != '/system-info'" />
-    <BtnPaginaInicial v-else />
+    <BtnInfoSistema v-if="route.name != 'InformacoesSistema'" />
+    <BtnPaginaInicial v-if="route.name != 'Inicio'" />
 
     <BtnToggleTheme />
 
@@ -37,7 +37,7 @@ import BtnActionDrawer, { type TPropsBtnDrawer } from './BtnActionDrawer.vue';
 import DialogLicence from '@/components/dialogs/DialogLicence.vue';
 import BtnAlterLanguage from './BtnAlterLanguage.vue';
 import BtnInstalarPwa from './BtnInstalarPwa.vue';
-import BtnInfoSystem from './BtnInfoSystem.vue';
+import BtnInfoSistema from './BtnInfoSistema.vue';
 import BtnPaginaInicial from './BtnPaginaInicial.vue';
 import BtnToggleTheme from './BtnToggleTheme.vue';
 

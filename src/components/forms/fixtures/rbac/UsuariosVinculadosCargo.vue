@@ -54,6 +54,7 @@
             <SelectRole
               :model-value="obterPapelUsuario(usuario)"
               :itens="itensCargos"
+              :disabled="somenteLeitura"
               hideDetails
               maxWidth="180"
               minWidth="160"
@@ -90,8 +91,15 @@ type TProps = {
    * Cargos disponíveis para vínculo.
    */
   cargos: ICargoRbac[];
+
+  /**
+   * Desabilita alterações de vínculo.
+   */
+  somenteLeitura?: boolean;
 };
-const props = defineProps<TProps>();
+const props = withDefaults(defineProps<TProps>(), {
+  somenteLeitura: false,
+});
 
 // Composables
 const { t } = useI18n();

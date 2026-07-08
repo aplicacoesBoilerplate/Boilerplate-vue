@@ -4,7 +4,7 @@
     "version": "Versão",
     "cardInfoLicence": "Informações da Licença",
     "updateDate": "Atualizado em",
-    "software": "software"
+    "software": "Software"
   },
   "routes": {
     "home": {
@@ -333,7 +333,47 @@
       "titulo": "Filtros",
       "consultaRegistrosAriaLabel": "Consulta auxiliar de registros",
       "limparFiltros": "Limpar filtros",
-      "aplicar": "Aplicar"
+      "aplicar": "Aplicar",
+      "operadores": {
+        "igual": "Igual",
+        "diferente": "Diferente",
+        "comecaCom": "Começa com",
+        "contem": "Contém",
+        "naoContem": "Não contém",
+        "terminaCom": "Termina com",
+        "entre": "Entre",
+        "maiorQue": "Maior que",
+        "maiorIgual": "Maior ou igual",
+        "menorQue": "Menor que",
+        "menorIgual": "Menor ou igual",
+        "selecao": "Seleção",
+        "excecao": "Exceção",
+        "verdadeiro": "Verdadeiro",
+        "falso": "Falso"
+      },
+      "campos": {
+        "id": "Código",
+        "nome": "Nome",
+        "email": "E-mail",
+        "papel": "Cargo",
+        "telefone": "Telefone",
+        "ativo": "Ativo",
+        "idError": "Código do Erro",
+        "classe": "Classe",
+        "metodo": "Método",
+        "linha": "Linha",
+        "arquivo": "Arquivo",
+        "usuarioReferencia": "Usuário",
+        "dataHora": "Data e Hora",
+        "httpStatusCode": "Status HTTP",
+        "mensagem": "Mensagem",
+        "descricao": "Descrição",
+        "comportamentoPadrao": "Comportamento Padrão",
+        "idUsuario": "ID do Usuário"
+      }
+    },
+    "selectOperadorFiltro": {
+      "label": "Condição"
     },
     "baseDialog": {
       "tituloPadrao": "Diálogo",
@@ -486,7 +526,7 @@
     "stepEmail": {
       "instruction": "Informe seu e-mail para receber o código de verificação.",
       "labelEmail": "E-mail",
-      "placeholderEmail": "exemplo@email.com",
+      "placeholderEmail": "exemplo{'@'}email.com",
       "btnSend": "Enviar Código"
     },
     "stepVerify": {

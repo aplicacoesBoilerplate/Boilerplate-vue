@@ -1,6 +1,7 @@
 // Types e Interfaces
 import type { TPapel } from '@/models/model/usuario/lUsuario';
 import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 
 // Mapeamentos
 import { MAPEAMENTO_ROTAS_API_RBAC } from './MapeamentoAcoesRotasRbac';
@@ -83,6 +84,7 @@ export interface IRedirecionamentoInicialRbac {
  * @property {IPermissaoCargoRbac[]} permissoes - Permissões configuradas explicitamente para o cargo.
  * @property {IRedirecionamentoInicialRbac} redirecionamentoInicial - Rota inicial e filtros aplicados após autenticação.
  * @property {boolean} ativo - Controla se o cargo pode ser atribuído a usuários.
+ * @property {IAuditoriaRegistro} auditoria - Metadados de criação e última atualização.
  */
 export interface ICargoRbac {
   id?: number;
@@ -94,6 +96,7 @@ export interface ICargoRbac {
   permissoes: IPermissaoCargoRbac[];
   redirecionamentoInicial: IRedirecionamentoInicialRbac;
   ativo: boolean;
+  auditoria?: IAuditoriaRegistro;
 }
 
 /**
@@ -220,6 +223,7 @@ export function criarCargoRbacPadrao(pDados: Partial<ICargoRbac> = {}): ICargoRb
       filtros: pDados.redirecionamentoInicial?.filtros ? [...pDados.redirecionamentoInicial.filtros] : [],
     },
     ativo: pDados.ativo ?? true,
+    auditoria: pDados.auditoria,
   };
 }
 

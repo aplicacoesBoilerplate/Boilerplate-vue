@@ -33,7 +33,7 @@
       </v-avatar>
     </template>
 
-    <template #content>
+    <template #content="{ fechar }">
       <v-card-text>
         <v-list-item-subtitle>
           <div class="d-flex flex-wrap ga-2">
@@ -71,6 +71,17 @@
         <v-list-item-subtitle class="mt-2">
           {{ cargo.descricao || t('components.detalhesCargo.semDescricao') }}
         </v-list-item-subtitle>
+
+        <div class="d-flex justify-end mt-3">
+          <v-btn
+            color="primary"
+            prependIcon="mdi-eye-outline"
+            size="small"
+            variant="tonal"
+            text="Abrir detalhes"
+            @click="abrirVisualizacao(fechar)"
+          />
+        </div>
       </v-card-text>
     </template>
   </BaseDetalhesCargo>
@@ -103,8 +114,19 @@ type TProps = {
    */
   quantidadeUsuariosVinculados: number;
 };
-defineProps<TProps>();
+const props = defineProps<TProps>();
+
+type TEmits = {
+  visualizar: [cargo: ICargoRbac];
+};
+const emits = defineEmits<TEmits>();
 
 // Composables
 const { t } = useI18n();
+
+// Funções
+function abrirVisualizacao(pFechar: () => void): void {
+  pFechar();
+  emits('visualizar', props.cargo);
+}
 </script>

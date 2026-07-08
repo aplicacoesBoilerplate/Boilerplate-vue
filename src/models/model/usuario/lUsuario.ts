@@ -1,3 +1,5 @@
+import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
+
 // Tipos para representar os papéis válidos.
 // IMPORTANTE: O enum deve estar em MAIÚSCULO para coincidir com o auth.service.
 export const PAPEIS_VALIDOS = ['ADMIN', 'USER'] as const;
@@ -49,6 +51,7 @@ export interface IUsuario extends TPapelUsuario {
   telefone?: string;
   notificar?: boolean;
   ativo?: boolean;
+  auditoria?: IAuditoriaRegistro;
 }
 
 /**
@@ -66,5 +69,6 @@ export function criarUsuarioPadrao(pDados: Partial<IUsuario> = {}): IUsuario {
     telefone: pDados.telefone ?? '',
     notificar: pDados.notificar ?? false,
     ativo: pDados.ativo ?? true,
+    auditoria: pDados.auditoria,
   };
 }

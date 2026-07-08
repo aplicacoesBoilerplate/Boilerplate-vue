@@ -31,31 +31,46 @@
         v-model:valido="formValido"
         v-model:abaAtual="aba"
         :cargosDisponiveis="cargosDisponiveis"
+        :somenteLeitura="modoVisualizacao"
         @onSubmit="salvarCargo"
       />
     </template>
 
     <template #actions>
-      <v-btn
-        v-tooltip="t('tooltips.forms.reset')"
-        :text="t('tooltips.forms.reset')"
-        color="amber"
-        variant="text"
-        prependIcon="mdi-refresh"
-        @click="resetarFormCargo"
-      />
+      <template v-if="modoVisualizacao">
+        <v-spacer />
 
-      <v-spacer />
+        <v-btn
+          color="primary"
+          variant="flat"
+          prependIcon="mdi-pencil"
+          text="Editar"
+          @click="habilitarEdicao"
+        />
+      </template>
 
-      <v-btn
-        :disabled="!formValido"
-        v-tooltip="t('tooltips.forms.save')"
-        :text="t('tooltips.forms.save')"
-        color="success"
-        variant="flat"
-        prependIcon="mdi-content-save"
-        @click="submeterFormCargo"
-      />
+      <template v-else>
+        <v-btn
+          v-tooltip="t('tooltips.forms.reset')"
+          :text="t('tooltips.forms.reset')"
+          color="amber"
+          variant="text"
+          prependIcon="mdi-refresh"
+          @click="resetarFormCargo"
+        />
+
+        <v-spacer />
+
+        <v-btn
+          :disabled="!formValido"
+          v-tooltip="t('tooltips.forms.save')"
+          :text="t('tooltips.forms.save')"
+          color="success"
+          variant="flat"
+          prependIcon="mdi-content-save"
+          @click="submeterFormCargo"
+        />
+      </template>
     </template>
   </BaseDialog>
 </template>
@@ -76,16 +91,21 @@ import TabsExtensionToolbar, { type TAbas } from '../forms/fixtures/rbac/TabsExt
 
 /**
  * @property {boolean} modoEdicao - Define se o diálogo está criando ou editando um cargo.
+ * @property {boolean} modoVisualizacao - Define se o diálogo está exibindo o cargo sem edição.
  * @property {ICargoRbac[]} cargosDisponiveis - Cargos disponíveis para vínculo de usuários.
  */
 type TProps = {
   modoEdicao: boolean;
+  modoVisualizacao?: boolean;
   cargosDisponiveis: ICargoRbac[];
 };
-const props = defineProps<TProps>();
+const props = withDefaults(defineProps<TProps>(), {
+  modoVisualizacao: false,
+});
 
 type TEmits = {
   salvar: [];
+  editar: [];
 };
 const emits = defineEmits<TEmits>();
 
@@ -117,12 +137,24 @@ function salvarCargo(): void {
   exibirDialog.value = false;
 }
 
+function habilitarEdicao(): void {
+  emits('editar');
+}
+
 // Computadas
 const titulo = computed(() => (
-  props.modoEdicao
+  props.modoVisualizacao
+    ? `Visualizar ${cargo.value.nome}`
+    : props.modoEdicao
     ? t('dialogs.cargoRbac.editar', { nome: cargo.value.nome })
     : t('dialogs.cargoRbac.criar')
 ));
-const icone = computed(() => (props.modoEdicao ? 'mdi-shield-edit-outline' : 'mdi-shield-plus-outline'));
+const icone = computed(() => {
+  if (props.modoVisualizacao) {
+    return 'mdi-shield-eye-outline';
+  }
+
+  return props.modoEdicao ? 'mdi-shield-edit-outline' : 'mdi-shield-plus-outline';
+});
 
 </script>

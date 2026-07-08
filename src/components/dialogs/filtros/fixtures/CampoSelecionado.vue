@@ -14,7 +14,7 @@
         size="small"
         class="mr-2 text-primary"
       />
-      {{ campoSelecionado?.descricao || t('components.campoSelecionado.nenhumCampoSelecionado') }}
+      {{ getDescricaoCampo || t('components.campoSelecionado.nenhumCampoSelecionado') }}
     </v-card-title>
 
     <v-card-subtitle class="mt-1 text-body-2">
@@ -62,7 +62,7 @@ type TProps = {
 const props = defineProps<TProps>();
 
 // Composables
-const { t } = useI18n();
+const { t, te } = useI18n();
 
 // Reativas - Model
 const exibirConsultaRegistros = defineModel<boolean>('exibirConsultaRegistros', { default: false });
@@ -82,4 +82,10 @@ function formatarTiposDados(pTipos: ETipoFiltro[]): string {
 // Computadas
 const tiposCampoAtual = computed(() => props.campoSelecionado?.tipos ?? []);
 const possuiConsultaRegistros = computed(() => !!props.campoSelecionado?.consultaRegistros);
+
+const getDescricaoCampo = computed(() => {
+  if (!props.campoSelecionado) return '';
+  const chave = `components.dialogFiltro.campos.${props.campoSelecionado.valor}`;
+  return te(chave) ? t(chave) : props.campoSelecionado.descricao;
+});
 </script>

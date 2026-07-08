@@ -30,10 +30,12 @@ import OverlayFullscream from '@/components/layout/OverlayFullscream.vue';
 
 // Composables
 import { useHealthCheck } from '@/composables/useHealthCheck';
+import { useSincronizacaoPermissoesRbac } from '@/composables/useSincronizacaoPermissoesRbac';
 
 // Composables
 const route = useRoute();
 const { carregando: carregandoHealthCheck, verificarHealthCheck } = useHealthCheck();
+useSincronizacaoPermissoesRbac();
 
 // Computadas
 const layoutComponent = computed(() => {

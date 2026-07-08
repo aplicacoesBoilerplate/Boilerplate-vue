@@ -1,5 +1,4 @@
 // Types e Interfaces
-import type { TPapel } from './usuario/lUsuario';
 import type { ICampoFiltro } from '../filters/ICampoFiltro';
 
 export interface IRouteMeta {
@@ -16,8 +15,6 @@ export interface IRouteMeta {
   hidden?: boolean;
   /** Se a rota requer autenticação. */
   requiresAuth?: boolean;
-  /** Cargos para os quais a rota está disponível. */
-  authorize?: TPapel[];
   /** As rotas filhas. */
   children?: IRouteMeta[];
   /** Os campos disponíveis para filtro nesta rota. */

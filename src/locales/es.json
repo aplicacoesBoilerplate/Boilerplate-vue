@@ -332,8 +332,48 @@
     "dialogFiltro": {
       "titulo": "Filtros",
       "consultaRegistrosAriaLabel": "Consulta auxiliar de registros",
-      "limparFiltros": "Limpiar filtros",
-      "aplicar": "Aplicar"
+      "limparFiltros": "Limpar filtros",
+      "aplicar": "Aplicar",
+      "operadores": {
+        "igual": "Igual",
+        "diferente": "Diferente",
+        "comecaCom": "Comienza con",
+        "contem": "Contiene",
+        "naoContem": "No contiene",
+        "terminaCom": "Termina con",
+        "entre": "Entre",
+        "maiorQue": "Mayor que",
+        "maiorIgual": "Mayor o igual",
+        "menorQue": "Menor que",
+        "menorIgual": "Menor o igual",
+        "selecao": "Selección",
+        "excecao": "Excepción",
+        "verdadeiro": "Verdadero",
+        "falso": "Falso"
+      },
+      "campos": {
+        "id": "Código",
+        "nome": "Nombre",
+        "email": "Correo electrónico",
+        "papel": "Rol",
+        "telefone": "Teléfono",
+        "ativo": "Activo",
+        "idError": "Código de Error",
+        "classe": "Clase",
+        "metodo": "Método",
+        "linha": "Línea",
+        "arquivo": "Archivo",
+        "usuarioReferencia": "Usuario",
+        "dataHora": "Fecha y Hora",
+        "httpStatusCode": "Estado HTTP",
+        "mensagem": "Mensaje",
+        "descricao": "Descripción",
+        "comportamentoPadrao": "Comportamiento Predeterminado",
+        "idUsuario": "ID del Usuario"
+      }
+    },
+    "selectOperadorFiltro": {
+      "label": "Condición"
     },
     "baseDialog": {
       "tituloPadrao": "Diálogo",
@@ -486,7 +526,7 @@
     "stepEmail": {
       "instruction": "Ingrese su correo electrónico para recibir el código de verificación.",
       "labelEmail": "Correo electrónico",
-      "placeholderEmail": "ejemplo@email.com",
+      "placeholderEmail": "ejemplo{'@'}email.com",
       "btnSend": "Enviar Código"
     },
     "stepVerify": {

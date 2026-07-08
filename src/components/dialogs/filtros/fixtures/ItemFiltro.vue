@@ -2,7 +2,7 @@
   <v-list-item
     elevation="4"
     rounded="te-xl bs-xl"
-    :title="filtro.campo ?? ''"
+    :title="getDescricaoCampo()"
   >
     <template #prepend>
       <div
@@ -17,8 +17,11 @@
     </template>
 
     <template #subtitle>
-      <v-icon :icon="getIconOperador()" />
-      {{ filtro.valor }}
+      <div class="d-flex align-center mt-1">
+        <v-icon :icon="getIconOperador()" size="small" class="mr-1" />
+        <span class="font-weight-medium mr-1 text-caption">{{ getDescricaoOperador() }}:</span>
+        <span class="text-caption">{{ filtro.valor }}</span>
+      </div>
     </template>
 
     <template #append>
@@ -47,6 +50,9 @@
 </template>
 
 <script setup lang="ts">
+// Ecossistema Vue
+import { useI18n } from 'vue-i18n';
+
 // Types e Interfaces
 import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
@@ -68,6 +74,9 @@ type TEmits = {
 };
 defineEmits<TEmits>();
 
+// Composables
+const { t, te } = useI18n();
+
 // Funções
 const getIconCampo = () => {
   if (props.filtro.campo) {
@@ -81,5 +90,27 @@ const getIconOperador = () => {
     const operadorEncontrado = MAPEAMENTO_OPERADORES.find((o) => o.valor === props.filtro.condicao);
     return operadorEncontrado?.icone || 'mdi-filter';
   }
+};
+
+const getDescricaoCampo = (): string => {
+  if (props.filtro.campo) {
+    const campoEncontrado = props.camposDisponiveis.find((c) => c.valor === props.filtro.campo);
+    if (!campoEncontrado) return props.filtro.campo;
+    
+    const chave = `components.dialogFiltro.campos.${campoEncontrado.valor}`;
+    return te(chave) ? t(chave) : campoEncontrado.descricao;
+  }
+  return '';
+};
+
+const getDescricaoOperador = (): string => {
+  if (props.filtro.condicao) {
+    const operadorEncontrado = MAPEAMENTO_OPERADORES.find((o) => o.valor === props.filtro.condicao);
+    if (!operadorEncontrado) return props.filtro.condicao;
+    
+    const chave = `components.dialogFiltro.operadores.${operadorEncontrado.valor}`;
+    return te(chave) ? t(chave) : operadorEncontrado.descricao;
+  }
+  return '';
 };
 </script>

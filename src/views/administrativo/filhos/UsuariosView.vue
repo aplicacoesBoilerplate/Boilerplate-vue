@@ -5,7 +5,7 @@
   >
     <GridDataChart
       :hiddenChart="hiddenChart"
-      @toggleChart="hiddenChart = !hiddenChart"
+      @toggleChart="alternarExibicaoGrafico(alternarGraficoLocal)"
     >
       <template #dataTable="{ toggleChart }">
         <GenericView
@@ -28,7 +28,8 @@
                   color="info"
                   variant="tonal"
                   size="x-small"
-                  @click="toggleChart"
+                  :disabled="!podeVisualizarGraficos"
+                  @click="alternarExibicaoGrafico(toggleChart)"
                 />
               </template>
             </v-tooltip>
@@ -48,6 +49,7 @@
                   variant="tonal"
                   size="x-small"
                   icon="mdi-plus"
+                  :disabled="!podeGerenciarRegistros"
                   @click="acionarNovoRegistro"
                 />
               </template>
@@ -89,12 +91,18 @@
                       {{ usuario.ativo ? t('messages.active') : t('messages.inactive') }}
                     </v-chip>
 
+                    <DialogAuditoriaRegistro
+                      :auditoria="usuario.auditoria"
+                      class="mr-2"
+                    />
+
                     <v-btn
                       icon="mdi-pencil"
                       variant="text"
                       color="info"
                       size="small"
                       class="mr-2"
+                      :disabled="!podeGerenciarRegistros"
                       @click.stop="
                           gerenciarRegistro({
                           modoEdicao: true,
@@ -107,7 +115,8 @@
                       variant="text"
                       color="error"
                       size="small"
-                      @click.stop="excluirUsuario(usuario.id)"
+                      :disabled="!podeRemoverUsuario(usuario)"
+                      @click.stop="excluirUsuario(usuario)"
                     />
                   </div>
                 </template>
@@ -138,6 +147,7 @@ import { useI18n } from 'vue-i18n';
 // Stores
 import { useGenericListStore } from '@/stores/genericList.store';
 import { useGenericFilterStore } from '@/stores/genericFilter.store';
+import { useAuthStore } from '@/stores/auth.store';
 
 // Types e Interfaces
 import { criarUsuarioPadrao, type IUsuario } from '@/models/model/usuario/lUsuario';
@@ -146,6 +156,7 @@ import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/mode
 // Composables
 import { useChartHelpers } from '@/composables/useChartHelpers';
 import { useRequisicaoService } from '@/composables/useRequisicaoService';
+import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
 
 // Services
 import { CUsuarioService } from '@/services/CUsuarioService';
@@ -159,11 +170,14 @@ import BaseChart from '@/components/charts/BaseChart.vue';
 import GenericView from '@/components/layout/generic/GenericView.vue';
 import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
 import DialogFormUsuario from '@/components/dialogs/DialogFormUsuario.vue';
+import DialogAuditoriaRegistro from '@/components/dialogs/DialogAuditoriaRegistro.vue';
 
 // Composables
 const listStore = useGenericListStore();
 const genericFilterStore = useGenericFilterStore();
+const authStore = useAuthStore();
 const requisicaoService = useRequisicaoService();
+const { possuiPermissaoGeral, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
 
 // Constantes e Dados Base
@@ -183,7 +197,25 @@ const modoEdicaoUsuario = ref(false);
 const modelFormUsuario = ref<IUsuario>(criarUsuarioPadrao());
 
 // Funções
+function alternarExibicaoGrafico(pToggleChart: () => void): void {
+  if (!podeVisualizarGraficos.value) {
+    notificarPermissaoNegada('Você não tem permissão para visualizar gráficos.');
+    return;
+  }
+
+  pToggleChart();
+}
+
+function alternarGraficoLocal(): void {
+  hiddenChart.value = !hiddenChart.value;
+}
+
 function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: IUsuario }): void {
+  if (!podeGerenciarRegistros.value) {
+    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    return;
+  }
+
   modoEdicaoUsuario.value = pPayload.modoEdicao;
 
   if (pPayload.modoEdicao && pPayload.item) {
@@ -200,6 +232,11 @@ async function buscarUsuarios(pPayload: IGenericListFetchPayload): Promise<TGene
 }
 
 async function salvarUsuario(): Promise<void> {
+  if (!podeGerenciarRegistros.value) {
+    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    return;
+  }
+
   const usuarioNormalizado = criarUsuarioPadrao(modelFormUsuario.value);
 
   if (modoEdicaoUsuario.value && usuarioNormalizado.id) {
@@ -213,6 +250,9 @@ async function salvarUsuario(): Promise<void> {
     });
 
     genericViewRef.value?.atualizarItem<IUsuario>('id', usuarioAtualizado.id, usuarioAtualizado);
+    if (usuarioAtualizado.id === usuarioAutenticadoId.value) {
+      await authStore.fetchUser();
+    }
   } else {
     const usuarioCriado = await requisicaoService.executar({
       metodo: CUsuarioService.criar,
@@ -229,22 +269,49 @@ async function salvarUsuario(): Promise<void> {
   exibirDialogUsuario.value = false;
 }
 
-async function excluirUsuario(pIdUsuario: number | undefined): Promise<void> {
-  if (!pIdUsuario) return;
+async function excluirUsuario(pUsuario: IUsuario): Promise<void> {
+  if (!pUsuario.id) return;
+
+  if (!podeGerenciarRegistros.value) {
+    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    return;
+  }
+
+  if (pUsuario.id === 1) {
+    notificarPermissaoNegada('O usuário raiz da aplicação não pode ser removido.');
+    return;
+  }
+
+  if (pUsuario.id === usuarioAutenticadoId.value) {
+    notificarPermissaoNegada('Você não pode remover a própria conta.');
+    return;
+  }
 
   await requisicaoService.executar({
     metodo: CUsuarioService.excluir,
-    parametros: pIdUsuario,
+    parametros: pUsuario.id,
     sucesso: {
       mensagem: 'Usuário removido com sucesso.',
       tipo: 'success',
     },
   });
 
-  genericViewRef.value?.removerItem<IUsuario>('id', pIdUsuario);
+  genericViewRef.value?.removerItem<IUsuario>('id', pUsuario.id);
+}
+
+function podeRemoverUsuario(pUsuario: IUsuario): boolean {
+  return Boolean(
+    podeGerenciarRegistros.value &&
+    pUsuario.id &&
+    pUsuario.id !== 1 &&
+    pUsuario.id !== usuarioAutenticadoId.value,
+  );
 }
 
 // Computadas
+const podeGerenciarRegistros = computed(() => possuiPermissaoGeral('gerenciarRegistros'));
+const podeVisualizarGraficos = computed(() => possuiPermissaoGeral('visualizarGraficos'));
+const usuarioAutenticadoId = computed(() => authStore.user?.id);
 const activeHeaderConfig = computed(() => {
   return headers.find((h) => h.key === selectedChartFilter.value);
 });

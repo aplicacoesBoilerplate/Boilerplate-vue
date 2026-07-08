@@ -76,7 +76,6 @@ export const routes: Array<RouteRecordRaw> = [
       icon: 'mdi-shield-crown',
       hotkey: 'cmd+shift+a',
       requiresAuth: true,
-      authorize: [],
     },
     children: [
       {

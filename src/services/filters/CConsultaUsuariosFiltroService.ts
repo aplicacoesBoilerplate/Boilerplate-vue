@@ -39,9 +39,11 @@ export class CConsultaUsuariosFiltroService {
       return [];
     }
 
+    const campoPesquisa = CConsultaUsuariosFiltroService.resolverCampoPesquisa(pPayload.campo);
+
     return [
       {
-        campo: pPayload.campo || 'nome',
+        campo: campoPesquisa,
         condicao: EOperadoresFiltro.CONTEM,
         valor: pPayload.termoPesquisa,
         dataInicio: null,
@@ -49,5 +51,15 @@ export class CConsultaUsuariosFiltroService {
         valoresSelecionados: [],
       },
     ];
+  }
+
+  private static resolverCampoPesquisa(pCampo?: string): string {
+    if (pCampo === 'id') {
+      return 'idUsuario';
+    }
+
+    const camposUsuarios = new Set(['nome', 'email', 'telefone']);
+
+    return pCampo && camposUsuarios.has(pCampo) ? pCampo : 'nome';
   }
 }

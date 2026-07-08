@@ -42,6 +42,11 @@ http.interceptors.response.use(
       return Promise.reject('Sessão expirada! faça login novamente.');
     }
 
+    if (errorResponse?.status === 403 && error.config?.url !== '/auth/me/cargo') {
+      void import('@/stores/auth.store')
+        .then(({ useAuthStore }) => useAuthStore().atualizarPermissoesUsuarioAutenticado());
+    }
+
     const objetoError = error.response?.data as IErrorAPI
 
     return Promise.reject(objetoError?.mensagem ?? error.message ?? 'messages.errors.reqGenerics')

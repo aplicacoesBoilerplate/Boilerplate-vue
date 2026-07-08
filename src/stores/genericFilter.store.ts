@@ -47,6 +47,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   const estadosPorContexto = ref<Record<string, IEstadoFiltrosContexto>>({});
   const camposDisponiveisTemporarios = ref<ICampoFiltro<any>[] | null>(null);
   const contextoFiltroTemporario = ref<string | null>(null);
+  const versaoAplicacaoFiltros = ref(0);
 
   /** Controle de abertura/fechamento do Drawer de filtros. */
   const drawerFilterOpen = ref(false);
@@ -235,6 +236,11 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     router.replace({ query });
   }
 
+  function confirmarAplicacaoFiltros(): void {
+    syncToUrl();
+    versaoAplicacaoFiltros.value += 1;
+  }
+
   /**
    * Le a query da rota atual e recria o estado em `filtersApplied`.
    */
@@ -279,6 +285,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
 
     filtersApplied.value = novosFiltros;
     persistirContextoAtual();
+    versaoAplicacaoFiltros.value += 1;
   }
 
   /**
@@ -386,10 +393,12 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     campoSelecionado,
     appliedCount,
     syncToUrl,
+    confirmarAplicacaoFiltros,
     loadFromUrl,
     applyFilterModel,
     removeFilter,
     editFilter,
     clearAll,
+    versaoAplicacaoFiltros,
   };
 });

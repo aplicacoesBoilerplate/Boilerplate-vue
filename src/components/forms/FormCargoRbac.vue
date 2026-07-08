@@ -16,6 +16,8 @@
               :counter="60"
               :rules="[rules.required(), rules.maxLength(60)]"
               :label="t('forms.formCargoRbac.inputNome.label')"
+              :readonly="somenteLeitura"
+              :disabled="somenteLeitura"
               variant="outlined"
               density="compact"
               autocomplete="off"
@@ -42,6 +44,7 @@
             <SeletorIconeMaterialDesign
               v-model="cargo.icone"
               :rules="[rules.maxLength(60)]"
+              :disabled="somenteLeitura"
             />
           </v-col>
 
@@ -52,6 +55,7 @@
               itemTitle="descricao"
               itemValue="valor"
               :label="t('forms.formCargoRbac.inputComportamentoPadrao.label')"
+              :disabled="somenteLeitura"
               variant="outlined"
               density="compact"
               autocomplete="off"
@@ -82,6 +86,8 @@
               :rules="[rules.maxLength(180)]"
               :counter="180"
               :label="t('forms.formCargoRbac.inputDescricao.label')"
+              :readonly="somenteLeitura"
+              :disabled="somenteLeitura"
               rows="2"
               variant="outlined"
               density="compact"
@@ -91,7 +97,10 @@
           </v-col>
 
           <v-col cols="12">
-            <ConfiguracaoRedirecionamentoCargo v-model:redirecionamento="redirecionamentoInicialCargo" />
+            <ConfiguracaoRedirecionamentoCargo
+              v-model:redirecionamento="redirecionamentoInicialCargo"
+              :somenteLeitura="somenteLeitura"
+            />
           </v-col>
 
           <v-col cols="12">
@@ -99,6 +108,7 @@
               v-model="cargo.ativo"
               class="pa-0"
               :label="t('forms.formCargoRbac.inputAtivo.label')"
+              :disabled="somenteLeitura"
               color="success"
               hideDetails
             />
@@ -110,6 +120,7 @@
         <ControlePermissoesCargo
           v-model:permissoes="cargo.permissoes"
           :comportamentoPadrao="cargo.comportamentoPadrao"
+          :somenteLeitura="somenteLeitura"
         />
       </v-window-item>
 
@@ -118,6 +129,7 @@
           v-model:usuarios="usuarios"
           :cargo="cargo"
           :cargos="cargosDisponiveis"
+          :somenteLeitura="somenteLeitura"
         />
       </v-window-item>
     </v-window>
@@ -154,11 +166,15 @@ import { useControlePermissoesCargo } from '@/composables/useControlePermissoesC
 
 /**
  * @property {ICargoRbac[]} cargosDisponiveis - Cargos disponíveis para vínculo de usuários.
+ * @property {boolean} somenteLeitura - Desabilita alterações no formulário.
  */
 type TProps = {
   cargosDisponiveis: ICargoRbac[];
+  somenteLeitura?: boolean;
 };
-defineProps<TProps>();
+const props = withDefaults(defineProps<TProps>(), {
+  somenteLeitura: false,
+});
 
 type TEmits = {
   onSubmit: [];
@@ -183,6 +199,10 @@ const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
 
 // Funções
 function atualizarNomeCargo(pValor: unknown): void {
+  if (somenteLeitura.value) {
+    return;
+  }
+
   const nome = String(pValor ?? '');
 
   cargo.value.nome = nome;
@@ -190,6 +210,8 @@ function atualizarNomeCargo(pValor: unknown): void {
 }
 
 // Computadas de permissões
+const somenteLeitura = computed(() => props.somenteLeitura);
+
 const permissoesCargo = computed({
   get: () => cargo.value.permissoes,
   set: (pValor) => {
@@ -207,6 +229,10 @@ const { obterPermissoesComRedirecionamentoInicialLiberado } = useControlePermiss
  * @description Sincroniza as permissões com o redirecionamento inicial.
  */
 function sincronizarPermissoesRedirecionamentoInicial(): void {
+  if (somenteLeitura.value) {
+    return;
+  }
+
   const permissoes = obterPermissoesComRedirecionamentoInicialLiberado(
     cargo.value.permissoes,
     redirecionamentoInicialCargo.value

@@ -52,7 +52,10 @@
       </v-list>
 
       <v-list bgColor="blue-grey-darken-4">
-        <slot name="content">
+        <slot
+          name="content"
+          :fechar="fecharMenu"
+        >
           <v-list-item
             prependIcon="mdi-briefcase"
             link
@@ -89,4 +92,9 @@ defineProps<TProps>();
 
 // Reativas
 const menu = ref(false);
+
+// Funções
+function fecharMenu(): void {
+  menu.value = false;
+}
 </script>

@@ -10,6 +10,7 @@
     :prependInnerIcon="iconeSelecionado"
     :variant="variant"
     :density="density"
+    :disabled="disabled"
     class="mt-1"
     itemTitle="label"
     itemValue="valor"
@@ -94,6 +95,11 @@ type TProps = {
    * Variante visual do componente.
    */
   variant?: 'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain';
+
+  /**
+   * Desabilita a seleção.
+   */
+  disabled?: boolean;
 };
 const props = withDefaults(defineProps<TProps>(), {
   hideDetails: false,
@@ -104,6 +110,7 @@ const props = withDefaults(defineProps<TProps>(), {
   rules: () => [],
   density: 'compact',
   variant: 'outlined',
+  disabled: false,
 });
 
 // Composables

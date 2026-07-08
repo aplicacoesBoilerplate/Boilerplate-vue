@@ -32,6 +32,7 @@
     </div>
 
     <v-infinite-scroll
+      :key="versaoScroll"
       :items="items"
       :onLoad="carregarMaisRegistros"
       :emptyText="textoVazioPadrao"
@@ -206,6 +207,7 @@ const { t } = useI18n();
 // Reativas
 const loading = ref(false);
 const limiteAtual = ref(props.limite);
+const versaoScroll = ref(0);
 
 // Funções
 
@@ -288,8 +290,7 @@ async function resetarECarregar() {
   try {
     genericListStore.setLimit(props.contexto, limiteAtual.value);
     genericListStore.resetContext(props.contexto);
-
-    await carregarMaisRegistros({ done: () => undefined, force: true });
+    versaoScroll.value += 1;
   } catch (error) {
     throw error;
   } finally {
@@ -418,13 +419,13 @@ watch(() => props.contexto, (pContextId) => {
   });
 });
 
-watch(() => genericFilterStore.filtersApplied, () => {
+watch(() => genericFilterStore.versaoAplicacaoFiltros, () => {
   if (!props.usarFiltrosGlobais) {
     return;
   }
 
   void resetarECarregar();
-}, { deep: true });
+});
 
 // Lifecycle Hooks
 onMounted(() => {

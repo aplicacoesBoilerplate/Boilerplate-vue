@@ -76,6 +76,7 @@
                   />
 
                   <v-tooltip
+                    v-if="exibirNovoRegistro"
                     :text="t('tooltips.forms.create')"
                     location="bottom"
                   >
@@ -158,6 +159,7 @@ import BtnActionDrawer from '@/components/layouts/base/appbar/fixtures/BtnAction
  * @property {object} colunasExportacao - Colunas usadas para montar cabecalhos e valores dos arquivos exportados.
  * @property {string} nomeArquivoExportacao - Nome base do arquivo exportado.
  * @property {boolean} exibirExportacao - Controla se o menu de exportacao sera exibido no drawer de acoes.
+ * @property {boolean} exibirNovoRegistro - Controla se o botão de criação será exibido no drawer de acoes.
  * @property {string} storage - Define onde o contexto sera persistido; em listas temporarias o padrao e session.
  * @property {string} titulo - Titulo simples exibido quando o slot header nao for informado.
  */
@@ -177,6 +179,7 @@ type TProps = {
   colunasExportacao?: IHeadersDataTable[];
   nomeArquivoExportacao?: string;
   exibirExportacao?: boolean;
+  exibirNovoRegistro?: boolean;
   storage?: TManagerStorageLocation;
   titulo?: string;
 };
@@ -194,6 +197,7 @@ const props = withDefaults(defineProps<TProps>(), {
   colunasExportacao: () => [],
   nomeArquivoExportacao: '',
   exibirExportacao: true,
+  exibirNovoRegistro: true,
   storage: 'session',
   titulo: '',
 });

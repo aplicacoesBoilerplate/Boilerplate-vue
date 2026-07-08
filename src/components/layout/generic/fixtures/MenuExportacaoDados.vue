@@ -12,6 +12,7 @@
         <template #activator="{ props: tooltipProps }">
           <v-btn
             v-bind="mergeProps(menuProps, tooltipProps)"
+            :disabled="!podeExportar"
             :loading="exportando"
             color="secondary"
             icon="mdi-export"
@@ -73,6 +74,7 @@ import type { TFormatoExportacaoDados, TMetodoExportacaoDados } from '@/models/c
 
 // Composables
 import { useExportacaoDados } from '@/composables/useExportacaoDados';
+import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
 
 type TProps = {
   /**
@@ -116,6 +118,7 @@ const props = withDefaults(defineProps<TProps>(), {
 
 // Composables
 const { exportando, exportarDados } = useExportacaoDados();
+const { possuiPermissaoGeral, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
 
 // Injeções
@@ -127,6 +130,7 @@ const formatoCarregando = ref<TFormatoExportacaoDados | null>(null);
 
 // Computadas
 const manterAberto = computed(() => exibirMenu.value);
+const podeExportar = computed(() => possuiPermissaoGeral('exportarDados'));
 const opcoesExportacao = computed<{ formato: TFormatoExportacaoDados; titulo: string; descricao: string; icone: string }[]>(() => [
   {
     formato: 'txt',
@@ -150,6 +154,12 @@ const opcoesExportacao = computed<{ formato: TFormatoExportacaoDados; titulo: st
 
 // Funções
 async function exportar(pFormato: TFormatoExportacaoDados): Promise<void> {
+  if (!podeExportar.value) {
+    notificarPermissaoNegada('Você não tem permissão para exportar dados.');
+    exibirMenu.value = false;
+    return;
+  }
+
   formatoCarregando.value = pFormato;
 
   try {

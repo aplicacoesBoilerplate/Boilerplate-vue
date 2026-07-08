@@ -4,10 +4,15 @@ import { useRoute, useRouter, type RouteRecordRaw } from 'vue-router';
 
 // Types e Interfaces
 import type { IRouteMeta } from '@/models/model/IRouteMeta';
-import type { TPapel } from '@/models/model/usuario/lUsuario';
 
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
+
+// Models
+import {
+  permissaoEstaLiberada,
+  RECURSO_PERMISSAO_ROTAS_RBAC,
+} from '@/models/model/rbac/ICargoRbac';
 
 /**
  * Composable responsável por gerenciar o comportamento do componente de Navigation.
@@ -26,11 +31,13 @@ export function useNavigation() {
   const canAccess = (route: RouteRecordRaw): boolean => {
     if (route.meta?.hidden) return false;
 
-    const requiredRoles = route.meta?.authorize as TPapel[] | undefined;
-    if (!requiredRoles || requiredRoles.length === 0) return true;
+    const nomeRota = String(route.name ?? '');
+    if (!nomeRota) return true;
 
-    const userRole = authStore.user?.papel;
-    return userRole ? requiredRoles.includes(userRole) : false;
+    if (!authStore.isAuthenticated) return true;
+    if (!authStore.cargoAtual) return false;
+
+    return permissaoEstaLiberada(authStore.cargoAtual, RECURSO_PERMISSAO_ROTAS_RBAC, nomeRota);
   };
 
   /**
@@ -47,7 +54,6 @@ export function useNavigation() {
       hotkey: route.meta?.hotkey as string | undefined,
       hidden: route.meta?.hidden as boolean | undefined,
       requiresAuth: route.meta?.requiresAuth as boolean | undefined,
-      authorize: route.meta?.authorize as TPapel[] | undefined,
       children: route.children ? route.children.map(mapRouteToMenuItem) : undefined,
     };
   };
@@ -58,18 +64,21 @@ export function useNavigation() {
   const menuItems = computed<IRouteMeta[]>(() => {
     const allRoutes = router.options.routes;
     const filterRoutes = (routes: readonly RouteRecordRaw[]): RouteRecordRaw[] => {
-      return routes
-        .filter((route) => canAccess(route))
-        .map((route) => {
-          if (route.children) {
-            return {
-              ...route,
-              children: filterRoutes(route.children),
-            };
-          }
+      return routes.reduce<RouteRecordRaw[]>((pRotasFiltradas, pRota) => {
+        const filhosFiltrados = pRota.children ? filterRoutes(pRota.children) : undefined;
+        const rotaAcessivel = canAccess(pRota);
 
-          return route;
-        });
+        if (!rotaAcessivel && (!filhosFiltrados || filhosFiltrados.length === 0)) {
+          return pRotasFiltradas;
+        }
+
+        pRotasFiltradas.push({
+          ...pRota,
+          children: filhosFiltrados,
+        } as RouteRecordRaw);
+
+        return pRotasFiltradas;
+      }, []);
     };
 
     // Realização do filtro e mapeamento dos itens do menu.

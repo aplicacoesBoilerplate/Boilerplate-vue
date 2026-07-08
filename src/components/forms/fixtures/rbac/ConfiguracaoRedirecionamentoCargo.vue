@@ -20,6 +20,7 @@
         itemTitle="titulo"
         itemValue="path"
         :label="t('forms.configuracaoRedirecionamentoCargo.inputRota.label')"
+        :disabled="somenteLeitura"
         variant="outlined"
         density="compact"
         autocomplete="off"
@@ -46,7 +47,10 @@
           />
         </template>
 
-        <template #append v-if="deveMontarDialogFiltros">
+        <template
+          v-if="deveMontarDialogFiltros && !somenteLeitura"
+          #append
+        >
           <DialogFiltro
             v-model:exibirFiltros="exibirDialogFiltros"
             :camposDisponiveis="rotaSelecionada?.camposFiltro ?? []"
@@ -131,6 +135,13 @@ type TRotaRedirecionamentoRbac = {
 // Composables
 const router = useRouter();
 const { t } = useI18n();
+
+type TProps = {
+  somenteLeitura?: boolean;
+};
+withDefaults(defineProps<TProps>(), {
+  somenteLeitura: false,
+});
 
 // Reativas - Model
 const redirecionamento = defineModel<IRedirecionamentoInicialRbac>('redirecionamento', { required: true });

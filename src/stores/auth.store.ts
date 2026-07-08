@@ -27,7 +27,6 @@ import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
 // Services
 import { CAutenticacaoService } from '@/services/CAutenticacaoService';
-import { CRbacService } from '@/services/CRbacService';
 
 // Constantes
 const TOKEN_STORAGE_KEY = 'token';
@@ -125,13 +124,29 @@ export const useAuthStore = defineStore('auth', () => {
     });
 
     user.value = usuarioAutenticado;
-    cargoAtual.value = usuarioAutenticado.papel
-      ? await CRbacService.buscarPorPapel(usuarioAutenticado.papel)
-      : undefined;
+    await atualizarPermissoesUsuarioAutenticado(true);
 
     await preferencesStore.carregarPreferenciasBackend();
 
     return usuarioAutenticado;
+  }
+
+  async function atualizarPermissoesUsuarioAutenticado(pPropagarErro = false): Promise<ICargoRbac | undefined> {
+    if (!user.value?.papel) {
+      cargoAtual.value = undefined;
+      return undefined;
+    }
+
+    try {
+      cargoAtual.value = await CAutenticacaoService.buscarCargoUsuarioAutenticado();
+      return cargoAtual.value;
+    } catch (pErro) {
+      if (pPropagarErro) {
+        throw pErro;
+      }
+
+      return cargoAtual.value;
+    }
   }
 
   async function fetchUser(): Promise<void> {
@@ -232,6 +247,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     loginGoogle,
     logout,
+    atualizarPermissoesUsuarioAutenticado,
     resolverDestinoAposLogin,
     redefinirSenhaRecuperacao,
     solicitarAcesso,

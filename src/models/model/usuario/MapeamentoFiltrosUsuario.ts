@@ -11,7 +11,7 @@ import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 import { CConsultaUsuariosFiltroService } from '@/services/filters/CConsultaUsuariosFiltroService';
 
 // Define com base na interface do Model, um tipo com os campos que os filtros são aplicaveis.
-export type TCamposFiltroUsuario = Omit<IUsuario, 'avatar' | 'notificar'>;
+export type TCamposFiltroUsuario = Omit<IUsuario, 'avatar' | 'notificar' | 'auditoria'>;
 
 const DESCRICAO_CAMPOS_FILTRO_USUARIO: Record<keyof TCamposFiltroUsuario, string> = {
   id: 'Código',

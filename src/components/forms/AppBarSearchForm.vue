@@ -93,15 +93,24 @@ function onSubmit() {
     const campoPadrao = genericFilterStore.camposDisponiveis.find((c) => c.pesquisaPadrao);
     
     if (campoPadrao) {
-      genericFilterStore.filtersApplied.push({
-        campo: campoPadrao.valor as string,
-        condicao: campoPadrao.operadorPesquisaPadrao || EOperadoresFiltro.CONTEM,
-        valor: searchQuery.value,
-        dataInicio: '',
-        dataFinal: '',
-        valoresSelecionados: []
-      });
-      genericFilterStore.syncToUrl();
+      const condicaoFiltro = campoPadrao.operadorPesquisaPadrao || EOperadoresFiltro.CONTEM;
+      const indexFiltroExistente = genericFilterStore.filtersApplied.findIndex(
+        (f) => f.campo === campoPadrao.valor && f.condicao === condicaoFiltro
+      );
+
+      if (indexFiltroExistente !== -1) {
+        genericFilterStore.filtersApplied[indexFiltroExistente].valor = searchQuery.value;
+      } else {
+        genericFilterStore.filtersApplied.push({
+          campo: campoPadrao.valor as string,
+          condicao: condicaoFiltro,
+          valor: searchQuery.value,
+          dataInicio: '',
+          dataFinal: '',
+          valoresSelecionados: []
+        });
+      }
+      genericFilterStore.confirmarAplicacaoFiltros();
     } else {
       emits('search', { queryBasica: searchQuery.value });
     }

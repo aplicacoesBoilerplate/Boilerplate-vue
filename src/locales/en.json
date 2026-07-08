@@ -333,7 +333,47 @@
       "titulo": "Filters",
       "consultaRegistrosAriaLabel": "Record helper query",
       "limparFiltros": "Clear filters",
-      "aplicar": "Apply"
+      "aplicar": "Apply",
+      "operadores": {
+        "igual": "Equals",
+        "diferente": "Not Equals",
+        "comecaCom": "Starts With",
+        "contem": "Contains",
+        "naoContem": "Does Not Contain",
+        "terminaCom": "Ends With",
+        "entre": "Between",
+        "maiorQue": "Greater Than",
+        "maiorIgual": "Greater or Equal",
+        "menorQue": "Less Than",
+        "menorIgual": "Less or Equal",
+        "selecao": "Selection",
+        "excecao": "Exception",
+        "verdadeiro": "True",
+        "falso": "False"
+      },
+      "campos": {
+        "id": "Code",
+        "nome": "Name",
+        "email": "E-mail",
+        "papel": "Role",
+        "telefone": "Phone",
+        "ativo": "Active",
+        "idError": "Error Code",
+        "classe": "Class",
+        "metodo": "Method",
+        "linha": "Line",
+        "arquivo": "File",
+        "usuarioReferencia": "User",
+        "dataHora": "Date and Time",
+        "httpStatusCode": "HTTP Status",
+        "mensagem": "Message",
+        "descricao": "Description",
+        "comportamentoPadrao": "Default Behavior",
+        "idUsuario": "User ID"
+      }
+    },
+    "selectOperadorFiltro": {
+      "label": "Condition"
     },
     "baseDialog": {
       "tituloPadrao": "Dialog",
@@ -486,7 +526,7 @@
     "stepEmail": {
       "instruction": "Enter your email to receive the verification code.",
       "labelEmail": "Email",
-      "placeholderEmail": "example@email.com",
+      "placeholderEmail": "example{'@'}email.com",
       "btnSend": "Send Code"
     },
     "stepVerify": {

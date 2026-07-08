@@ -42,6 +42,7 @@
           <v-checkbox-btn
             :model-value="isRotaCheckboxSelecionado(rota)"
             :color="padraoLiberado ? 'error' : 'success'"
+            :disabled="somenteLeitura"
             density="compact"
             @update:model-value="alternarPermissaoRota(rota, Boolean($event))"
           />
@@ -76,7 +77,7 @@
                       :class="{ 'acao-indisponivel': !acaoApiDisponivel(rota, acaoApi) }"
                       :aria-label="obterDescricaoAcaoApi(acaoApi)"
                       :color="isAcaoApiCheckboxSelecionado(rota, acaoApi) ? (padraoLiberado ? 'error' : 'success') : undefined"
-                      :disabled="isAcaoApiDesabilitada(rota, acaoApi)"
+                      :disabled="somenteLeitura || isAcaoApiDesabilitada(rota, acaoApi)"
                       :text="obterSiglaAcaoApi(acaoApi)"
                       :variant="isAcaoApiCheckboxSelecionado(rota, acaoApi) ? 'flat' : 'tonal'"
                       min-width="32"
@@ -122,6 +123,7 @@
           <v-checkbox-btn
             :model-value="isPermissaoGeralSelecionada(permissao.valor)"
             :color="padraoLiberado ? 'error' : 'success'"
+            :disabled="somenteLeitura"
             density="compact"
             @update:model-value="alternarPermissaoGeral(permissao.valor, Boolean($event))"
           />
@@ -165,11 +167,15 @@ import { useControlePermissoesCargo } from '@/composables/useControlePermissoesC
 
 /**
  * @property {TComportamentoPadraoPermissao} comportamentoPadrao Regra aplicada quando uma permissão ainda não foi configurada explicitamente.
+ * @property {boolean} somenteLeitura Desabilita alteração das permissões.
  */
 type TProps = {
   comportamentoPadrao: TComportamentoPadraoPermissao;
+  somenteLeitura?: boolean;
 };
-const props = defineProps<TProps>();
+const props = withDefaults(defineProps<TProps>(), {
+  somenteLeitura: false,
+});
 
 // Reativas
 const permissoes = defineModel<IPermissaoCargoRbac[]>('permissoes', { required: true });

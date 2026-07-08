@@ -17,10 +17,10 @@
     <v-list-item
       v-for="campo in camposFiltrados"
       :key="String(campo.valor)"
-      :title="campo.descricao"
+      :title="obterDescricaoCampo(campo)"
       :prependIcon="campo.icone"
       :active="genericFilterStore.campoSelecionado?.valor === campo.valor"
-      v-tooltip="{ text: campo.descricao, openDelay: 300 }"
+      v-tooltip="{ text: obterDescricaoCampo(campo), openDelay: 300 }"
       class="mt-1 ma-1"
       color="primary"
       rounded="ts-xl be-xl"
@@ -33,6 +33,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
 // Types e Interfaces
@@ -55,6 +56,7 @@ const genericFilterStore = useGenericFilterStore();
 
 // Composables
 const { mdAndUp } = useDisplay();
+const { t, te } = useI18n();
 
 // Reativas - Model
 const toggleLeftDrawer = defineModel<boolean>('toggleLeftDrawer', { required: true });
@@ -63,6 +65,11 @@ const toggleLeftDrawer = defineModel<boolean>('toggleLeftDrawer', { required: tr
 const camposFiltrados = ref<ICampoFiltro<any>[]>(props.camposDisponiveis);
 
 // Funções
+function obterDescricaoCampo(pCampo: ICampoFiltro<any>): string {
+  const chave = `components.dialogFiltro.campos.${pCampo.valor}`;
+  return te(chave) ? t(chave) : pCampo.descricao;
+}
+
 function onSearchCampo(pTermoPesquisa: string) {
   if (!pTermoPesquisa) {
     camposFiltrados.value = props.camposDisponiveis;
@@ -72,7 +79,8 @@ function onSearchCampo(pTermoPesquisa: string) {
   const searchUpper = pTermoPesquisa.toUpperCase();
   camposFiltrados.value = props.camposDisponiveis.filter(
     (campo) =>
-      String(campo.valor).toUpperCase().includes(searchUpper) || campo.descricao.toUpperCase().includes(searchUpper),
+      String(campo.valor).toUpperCase().includes(searchUpper) ||
+      obterDescricaoCampo(campo).toUpperCase().includes(searchUpper),
   );
 }
 

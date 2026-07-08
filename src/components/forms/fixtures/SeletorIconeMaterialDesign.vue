@@ -7,6 +7,7 @@
     :hint="hintPadrao"
     :items="iconesMaterialDesign"
     :label="labelPadrao"
+    :disabled="disabled"
     :prependInnerIcon="iconeNormalizadoAtual"
     :returnObject="false"
     :rules="rules"
@@ -18,7 +19,10 @@
     spellcheck="false"
     clearable
   >
-    <template #append>
+    <template
+      v-if="!disabled"
+      #append
+    >
       <v-tooltip
         :text="t('forms.seletorIconeMaterialDesign.tooltipPaginaIcones')"
         location="bottom"
@@ -62,6 +66,7 @@ import type { ValidationRule } from 'vuetify';
  * @property {boolean | 'auto'} hideDetails - Controla a exibição de detalhes do campo.
  * @property {string} hint - Texto auxiliar exibido abaixo do campo.
  * @property {string} label - Rótulo exibido no campo.
+ * @property {boolean} disabled - Desabilita a interação com o seletor.
  * @property {readonly TRegraValidacao[]} rules - Regras de validação aplicadas pelo formulário.
  * @property {'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'} variant - Variante visual do Vuetify.
  */
@@ -71,6 +76,7 @@ type TProps = {
   hideDetails?: boolean | 'auto';
   hint?: string;
   label?: string;
+  disabled?: boolean;
   rules?: readonly ValidationRule[];
   variant?: 'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain';
 };
@@ -94,6 +100,7 @@ const props = withDefaults(defineProps<TProps>(), {
   hideDetails: false,
   hint: undefined,
   label: undefined,
+  disabled: false,
   rules: () => [],
   variant: 'outlined',
 });

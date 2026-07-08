@@ -9,7 +9,7 @@
  * @property {number} httpStatusCode - Status HTTP do erro.
  * @property {number} idUsuario - Identificador do usuário que causou o erro quando existe.
  * @property {string} usuarioReferencia - E-mail de referência do usuário ou 'SISTEMA' quando não existe.
- * @property {Date} dataHora - Data e hora do erro.
+ * @property {string|Date} dataHora - Data e hora do erro.
  */
 export interface IErros {
   idError: number;
@@ -21,5 +21,5 @@ export interface IErros {
   httpStatusCode: number;
   idUsuario?: number;
   usuarioReferencia: string;
-  dataHora: Date;
+  dataHora: string | Date;
 }
