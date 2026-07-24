@@ -12,10 +12,10 @@ Estas regras são globais e devem ser aplicadas por todos os agentes, independen
 
 ## 1.1 Linguagem de comunicação
 
-* Toda comunicação com o usuário deve ser feita em português do Brasil (`pt-BR`).
-* Termos técnicos podem ser mantidos em inglês quando forem nomes oficiais de tecnologias, APIs, bibliotecas, padrões ou conceitos amplamente usados pela comunidade.
-* As respostas devem priorizar clareza, objetividade e explicação progressiva.
-* Quando houver sugestão de código, explicar antes o motivo da abordagem e depois apresentar o exemplo.
+- Toda comunicação com o usuário deve ser feita em português do Brasil (`pt-BR`).
+- Termos técnicos podem ser mantidos em inglês quando forem nomes oficiais de tecnologias, APIs, bibliotecas, padrões ou conceitos amplamente usados pela comunidade.
+- As respostas devem priorizar clareza, objetividade e explicação progressiva.
+- Quando houver sugestão de código, explicar antes o motivo da abordagem e depois apresentar o exemplo.
 
 ---
 
@@ -96,12 +96,12 @@ export type TUserFilters = {
 // IUserResponse.ts
 export interface IUserResponse {
   id: number;
-};
+}
 
 // CUserService.ts
 export class CUserService {
   // ...
-};
+}
 
 // DEFAULT_LIMIT.ts
 export const DEFAULT_LIMIT = 20;
@@ -117,7 +117,7 @@ export type TUserFilters = {
 
 export interface IUserResponse {
   id: number;
-};
+}
 ```
 
 ---
@@ -171,9 +171,9 @@ Classes, funções e métodos devem ser documentados com JSDoc em bloco único a
 
 Usar:
 
-* `@description` para explicar a responsabilidade geral.
-* `@param nomeDoParametro Descrição do parâmetro.` para cada parâmetro.
-* `@returns Descrição do retorno.` quando a função ou método retornar valor diferente de `void`.
+- `@description` para explicar a responsabilidade geral.
+- `@param nomeDoParametro Descrição do parâmetro.` para cada parâmetro.
+- `@returns Descrição do retorno.` quando a função ou método retornar valor diferente de `void`.
 
 ```ts
 /**
@@ -290,11 +290,11 @@ A nomenclatura dos grupos pode variar conforme a stack, mas a separação por re
 
 ## 1.5 Tipagem forte
 
-* Evitar `any`.
-* Tipar parâmetros, retornos, callbacks, eventos e estruturas de dados.
-* Retornos `void` também devem ser declarados quando melhorarem a clareza da assinatura.
-* Types, interfaces, classes e enums reutilizáveis devem ser centralizados em diretórios próprios.
-* Tipos locais só devem permanecer no arquivo quando forem exclusivos daquele contexto.
+- Evitar `any`.
+- Tipar parâmetros, retornos, callbacks, eventos e estruturas de dados.
+- Retornos `void` também devem ser declarados quando melhorarem a clareza da assinatura.
+- Types, interfaces, classes e enums reutilizáveis devem ser centralizados em diretórios próprios.
+- Tipos locais só devem permanecer no arquivo quando forem exclusivos daquele contexto.
 
 ```ts
 export class CUserService {
@@ -310,12 +310,12 @@ export class CUserService {
 
 Cada camada deve ter uma responsabilidade clara.
 
-* Services devem executar integrações externas, chamadas HTTP ou comunicação com infraestrutura.
-* Services não devem manipular estado visual, snackbar, navegação ou comportamento de tela.
-* Camadas próximas da UI podem lidar com loading, snackbar, redirecionamentos e mensagens para o usuário.
-* Components, pages ou controllers não devem concentrar regras reutilizáveis quando elas puderem ser extraídas.
-* Stores devem conter estado compartilhado, não detalhes de componentes específicos.
-* Utils e formatters devem conter funções puras ou transformações reutilizáveis.
+- Services devem executar integrações externas, chamadas HTTP ou comunicação com infraestrutura.
+- Services não devem manipular estado visual, snackbar, navegação ou comportamento de tela.
+- Camadas próximas da UI podem lidar com loading, snackbar, redirecionamentos e mensagens para o usuário.
+- Components, pages ou controllers não devem concentrar regras reutilizáveis quando elas puderem ser extraídas.
+- Stores devem conter estado compartilhado, não detalhes de componentes específicos.
+- Utils e formatters devem conter funções puras ou transformações reutilizáveis.
 
 ---
 
@@ -323,18 +323,18 @@ Cada camada deve ter uma responsabilidade clara.
 
 Aplicar o princípio de DRY em:
 
-* componentes;
-* services;
-* classes;
-* funções;
-* composables;
-* stores;
-* utils;
-* formatters;
-* mixins SCSS;
-* validações;
-* DTOs;
-* models.
+- componentes;
+- services;
+- classes;
+- funções;
+- composables;
+- stores;
+- utils;
+- formatters;
+- mixins SCSS;
+- validações;
+- DTOs;
+- models.
 
 Sempre que uma regra se repetir ou puder ser reaproveitada, avaliar extração para uma camada mais apropriada.
 
@@ -346,10 +346,10 @@ Estas regras se aplicam a arquivos TypeScript em qualquer camada do projeto.
 
 ## 2.1 Types e interfaces
 
-* Usar `type` para composições, unions, assinaturas locais e estruturas flexíveis.
-* Usar `interface` para contratos de objetos, DTOs, responses e estruturas que representem entidades.
-* Todos os atributos devem usar `camelCase`.
-* Exportar types e interfaces reutilizáveis.
+- Usar `type` para composições, unions, assinaturas locais e estruturas flexíveis.
+- Usar `interface` para contratos de objetos, DTOs, responses e estruturas que representem entidades.
+- Todos os atributos devem usar `camelCase`.
+- Exportar types e interfaces reutilizáveis.
 
 ```ts
 export type TOrderDirection = 'asc' | 'desc';
@@ -437,13 +437,13 @@ export class CUserService {
 
 Services devem:
 
-* ter assinatura clara de parâmetros e retornos;
-* capturar erro apenas para repassar quando necessário;
-* não exibir snackbar;
-* não navegar entre rotas;
-* não manipular estado visual;
-* não conhecer componentes;
-* não concentrar tratamento de UX.
+- ter assinatura clara de parâmetros e retornos;
+- capturar erro apenas para repassar quando necessário;
+- não exibir snackbar;
+- não navegar entre rotas;
+- não manipular estado visual;
+- não conhecer componentes;
+- não concentrar tratamento de UX.
 
 ---
 
@@ -522,13 +522,13 @@ Desenvolvedor Frontend especialista em Progressive Web Apps, Vue 3, Vuetify, Typ
 
 ## 4.2 Skills & Stack
 
-* Vue.js 3 com Composition API e `<script setup>`.
-* Vuetify.
-* TypeScript.
-* SCSS.
-* PWA com Service Workers e configuração de ícones no manifest.
-* Pinia para estado compartilhado.
-* Vue Router para navegação.
+- Vue.js 3 com Composition API e `<script setup>`.
+- Vuetify.
+- TypeScript.
+- SCSS.
+- PWA com Service Workers e configuração de ícones no manifest.
+- Pinia para estado compartilhado.
+- Vue Router para navegação.
 
 ---
 
@@ -660,50 +660,50 @@ emit('closeModalButton');
 
 ## 4.5 Componentes
 
-* Priorizar a criação de componentes reutilizáveis.
-* Componentes Base devem ser genéricos e não conhecer regras de negócio.
-* Quando um componente começar a depender de entidades específicas, deve ser promovido para componente de domínio.
-* Componentes reutilizáveis devem ter comentário curto explicando sua responsabilidade geral.
-* Slots principais devem ter seu efeito esperado documentado quando o comportamento não for óbvio.
+- Priorizar a criação de componentes reutilizáveis.
+- Componentes Base devem ser genéricos e não conhecer regras de negócio.
+- Quando um componente começar a depender de entidades específicas, deve ser promovido para componente de domínio.
+- Componentes reutilizáveis devem ter comentário curto explicando sua responsabilidade geral.
+- Slots principais devem ter seu efeito esperado documentado quando o comportamento não for óbvio.
 
 ---
 
 ## 4.6 Vuetify
 
-* Priorizar componentes nativos do Vuetify antes de criar wrappers, grids manuais ou CSS estrutural próprio.
-* Wrappers só devem existir quando encapsularem comportamento real, como loading, permissões, defaults, requisições ou regras reutilizáveis.
-* Não sugerir bibliotecas de componentes de terceiros que fujam da base do Vuetify.
-* Componentes de layout devem usar `useDisplay` e demais composables do Vuetify para responsividade sempre que possível.
-* Hotkeys devem usar o composable `useHotkey` do Vuetify e ser registradas condicionalmente para desktop.
-* Em mobile, evitar processamento e elementos visuais de atalhos que não agreguem à experiência.
+- Priorizar componentes nativos do Vuetify antes de criar wrappers, grids manuais ou CSS estrutural próprio.
+- Wrappers só devem existir quando encapsularem comportamento real, como loading, permissões, defaults, requisições ou regras reutilizáveis.
+- Não sugerir bibliotecas de componentes de terceiros que fujam da base do Vuetify.
+- Componentes de layout devem usar `useDisplay` e demais composables do Vuetify para responsividade sempre que possível.
+- Hotkeys devem usar o composable `useHotkey` do Vuetify e ser registradas condicionalmente para desktop.
+- Em mobile, evitar processamento e elementos visuais de atalhos que não agreguem à experiência.
 
 ---
 
 ## 4.7 Layout
 
-* Manter o `App.vue` mínimo, preferencialmente apenas com `v-app` e `RouterView`.
-* Qualquer tag estrutural adicional no `App.vue` deve ser debatida antes.
-* Layouts devem controlar estrutura, responsividade, scroll e disposição macro da tela.
-* Pages e components não devem compensar problemas estruturais com repetições de `d-flex`, paddings ou wrappers desnecessários.
-* O scroll principal da aplicação deve ficar em `v-main` ou na área scrollable definida pelo layout.
-* O scroll principal não deve ficar em `body`, `html` ou wrappers arbitrários.
-* Controles de layout devem ter funções distintas entre desktop e mobile, evitando botões redundantes.
+- Manter o `App.vue` mínimo, preferencialmente apenas com `v-app` e `RouterView`.
+- Qualquer tag estrutural adicional no `App.vue` deve ser debatida antes.
+- Layouts devem controlar estrutura, responsividade, scroll e disposição macro da tela.
+- Pages e components não devem compensar problemas estruturais com repetições de `d-flex`, paddings ou wrappers desnecessários.
+- O scroll principal da aplicação deve ficar em `v-main` ou na área scrollable definida pelo layout.
+- O scroll principal não deve ficar em `body`, `html` ou wrappers arbitrários.
+- Controles de layout devem ter funções distintas entre desktop e mobile, evitando botões redundantes.
 
 ---
 
 ## 4.8 SCSS
 
-* Arquivos SCSS de componentes devem ficar em arquivo separado com o mesmo nome do componente.
-* O arquivo `.vue` deve importar o SCSS via tag `<style>` com `src`.
-* O atributo `lang` deve respeitar a extensão do arquivo.
-* Quando o estilo for local, usar `scoped`.
+- Arquivos SCSS de componentes devem ficar em arquivo separado com o mesmo nome do componente.
+- O arquivo `.vue` deve importar o SCSS via tag `<style>` com `src`.
+- O atributo `lang` deve respeitar a extensão do arquivo.
+- Quando o estilo for local, usar `scoped`.
 
 ```vue
 <style src="./MeuComponente.scss" scoped lang="scss"></style>
 ```
 
-* Scrollbars devem ser discretas, com trilho transparente, sem botões de controle e definidas por mixins SCSS reutilizáveis.
-* Estilizações de hover, active e estados interativos devem usar tokens ou paleta do Vuetify para manter compatibilidade com temas claro/escuro.
+- Scrollbars devem ser discretas, com trilho transparente, sem botões de controle e definidas por mixins SCSS reutilizáveis.
+- Estilizações de hover, active e estados interativos devem usar tokens ou paleta do Vuetify para manter compatibilidade com temas claro/escuro.
 
 ---
 
@@ -713,21 +713,21 @@ Stores devem conter apenas estado compartilhado da aplicação.
 
 Exemplos adequados:
 
-* preferências do usuário;
-* tema;
-* idioma;
-* estado persistente de layout;
-* parâmetros globais de filtros;
-* paginação compartilhada;
-* comunicação entre componentes fora da hierarquia familiar;
-* micro cache de listas genéricas.
+- preferências do usuário;
+- tema;
+- idioma;
+- estado persistente de layout;
+- parâmetros globais de filtros;
+- paginação compartilhada;
+- comunicação entre componentes fora da hierarquia familiar;
+- micro cache de listas genéricas.
 
 Stores não devem:
 
-* conhecer componentes;
-* manipular detalhes de UI local;
-* realizar chamadas HTTP diretamente quando a lógica puder ser encapsulada em composables;
-* concentrar regras que pertençam a services, utils ou formatters.
+- conhecer componentes;
+- manipular detalhes de UI local;
+- realizar chamadas HTTP diretamente quando a lógica puder ser encapsulada em composables;
+- concentrar regras que pertençam a services, utils ou formatters.
 
 Preferir actions pequenas e específicas.
 
@@ -739,13 +739,13 @@ Composables devem conter lógica reutilizável de estado ou comportamento.
 
 Podem ser responsáveis por:
 
-* preparar parâmetros para services;
-* tratar erros;
-* disparar snackbar;
-* redirecionar para rotas como not found ou forbidden;
-* controlar loading;
-* encapsular regras reutilizáveis de UX;
-* reutilizar formatadores em templates.
+- preparar parâmetros para services;
+- tratar erros;
+- disparar snackbar;
+- redirecionar para rotas como not found ou forbidden;
+- controlar loading;
+- encapsular regras reutilizáveis de UX;
+- reutilizar formatadores em templates.
 
 Não realizar chamadas HTTP diretamente em componentes quando a lógica puder ser encapsulada em composables.
 
@@ -757,21 +757,21 @@ Component -> Store -> Composable -> Service
 
 Responsabilidades:
 
-* `Service`: realiza a chamada e repassa erros.
-* `Composable`: trata parâmetros, erros e UX.
-* `Store`: mantém estado compartilhado e orquestra dados persistentes.
-* `Component`: usa dados e ações, mantendo o template limpo.
+- `Service`: realiza a chamada e repassa erros.
+- `Composable`: trata parâmetros, erros e UX.
+- `Store`: mantém estado compartilhado e orquestra dados persistentes.
+- `Component`: usa dados e ações, mantendo o template limpo.
 
 ---
 
 ## 4.11 Reatividade e performance
 
-* Evitar watchers quando uma computed resolver o problema.
-* Evitar computed encadeadas desnecessariamente.
-* Evitar renderização de listas sem `key`.
-* Priorizar lazy loading para rotas e componentes pesados.
-* Ao manipular estágios de UI, respeitar as regras de paginação do domínio.
-* Em paginação invertida, usar o último índice da lista quando ele representar o cursor correto.
+- Evitar watchers quando uma computed resolver o problema.
+- Evitar computed encadeadas desnecessariamente.
+- Evitar renderização de listas sem `key`.
+- Priorizar lazy loading para rotas e componentes pesados.
+- Ao manipular estágios de UI, respeitar as regras de paginação do domínio.
+- Em paginação invertida, usar o último índice da lista quando ele representar o cursor correto.
 
 ---
 
@@ -781,28 +781,28 @@ Toda requisição acionada pela interface deve possuir lock para evitar disparos
 
 O lock deve ser visualmente perceptível para o usuário.
 
-* Processos principais podem usar loading no botão, skeleton, progress ou overlay contextual.
-* Processos em segundo plano devem mostrar algum feedback discreto.
-* Loadings de segundo plano não devem bloquear a interação da tela inteira, salvo quando houver justificativa clara.
+- Processos principais podem usar loading no botão, skeleton, progress ou overlay contextual.
+- Processos em segundo plano devem mostrar algum feedback discreto.
+- Loadings de segundo plano não devem bloquear a interação da tela inteira, salvo quando houver justificativa clara.
 
 ---
 
 ## 4.13 PWA
 
-* Garantir responsividade nativa e suporte a dispositivos móveis.
-* Configurar corretamente ícones no manifest.
-* Ter atenção especial a `icon` e `badge` em notificações web push.
-* Service Workers devem ser tratados com cuidado, especialmente em atualização, cache e notificações.
+- Garantir responsividade nativa e suporte a dispositivos móveis.
+- Configurar corretamente ícones no manifest.
+- Ter atenção especial a `icon` e `badge` em notificações web push.
+- Service Workers devem ser tratados com cuidado, especialmente em atualização, cache e notificações.
 
 ---
 
 ## 4.14 Navegação
 
-* Itens de navegação devem ser derivados das rotas e seus metadados sempre que possível.
-* Rotas com `children` devem suportar grupos recursivos.
-* Metadados de rotas podem conter título, ícone, hotkey e regras de exibição.
-* Preferências de usuário, como tema e estado persistente de layout, devem viver em stores Pinia e ser persistidas por utilitários centralizados de storage.
-* Não espalhar acesso direto ao `localStorage` dentro de componentes.
+- Itens de navegação devem ser derivados das rotas e seus metadados sempre que possível.
+- Rotas com `children` devem suportar grupos recursivos.
+- Metadados de rotas podem conter título, ícone, hotkey e regras de exibição.
+- Preferências de usuário, como tema e estado persistente de layout, devem viver em stores Pinia e ser persistidas por utilitários centralizados de storage.
+- Não espalhar acesso direto ao `localStorage` dentro de componentes.
 
 ---
 
@@ -816,14 +816,78 @@ Desenvolvedor Backend especialista em Java, Spring Boot, APIs REST, segurança, 
 
 ## 5.2 Guidelines iniciais
 
-* Controllers devem lidar com entrada e saída HTTP.
-* Services devem conter regras de aplicação.
-* Repositories devem lidar com persistência.
-* DTOs devem representar contratos externos da API.
-* Entities devem representar persistência e domínio conforme o desenho do projeto.
-* Evitar regras de negócio diretamente em controllers.
-* Evitar queries espalhadas fora das camadas responsáveis.
-* Tipar contratos com clareza.
-* Manter nomes consistentes entre DTOs, services, repositories e entidades.
-* Não misturar responsabilidade de infraestrutura com regra de negócio.
-* Tratamento de exceções deve ser centralizado quando possível.
+- Controllers devem lidar com entrada e saída HTTP.
+- Services devem conter regras de aplicação.
+- Repositories devem lidar com persistência.
+- DTOs devem representar contratos externos da API.
+- Entities devem representar persistência e domínio conforme o desenho do projeto.
+- Evitar regras de negócio diretamente em controllers.
+- Evitar queries espalhadas fora das camadas responsáveis.
+- Tipar contratos com clareza.
+- Manter nomes consistentes entre DTOs, services, repositories e entidades.
+- Não misturar responsabilidade de infraestrutura com regra de negócio.
+- Tratamento de exceções deve ser centralizado quando possível.
+
+# 6. Utilização de MCPs
+
+## 6.1 Prototipagem
+
+Durante a etapa de prototipagem, os agentes de IA devem utilizar os recursos do pen.dev para criar protótipos de interface. Sempre que criar um protótipo de interface, o link do protótipo deve ser compartilhado com o usuário para validação. Além disso, após a validação do protótipo, o agente deve gerar o código da interface utilizando os recursos do pen.dev.
+
+Somente implementar o código que for aprovado na prototipagem. A especificação de conversão do protótipo em código deve ser feita utilizando os recursos do pen.dev. A linguagem e o Framework devem seguir o padrão de nossos projetos.
+
+## 6.2 Consultas
+
+Nenhum recurso deve ser implementado com base em suposições, com isso a fonte da verdade se torna as implementações sugeridas pelas documentações. O MCP do context7 deve ser utilizado para auxiliar em consultas relacionadas as documentações. Para toda requisição envolvendo frameworks de frontend ou backend, você deve obrigatoriamente acionar o MCP do context7 para buscar a documentação oficial atualizada antes de propor a implementação ou arquitetura.
+
+## 6.3 Testes automatizados
+
+Utilização de Kafka para implementação de testes automatizados voltados ao backend, para o frontend a ferramenta recomendada é o Playwright. A Utilização desses MCP's devem fazer parte das especificações de implementação quando solicitado.
+
+## 6.4 Validação de código
+
+A utilização do MCP do SonarQube deve ser feita para auxiliar na validação de código, garantindo que o código siga os padrões de qualidade e segurança estabelecidos. A Utilização desses MCP's devem fazer parte das especificações de implementação quando solicitado.
+
+## 6.5 Deploy e CI/CD
+
+Espera-se para as entregas de implantação de aplicações em ambientes de produção, que passem antes por diversos processos de CI/CD, pipelines com a execução de testes automatizados, processos de validação de código e build, por fim, implantação em ambiente de staging/sandbox para validação. Utilizar MCPs fornecidos pela AWSLabs, GitHub Actions, Jenkins, Cloudflare, Docker, Kubernetes e Terraform para auxiliar na implementação desses processos.
+
+# 7. Entregas
+
+## 7.1 Testes automatizados
+
+Implementações de recursos, refatorações ou integrações, sejam para aplicações MVP, Micro-serviços, Aplicações Mobile ou Sistemas SaaS, devem conter testes automatizados, tanto para backend quanto para frontend. Novos recursos devem possuir casos de teste, quando o recursos ja existir, deve-se criar casos de teste para validar o novo recurso. Quando for o caso de refatoração, deve-se criar casos de teste para validar a refatoração. A Utilização de Kafka para implementação de testes automatizados voltados ao backend, para o frontend a ferramenta recomendada é o Playwright. A Utilização desses MCP's devem fazer parte das especificações de implementação quando solicitado.
+
+## 7.2 Validação de código
+
+A utilização do MCP do SonarQube deve ser feita para auxiliar na validação de código, garantindo que o código siga os padrões de qualidade e segurança estabelecidos. A Utilização desses MCP's devem fazer parte das especificações de implementação quando solicitado. Além disso, fora da utilização dos MCP's, fazer validações com o ESLint para o frontend.
+
+## 7.3 Validações finais
+
+Execução de type-check, validação da execução da aplicação em um ambiente com docker-compose.yml, consoles não devem apresentar erros, e deve-se validar se os testes automatizados estão sendo executados com sucesso e sem erros neste ambiente do compose.
+
+## 7.4 Build
+
+Toda entrega de recursos deve ser acompanhada de build de código, seja para frontend ou backend.
+
+## 7.5 Garantias
+
+Garantias de que todas as tarefas foram executadas, estejam em um estado funcional e que estejam de acordo com as especificações.
+
+# 8. MCP's
+
+## 8.1 context7
+
+Utilize o Context7 MCP para buscar a documentação atualizada sempre que o usuário perguntar sobre uma biblioteca, framework, SDK, API, ferramenta de CLI ou serviço de nuvem — mesmo os mais conhecidos, como React, Next.js, Prisma, Express, Tailwind, Django ou Spring Boot. Isso inclui sintaxe de API, configuração, migração de versão, depuração específica da biblioteca, instruções de instalação e uso de ferramentas de CLI. Utilize a ferramenta mesmo quando achar que já sabe a resposta; seus dados de treinamento podem não refletir alterações recentes. Dê preferência a esse método em vez de pesquisas na web para documentação de bibliotecas.
+
+Não utilize para: refatoração, criação de scripts do zero, depuração de lógica de negócios, revisão de código ou conceitos gerais de programação.
+
+#### Etapas
+
+1. Sempre comece com `resolve-library-id` usando o nome da biblioteca e a pergunta do usuário, a menos que o usuário forneça um ID de biblioteca exato no formato `/org/project`
+
+2. Escolha a melhor correspondência (formato do ID: `/org/project`) com base em: correspondência exata do nome, relevância da descrição, quantidade de trechos de código, reputação da fonte (preferencialmente Alta/Média) e pontuação de benchmark (quanto maior, melhor). Se os resultados não parecerem adequados, tente nomes ou consultas alternativos (por exemplo, "next.js" em vez de "nextjs", ou reformule a pergunta). Utilize IDs específicos de versão quando o usuário mencionar uma versão
+
+3. Execute `query-docs` com o ID da biblioteca selecionado e a pergunta completa do usuário (não apenas palavras isoladas), restringindo a consulta a um único conceito. Se a pergunta abranger vários conceitos distintos (por exemplo, roteamento, autenticação e cache), faça uma chamada `query-docs` separada para cada conceito usando o mesmo ID de biblioteca, a menos que a pergunta seja sobre como os conceitos interagem — consultas combinadas diluem a classificação e retornam resultados superficiais para cada tópico
+
+4. Responda utilizando a documentação obtida.
