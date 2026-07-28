@@ -16,6 +16,10 @@ try {
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    port: 5173,
+    allowedHosts: ['host.docker.internal'],
+  },
   plugins: [
     vue(),
     vueDevTools(),

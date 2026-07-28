@@ -39,7 +39,7 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-router.beforeEach(authGuard);
-router.beforeEach(rbacGuard);
+// router.beforeEach(authGuard);
+// router.beforeEach(rbacGuard);
 
 export default router;
