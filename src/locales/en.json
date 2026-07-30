@@ -268,12 +268,12 @@
       "reqGenerics": "An error occurred in the request!"
     },
     "forms": {
-        "formUsers": {
-          "createUser": "Create user",
-          "editingUser": "Edit user",
-          "editingUserId": "Edit user #{id}"
-        }
-      },
+      "formUsers": {
+        "createUser": "Create user",
+        "editingUser": "Edit user",
+        "editingUserId": "Edit user #{id}"
+      }
+    },
     "components": {
       "dataTable": {
         "titleDefault": "Results",

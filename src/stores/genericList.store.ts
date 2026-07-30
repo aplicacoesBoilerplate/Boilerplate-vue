@@ -3,7 +3,8 @@ import { computed, ref, toRaw } from 'vue';
 import { defineStore } from 'pinia';
 
 // Types e Interfaces
-import type { IGenericListContext, IGenericListContextOptions, TOrdem } from '@/models/components/IGenericListContext';
+import type { IGenericListContext, IGenericListContextOptions } from '@/models/components/IGenericListContext';
+import type { TOrdem } from '@/models/filters/IConsultaRegistrosFiltro';
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
 
 // Utils
@@ -16,7 +17,9 @@ const DEFAULT_STORAGE: TManagerStorageLocation = 'session';
 const DEFAULT_LIMIT = 10;
 const DEFAULT_ORDER: TOrdem = 'desc';
 
-type TResolvedContextOptions = Required<Pick<IGenericListContextOptions, 'cacheTtlMs' | 'storage' | 'limite' | 'ordem'>>;
+type TResolvedContextOptions = Required<
+  Pick<IGenericListContextOptions, 'cacheTtlMs' | 'storage' | 'limite' | 'ordem'>
+>;
 
 /**
  * Função para criar um contexto vazio.
@@ -28,7 +31,7 @@ type TResolvedContextOptions = Required<Pick<IGenericListContextOptions, 'cacheT
 function createEmptyContext<TItem = unknown>(
   pContextId: string,
   pLimit = DEFAULT_LIMIT,
-  pOrder: TOrdem = DEFAULT_ORDER
+  pOrder: TOrdem = DEFAULT_ORDER,
 ): IGenericListContext<TItem> {
   return {
     contexto: pContextId,
@@ -80,10 +83,7 @@ export const useGenericListStore = defineStore('genericList', () => {
    * @param pContextId O ID do contexto.
    * @param pOptions As opções do contexto.
    */
-  function initContext<TItem = unknown>(
-    pContextId: string,
-    pOptions?: IGenericListContextOptions
-  ) {
+  function initContext<TItem = unknown>(pContextId: string, pOptions?: IGenericListContextOptions) {
     const resolvedOptions = resolveOptions(pOptions);
     const storageKey = getStorageKey(pContextId);
 
@@ -97,11 +97,8 @@ export const useGenericListStore = defineStore('genericList', () => {
     );
 
     // ManagerStorage ja remove valores expirados; se voltar null, a lista comeca limpa.
-    contexts.value[pContextId] = storedContext ?? createEmptyContext<TItem>(
-      pContextId,
-      resolvedOptions.limite,
-      resolvedOptions.ordem
-    );
+    contexts.value[pContextId] =
+      storedContext ?? createEmptyContext<TItem>(pContextId, resolvedOptions.limite, resolvedOptions.ordem);
 
     if (!storedContext) {
       persistContext(pContextId);
@@ -210,12 +207,7 @@ export const useGenericListStore = defineStore('genericList', () => {
    * @param pNextEntry O próximo item.
    * @param pHasMore Se ha mais itens.
    */
-  function addItems<TItem = unknown>(
-    pContextId: string,
-    pNewItems: TItem[],
-    pNextEntry: unknown,
-    pHasMore: boolean,
-  ) {
+  function addItems<TItem = unknown>(pContextId: string, pNewItems: TItem[], pNextEntry: unknown, pHasMore: boolean) {
     const context = getContext<TItem>(pContextId);
 
     // Acumula paginas ja consultadas para que o retorno de rota nao dependa de nova chamada.
@@ -234,12 +226,7 @@ export const useGenericListStore = defineStore('genericList', () => {
    * @param pNextEntry O próximo item.
    * @param pHasMore Se ha mais itens.
    */
-  function replaceItems<TItem = unknown>(
-    pContextId: string,
-    pItems: TItem[],
-    pNextEntry: unknown,
-    pHasMore: boolean,
-  ) {
+  function replaceItems<TItem = unknown>(pContextId: string, pItems: TItem[], pNextEntry: unknown, pHasMore: boolean) {
     const context = getContext<TItem>(pContextId);
 
     context.items = pItems;
@@ -317,11 +304,7 @@ export const useGenericListStore = defineStore('genericList', () => {
    * @param pIdField O campo de identificacao.
    * @param pIdValue O valor de identificacao.
    */
-  function removeItem<TItem extends object>(
-    pContextId: string,
-    pIdField: keyof TItem,
-    pIdValue: TItem[keyof TItem],
-  ) {
+  function removeItem<TItem extends object>(pContextId: string, pIdField: keyof TItem, pIdValue: TItem[keyof TItem]) {
     const context = getContext<TItem>(pContextId);
 
     context.items = context.items.filter((pItem) => pItem[pIdField] !== pIdValue);
@@ -381,14 +364,10 @@ export const useGenericListStore = defineStore('genericList', () => {
     const options = getOptions(pContextId);
 
     // O TTL renova a cada alteracao relevante do contexto para manter cache por atividade.
-    ClassManagerStorage.set(
-      getStorageKey(pContextId),
-      toRaw(context),
-      {
-        storage: options.storage,
-        expiresInMs: options.cacheTtlMs,
-      },
-    );
+    ClassManagerStorage.set(getStorageKey(pContextId), toRaw(context), {
+      storage: options.storage,
+      expiresInMs: options.cacheTtlMs,
+    });
   }
 
   // Computadas

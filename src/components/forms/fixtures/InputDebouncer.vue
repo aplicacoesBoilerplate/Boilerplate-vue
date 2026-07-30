@@ -1,23 +1,23 @@
 <template>
   <v-text-field
     v-model="pesquisa"
-    class="mb-1 pa-1"
     :label="label"
     :appendInnerIcon="icon"
     :density="density"
     :variant="variant"
-    autocomplete="off"
     :hideDetails="hideDetails"
     :singleLine="singleLine"
     :clearable="clearable"
+    class="mb-1 pa-1"
+    autocomplete="off"
     @keypress.enter="handleOnSearch(pesquisa)"
     @click:appendInner="handleOnSearch(pesquisa)"
   >
     <template #append-inner>
       <slot
-        name="append"
         :appendIcon="icon"
         :handleFunction="handleOnSearch"
+        name="append"
       />
     </template>
   </v-text-field>
@@ -37,14 +37,14 @@ type TProps = {
   clearable?: boolean;
 };
 withDefaults(defineProps<TProps>(), {
-  label: "Pesquisar campo",
-  icon: "mdi-magnify",
-  density: "compact",
-  variant: "solo",
-  autocomplete: "off",
+  label: 'Pesquisar campo',
+  icon: 'mdi-magnify',
+  density: 'compact',
+  variant: 'solo',
+  autocomplete: 'off',
   hideDetails: true,
   singleLine: true,
-  clearable: true
+  clearable: true,
 });
 
 type TEmits = {
@@ -68,9 +68,9 @@ function handleOnSearch(pTermoPesquisa: string | null) {
 
   const lTermoPesquisaTratado = pTermoPesquisa
     .toUpperCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(" ", "_");
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(' ', '_');
 
   debounceTimer = setTimeout(() => {
     emits('onSearch', lTermoPesquisaTratado);
@@ -79,11 +79,10 @@ function handleOnSearch(pTermoPesquisa: string | null) {
 
 // Observadores
 watch(pesquisa, (newValue, oldValue) => {
-  if (!newValue){
+  if (!newValue) {
     handleOnSearch(null);
   } else if (newValue?.toUpperCase() !== oldValue?.toUpperCase()) {
     handleOnSearch(newValue);
   }
 });
-
 </script>

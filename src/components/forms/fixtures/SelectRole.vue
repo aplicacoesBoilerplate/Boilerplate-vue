@@ -34,9 +34,9 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { MAPEAMENTO_PAPEIS, type TPapel, type TPapelPadrao } from '@/models/model/core/usuario.model';
 // Types e Interfaces
 import type { ValidationRule } from 'vuetify';
-import { MAPEAMENTO_PAPEIS, type TPapel, type TPapelPadrao } from '@/models/model/usuario/lUsuario';
 
 export interface IItemSelectPapel {
   /**
@@ -133,7 +133,9 @@ const iconeSelecionado = computed((): string | undefined => {
     return undefined;
   }
 
-  return itensSelect.value.find((pItem) => pItem.valor === papelSelecionado.value)?.icone
-    ?? MAPEAMENTO_PAPEIS[papelSelecionado.value as TPapelPadrao]?.icone;
+  return (
+    itensSelect.value.find((pItem) => pItem.valor === papelSelecionado.value)?.icone ??
+    MAPEAMENTO_PAPEIS[papelSelecionado.value as TPapelPadrao]?.icone
+  );
 });
 </script>

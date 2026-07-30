@@ -1,25 +1,15 @@
 // Ecossistema Vue
 import { computed, type ComputedRef, type Ref } from 'vue';
 
-// Types e Interfaces
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import { EOperadoresFiltro, MAPEAMENTO_OPERADORES } from '@/models/filters/enums/EOperadoresFiltro';
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
-import {
-  EOperadoresFiltro,
-  MAPEAMENTO_OPERADORES,
-  type IMapeamentoOperador,
-} from '@/models/filters/enums/EOperadoresFiltro';
+// Types e Interfaces
+import type { ICampoFiltro, IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
 
 // Constantes
-const OPERADORES_BOOLEANOS = [
-  EOperadoresFiltro.VERDADEIRO,
-  EOperadoresFiltro.FALSO,
-];
+const OPERADORES_BOOLEANOS = [EOperadoresFiltro.VERDADEIRO, EOperadoresFiltro.FALSO];
 
-const OPERADORES_SELECAO = [
-  EOperadoresFiltro.SELECAO,
-  EOperadoresFiltro.EXCECAO,
-];
+const OPERADORES_SELECAO = [EOperadoresFiltro.SELECAO, EOperadoresFiltro.EXCECAO];
 
 const OPERADORES_NUMERICOS_E_DATA = [
   EOperadoresFiltro.IGUAL,
@@ -49,10 +39,10 @@ type TUseOperadoresFiltroParams = {
  * @param pOperadoresPermitidos Array de operadores permitidos.
  * @returns Array de operadores disponíveis.
  */
-function filtrarOperadores(pOperadoresPermitidos: EOperadoresFiltro[]): IMapeamentoOperador[] {
+function filtrarOperadores(pOperadoresPermitidos: EOperadoresFiltro[]): IOpcaoSelecao[] {
   const operadoresPermitidos = new Set(pOperadoresPermitidos);
 
-  return MAPEAMENTO_OPERADORES.filter((pOperador) => operadoresPermitidos.has(pOperador.valor));
+  return MAPEAMENTO_OPERADORES.filter((pOperador) => operadoresPermitidos.has(pOperador.valor as EOperadoresFiltro));
 }
 
 /**
@@ -60,17 +50,21 @@ function filtrarOperadores(pOperadoresPermitidos: EOperadoresFiltro[]): IMapeame
  * @param pOperadoresAtuais Set de operadores atuais.
  * @param pOperadoresPermitidos Array de operadores a serem adicionados.
  */
-function adicionarOperadores(pOperadoresAtuais: Set<EOperadoresFiltro>, pOperadoresPermitidos: EOperadoresFiltro[]): void {
+function adicionarOperadores(
+  pOperadoresAtuais: Set<EOperadoresFiltro>,
+  pOperadoresPermitidos: EOperadoresFiltro[],
+): void {
   pOperadoresPermitidos.forEach((pOperador) => pOperadoresAtuais.add(pOperador));
 }
 
 /**
  * Responsável por montar a lista de operadores válidos baseado no tipo do campo selecionado.
+ * @param pParams
  */
 export function useOperadoresFiltro(pParams: TUseOperadoresFiltroParams) {
   const tiposCampoAtual = computed<ETipoFiltro[]>(() => pParams.campoSelecionado.value?.tipos ?? []);
 
-  const operadoresDisponiveis = computed<IMapeamentoOperador[]>(() => {
+  const operadoresDisponiveis = computed<IOpcaoSelecao[]>(() => {
     const campoSelecionado = pParams.campoSelecionado.value;
 
     // Usa Set para evitar duplicidade

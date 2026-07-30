@@ -1,5 +1,5 @@
 // Types e Interfaces
-import type { IPreferenciaUsuario, IPreferenciasUsuario } from '@/models/services/IPreferenciaUsuario';
+import type { IPreferenciasUsuario, IPreferenciaUsuario } from '@/models/services/IPreferenciaUsuario';
 
 // Services
 import { CBaseHttpService } from '@/services/base/CBaseHttpService';

@@ -1,25 +1,33 @@
-import { useTheme } from 'vuetify'
-import { onMounted } from 'vue'
+// Ecossistema Vue
+import { onMounted } from 'vue';
+import { useTheme } from 'vuetify';
 
+// Stores
+import { usePreferencesStore } from '@/stores/preferences.store';
+
+/**
+ * @description Gerencia alternância entre tema claro e escuro, sincronizando com a store de preferências.
+ */
 export function useThemeSwitch() {
-  const theme = useTheme()
-  const THEME_KEY = 'user_theme_preference'
+  const theme = useTheme();
+  const preferencesStore = usePreferencesStore();
 
-  const toggleTheme = () => {
-    const newVal = theme.global.current.value.dark ? 'light' : 'dark'
+  function toggleTheme() {
+    const newVal = theme.global.current.value.dark ? 'light' : 'dark';
     theme.change(newVal);
-    localStorage.setItem(THEME_KEY, newVal)
+    preferencesStore.setTheme(newVal);
   }
 
   onMounted(() => {
-    const storedTheme = localStorage.getItem(THEME_KEY)
-    if (storedTheme) {
-      theme.change(storedTheme);
+    const themePreference = preferencesStore.preferences.theme.currentTheme;
+
+    if (themePreference && themePreference !== 'system') {
+      theme.change(themePreference);
     }
-  })
+  });
 
   return {
     theme,
-    toggleTheme
-  }
+    toggleTheme,
+  };
 }

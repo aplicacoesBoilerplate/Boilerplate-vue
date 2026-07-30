@@ -6,9 +6,9 @@
     <template #activator="{ props }">
       <v-btn
         v-bind="props"
-        class="mx-1"
         :color="instalacaoDisponivel ? 'success' : 'default'"
         :disabled="!instalacaoDisponivel"
+        class="mx-1"
         icon="mdi-cellphone-arrow-down"
         size="small"
         variant="text"

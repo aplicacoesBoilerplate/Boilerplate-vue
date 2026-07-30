@@ -1,14 +1,14 @@
 // Ecossistema Vue
 import { createRouter, createWebHistory } from 'vue-router';
-import { i18n } from '@/plugins/i18n';
 
-// Routes
-import { routes } from './routes';
+import { i18n } from '@/plugins/i18n';
 
 // Guards
 import { authGuard } from './guards/auth.guard';
 import { rbacGuard } from './guards/roles.guard';
 
+// Routes
+import { routes } from './routes';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

@@ -25,8 +25,8 @@
       class="d-flex flex-grow-1 flex-sm-grow-0 ms-sm-auto"
     >
       <LoginGoogle
-        class="w-100"
         :carregando="carregandoGoogle"
+        class="w-100"
         @autenticado="(pCredential) => emits('autenticarGoogle', pCredential)"
         @erro="(pMensagem) => emits('erroGoogle', pMensagem)"
       />

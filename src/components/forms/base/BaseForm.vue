@@ -13,39 +13,51 @@
 </template>
 
 <script setup lang="ts">
-// Ecossistema vue
-import { nextTick, ref, watch } from "vue";
+import { nextTick, ref, watch } from 'vue';
+
+import type { VForm } from 'vuetify/components';
+
+export interface IBaseFormExpose<TModel = unknown> {
+  refreshForm: (criarObjetoModel: (pData?: TModel) => TModel) => Promise<void>;
+  submit: () => void;
+  isValid: () => boolean;
+}
 
 type TEmits = {
   onSubmit: [];
-  onInvalid: [errors: any[]];
-  "update:isValid": [isValid: boolean];
+  onInvalid: [errors: unknown[]];
+  'update:isValid': [isValid: boolean];
 };
 const emits = defineEmits<TEmits>();
 
-// Reativas
-const formRef = ref<any>(null);
+const formModel = defineModel<unknown>('formModel', { default: undefined });
+
+const formRef = ref<VForm | null>(null);
 const isFormValid = ref(false);
 
-// Funções
 async function handleOnSubmit() {
-  const { valid, errors } = await formRef.value.validate();
-  if (valid) emits("onSubmit");
-  else emits("onInvalid", errors);
+  const resultado = await formRef.value?.validate();
+  const valido = resultado?.valid ?? false;
+  const erros = resultado?.errors ?? [];
+  if (valido) emits('onSubmit');
+  else emits('onInvalid', erros);
 }
 
-// Observadores
-watch(isFormValid, (novoValor) => {
-  emits("update:isValid", novoValor);
+async function refreshForm(pCriarObjetoModel: (pData?: unknown) => unknown): Promise<void> {
+  if (formModel.value !== undefined) {
+    formModel.value = pCriarObjetoModel();
+  }
+  await nextTick();
+  formRef.value?.resetValidation();
+}
+
+watch(isFormValid, (pNovoValor) => {
+  emits('update:isValid', pNovoValor);
 });
 
-// Expose
 defineExpose({
-  resetValidation: async () => {
-    await nextTick();
-    formRef.value?.resetValidation();
-  },
+  refreshForm,
   submit: handleOnSubmit,
   isValid: () => isFormValid.value,
-});
+} satisfies IBaseFormExpose);
 </script>

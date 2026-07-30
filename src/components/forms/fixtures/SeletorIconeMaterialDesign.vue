@@ -58,6 +58,7 @@
 // Ecossistema Vue
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import type { ValidationRule } from 'vuetify';
 
 /**
@@ -124,6 +125,8 @@ function consultarPaginaIcones(): void {
 
 /**
  * Monta a estrutura visual consumida pelo combobox a partir do sufixo do ícone.
+ * @param pSufixo
+ * @param pTitulo
  */
 function criarItemIcone(pSufixo: string, pTitulo: string): TItemIconeMaterialDesign {
   return {
@@ -135,6 +138,7 @@ function criarItemIcone(pSufixo: string, pTitulo: string): TItemIconeMaterialDes
 
 /**
  * Garante que qualquer valor digitado ou selecionado seja salvo no formato aceito pelo v-icon.
+ * @param pValor
  */
 function normalizarIcone(pValor: unknown): string {
   const sufixo = obterSufixoIcone(pValor);
@@ -143,6 +147,7 @@ function normalizarIcone(pValor: unknown): string {
 
 /**
  * Remove prefixos e caracteres incompatíveis para manter somente o nome do ícone.
+ * @param pValor
  */
 function obterSufixoIcone(pValor: unknown): string {
   return String(obterValorIcone(pValor) ?? '')
@@ -156,6 +161,7 @@ function obterSufixoIcone(pValor: unknown): string {
 
 /**
  * Extrai o valor útil quando o Vuetify retorna um item completo em vez de texto puro.
+ * @param pValor
  */
 function obterValorIcone(pValor: unknown): unknown {
   if (typeof pValor !== 'object' || pValor === null) {

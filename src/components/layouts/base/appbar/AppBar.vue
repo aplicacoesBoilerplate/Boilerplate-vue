@@ -26,7 +26,7 @@
 
     <template
       v-if="smAndDown"
-      v-slot:extension
+      #extension
     >
       <div class="px-4 pb-2 w-100">
         <AppBarSearchForm
@@ -36,7 +36,7 @@
       </div>
     </template>
 
-    <template v-slot:append>
+    <template #append>
       <MenuOptionsDrawer v-model:dialogLicenceOpen="dialogLicenceOpen" />
     </template>
   </v-app-bar>
@@ -56,6 +56,7 @@ import type { TParametrosBusca } from '@/models/filters/TParametrosBusca.ts';
 
 // Componentes
 import AppBarSearchForm from '@/components/forms/AppBarSearchForm.vue';
+
 import MenuOptionsDrawer from './fixtures/MenuOptionsDrawer.vue';
 
 // Stores

@@ -5,7 +5,7 @@
   >
     <v-card
       class="w-100 d-flex flex-column"
-      min-height="calc(100vh - 112px)"
+      minHeight="calc(100vh - 112px)"
       elevation="4"
       rounded="lg"
     >
@@ -81,19 +81,24 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-// Dados locais
-import changelog from '../../CHANGELOG.md?raw';
-import packageJson from '../../package.json';
-
 // Types e Interfaces
-import type { TAbaSistema, TMetadadosSecaoChangelog, TSecaoChangelog, TVersaoChangelog } from '@/models/components/IVersaoChangelog';
+import type {
+  TAbaSistema,
+  TMetadadosSecaoChangelog,
+  TSecaoChangelog,
+  TVersaoChangelog,
+} from '@/models/components/IVersaoChangelog';
+
+// Componentes
+import InfoGeral from '@/components/common/informacoes/InfoGeral.vue';
+import Versoes from '@/components/common/informacoes/versoes/Versoes.vue';
 
 // Utils
 import { CFormatters } from '@/classes/Utils/CFormatters';
 
-// Componentes
-import InfoGeral from '@/components/informacoes/InfoGeral.vue';
-import Versoes from '@/components/informacoes/versoes/Versoes.vue';
+// Dados locais
+import changelog from '../../CHANGELOG.md?raw';
+import packageJson from '../../package.json';
 
 // Reativas
 const abaAtual = ref<TAbaSistema>('geral');
@@ -228,5 +233,4 @@ const versaoAtual = computed(() => packageJson.version);
 const versoes = computed<TVersaoChangelog[]>(() => extrairVersoesChangelog(changelog));
 const versaoMaisRecenteChangelog = computed(() => versoes.value[0]);
 const totalAlteracoes = computed(() => versoes.value.reduce((pTotal, pVersao) => pTotal + pVersao.totalItens, 0));
-
 </script>

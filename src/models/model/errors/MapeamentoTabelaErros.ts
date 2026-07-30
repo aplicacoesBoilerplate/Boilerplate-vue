@@ -1,6 +1,6 @@
 // Types e Interfaces
-import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
 import type { IErros } from './IErros';
+import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
 
 // Utils
 import { CFormatters } from '@/classes/Utils/CFormatters';

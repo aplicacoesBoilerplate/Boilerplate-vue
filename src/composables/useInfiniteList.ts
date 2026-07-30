@@ -1,5 +1,6 @@
-import { ref, onMounted, nextTick } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
+
 import { useListaCacheStore } from '@/stores/listaCache.store';
 
 export function useInfiniteList<T>(key: string, fetchData: Function, limit = 20) {
@@ -49,7 +50,7 @@ export function useInfiniteList<T>(key: string, fetchData: Function, limit = 20)
       items: items.value,
       nextOffset: offset.value,
       isFinished: isFinished.value,
-      scrollPosition: wrapper ? wrapper.scrollTop : 0
+      scrollPosition: wrapper ? wrapper.scrollTop : 0,
     });
   });
 

@@ -15,21 +15,21 @@
   >
     <template #activator="{ props }">
       <slot
-        name="activator"
         :props="props"
+        name="activator"
       />
     </template>
 
     <v-card
-      class="base-dialog d-flex flex-column"
       :class="{ 'fill-height': fullscreen }"
       :rounded="fullscreen ? '0' : 'lg'"
+      class="base-dialog d-flex flex-column"
     >
       <slot
-        name="titulo"
         :title="tituloDialog"
         :titulo="tituloDialog"
         :onFechar="fechar"
+        name="titulo"
       >
         <v-toolbar
           :title="tituloDialog"
@@ -76,27 +76,27 @@
 
         <v-card-actions>
           <slot
-            name="actions"
             :title="tituloDialog"
             :titulo="tituloDialog"
             :onFechar="fechar"
             :onSalvar="salvar"
             :onCancelar="cancelar"
+            name="actions"
           >
             <v-btn
+              :text="t('tooltips.forms.cancel')"
               color="error"
               variant="tonal"
-              :text="t('tooltips.forms.cancel')"
               @click="cancelar"
             />
 
             <v-spacer />
 
             <v-btn
+              :loading="loading"
+              :text="t('tooltips.forms.save')"
               color="primary"
               variant="flat"
-              :text="t('tooltips.forms.save')"
-              :loading="loading"
               @click="salvar"
             />
           </slot>
@@ -107,12 +107,17 @@
 </template>
 
 <script setup lang="ts">
-// Ecossistema vue
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-// Types e Interfaces
-import type { IPropsBaseDialog } from '@/models/IPropsBaseDialog';
+import type { IPropsBaseDialog } from '@/models/components/props/IPropsBaseDialog';
+
+export interface IBaseDialogExpose {
+  abrir: () => void;
+  fechar: () => void;
+  cancelar: () => void;
+  salvar: () => void;
+}
 
 const props = withDefaults(defineProps<IPropsBaseDialog>(), {
   persistent: false,
@@ -136,24 +141,17 @@ type TEmits = {
 };
 const emits = defineEmits<TEmits>();
 
-// Composables
 const { t } = useI18n();
 
-// Reativas
 const dialogModel = defineModel<boolean>('exibirDialog', { default: false });
 
-// Funções
-function definirAbertura(pAberto: boolean): void {
-  dialogModel.value = pAberto;
-}
-
 function abrir(): void {
-  definirAbertura(true);
+  dialogModel.value = true;
 }
 
 function fechar(): void {
   emits('fechar');
-  definirAbertura(false);
+  dialogModel.value = false;
 }
 
 function cancelar(): void {
@@ -165,7 +163,6 @@ function salvar(): void {
   emits('salvar');
 }
 
-// Computadas
 const contentStyles = computed(() => {
   if (props.fullscreen) return {};
   return {
@@ -175,21 +172,16 @@ const contentStyles = computed(() => {
 });
 
 const mostrarAcoesDialog = computed(() => props.mostrarAcoes ?? true);
-const tituloDialog = computed(() => props.titulo === 'Dialog' ? t('components.baseDialog.tituloPadrao') : props.titulo);
+const tituloDialog = computed(() =>
+  props.titulo === 'Dialog' ? t('components.baseDialog.tituloPadrao') : props.titulo,
+);
 
-// Expose
 defineExpose({
   abrir,
   fechar,
-  definirAbertura,
   cancelar,
   salvar,
-  open: abrir,
-  close: fechar,
-  setOpen: definirAbertura,
-  handleCancelar: cancelar,
-  handleSalvar: salvar,
-});
+} satisfies IBaseDialogExpose);
 </script>
 
 <style src="./BaseDialog.scss" scoped lang="scss"></style>

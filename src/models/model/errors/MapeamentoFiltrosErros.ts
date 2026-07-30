@@ -1,15 +1,14 @@
 // Types e Interfaces
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
-import type { IErros } from './IErros';
-import type { IConsultaRegistrosFiltro } from '@/models/filters/IConsultaRegistrosFiltro';
-import type { IUsuario } from '@/models/model/usuario/lUsuario';
-
+import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 // Enums
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
-import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
+import type { IErros } from './IErros';
+import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import type { IConsultaRegistrosFiltro } from '@/models/filters/IConsultaRegistrosFiltro';
+import type { IUsuario } from '@/models/model/core/usuario.model';
 
 // Services
-import { CConsultaUsuariosFiltroService } from '@/services/filters/CConsultaUsuariosFiltroService';
+import { CConsultaUsuariosFiltroService } from '@/services/core/filters/CConsultaUsuariosFiltroService';
 
 export type TCamposFiltroErros = Omit<IErros, 'idError'>;
 type TCampoFiltroErro = keyof TCamposFiltroErros | 'usuario.idUsuario';

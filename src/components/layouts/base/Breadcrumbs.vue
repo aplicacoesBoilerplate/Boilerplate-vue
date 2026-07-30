@@ -6,7 +6,7 @@
     divider="/"
     style="position: sticky; top: 0; z-index: 10"
   >
-    <template v-slot:title="{ item }">
+    <template #title="{ item }">
       {{ item.title }}
     </template>
   </v-breadcrumbs>
@@ -14,9 +14,9 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed } from "vue";
-import { useRoute } from "vue-router";
-import { useI18n } from "vue-i18n";
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 
 // Composables
 const route = useRoute();
@@ -33,19 +33,15 @@ const items = computed(() => {
     exact: true,
   }));
 
-  if (
-    breadcrumbs.length > 0 &&
-    breadcrumbs[0].title !== t("routes.home.title")
-  ) {
+  if (breadcrumbs.length > 0 && breadcrumbs[0].title !== t('routes.home.title')) {
     breadcrumbs.unshift({
-      title: t("routes.home.title"),
+      title: t('routes.home.title'),
       disabled: false,
-      to: { name: "Inicio" },
+      to: { name: 'Inicio' },
       exact: true,
     });
   }
 
   return breadcrumbs;
 });
-
 </script>

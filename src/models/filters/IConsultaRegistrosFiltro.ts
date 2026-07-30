@@ -1,16 +1,18 @@
 /**
  * @description Type genérico responsável por configurar o payload da consulta auxiliar de registros disponível para um campo do filtro.
- * @template TRegistro - O tipo do registro que será consultado.
- * @property {keyof TRegistro & string} campo - O campo que será consultado.
+ * @template T - O tipo genérico do termo de pesquisa aplicado na consulta.
+ * @property {keyof T & string} campo - O campo que será consultado.
  * @property {EOperadoresFiltro} condicao - O operador que será utilizado na consulta.
  * @property {number} limite - A quantidade de registros retornados por página.
+ * @property {string} ordenacao - Direção da ordenação ('asc' | 'desc').
  * @property {unknown} proximaEntrada - Cursor usado para buscar a próxima página.
  * @property {string} termoPesquisa - O termo de pesquisa utilizado na consulta.
  */
-export interface IConsultaRegistrosFiltroPayload {
+export interface IConsultaRegistrosFiltroPayload<T = string> {
   campo: string;
   condicao?: string;
   limite: number;
+  ordenacao: TOrdem;
   proximaEntrada?: unknown;
   termoPesquisa: string;
 }
@@ -53,3 +55,5 @@ export interface IConsultaRegistrosFiltro<TRegistro extends object = Record<stri
   limiteInicial?: number;
   textoVazio?: string;
 }
+
+export type TOrdem = 'asc' | 'desc';

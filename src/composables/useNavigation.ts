@@ -1,18 +1,15 @@
 // Ecossistema Vue
 import { computed } from 'vue';
-import { useRoute, useRouter, type RouteRecordRaw } from 'vue-router';
-
-// Types e Interfaces
-import type { IRouteMeta } from '@/models/model/IRouteMeta';
+import { type RouteRecordRaw, useRoute, useRouter } from 'vue-router';
 
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
 
 // Models
-import {
-  permissaoEstaLiberada,
-  RECURSO_PERMISSAO_ROTAS_RBAC,
-} from '@/models/model/rbac/ICargoRbac';
+import { permissaoEstaLiberada } from '@/models/model/core/rbac/rbac.model';
+import { RECURSO_PERMISSAO_ROTAS_RBAC } from '@/models/model/core/rbac/rbac.api';
+// Types e Interfaces
+import type { IRouteMeta } from '@/models/model/IRouteMeta';
 
 /**
  * Composable responsável por gerenciar o comportamento do componente de Navigation.

@@ -1,8 +1,8 @@
 <template>
   <v-container
     class="d-flex align-center justify-center py-8"
-    fluid
     style="min-height: 90vh"
+    fluid
   >
     <v-card
       class="w-100"
@@ -72,13 +72,13 @@ import { useRouter } from 'vue-router';
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
 
+// Utils
+import { ClassManagerStorage } from '@/utils/ManagerStorage';
+
 // Componentes
 import EtapaCodigoRecuperacaoSenha from '@/components/forms/fixtures/autenticacao/EtapaCodigoRecuperacaoSenha.vue';
 import EtapaEmailRecuperacaoSenha from '@/components/forms/fixtures/autenticacao/EtapaEmailRecuperacaoSenha.vue';
 import EtapaSenhaRecuperacaoSenha from '@/components/forms/fixtures/autenticacao/EtapaSenhaRecuperacaoSenha.vue';
-
-// Utils
-import { ClassManagerStorage } from '@/utils/ManagerStorage';
 
 /**
  * @property {string} email - E-mail usado para solicitar o código de verificação.

@@ -1,15 +1,18 @@
 <template>
   <v-row
-    dense
     class="prevent-jump-desktop align-stretch ma-0 w-100"
+    dense
   >
     <v-col
-      cols="12"
       :md="hiddenChart ? 12 : 6"
+      cols="12"
       class="col-transition overflow-hidden d-flex"
     >
       <div class="w-100 h-100">
-        <slot name="dataTable" :toggleChart="() => emit('toggle-chart')" />
+        <slot
+          :toggleChart="() => emit('toggle-chart')"
+          name="dataTable"
+        />
       </div>
     </v-col>
 
@@ -22,7 +25,10 @@
         ref="refCharts"
         tabindex="-1"
       >
-        <div v-if="!hiddenChart" class="fill-height w-100 d-flex">
+        <div
+          v-if="!hiddenChart"
+          class="fill-height w-100 d-flex"
+        >
           <slot name="dataChart" />
         </div>
       </v-col>
@@ -37,7 +43,7 @@
 import { nextTick, ref, watch } from 'vue';
 
 const props = defineProps<{
-  hiddenChart: boolean
+  hiddenChart: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -52,20 +58,23 @@ defineSlots<{
 
 const refCharts = ref<any>(null);
 
-watch(() => props.hiddenChart, (isHidden) => {
-  if (!isHidden) {
-    nextTick(() => {
-      const el = refCharts.value?.$el || refCharts.value;
-      if (el) {
-        el.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'nearest'
-        });
-      }
-    });
-  }
-});
+watch(
+  () => props.hiddenChart,
+  (isHidden) => {
+    if (!isHidden) {
+      nextTick(() => {
+        const el = refCharts.value?.$el || refCharts.value;
+        if (el) {
+          el.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'nearest',
+          });
+        }
+      });
+    }
+  },
+);
 </script>
 
 <style scoped>
@@ -78,7 +87,8 @@ watch(() => props.hiddenChart, (isHidden) => {
   grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   max-width: 100%;
-  transition: flex-basis 300ms cubic-bezier(0.4, 0, 0.2, 1),
+  transition:
+    flex-basis 300ms cubic-bezier(0.4, 0, 0.2, 1),
     max-width 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 

@@ -1,8 +1,5 @@
-// Types e Interfaces
+import type { TOrdem } from '../filters/IConsultaRegistrosFiltro';
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
-import type { IFiltrosConsulta } from '../filters/IFiltrosConsulta';
-
-export type TOrdem = 'asc' | 'desc';
 
 export interface IGenericListContext<TItem = unknown> {
   /** Identificador unico dessa lista. */
@@ -31,29 +28,3 @@ export interface IGenericListContextOptions {
   /** Orientacao padrao de ordenacao inicial. */
   ordem?: TOrdem;
 }
-
-/**
- * Payload padrao de chamadas do tipo infinite scroll.
- */
-export interface IGenericListFetchPayload<TFiltros = IFiltrosConsulta[]> {
-  contexto: string;
-  limite: number;
-  proximaEntrada: unknown;
-  ordem: TOrdem;
-  filtros?: TFiltros;
-}
-
-/**
- * Resultado padrao de chamadas do tipo infinite scroll.
- */
-export interface IGenericListFetchReturn<TItem = unknown> {
-  items: TItem[];
-  proximaEntrada?: unknown;
-  /** Se ausente, o componente infere pelo tamanho da pagina retornada. (Se for < que o limite, recebe false) */
-  temMaisRegistros?: boolean;
-}
-
-/** Resposta padrao de chamadas do tipo infinite scroll. */
-export type TGenericListFetchResponse<TItem = unknown> =
-  | TItem[]
-  | IGenericListFetchReturn<TItem>;

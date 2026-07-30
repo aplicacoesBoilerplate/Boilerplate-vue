@@ -9,8 +9,8 @@
         :active="itemAtivo"
       >
         <template
-          v-slot:append
           v-if="item.hotkey && mdAndUp && isPinned"
+          #append
         >
           <v-hotkey
             :keys="item.hotkey"
@@ -69,5 +69,4 @@ if (props.item.hotkey && props.item.name) {
     router.push({ name: props.item.name });
   });
 }
-
 </script>

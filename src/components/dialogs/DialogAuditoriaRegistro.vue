@@ -25,8 +25,8 @@
     <template #content>
       <v-list density="compact">
         <v-list-item
-          title="Criado em"
           :subtitle="formatarData(auditoria?.criadoEm)"
+          title="Criado em"
         >
           <template #prepend>
             <v-icon
@@ -38,8 +38,8 @@
         </v-list-item>
 
         <v-list-item
-          title="Criado por"
           :subtitle="formatarResponsavel(auditoria?.criadoPor, auditoria?.criadoPorReferencia)"
+          title="Criado por"
         >
           <template #prepend>
             <v-icon
@@ -53,8 +53,8 @@
         <v-divider class="my-2" />
 
         <v-list-item
-          title="Última edição"
           :subtitle="formatarData(auditoria?.atualizadoEm)"
+          title="Última edição"
         >
           <template #prepend>
             <v-icon
@@ -66,8 +66,8 @@
         </v-list-item>
 
         <v-list-item
-          title="Editado por"
           :subtitle="formatarResponsavel(auditoria?.atualizadoPor, auditoria?.atualizadoPorReferencia)"
+          title="Editado por"
         >
           <template #prepend>
             <v-icon

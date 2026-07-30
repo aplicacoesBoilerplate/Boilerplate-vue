@@ -1,28 +1,26 @@
 // Ecossistema
-import { computed, type Ref, type ComputedRef } from 'vue';
+import { computed, type ComputedRef, type Ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter, type RouteRecordRaw } from 'vue-router';
-
-// Types e Interfaces
-import type {
-  TAcaoApiRbac,
-  IMapeamentoRotaApiRbac,
-  IPermissaoCargoRbac,
-  TComportamentoPadraoPermissao,
-  IRedirecionamentoInicialRbac,
-} from '@/models/model/rbac/ICargoRbac';
+import { type RouteRecordRaw, useRouter } from 'vue-router';
 
 // Mapeamentos
 import {
-  ACOES_API_RBAC,
   ACOES_API_REDIRECIONAMENTO_INICIAL_RBAC,
-  RECURSO_PERMISSAO_API_RBAC,
-  RECURSO_PERMISSAO_ROTAS_RBAC,
+  MAPEAMENTO_ROTAS_API_RBAC,
   montarAcaoEndpointApiRbac,
   montarChavePermissaoRbac,
-  criarCargoRbacPadrao,
-} from '@/models/model/rbac/ICargoRbac';
-import { MAPEAMENTO_ROTAS_API_RBAC } from '@/models/model/rbac/MapeamentoAcoesRotasRbac';
+  RECURSO_PERMISSAO_API_RBAC,
+  RECURSO_PERMISSAO_ROTAS_RBAC,
+} from '@/models/model/core/rbac/rbac.api';
+import { criarCargoRbacPadrao } from '@/models/model/core/rbac/rbac.model';
+import { ACOES_API_RBAC } from '@/models/model/core/rbac/rbac.types';
+import type {
+  IMapeamentoRotaApiRbac,
+  IPermissaoCargoRbac,
+  IRedirecionamentoInicialRbac,
+  TAcaoApiRbac,
+  TComportamentoPadraoPermissao,
+} from '@/models/model/core/rbac/rbac.types';
 
 /**
  * @description Representa um item da árvore de rotas achatada com seus metadados de permissões.
@@ -73,7 +71,7 @@ export type TUseControlePermissoesCargoReturn = {
   atualizarPermissaoAcaoRota: (pItem: IItemPermissaoRota, pAcao: TAcaoApiRbac, pLiberado: boolean) => void;
   obterPermissoesComRedirecionamentoInicialLiberado: (
     pPermissoesAtuais: IPermissaoCargoRbac[],
-    pRedirecionamento: IRedirecionamentoInicialRbac
+    pRedirecionamento: IRedirecionamentoInicialRbac,
   ) => IPermissaoCargoRbac[];
 };
 
@@ -85,7 +83,7 @@ export type TUseControlePermissoesCargoReturn = {
  */
 export function useControlePermissoesCargo(
   pPermissoes: Ref<IPermissaoCargoRbac[]>,
-  pComportamentoPadrao: Ref<TComportamentoPadraoPermissao> | ComputedRef<TComportamentoPadraoPermissao>
+  pComportamentoPadrao: Ref<TComportamentoPadraoPermissao> | ComputedRef<TComportamentoPadraoPermissao>,
 ): TUseControlePermissoesCargoReturn {
   const router = useRouter();
   const { t } = useI18n();
@@ -112,11 +110,7 @@ export function useControlePermissoesCargo(
    * @param pPais - Lista de chaves das rotas superiores.
    * @returns {TNoRota[]} Lista de nós estruturados.
    */
-  function montarNosRotas(
-    pRotas: readonly RouteRecordRaw[],
-    pNivel = 0,
-    pPais: string[] = []
-  ): TNoRota[] {
+  function montarNosRotas(pRotas: readonly RouteRecordRaw[], pNivel = 0, pPais: string[] = []): TNoRota[] {
     return pRotas
       .filter((pRota) => !pRota.meta?.hidden)
       .map((pRota) => {
@@ -195,7 +189,7 @@ export function useControlePermissoesCargo(
       pPermissoes.value.map((pPermissao) => [
         obterChavePermissao(pPermissao.recurso, pPermissao.acao),
         pPermissao.liberado,
-      ])
+      ]),
     );
   }
 
@@ -220,7 +214,7 @@ export function useControlePermissoesCargo(
     pMapaPermissoes: Map<string, boolean>,
     pRecurso: string,
     pAcao: string,
-    pLiberado: boolean
+    pLiberado: boolean,
   ): void {
     pMapaPermissoes.set(obterChavePermissao(pRecurso, pAcao), pLiberado);
   }
@@ -232,11 +226,7 @@ export function useControlePermissoesCargo(
    * @param pAcao - Ação da permissão.
    * @returns {boolean} Status de liberação.
    */
-  function permissaoLiberadaNoMapa(
-    pMapaPermissoes: Map<string, boolean>,
-    pRecurso: string,
-    pAcao: string
-  ): boolean {
+  function permissaoLiberadaNoMapa(pMapaPermissoes: Map<string, boolean>, pRecurso: string, pAcao: string): boolean {
     return pMapaPermissoes.get(obterChavePermissao(pRecurso, pAcao)) ?? padraoLiberado.value;
   }
 
@@ -265,9 +255,7 @@ export function useControlePermissoesCargo(
    * @returns {boolean} True se liberado.
    */
   function permissaoLiberada(pRecurso: string, pAcao: string): boolean {
-    const permissao = pPermissoes.value.find(
-      (pPerm) => pPerm.recurso === pRecurso && pPerm.acao === pAcao
-    );
+    const permissao = pPermissoes.value.find((pPerm) => pPerm.recurso === pRecurso && pPerm.acao === pAcao);
     return permissao?.liberado ?? padraoLiberado.value;
   }
 
@@ -280,9 +268,7 @@ export function useControlePermissoesCargo(
     if (permissaoLiberada(RECURSO_PERMISSAO_ROTAS_RBAC, pRota.chave)) {
       return true;
     }
-    return pRota.descendentes.some((pDescendente) =>
-      permissaoLiberada(RECURSO_PERMISSAO_ROTAS_RBAC, pDescendente)
-    );
+    return pRota.descendentes.some((pDescendente) => permissaoLiberada(RECURSO_PERMISSAO_ROTAS_RBAC, pDescendente));
   }
 
   /**
@@ -309,7 +295,7 @@ export function useControlePermissoesCargo(
     }
 
     return endpoints.every((pEndpoint) =>
-      permissaoLiberada(RECURSO_PERMISSAO_API_RBAC, montarAcaoEndpointApiRbac(pEndpoint))
+      permissaoLiberada(RECURSO_PERMISSAO_API_RBAC, montarAcaoEndpointApiRbac(pEndpoint)),
     );
   }
 
@@ -325,13 +311,11 @@ export function useControlePermissoesCargo(
       return true;
     }
 
-    // 2. Se for a ação de 'consultar' (leitura), ela ficará desabilitada se qualquer 
+    // 2. Se for a ação de 'consultar' (leitura), ela ficará desabilitada se qualquer
     // outra ação de escrita (gravar, editar ou remover) estiver ativada, para forçar a leitura ativa.
     if (pAcao === 'consultar') {
       const possuiEscrita =
-        acaoApiLiberada(pRota, 'gravar') ||
-        acaoApiLiberada(pRota, 'editar') ||
-        acaoApiLiberada(pRota, 'remover');
+        acaoApiLiberada(pRota, 'gravar') || acaoApiLiberada(pRota, 'editar') || acaoApiLiberada(pRota, 'remover');
 
       return possuiEscrita;
     }
@@ -383,8 +367,9 @@ export function useControlePermissoesCargo(
    */
   function atualizarPermissaoRota(pRota: IItemPermissaoRota, pLiberado: boolean): void {
     const mapaPermissoes = criarMapaPermissoes();
-    const rotasAfetadas = [pRota, ...pRota.descendentes.map((pChave) => mapaRotas.value.get(pChave))]
-      .filter((pRotaAtual): pRotaAtual is IItemPermissaoRota => Boolean(pRotaAtual));
+    const rotasAfetadas = [pRota, ...pRota.descendentes.map((pChave) => mapaRotas.value.get(pChave))].filter(
+      (pRotaAtual): pRotaAtual is IItemPermissaoRota => Boolean(pRotaAtual),
+    );
 
     // Atualiza a rota e todos os descendentes
     rotasAfetadas.forEach((pRotaAtual) => {
@@ -411,11 +396,7 @@ export function useControlePermissoesCargo(
    * @param pAcao - Ação a ser alterada (consultar, gravar, etc).
    * @param pLiberado - Novo status de liberação.
    */
-  function atualizarPermissaoAcaoRota(
-    pRota: IItemPermissaoRota,
-    pAcao: TAcaoApiRbac,
-    pLiberado: boolean
-  ): void {
+  function atualizarPermissaoAcaoRota(pRota: IItemPermissaoRota, pAcao: TAcaoApiRbac, pLiberado: boolean): void {
     const endpoints = pRota.recursoApi?.acoes[pAcao] ?? [];
 
     if (!endpoints.length) {
@@ -428,9 +409,7 @@ export function useControlePermissoesCargo(
     if (pLiberado) {
       // Força a liberação da própria rota e de seus pais
       definirPermissaoNoMapa(mapaPermissoes, RECURSO_PERMISSAO_ROTAS_RBAC, pRota.chave, true);
-      pRota.pais.forEach((pPai) =>
-        definirPermissaoNoMapa(mapaPermissoes, RECURSO_PERMISSAO_ROTAS_RBAC, pPai, true)
-      );
+      pRota.pais.forEach((pPai) => definirPermissaoNoMapa(mapaPermissoes, RECURSO_PERMISSAO_ROTAS_RBAC, pPai, true));
 
       // Regra de negócio: Se habilitou ação de escrita, força a liberação de 'consultar'
       if (pAcao !== 'consultar') {
@@ -450,7 +429,7 @@ export function useControlePermissoesCargo(
   function atualizarPermissoesApiDaRotaNoMapa(
     pMapaPermissoes: Map<string, boolean>,
     pRota: IItemPermissaoRota,
-    pLiberado: boolean
+    pLiberado: boolean,
   ): void {
     if (!pRota.recursoApi) {
       return;
@@ -463,9 +442,7 @@ export function useControlePermissoesCargo(
     }
 
     // Se a rota for bloqueada, bloqueia todas as ações dela
-    ACOES_API_RBAC.forEach((pAcao) =>
-      definirPermissaoAcaoApiNoMapa(pMapaPermissoes, pRota, pAcao, false)
-    );
+    ACOES_API_RBAC.forEach((pAcao) => definirPermissaoAcaoApiNoMapa(pMapaPermissoes, pRota, pAcao, false));
   }
 
   /**
@@ -479,7 +456,7 @@ export function useControlePermissoesCargo(
     pMapaPermissoes: Map<string, boolean>,
     pRota: IItemPermissaoRota,
     pAcao: TAcaoApiRbac,
-    pLiberado: boolean
+    pLiberado: boolean,
   ): void {
     const endpoints = pRota.recursoApi?.acoes[pAcao] ?? [];
 
@@ -488,7 +465,7 @@ export function useControlePermissoesCargo(
         pMapaPermissoes,
         RECURSO_PERMISSAO_API_RBAC,
         montarAcaoEndpointApiRbac(pEndpoint),
-        pLiberado
+        pLiberado,
       );
     });
   }
@@ -498,10 +475,7 @@ export function useControlePermissoesCargo(
    * @param pMapaPermissoes - Mapa de permissões.
    * @param pPais - Chaves das rotas pais.
    */
-  function sincronizarPaisPeloEstadoDosFilhos(
-    pMapaPermissoes: Map<string, boolean>,
-    pPais: string[]
-  ): void {
+  function sincronizarPaisPeloEstadoDosFilhos(pMapaPermissoes: Map<string, boolean>, pPais: string[]): void {
     [...pPais].reverse().forEach((pPai) => {
       const rotaPai = mapaRotas.value.get(pPai);
 
@@ -510,7 +484,7 @@ export function useControlePermissoesCargo(
       }
 
       const possuiFilhoLiberado = rotaPai.descendentes.some((pDescendente) =>
-        permissaoLiberadaNoMapa(pMapaPermissoes, RECURSO_PERMISSAO_ROTAS_RBAC, pDescendente)
+        permissaoLiberadaNoMapa(pMapaPermissoes, RECURSO_PERMISSAO_ROTAS_RBAC, pDescendente),
       );
 
       definirPermissaoNoMapa(pMapaPermissoes, RECURSO_PERMISSAO_ROTAS_RBAC, pPai, possuiFilhoLiberado);
@@ -527,7 +501,7 @@ export function useControlePermissoesCargo(
    */
   function obterPermissoesComRedirecionamentoInicialLiberado(
     pPermissoesAtuais: IPermissaoCargoRbac[],
-    pRedirecionamento: IRedirecionamentoInicialRbac
+    pRedirecionamento: IRedirecionamentoInicialRbac,
   ): IPermissaoCargoRbac[] {
     if (!pRedirecionamento.name) {
       return pPermissoesAtuais;
@@ -540,7 +514,7 @@ export function useControlePermissoesCargo(
       pPermissoesAtuais.map((pPermissao) => [
         montarChavePermissaoRbac(pPermissao.recurso, pPermissao.acao),
         { ...pPermissao },
-      ])
+      ]),
     );
 
     const rota = obterRotaPermissaoCargo(router.options.routes, pRedirecionamento.name);
@@ -550,11 +524,8 @@ export function useControlePermissoesCargo(
     // Libera a rota de redirecionamento e todos os seus pais para permitir o carregamento do menu
     chavesRotas.forEach((pChaveRota) => {
       permissoesAlteradas =
-        definirPermissaoLiberadaNoMapaRedirecionamento(
-          mapaPermissoes,
-          RECURSO_PERMISSAO_ROTAS_RBAC,
-          pChaveRota
-        ) || permissoesAlteradas;
+        definirPermissaoLiberadaNoMapaRedirecionamento(mapaPermissoes, RECURSO_PERMISSAO_ROTAS_RBAC, pChaveRota) ||
+        permissoesAlteradas;
     });
 
     // Libera por padrão as ações básicas de redirecionamento inicial (geralmente consultar e gravar)
@@ -564,7 +535,7 @@ export function useControlePermissoesCargo(
           definirPermissaoLiberadaNoMapaRedirecionamento(
             mapaPermissoes,
             RECURSO_PERMISSAO_API_RBAC,
-            montarAcaoEndpointApiRbac(pEndpoint)
+            montarAcaoEndpointApiRbac(pEndpoint),
           ) || permissoesAlteradas;
       });
     });
@@ -582,7 +553,7 @@ export function useControlePermissoesCargo(
   function definirPermissaoLiberadaNoMapaRedirecionamento(
     pMapaPermissoes: Map<string, IPermissaoCargoRbac>,
     pRecurso: string,
-    pAcao: string
+    pAcao: string,
   ): boolean {
     const chavePermissao = montarChavePermissaoRbac(pRecurso, pAcao);
     const permissaoAtual = pMapaPermissoes.get(chavePermissao);
@@ -610,7 +581,7 @@ export function useControlePermissoesCargo(
   function obterRotaPermissaoCargo(
     pRotas: readonly RouteRecordRaw[],
     pNomeRota: string,
-    pPais: string[] = []
+    pPais: string[] = [],
   ): { chave: string; pais: string[] } | undefined {
     for (const rota of pRotas) {
       const chave = String(rota.name ?? rota.path);
@@ -640,7 +611,7 @@ export function useControlePermissoesCargo(
    */
   function definirPermissao(pRecurso: string, pAcao: string, pLiberado: boolean): void {
     const permissoesAtualizadas = pPermissoes.value.filter(
-      (pPermissao) => !(pPermissao.recurso === pRecurso && pPermissao.acao === pAcao)
+      (pPermissao) => !(pPermissao.recurso === pRecurso && pPermissao.acao === pAcao),
     );
 
     permissoesAtualizadas.push({

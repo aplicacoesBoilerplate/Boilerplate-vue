@@ -1,11 +1,12 @@
 // Types e Interfaces
-import type { ETipoFiltro } from './enums/ETipoFiltro';
 import type { EOperadoresFiltro } from './enums/EOperadoresFiltro';
+import type { ETipoFiltro } from './enums/ETipoFiltro';
 import type { IConsultaRegistrosFiltro } from './IConsultaRegistrosFiltro';
 
-export interface IOpcaoFiltro {
-  valor: any;
+export interface IOpcaoSelecao {
+  valor: unknown;
   descricao: string;
+  icone?: string;
 }
 
 /**
@@ -17,7 +18,7 @@ export interface IOpcaoFiltro {
  * @property {string} icone - O ícone que será exibido no filtro
  * @property {ETipoFiltro[]} tipos - Os tipos de dados do campo que serão aceitos no filtro
  * @property {ICampoFiltro<T>[]} filhos - Suporte a campos de objetos aninhados (recursivo)
- * @property {IOpcaoFiltro[]} opcoes - Opções disponíveis quando o tipo for SELECT
+ * @property {IOpcaoSelecao[]} opcoes - Opções disponíveis quando o tipo for SELECT
  * @property {EOperadoresFiltro[]} operadores - Operadores específicos permitidos para este campo
  * @property {boolean} pesquisaPadrao - Indica se este é o campo utilizado por padrão quando o usuário usar a barra de busca rápida (Ex: Nome)
  * @property {EOperadoresFiltro} operadorPesquisaPadrao - Operador utilizado pela busca rápida para o campo padrão (Ex: CONTEM, IGUAL)
@@ -30,7 +31,7 @@ export interface ICampoFiltro<T, TRegistroConsulta extends object = Record<strin
   icone: string;
   tipos: ETipoFiltro[];
   filhos?: ICampoFiltro<T>[];
-  opcoes?: IOpcaoFiltro[];
+  opcoes?: IOpcaoSelecao[];
   operadores?: EOperadoresFiltro[];
   pesquisaPadrao?: boolean;
   operadorPesquisaPadrao?: EOperadoresFiltro;

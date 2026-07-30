@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { defineStore } from 'pinia';
 
 interface ListSnapshot {
   items: any[];
@@ -32,6 +32,6 @@ export const useListaCacheStore = defineStore('listaCache', () => {
     saveSnapshot,
     getSnapshot,
     clearSnapshot,
-    clearAll
+    clearAll,
   };
 });

@@ -51,10 +51,20 @@ import { useI18n } from 'vue-i18n';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
-import type { ILogin } from '@/models/model/autenticacao/autenticacao.models';
+import { criarLoginPadrao, type ILogin } from '@/models/model/core/autenticacao.model';
 
 // Componentes
 import BaseForm from '@/components/forms/base/BaseForm.vue';
+
+/**
+ * @description Métodos expostos pelo formulário de login.
+ * @property {() => Promise<void>} refreshForm - Restaura o estado original do formulário.
+ * @property {() => void} submit - Dispara a validação e submit do formulário.
+ */
+export interface IFormLoginExpose {
+  refreshForm: () => Promise<void>;
+  submit: () => void;
+}
 
 type TEmits = {
   onSubmit: [];
@@ -73,9 +83,14 @@ const formIsValid = defineModel<boolean>('valid', { default: false });
 const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
 const mostrarSenha = ref(false);
 
+async function refreshForm(): Promise<void> {
+  if (!baseFormRef.value) return;
+  await baseFormRef.value.refreshForm(() => criarLoginPadrao());
+}
+
 // Expose
 defineExpose({
-  reset: () => baseFormRef.value?.resetValidation(),
+  refreshForm,
   submit: () => baseFormRef.value?.submit(),
-});
+} satisfies IFormLoginExpose);
 </script>

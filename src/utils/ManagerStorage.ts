@@ -1,9 +1,7 @@
 export type TManagerStorageLocation = 'local' | 'session';
 
 // TValue é semelhante ao T do Generics
-type TStoredValue<TValue> =
-  | TValue
-  | TManagedStorageValue<TValue>;
+type TStoredValue<TValue> = TValue | TManagedStorageValue<TValue>;
 
 type TManagedStorageValue<TValue> = {
   __managerStorage: true;
@@ -58,13 +56,14 @@ export class ClassManagerStorage {
     const expiresAt = this.resolveExpiresAt(options);
 
     // So envelopa o valor quando ha regra de expiracao; caso contrario mantem JSON simples.
-    const storageValue: TStoredValue<TValue> = expiresAt !== null
-      ? {
-        __managerStorage: true,
-        expiresAt,
-        value,
-      }
-      : value;
+    const storageValue: TStoredValue<TValue> =
+      expiresAt !== null
+        ? {
+            __managerStorage: true,
+            expiresAt,
+            value,
+          }
+        : value;
 
     this.safeSetItem(storage, key, JSON.stringify(storageValue));
   }
@@ -85,8 +84,9 @@ export class ClassManagerStorage {
     const storage = this.resolveStorage(options);
 
     try {
-      return Array.from({ length: storage.length }, (_, index) => storage.key(index))
-        .filter((key): key is string => typeof key === 'string');
+      return Array.from({ length: storage.length }, (_, index) => storage.key(index)).filter(
+        (key): key is string => typeof key === 'string',
+      );
     } catch {
       return [];
     }
@@ -137,10 +137,7 @@ export class ClassManagerStorage {
 
   private static isManagedValue<TValue>(value: TStoredValue<TValue>): value is TManagedStorageValue<TValue> {
     return (
-      typeof value === 'object' &&
-      value !== null &&
-      '__managerStorage' in value &&
-      value.__managerStorage === true
+      typeof value === 'object' && value !== null && '__managerStorage' in value && value.__managerStorage === true
     );
   }
 

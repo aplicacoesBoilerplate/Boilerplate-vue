@@ -3,10 +3,8 @@ import { useAuthStore } from '@/stores/auth.store';
 import { useSnackbarStore } from '@/stores/Snackbar.store';
 
 // Models
-import {
-  permissaoEstaLiberada,
-  RECURSO_PERMISSAO_GERAL_RBAC,
-} from '@/models/model/rbac/ICargoRbac';
+import { permissaoEstaLiberada } from '@/models/model/core/rbac/rbac.model';
+import { RECURSO_PERMISSAO_GERAL_RBAC } from '@/models/model/core/rbac/rbac.api';
 
 export type TAcaoPermissaoGeralRbac = 'exportarDados' | 'visualizarGraficos' | 'gerenciarRegistros';
 

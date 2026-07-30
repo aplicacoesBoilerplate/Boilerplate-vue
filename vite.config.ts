@@ -1,23 +1,23 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import vuetify from 'vite-plugin-vuetify'
-import { VitePWA } from 'vite-plugin-pwa'
-import Unfonts from 'unplugin-fonts/vite'
-import { execSync } from 'child_process'
-import { fileURLToPath, URL } from 'node:url'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import vueDevTools from 'vite-plugin-vue-devtools';
+import vuetify from 'vite-plugin-vuetify';
+import { VitePWA } from 'vite-plugin-pwa';
+import Unfonts from 'unplugin-fonts/vite';
+import { execSync } from 'child_process';
+import { fileURLToPath, URL } from 'node:url';
 
-let lastCommitDate = ''
+let lastCommitDate = '';
 try {
-  lastCommitDate = execSync('git log -1 --format=%cI').toString().trim()
+  lastCommitDate = execSync('git log -1 --format=%cI').toString().trim();
 } catch (e) {
-  lastCommitDate = new Date().toISOString()
+  lastCommitDate = new Date().toISOString();
 }
 
 // https://vite.dev/config/
 export default defineConfig({
   server: {
-    port: 5173,
+    port: 5170,
     allowedHosts: ['host.docker.internal'],
   },
   plugins: [
@@ -44,8 +44,8 @@ export default defineConfig({
         name: 'Boilerplate App',
         short_name: 'Boilerplate',
         description: 'Aplicacao Boilerplate Frontend.',
-        theme_color: '#FAFAFB',
-        background_color: '#FAFAFB',
+        theme_color: '#0f1117',
+        background_color: '#0f1117',
         display: 'standalone',
         start_url: '/',
         icons: [
@@ -69,16 +69,16 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: '/index.html',
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
       },
       devOptions: {
         enabled: true,
-        type: 'module'
-      }
+        type: 'module',
+      },
     }),
   ],
   define: {
-    '__APP_BUILD_DATE__': JSON.stringify(lastCommitDate)
+    __APP_BUILD_DATE__: JSON.stringify(lastCommitDate),
   },
   resolve: {
     alias: {
@@ -86,4 +86,4 @@ export default defineConfig({
     },
   },
   base: '/',
-})
+});

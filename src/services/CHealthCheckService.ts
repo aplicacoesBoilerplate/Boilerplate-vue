@@ -1,5 +1,5 @@
 // Types e Interfaces
-import type { IHealthCheckResultado, IHealthCheckResponse } from '@/models/services/IHealthCheck';
+import type { IHealthCheckResponse, IHealthCheckResultado } from '@/models/services/IHealthCheck';
 
 // Services
 import http from '@/services/base/axios';

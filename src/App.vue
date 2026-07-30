@@ -1,13 +1,15 @@
 <template>
   <v-app>
-    <component :is="layoutComponent" />
+    <component
+      :is="layoutComponent"
+      v-if="!carregandoHealthCheck"
+    />
+
     <SnackbarQueue />
 
     <OverlayFullscream v-model:exibirOverlay="carregandoHealthCheck">
       <template #mensagem>
-        <div class="text-subtitle-1 font-weight-bold">
-          Verificando servidor
-        </div>
+        <div class="text-subtitle-1 font-weight-bold">Verificando servidor</div>
 
         <div class="text-body-2 text-medium-emphasis text-center">
           Aguarde enquanto validamos a disponibilidade da API.
@@ -22,15 +24,16 @@
 import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
-// Componentes
-import AppLayout from '@/layouts/AppLayout.vue';
-import DefaultLayout from '@/layouts/DefaultLayout.vue';
-import SnackbarQueue from './components/SnackbarQueue.vue';
-import OverlayFullscream from '@/components/layout/OverlayFullscream.vue';
-
 // Composables
 import { useHealthCheck } from '@/composables/useHealthCheck';
 import { useSincronizacaoPermissoesRbac } from '@/composables/useSincronizacaoPermissoesRbac';
+
+// Componentes
+import AppLayout from '@/components/layouts/AppLayout.vue';
+import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
+import OverlayFullscream from '@/components/layouts/OverlayFullscream.vue';
+
+import SnackbarQueue from './components/common/SnackbarQueue.vue';
 
 // Composables
 const route = useRoute();
@@ -47,21 +50,3 @@ onMounted(() => {
   void verificarHealthCheck();
 });
 </script>
-
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-/* Oculta scrollbars globalmente */
-::-webkit-scrollbar {
-  display: none; /* Chrome, Safari e Opera */
-}
-
-* {
-  -ms-overflow-style: none;  /* IE e Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-</style>

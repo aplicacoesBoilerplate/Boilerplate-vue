@@ -6,6 +6,7 @@
     <GenericView
       :contexto="CONTEXTO_LISTA_ERROS"
       :serviceFetch="buscarErros"
+      :serviceExportacao="CErroService.consultarTodosRegistros"
       :colunasExportacao="MAPEAMENTO_TABELA_ERROS"
       :exibirNovoRegistro="false"
       nomeArquivoExportacao="erros-sistema"
@@ -31,8 +32,11 @@
                     size="24"
                     class="mr-3"
                   />
-                  
-                  <span class="font-weight-bold text-primary text-truncate text-body-2" style="max-width: calc(100% - 100px);">
+
+                  <span
+                    class="font-weight-bold text-primary text-truncate text-body-2"
+                    style="max-width: calc(100% - 100px)"
+                  >
                     #{{ erro.idError }} - {{ formatarTituloMensagem(erro.mensagem) }}
                   </span>
 
@@ -60,19 +64,18 @@
 
 <script setup lang="ts">
 // Types e Interfaces
-import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
+// Mapeamentos
+import { MAPEAMENTO_TABELA_ERROS } from '@/models/model/errors/MapeamentoTabelaErros';
+import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 import type { IErros } from '@/models/model/errors/IErros';
 
 // Services
 import { CErroService } from '@/services/CErroService';
 
-// Mapeamentos
-import { MAPEAMENTO_TABELA_ERROS } from '@/models/model/errors/MapeamentoTabelaErros';
-
-// Componentes
-import GenericView from '@/components/layout/generic/GenericView.vue';
-import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
 import DetalhesLogErro from '@/components/errors/DetalhesLogErro.vue';
+import GenericInfiniteListItem from '@/components/layouts/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
+// Componentes
+import GenericView from '@/components/layouts/generic/GenericView.vue';
 
 // Constantes
 const CONTEXTO_LISTA_ERROS = 'lista-erros';
@@ -83,7 +86,7 @@ const CONTEXTO_LISTA_ERROS = 'lista-erros';
  * @param pPayload Parâmetros contendo o limite, cursor e ordem para paginação.
  * @returns Retorna a resposta contendo a lista de erros e status da paginação.
  */
-async function buscarErros(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse<IErros>> {
+async function buscarErros(pPayload: IConsultaRegistros): Promise<IResultadoConsultaRegistros<IErros>> {
   return CErroService.consultar(pPayload);
 }
 

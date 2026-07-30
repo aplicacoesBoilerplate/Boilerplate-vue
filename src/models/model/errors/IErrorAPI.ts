@@ -1,14 +1,14 @@
 // Types e Interfaces
-import type { IUsuario } from "../usuario/lUsuario";
+import type { IUsuario } from '../usuario/lUsuario';
 
 /**
  * Interface que representa o rastro de um erro retornado pela API
  */
 export interface ITraceError {
-  linha: number
-  arquivo: string
-  classe: string
-  metodo: string
+  linha: number;
+  arquivo: string;
+  classe: string;
+  metodo: string;
 }
 
 /**

@@ -30,11 +30,12 @@
 import { nextTick, ref } from 'vue';
 
 // Types e Interfaces
-import type { ILogin } from '@/models/model/autenticacao/autenticacao.models';
+import type { ILogin } from '@/models/model/core/autenticacao.model';
+
+import FormLogin from '@/components/forms/FormLogin.vue';
 
 // Componentes
 import AcoesFormularioAutenticacao from './AcoesFormularioAutenticacao.vue';
-import FormLogin from '@/components/forms/FormLogin.vue';
 
 type TProps = {
   /**
@@ -96,7 +97,7 @@ const formLoginRef = ref<InstanceType<typeof FormLogin> | null>(null);
 // Funções
 async function reset(): Promise<void> {
   await nextTick();
-  formLoginRef.value?.reset();
+  formLoginRef.value?.refreshForm();
 }
 
 async function submit(): Promise<void> {

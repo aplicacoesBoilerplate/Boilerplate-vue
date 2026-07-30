@@ -2,7 +2,7 @@
   <div class="d-flex align-center justify-center w-100">
     <GoogleLogin
       v-if="googleConfigurado"
-      :client-id="clientId"
+      :clientId="clientId"
       :callback="handleGoogleCallback"
       :buttonConfig="CONFIGURACAO_BOTAO_GOOGLE"
       prompt
@@ -11,11 +11,11 @@
     <v-btn
       v-else
       :loading="carregando"
-      block
       color="surface-variant"
-      prepend-icon="mdi-google"
+      prependIcon="mdi-google"
       text="Google"
       variant="tonal"
+      block
       @click="emits('autenticado')"
     />
   </div>
@@ -24,7 +24,6 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from 'vue';
-
 // Componentes
 import { GoogleLogin } from 'vue3-google-login';
 
@@ -90,5 +89,4 @@ function handleGoogleCallback(pResposta: TRespostaCredencialGoogle): void {
 
   emits('autenticado', pResposta.credential);
 }
-
 </script>

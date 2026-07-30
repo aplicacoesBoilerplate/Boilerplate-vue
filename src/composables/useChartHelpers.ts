@@ -4,7 +4,7 @@ import type { IValorGrafico } from '@/models/components/IValorGrafico';
 export function useChartHelpers(
   items: any[],
   campoAgrupamento: string,
-  chartAgregacao: 'sum' | 'count' = 'count'
+  chartAgregacao: 'sum' | 'count' = 'count',
 ): IValorGrafico[] {
   if (!items || items.length === 0) {
     return [];
@@ -12,7 +12,7 @@ export function useChartHelpers(
 
   const agrupado = new Map<string, { valor: number; valorOriginal: unknown }>();
 
-  items.forEach(item => {
+  items.forEach((item) => {
     const valorOriginal = item[campoAgrupamento];
     const chave = String(valorOriginal);
 

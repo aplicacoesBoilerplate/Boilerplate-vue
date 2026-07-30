@@ -1,5 +1,6 @@
 // Ecossistema vue
 import { useRoute, useRouter } from 'vue-router';
+
 import type { RouteLocationRaw } from 'vue-router';
 
 // Utilitários

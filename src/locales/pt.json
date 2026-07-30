@@ -12,7 +12,7 @@
     },
     "dashboard": {
       "title": "Painel"
-    },    
+    },
     "systemInfo": {
       "title": "Informações do sistema"
     },
@@ -268,12 +268,12 @@
       "reqGenerics": "Ocorreu um erro na requisição!"
     },
     "forms": {
-        "formUsers": {
-          "createUser": "Criar usuário",
-          "editingUser": "Editar usuário",
-          "editingUserId": "Editar usuário #{id}"
-        }
-      },
+      "formUsers": {
+        "createUser": "Criar usuário",
+        "editingUser": "Editar usuário",
+        "editingUserId": "Editar usuário #{id}"
+      }
+    },
     "components": {
       "dataTable": {
         "titleDefault": "Resultados",

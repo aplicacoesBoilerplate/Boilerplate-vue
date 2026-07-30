@@ -10,9 +10,7 @@
       <div class="d-flex align-center justify-space-between flex-wrap ga-3 mb-4">
         <div>
           <div class="text-h6 font-weight-bold">Health-check</div>
-          <div class="text-body-2 text-medium-emphasis">
-            Retorno atual do endpoint administrativo da API.
-          </div>
+          <div class="text-body-2 text-medium-emphasis">Retorno atual do endpoint administrativo da API.</div>
         </div>
 
         <div class="d-flex align-center ga-2">
@@ -24,10 +22,10 @@
           </v-chip>
 
           <v-btn
+            :loading="carregando"
             icon="mdi-refresh"
             color="primary"
             variant="tonal"
-            :loading="carregando"
             @click="verificar"
           />
         </div>
@@ -43,9 +41,9 @@
 
       <v-sheet
         class="pa-3 overflow-auto bg-background"
+        maxHeight="520"
         rounded
         border
-        maxHeight="520"
       >
         <pre class="ma-0 text-body-2">{{ retornoFormatado }}</pre>
       </v-sheet>
@@ -53,9 +51,7 @@
 
     <OverlayFullscream v-model:exibirOverlay="carregando">
       <template #mensagem>
-        <div class="text-subtitle-1 font-weight-bold">
-          Consultando health-check
-        </div>
+        <div class="text-subtitle-1 font-weight-bold">Consultando health-check</div>
 
         <div class="text-body-2 text-medium-emphasis text-center">
           Aguarde enquanto buscamos o retorno atualizado do servidor.
@@ -73,7 +69,7 @@ import { computed, onMounted } from 'vue';
 import { useHealthCheck } from '@/composables/useHealthCheck';
 
 // Componentes
-import OverlayFullscream from '@/components/layout/OverlayFullscream.vue';
+import OverlayFullscream from '@/components/layouts/OverlayFullscream.vue';
 
 // Composables
 const { carregando, resultado, verificarHealthCheck } = useHealthCheck();

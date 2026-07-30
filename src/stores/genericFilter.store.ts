@@ -1,19 +1,17 @@
 // Ecossistema Vue
 import { computed, ref, toRaw, watch } from 'vue';
-import { useRoute, useRouter, type LocationQueryRaw } from 'vue-router';
-
 // Pinia
 import { defineStore } from 'pinia';
-
-// Stores
-import { useSnackbarStore } from './Snackbar.store';
-
-// Types e Interfaces
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router';
 
 // Enums
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
+import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+// Types e Interfaces
+import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+
+// Stores
+import { useSnackbarStore } from './Snackbar.store';
 
 /**
  * @description Gerencia o estado de filtros aplicados em uma view específica (contexto).
@@ -63,7 +61,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
 
   /** Campos disponíveis para agrupamento na view atual baseados nos metadados da rota. */
   const camposAgrupadoresDisponiveis = computed(() => {
-    return camposDisponiveis.value.filter(campo => campo.disponivelAgrupamento);
+    return camposDisponiveis.value.filter((campo) => campo.disponivelAgrupamento);
   });
 
   const contextoFiltroAtual = computed(() => {
@@ -218,7 +216,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
 
       const campoChave = filtro.campo;
       // Serializa no formato: "condicao:valor" (ex: "contains:joao")
-      const valorFiltro = Array.isArray(filtro.valor) ? filtro.valor.join(',') : filtro.valor ?? '';
+      const valorFiltro = Array.isArray(filtro.valor) ? filtro.valor.join(',') : (filtro.valor ?? '');
       const valorConvertido = `${filtro.condicao}:${valorFiltro}`;
 
       if (query[campoChave]) {
@@ -263,10 +261,9 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
           if (splitVal.length >= 2) {
             const condition = splitVal[0];
             const value = splitVal.slice(1).join(':');
-            const valoresSelecionados = [
-              EOperadoresFiltro.SELECAO,
-              EOperadoresFiltro.EXCECAO,
-            ].includes(condition as EOperadoresFiltro)
+            const valoresSelecionados = [EOperadoresFiltro.SELECAO, EOperadoresFiltro.EXCECAO].includes(
+              condition as EOperadoresFiltro,
+            )
               ? value.split(',').filter(Boolean)
               : [];
 
@@ -305,7 +302,11 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     );
 
     if (isDuplicate) {
-      snackbarStore.adicionar({ tipo: 'info', titulo: 'Filtro duplicado', mensagem: 'Você já adicionou esta condição.' });
+      snackbarStore.adicionar({
+        tipo: 'info',
+        titulo: 'Filtro duplicado',
+        mensagem: 'Você já adicionou esta condição.',
+      });
       return;
     }
 
@@ -314,13 +315,19 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     persistirContextoAtual();
   }
 
-  /** Remove um filtro ativo no indice especificado. */
+  /**
+   * Remove um filtro ativo no indice especificado.
+   * @param index
+   */
   function removeFilter(index: number): void {
     filtersApplied.value.splice(index, 1);
     persistirContextoAtual();
   }
 
-  /** Move um filtro ativo devolta para o formulario (rascunho). */
+  /**
+   * Move um filtro ativo devolta para o formulario (rascunho).
+   * @param index
+   */
   function editFilter(index: number): void {
     const filtro = filtersApplied.value.splice(index, 1)[0];
     if (!filtro) return;
@@ -337,6 +344,9 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
 
   /**
    * Ativa um contexto descartável para montar filtros sem afetar a rota atual.
+   * @param pContexto
+   * @param pCamposDisponiveis
+   * @param pFiltrosIniciais
    */
   function ativarContextoTemporario(
     pContexto: string,
@@ -371,13 +381,17 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   const appliedCount = computed(() => filtersApplied.value.length);
 
   // Observadores
-  watch(() => [contextoFiltroAtual.value, route.fullPath], () => {
-    obterEstadoContexto(contextoFiltroAtual.value);
+  watch(
+    () => [contextoFiltroAtual.value, route.fullPath],
+    () => {
+      obterEstadoContexto(contextoFiltroAtual.value);
 
-    if (possuiFiltrosNaUrl()) {
-      loadFromUrl();
-    }
-  }, { immediate: true });
+      if (possuiFiltrosNaUrl()) {
+        loadFromUrl();
+      }
+    },
+    { immediate: true },
+  );
 
   return {
     estadosPorContexto,

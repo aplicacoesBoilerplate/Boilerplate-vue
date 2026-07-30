@@ -39,6 +39,8 @@ export function getRouteScrollSelector(route: Pick<RouteLocationNormalizedLoaded
 
 /**
  * Função que constrói o seletor composto para evitar colisao quando listas diferentes renderizam ids iguais.
+ * @param contextId
+ * @param itemKey
  */
 export function buildRouteScrollSelector(contextId: string, itemKey: string | number) {
   return [
@@ -49,11 +51,10 @@ export function buildRouteScrollSelector(contextId: string, itemKey: string | nu
 
 /**
  * Função que cria os bindings para o item ser encontrado depois que a lista restaurar seu contexto.
+ * @param contextId
+ * @param itemKey
  */
-export function createRouteScrollItemBindings(
-  contextId: string,
-  itemKey: string | number,
-) {
+export function createRouteScrollItemBindings(contextId: string, itemKey: string | number) {
   return {
     class: ROUTE_SCROLL_TARGET_CLASS,
     'data-scroll-context': contextId,
@@ -64,6 +65,8 @@ export function createRouteScrollItemBindings(
 
 /**
  * Função que aguarda o elemento ser encontrado.
+ * @param selector
+ * @param timeoutMs
  */
 export function waitForRouteScrollTarget(
   selector: string,
@@ -95,6 +98,7 @@ export function waitForRouteScrollTarget(
 
 /**
  * Função que marca o item como último visualizado.
+ * @param element
  */
 export function markRouteScrollTarget(element: Element) {
   // Apenas um item deve ter o destaque visual de "ultimo visualizado".
@@ -107,9 +111,8 @@ export function markRouteScrollTarget(element: Element) {
 
 /**
  * Função que protege o seletor quando ids/contextos possuem aspas ou barras.
+ * @param value
  */
 function escapeAttributeValue(value: string | number) {
-  return String(value)
-    .replace(/\\/g, '\\\\')
-    .replace(/"/g, '\\"');
+  return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }

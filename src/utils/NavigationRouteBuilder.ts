@@ -1,8 +1,7 @@
 // Ecossistema Vue
-import type { RouteRecordRaw } from 'vue-router';
-
 // Types e Interfaces
 import type { INavigationItem } from '@/models/components/INavigationItem';
+import type { RouteRecordRaw } from 'vue-router';
 
 // Class com a responsabilidade de montar os itens do componente NavigationDrawer.
 export class ClassNavigationRouteBuilder {

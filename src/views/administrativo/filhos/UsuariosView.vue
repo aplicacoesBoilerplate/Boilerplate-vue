@@ -12,6 +12,7 @@
           ref="genericViewRef"
           :contexto="CONTEXTO_LISTA_USUARIOS"
           :serviceFetch="buscarUsuarios"
+          :serviceExportacao="CUsuarioService.consultarTodosRegistros"
           :colunasExportacao="headersExportacao"
           nomeArquivoExportacao="usuarios"
           @novoRegistro="gerenciarRegistro"
@@ -25,10 +26,10 @@
                 <v-btn
                   v-bind="props"
                   :icon="hiddenChart ? 'mdi-chart-pie' : 'mdi-table'"
+                  :disabled="!podeVisualizarGraficos"
                   color="info"
                   variant="tonal"
                   size="x-small"
-                  :disabled="!podeVisualizarGraficos"
                   @click="alternarExibicaoGrafico(toggleChart)"
                 />
               </template>
@@ -45,11 +46,11 @@
               <template #activator="{ props }">
                 <v-btn
                   v-bind="mergeProps(props, tooltipProps)"
+                  :disabled="!podeGerenciarRegistros"
                   color="primary"
                   variant="tonal"
                   size="x-small"
                   icon="mdi-plus"
-                  :disabled="!podeGerenciarRegistros"
                   @click="acionarNovoRegistro"
                 />
               </template>
@@ -97,25 +98,25 @@
                     />
 
                     <v-btn
+                      :disabled="!podeGerenciarRegistros"
                       icon="mdi-pencil"
                       variant="text"
                       color="info"
                       size="small"
                       class="mr-2"
-                      :disabled="!podeGerenciarRegistros"
                       @click.stop="
-                          gerenciarRegistro({
+                        gerenciarRegistro({
                           modoEdicao: true,
                           item: usuario,
                         })
                       "
                     />
                     <v-btn
+                      :disabled="!podeRemoverUsuario(usuario)"
                       icon="mdi-delete"
                       variant="text"
                       color="error"
                       size="small"
-                      :disabled="!podeRemoverUsuario(usuario)"
                       @click.stop="excluirUsuario(usuario)"
                     />
                   </div>
@@ -144,33 +145,32 @@
 import { computed, mergeProps, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { useAuthStore } from '@/stores/auth.store';
+import { useGenericFilterStore } from '@/stores/genericFilter.store';
 // Stores
 import { useGenericListStore } from '@/stores/genericList.store';
-import { useGenericFilterStore } from '@/stores/genericFilter.store';
-import { useAuthStore } from '@/stores/auth.store';
 
 // Types e Interfaces
-import { criarUsuarioPadrao, type IUsuario } from '@/models/model/usuario/lUsuario';
-import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
+import { criarUsuarioPadrao, type IUsuario } from '@/models/model/core/usuario.model';
+// Mapeamentos
+import { MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO, MAPEAMENTO_TABELA_USUARIO } from '@/models/model/core/usuario.model';
+import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 
 // Composables
 import { useChartHelpers } from '@/composables/useChartHelpers';
-import { useRequisicaoService } from '@/composables/useRequisicaoService';
 import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
+import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
 // Services
-import { CUsuarioService } from '@/services/CUsuarioService';
+import { CUsuarioService } from '@/services/core/CUsuarioService';
 
-// Mapeamentos
-import { MAPEAMENTO_TABELA_USUARIO, MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO } from '@/models/model/usuario/MapeamentoTabelaUsuario';
-
+import BaseChart from '@/components/common/charts/BaseApexChart.vue';
+import DialogFormUsuario from '@/components/dialogs/core/DialogFormUsuario.vue';
+import DialogAuditoriaRegistro from '@/components/dialogs/DialogAuditoriaRegistro.vue';
+import GenericInfiniteListItem from '@/components/layouts/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
+import GenericView from '@/components/layouts/generic/GenericView.vue';
 // Componentes
 import GridDataChart from '@/components/layouts/GridDataChart.vue';
-import BaseChart from '@/components/charts/BaseChart.vue';
-import GenericView from '@/components/layout/generic/GenericView.vue';
-import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
-import DialogFormUsuario from '@/components/dialogs/DialogFormUsuario.vue';
-import DialogAuditoriaRegistro from '@/components/dialogs/DialogAuditoriaRegistro.vue';
 
 // Composables
 const listStore = useGenericListStore();
@@ -227,7 +227,7 @@ function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: IUsuario }): 
   exibirDialogUsuario.value = true;
 }
 
-async function buscarUsuarios(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse<IUsuario>> {
+async function buscarUsuarios(pPayload: IConsultaRegistros): Promise<IResultadoConsultaRegistros<IUsuario>> {
   return CUsuarioService.buscarTodos(pPayload);
 }
 
@@ -301,10 +301,7 @@ async function excluirUsuario(pUsuario: IUsuario): Promise<void> {
 
 function podeRemoverUsuario(pUsuario: IUsuario): boolean {
   return Boolean(
-    podeGerenciarRegistros.value &&
-    pUsuario.id &&
-    pUsuario.id !== 1 &&
-    pUsuario.id !== usuarioAutenticadoId.value,
+    podeGerenciarRegistros.value && pUsuario.id && pUsuario.id !== 1 && pUsuario.id !== usuarioAutenticadoId.value,
   );
 }
 
@@ -326,5 +323,4 @@ const chartDataComputed = computed(() => {
   const strategy = activeHeaderConfig.value?.chartAggregator || 'count';
   return useChartHelpers(items, key, strategy);
 });
-
 </script>

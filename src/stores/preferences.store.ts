@@ -1,6 +1,5 @@
 // Ecossistema vue
 import { ref, watch } from 'vue';
-
 // Pinia
 import { defineStore } from 'pinia';
 
@@ -8,11 +7,11 @@ import { defineStore } from 'pinia';
 import type { IPreferences, IPreferencesTheme } from '@/models/components/IPreferences';
 import type { IPreferenciaUsuario } from '@/models/services/IPreferenciaUsuario';
 
-// Services
-import { CPreferenciaUsuarioService } from '@/services/CPreferenciaUsuarioService';
-
 // Utilitários
 import { ClassManagerStorage } from '@/utils/ManagerStorage';
+
+// Services
+import { CPreferenciaUsuarioService } from '@/services/CPreferenciaUsuarioService';
 
 // Constantes
 const STORAGE_KEY = 'boilerplate.preferences';
@@ -42,9 +41,13 @@ export const usePreferencesStore = defineStore('preferences', () => {
   const erroRemoto = ref<unknown>(null);
 
   // Observadores
-  watch(preferences, (value) => {
-    ClassManagerStorage.set(STORAGE_KEY, value, STORAGE_OPTIONS);
-  }, { deep: true });
+  watch(
+    preferences,
+    (value) => {
+      ClassManagerStorage.set(STORAGE_KEY, value, STORAGE_OPTIONS);
+    },
+    { deep: true },
+  );
 
   // Funções
   function setDesktopDrawerVisible(pValue: boolean) {
@@ -102,8 +105,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
     try {
       const resposta = await CPreferenciaUsuarioService.buscarPreferenciasUsuarioAutenticado();
       const preferencia = resposta.preferencias.find(
-        (pPreferencia) => pPreferencia.contexto === CONTEXTO_PREFERENCIAS
-          && pPreferencia.chave === CHAVE_PREFERENCIAS,
+        (pPreferencia) => pPreferencia.contexto === CONTEXTO_PREFERENCIAS && pPreferencia.chave === CHAVE_PREFERENCIAS,
       );
 
       if (preferencia) {

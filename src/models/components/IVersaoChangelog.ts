@@ -1,3 +1,4 @@
+/** @description Opções das abas no componente das informações do sistema */
 export type TAbaSistema = 'geral' | 'versoes';
 
 /**
@@ -26,6 +27,7 @@ export type TVersaoChangelog = {
   totalItens: number;
 };
 
+/** @description Objeto usado para montagem do changelog em versões do sistema */
 export type TMetadadosSecaoChangelog = Omit<TSecaoChangelog, 'itens'>;
 
 /**
@@ -35,11 +37,11 @@ export type TMetadadosSecaoChangelog = Omit<TSecaoChangelog, 'itens'>;
  * @property {TVersaoChangelog[]} versoes - Array de versões registradas no changelog
  */
 export type TPropsResumoVersoes = {
-  totalAlteracoes: number
-  versaoAtual: string
-  versaoMaisRecenteChangelog: TVersaoChangelog | null
-  versoes: TVersaoChangelog[]
-}
+  totalAlteracoes: number;
+  versaoAtual: string;
+  versaoMaisRecenteChangelog: TVersaoChangelog | null;
+  versoes: TVersaoChangelog[];
+};
 
 /** Tipagem com origem em TPropsResumoVersoes para o componente ListaRealizadosVersoes */
-export type TPropsListaRealizadosVersoes = Pick<TPropsResumoVersoes, 'versaoAtual' | 'versoes'>
+export type TPropsListaRealizadosVersoes = Pick<TPropsResumoVersoes, 'versaoAtual' | 'versoes'>;

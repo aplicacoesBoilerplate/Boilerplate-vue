@@ -1,16 +1,16 @@
 // Ecossistema Vue
 import type { RouteRecordRaw } from 'vue-router';
 
-// Classes
-import { ClassMapeamentosFiltro } from '@/classes/filters/ClassMapeamentosFiltro';
-
-// Types e Interfaces
-import type { TCamposFiltroUsuario } from '@/models/model/usuario/MapeamentoFiltrosUsuario';
-import type { TCamposFiltroRbac } from '@/models/model/rbac/MapeamentoFiltrosRbac';
-import type { TCamposFiltroErros } from '@/models/model/errors/MapeamentoFiltrosErros';
-
 // Enums
 import { ERecursosFiltro } from '@/models/filters/enums/ERecursosFiltro';
+
+// Types e Interfaces
+import type { TCamposFiltroRbac } from '@/models/model/core/rbac/rbac.model';
+import type { TCamposFiltroUsuario } from '@/models/model/core/usuario.model';
+import type { TCamposFiltroErros } from '@/models/model/errors/MapeamentoFiltrosErros';
+
+// Classes
+import { CMapeamentosFiltro } from '@/classes/filters/CMapeamentosFiltro';
 
 // Views
 import HomeView from '@/views/HomeView.vue';
@@ -38,7 +38,7 @@ export const routes: Array<RouteRecordRaw> = [
       hotkey: 'cmd+shift+d',
       requiresAuth: true,
     },
-  },  
+  },
   {
     path: '/info-sistema',
     name: 'InformacoesSistema',
@@ -87,7 +87,7 @@ export const routes: Array<RouteRecordRaw> = [
           icon: 'mdi-account-group',
           hotkey: 'cmd+shift+u',
           filterContext: ERecursosFiltro.USUARIOS,
-          filterResource: ClassMapeamentosFiltro.getMapeamento<TCamposFiltroUsuario>(ERecursosFiltro.USUARIOS),
+          filterResource: CMapeamentosFiltro.getMapeamento<TCamposFiltroUsuario>(ERecursosFiltro.USUARIOS),
         },
       },
       {
@@ -99,7 +99,7 @@ export const routes: Array<RouteRecordRaw> = [
           icon: 'mdi-shield-key',
           hotkey: 'cmd+shift+r',
           filterContext: ERecursosFiltro.RBAC,
-          filterResource: ClassMapeamentosFiltro.getMapeamento<TCamposFiltroRbac>(ERecursosFiltro.RBAC),
+          filterResource: CMapeamentosFiltro.getMapeamento<TCamposFiltroRbac>(ERecursosFiltro.RBAC),
         },
       },
       {
@@ -111,7 +111,7 @@ export const routes: Array<RouteRecordRaw> = [
           icon: 'mdi-sync-alert',
           hotkey: 'cmd+shift+e',
           filterContext: ERecursosFiltro.ERROS,
-          filterResource: ClassMapeamentosFiltro.getMapeamento<TCamposFiltroErros>(ERecursosFiltro.ERROS),
+          filterResource: CMapeamentosFiltro.getMapeamento<TCamposFiltroErros>(ERecursosFiltro.ERROS),
         },
       },
       {

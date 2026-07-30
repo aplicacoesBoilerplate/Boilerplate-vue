@@ -134,8 +134,8 @@ const visualizarSenha = ref(false);
 
 // Funções
 async function reset(): Promise<void> {
-  await nextTick();
-  baseFormRef.value?.resetValidation();
+  if (!baseFormRef.value) return;
+  await baseFormRef.value.refreshForm(() => ({}));
 }
 
 async function submit(): Promise<void> {

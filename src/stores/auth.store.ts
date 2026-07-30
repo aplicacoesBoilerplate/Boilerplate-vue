@@ -1,12 +1,8 @@
 // Ecossistema Vue
 import { computed, ref } from 'vue';
-import type { LocationQueryRaw, RouteLocationRaw } from 'vue-router';
-
 // Pinia
 import { defineStore } from 'pinia';
 
-// Stores
-import { useListaCacheStore } from './listaCache.store';
 import { usePreferencesStore } from '@/stores/preferences.store';
 
 // Types e Interfaces
@@ -17,16 +13,20 @@ import type {
   IRedefinicaoSenhaRecuperacao,
   ISolicitacaoRecuperacaoSenha,
   IVerificacaoCodigoRecuperacaoSenha,
-} from '@/models/model/autenticacao/autenticacao.models';
-import type { IUsuario } from '@/models/model/usuario/lUsuario';
-import type { IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
-import type { ICargoRbac } from '@/models/model/rbac/ICargoRbac';
+} from '@/models/model/core/autenticacao.model';
+import type { ICargoRbac } from '@/models/model/core/rbac/rbac.model';
+import type { IUsuario } from '@/models/model/core/usuario.model';
+import type { IUsuarioSolicitacaoAcesso } from '@/models/model/core/usuario.solicitacao.model';
+import type { LocationQueryRaw, RouteLocationRaw } from 'vue-router';
 
 // Composables
 import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
 // Services
-import { CAutenticacaoService } from '@/services/CAutenticacaoService';
+import { CAutenticacaoService } from '@/services/core/CAutenticacaoService';
+
+// Stores
+import { useListaCacheStore } from './listaCache.store';
 
 // Constantes
 const TOKEN_STORAGE_KEY = 'token';
@@ -94,9 +94,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       const valoresSelecionados = pFiltro.valoresSelecionados ?? [];
-      const valoresFiltro = valoresSelecionados.length > 0
-        ? valoresSelecionados
-        : [pFiltro.valor ?? ''];
+      const valoresFiltro = valoresSelecionados.length > 0 ? valoresSelecionados : [pFiltro.valor ?? ''];
       const valorSerializado = valoresFiltro.map((pValor) => String(pValor)).join(',');
       const valorQuery = `${pFiltro.condicao}:${valorSerializado}`;
       const valorAtual = pQuery[pFiltro.campo];

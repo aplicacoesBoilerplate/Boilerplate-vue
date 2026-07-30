@@ -27,21 +27,20 @@
           <template #activator="{ props: DialogProps }">
             <v-btn
               v-bind="mergeProps(tooltipProps, DialogProps)"
+              :disabled="!podeGerenciarRegistros"
               color="primary"
               icon="mdi-plus"
               size="x-small"
               variant="tonal"
-              :disabled="!podeGerenciarRegistros"
               @click="acionarNovoRegistro"
             />
           </template>
         </DialogFormCargoRbac>
-
       </template>
 
       <template #default="{ items }">
         <GenericInfiniteListItem
-          v-for="cargo in (items as ICargoRbac[])"
+          v-for="cargo in items as ICargoRbac[]"
           :key="cargo.id"
           :item="cargo"
           itemKey="id"
@@ -67,20 +66,20 @@
                 />
 
                 <v-btn
+                  :disabled="!podeGerenciarRegistros"
                   icon="mdi-pencil"
                   variant="text"
                   color="info"
                   size="small"
                   class="mr-2"
-                  :disabled="!podeGerenciarRegistros"
                   @click.stop="gerenciarRegistro({ modoEdicao: true, item: cargo })"
                 />
                 <v-btn
+                  :disabled="!podeRemoverCargo(cargo)"
                   icon="mdi-delete"
                   variant="text"
                   color="error"
                   size="small"
-                  :disabled="!podeRemoverCargo(cargo)"
                   @click.stop="excluirCargo(cargo)"
                 />
               </div>
@@ -102,27 +101,24 @@ import { useDisplay } from 'vuetify';
 import { useAuthStore } from '@/stores/auth.store';
 
 // Types e Interfaces
-import {
-  criarCargoRbacPadrao,
-  type ICargoRbac,
-} from '@/models/model/rbac/ICargoRbac';
-import type { IUsuario, TPapel } from '@/models/model/usuario/lUsuario';
-import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
+import { criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/core/rbac/rbac.model';
+import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { IUsuario, TPapel } from '@/models/model/core/usuario.model';
 
+import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
 // Composables
 import { useRequisicaoService } from '@/composables/useRequisicaoService';
-import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
 
 // Services
-import { CRbacService } from '@/services/CRbacService';
-import { CUsuarioService } from '@/services/CUsuarioService';
+import { CRbacService } from '@/services/core/CRbacService';
+import { CUsuarioService } from '@/services/core/CUsuarioService';
 
-// Componentes
-import GenericView from '@/components/layout/generic/GenericView.vue';
-import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
-import DialogFormCargoRbac from '@/components/dialogs/DialogFormCargoRbac.vue';
-import DetalhesCargo from '@/components/rbac/DetalhesCargo.vue';
+import DialogFormCargoRbac from '@/components/dialogs/core/DialogFormCargoRbac.vue';
 import DialogAuditoriaRegistro from '@/components/dialogs/DialogAuditoriaRegistro.vue';
+import GenericInfiniteListItem from '@/components/layouts/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
+// Componentes
+import GenericView from '@/components/layouts/generic/GenericView.vue';
+import DetalhesCargo from '@/components/core/rbac/DetalhesCargo.vue';
 
 // Constantes
 const CONTEXTO_LISTA_CARGOS = 'lista-cargos-rbac';
@@ -146,7 +142,7 @@ const papelCargoAntesEdicao = ref<TPapel | null>(null);
 const papeisOriginaisUsuarios = ref(new Map<number, TPapel>());
 
 // Funções
-async function buscarCargos(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse<ICargoRbac>> {
+async function buscarCargos(pPayload: IConsultaRegistros): Promise<IResultadoConsultaRegistros<ICargoRbac>> {
   return CRbacService.consultar(pPayload);
 }
 
@@ -156,10 +152,7 @@ async function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoR
     return;
   }
 
-  await Promise.all([
-    carregarCargos(),
-    carregarUsuariosParaVinculo(),
-  ]);
+  await Promise.all([carregarCargos(), carregarUsuariosParaVinculo()]);
 
   modoEdicaoCargo.value = pPayload.modoEdicao;
   modoVisualizacaoCargo.value = false;
@@ -179,10 +172,7 @@ async function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoR
 }
 
 async function visualizarCargo(pCargo: ICargoRbac): Promise<void> {
-  await Promise.all([
-    carregarCargos(),
-    carregarUsuariosParaVinculo(),
-  ]);
+  await Promise.all([carregarCargos(), carregarUsuariosParaVinculo()]);
 
   modoEdicaoCargo.value = false;
   modoVisualizacaoCargo.value = true;
@@ -221,10 +211,7 @@ async function salvarCargo(): Promise<void> {
   });
 
   await salvarUsuariosComCargoAlterado(cargoSalvo);
-  await Promise.all([
-    carregarCargos(),
-    carregarUsuariosParaVinculo(),
-  ]);
+  await Promise.all([carregarCargos(), carregarUsuariosParaVinculo()]);
 
   if (modoEdicaoCargo.value && cargoSalvo.id) {
     genericViewRef.value?.atualizarItem<ICargoRbac>('id', cargoSalvo.id, cargoSalvo);
@@ -265,10 +252,7 @@ async function excluirCargo(pCargo: ICargoRbac): Promise<void> {
   });
 
   genericViewRef.value?.removerItem<ICargoRbac>('id', pCargo.id);
-  await Promise.all([
-    carregarCargos(),
-    carregarUsuariosParaVinculo(),
-  ]);
+  await Promise.all([carregarCargos(), carregarUsuariosParaVinculo()]);
   await authStore.fetchUser();
 }
 
@@ -300,21 +284,19 @@ async function carregarUsuariosParaVinculo(): Promise<void> {
   while (temMaisRegistros) {
     const pagina = await CUsuarioService.buscarTodos({
       limite: 100,
-      ordem: 'asc',
+      ordenacao: 'asc',
       proximaEntrada,
       filtros: [],
     });
 
-    registros.push(...pagina.items);
+    registros.push(...pagina.registros);
     proximaEntrada = pagina.proximaEntrada;
-    temMaisRegistros = pagina.temMaisRegistros && pagina.items.length > 0;
+    temMaisRegistros = (pagina.possuiMais ?? false) && pagina.registros.length > 0;
   }
 
   usuarios.value = registros;
   papeisOriginaisUsuarios.value = new Map(
-    registros
-      .filter((pUsuario) => pUsuario.id)
-      .map((pUsuario) => [pUsuario.id as number, pUsuario.papel]),
+    registros.filter((pUsuario) => pUsuario.id).map((pUsuario) => [pUsuario.id as number, pUsuario.papel]),
   );
 }
 
@@ -368,9 +350,6 @@ const podeGerenciarRegistros = computed(() => possuiPermissaoGeral('gerenciarReg
 
 // Lifecycle Hooks
 onMounted(() => {
-  void Promise.all([
-    carregarCargos(),
-    carregarUsuariosParaVinculo(),
-  ]);
+  void Promise.all([carregarCargos(), carregarUsuariosParaVinculo()]);
 });
 </script>

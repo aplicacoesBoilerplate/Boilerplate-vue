@@ -6,8 +6,15 @@
     >
       <tbody>
         <tr>
-          <td class="font-weight-bold py-2 text-medium-emphasis border-bottom text-no-wrap" style="width: 180px;">
-            <v-icon icon="mdi-text-box-search" size="18" class="mr-2 text-primary" />
+          <td
+            class="font-weight-bold py-2 text-medium-emphasis border-bottom text-no-wrap"
+            style="width: 180px"
+          >
+            <v-icon
+              icon="mdi-text-box-search"
+              size="18"
+              class="mr-2 text-primary"
+            />
             Mensagem Completa
           </td>
           <td class="py-2 text-body-2 select-all font-weight-medium">
@@ -17,7 +24,11 @@
 
         <tr>
           <td class="font-weight-bold py-2 text-medium-emphasis border-bottom text-no-wrap">
-            <v-icon icon="mdi-calendar-clock" size="18" class="mr-2 text-primary" />
+            <v-icon
+              icon="mdi-calendar-clock"
+              size="18"
+              class="mr-2 text-primary"
+            />
             Data e Hora
           </td>
           <td class="py-2 text-body-2">
@@ -27,7 +38,11 @@
 
         <tr>
           <td class="font-weight-bold py-2 text-medium-emphasis border-bottom text-no-wrap">
-            <v-icon icon="mdi-code-class" size="18" class="mr-2 text-primary" />
+            <v-icon
+              icon="mdi-code-class"
+              size="18"
+              class="mr-2 text-primary"
+            />
             Classe
           </td>
           <td class="py-2 text-body-2 text-mono font-weight-medium">
@@ -37,7 +52,11 @@
 
         <tr>
           <td class="font-weight-bold py-2 text-medium-emphasis border-bottom text-no-wrap">
-            <v-icon icon="mdi-code-braces" size="18" class="mr-2 text-primary" />
+            <v-icon
+              icon="mdi-code-braces"
+              size="18"
+              class="mr-2 text-primary"
+            />
             Método
           </td>
           <td class="py-2 text-body-2 text-mono">
@@ -47,7 +66,11 @@
 
         <tr>
           <td class="font-weight-bold py-2 text-medium-emphasis border-bottom text-no-wrap">
-            <v-icon icon="mdi-format-list-numbered" size="18" class="mr-2 text-primary" />
+            <v-icon
+              icon="mdi-format-list-numbered"
+              size="18"
+              class="mr-2 text-primary"
+            />
             Linha
           </td>
           <td class="py-2 text-body-2 text-mono">
@@ -57,7 +80,11 @@
 
         <tr>
           <td class="font-weight-bold py-2 text-medium-emphasis border-bottom text-no-wrap">
-            <v-icon icon="mdi-file-code-outline" size="18" class="mr-2 text-primary" />
+            <v-icon
+              icon="mdi-file-code-outline"
+              size="18"
+              class="mr-2 text-primary"
+            />
             Arquivo
           </td>
           <td class="py-2 text-body-2 text-mono">
@@ -67,12 +94,21 @@
 
         <tr>
           <td class="font-weight-bold py-2 text-medium-emphasis border-bottom text-no-wrap">
-            <v-icon icon="mdi-account" size="18" class="mr-2 text-primary" />
+            <v-icon
+              icon="mdi-account"
+              size="18"
+              class="mr-2 text-primary"
+            />
             Usuário Responsável
           </td>
           <td class="py-2 text-body-2">
             {{ erro.usuarioReferencia || 'SISTEMA' }}
-            <span v-if="erro.idUsuario" class="text-medium-emphasis"> (ID: #{{ erro.idUsuario }})</span>
+            <span
+              v-if="erro.idUsuario"
+              class="text-medium-emphasis"
+            >
+              (ID: #{{ erro.idUsuario }})</span
+            >
           </td>
         </tr>
       </tbody>
@@ -82,9 +118,9 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
+// Types e Interfaces
 import { useI18n } from 'vue-i18n';
 
-// Types e Interfaces
 import type { IErros } from '@/models/model/errors/IErros';
 
 // Utils

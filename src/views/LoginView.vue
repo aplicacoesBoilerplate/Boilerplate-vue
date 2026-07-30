@@ -1,8 +1,8 @@
 <template>
   <v-container
     class="d-flex align-center justify-center py-8"
-    fluid
     style="min-height: 90vh"
+    fluid
   >
     <v-card
       class="w-100"
@@ -79,13 +79,9 @@
 
     <OverlayFullscream v-model:exibirOverlay="exibirOverlayAutenticacao">
       <template #mensagem>
-        <div class="text-subtitle-1 font-weight-bold">
-          Preparando acesso
-        </div>
+        <div class="text-subtitle-1 font-weight-bold">Preparando acesso</div>
 
-        <div class="text-body-2 text-medium-emphasis text-center">
-          Validando credenciais e rota inicial.
-        </div>
+        <div class="text-body-2 text-medium-emphasis text-center">Validando credenciais e rota inicial.</div>
       </template>
     </OverlayFullscream>
   </v-container>
@@ -101,7 +97,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
 
 // Types e Interfaces
-import { criarRegistroPadrao, type IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
+import { criarRegistroPadrao, type IUsuarioSolicitacaoAcesso } from '@/models/model/core/usuario.solicitacao.model';
 
 // Composables
 import { useFormularioLogin } from '@/composables/useFormularioLogin';
@@ -110,7 +106,7 @@ import { useSnackbar } from '@/composables/useSnackbar';
 // Componentes
 import PainelLogin from '@/components/forms/fixtures/autenticacao/PainelLogin.vue';
 import PainelRegistro from '@/components/forms/fixtures/autenticacao/PainelRegistro.vue';
-import OverlayFullscream from '@/components/layout/OverlayFullscream.vue';
+import OverlayFullscream from '@/components/layouts/OverlayFullscream.vue';
 
 type TAbaAutenticacao = 'login' | 'registro';
 
@@ -204,9 +200,10 @@ async function redirecionarAposAutenticacao(): Promise<void> {
   processandoRedirecionamento.value = true;
 
   try {
-    const redirectPrioritario = typeof router.currentRoute.value.query.redirect === 'string'
-      ? router.currentRoute.value.query.redirect
-      : undefined;
+    const redirectPrioritario =
+      typeof router.currentRoute.value.query.redirect === 'string'
+        ? router.currentRoute.value.query.redirect
+        : undefined;
     const destino = authStore.resolverDestinoAposLogin(redirectPrioritario);
 
     await router.push(destino);

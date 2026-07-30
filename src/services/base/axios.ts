@@ -1,11 +1,11 @@
 // Ecosssitema Vue
-import { i18n } from '@/plugins/i18n'
-
 // Axios
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError } from 'axios';
 
 // Types e Interfaces
-import type { IErrorAPI } from '@/models/model/errors/IErrorAPI'
+import type { IErrorAPI } from '@/models/model/errors/IErrorAPI';
+
+import { i18n } from '@/plugins/i18n';
 
 const http = axios.create({
   baseURL: window.env?.VITE_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:8080',
@@ -17,15 +17,15 @@ const http = axios.create({
 });
 
 http.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem('token')
+  const token = sessionStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   // @ts-ignore
-  config.headers['Accept-Language'] = i18n.global.locale.value
+  config.headers['Accept-Language'] = i18n.global.locale.value;
 
-  return config
-})
+  return config;
+});
 
 http.interceptors.response.use(
   (response) => response,
@@ -43,14 +43,15 @@ http.interceptors.response.use(
     }
 
     if (errorResponse?.status === 403 && error.config?.url !== '/auth/me/cargo') {
-      void import('@/stores/auth.store')
-        .then(({ useAuthStore }) => useAuthStore().atualizarPermissoesUsuarioAutenticado());
+      void import('@/stores/auth.store').then(({ useAuthStore }) =>
+        useAuthStore().atualizarPermissoesUsuarioAutenticado(),
+      );
     }
 
-    const objetoError = error.response?.data as IErrorAPI
+    const objetoError = error.response?.data as IErrorAPI;
 
-    return Promise.reject(objetoError?.mensagem ?? error.message ?? 'messages.errors.reqGenerics')
+    return Promise.reject(objetoError?.mensagem ?? error.message ?? 'messages.errors.reqGenerics');
   },
-)
+);
 
-export default http
+export default http;

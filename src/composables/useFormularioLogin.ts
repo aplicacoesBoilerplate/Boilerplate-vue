@@ -2,7 +2,7 @@
 import { reactive } from 'vue';
 
 // Types e Interfaces
-import type { ILogin } from '@/models/model/autenticacao/autenticacao.models';
+import type { ILogin } from '@/models/model/core/autenticacao.model';
 
 // Utils
 import { ClassManagerStorage } from '@/utils/ManagerStorage';
