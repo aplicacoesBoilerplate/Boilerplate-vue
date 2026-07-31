@@ -14,7 +14,7 @@
         "--app",
         "visual_studio_code",
         "--agent",
-        "copilotIDE"
+        "openCodeCLI"
       ],
       "enabled": true
     },

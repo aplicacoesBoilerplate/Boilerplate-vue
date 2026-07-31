@@ -146,19 +146,21 @@ export interface IDialogForm<Nome>Expose {
 
 ## Padrões de Consulta e Filtros
 
-- Filters options tipados via interface de opção de seleção.
-- View normaliza payloads de filtro para a API.
-- Services expõem método protegido de resolução de payload.
-- Services genéricos para consultas paginadas.
-- Formatters centralizados para transformação de dados (datas, booleanos, moeda).
-- Métodos de fetch devem receber payload tipado com filtros e retornar resultado paginado ou lista.
+- Filters options tipados via interface `IOpcaoSelecao` (localizada em `ICampoFiltro.ts`).
+- A classe `CResolvePayloadFiltros` deve ser utilizada para normalizar payloads de filtro para a API.
+- Services HTTP devem estender ou utilizar o método protegido `resolverPayload()` da `CBaseHttpService`.
+- Para consultas paginadas genéricas, utilize a classe `CConsultaGenericaService`.
+- Formatadores de dados (datas, booleanos, moeda) estão centralizados na classe `CFormatters` em `src/classes/Utils/CFormatters.ts`.
+- **Assinatura de Fetch:** Métodos de fetch devem seguir estritamente o contrato de tipos do projeto:
+  `function nome(pPayload: IConsultaRegistrosFiltroPayload<string>) => Promise<IResultadoConsultaRegistrosFiltro<object> | object[]>;`
 
-## Gráficos
+## Gráficos e Views Integradas
 
-- Dados de gráfico representados por `TDadoGrafico = { rotulo: string; valor: number; agrupador?: string }`.
-- Utilitário `gerarCores()` para paletas dinâmicas.
-- Views genéricas que suportam:
-  - Prop `exibirGraficos: boolean` — ativa coluna lateral de gráficos
-  - Prop `serviceExportacao` — método separado para exportação de dados
-  - Slot `#data-chart` — conteúdo personalizado do gráfico
-  - Emit `@toggle-chart` — notifica ao alternar visibilidade
+- **Componentes Base:** Utilize `BaseApexChart.vue` e `ChartControls.vue` localizados em `src/components/common/charts/`.
+- **Dados:** Representados pela tipagem `TDadoGrafico = { rotulo: string; valor: number; agrupador?: string }`.
+- **Cores:** Utilize o utilitário `gerarCores()` importado de `src/utils/generateColors.ts` para paletas dinâmicas.
+- **GenericView.vue:** É o componente padrão que suporta gráficos integrados. Ele aceita:
+  - Prop `exibirGraficos: boolean` — ativa coluna lateral de gráficos.
+  - Prop `serviceExportacao` — método separado para exportação de dados.
+  - Slot `#data-chart` — conteúdo personalizado do gráfico.
+  - Emit `@toggle-chart` — emitido ao alternar a visibilidade.
