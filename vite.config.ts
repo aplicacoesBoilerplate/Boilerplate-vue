@@ -17,12 +17,18 @@ try {
 // https://vite.dev/config/
 export default defineConfig({
   server: {
-    port: 5170,
+    port: 5200,
     allowedHosts: ['host.docker.internal'],
+    watch: {
+      ignored: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/dev-dist/**']
+    }
+  },
+  optimizeDeps: {
+    include: [],
   },
   plugins: [
     vue(),
-    vueDevTools(),
+    // vueDevTools(),
     vuetify({
       autoImport: true,
     }),
