@@ -9,13 +9,13 @@
     @cancelar="concluirSalvo"
     @salvar="submeterFormUsuario"
   >
-    <template #activator="{ props }">
+    <template #activator="{ props: dialogProps }">
       <slot
-        :props="props"
+        :props="dialogProps"
         name="activator"
       >
         <v-btn
-          v-bind="props"
+          v-bind="dialogProps"
           color="primary"
           icon="mdi-plus"
           size="x-small"
@@ -59,48 +59,56 @@
 </template>
 
 <script setup lang="ts">
+// Ecossistema Vue
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+// Models
 import { criarUsuarioPadrao, type IUsuario } from '@/models/model/core/usuario.model';
+import type { IDialogFormExposeBase } from '@/models/components/exposes/IDialogFormExposeBase';
 
+// Componentes
 import BaseDialog from '@/components/dialogs/base/BaseDialog.vue';
 import FormUsuario from '@/components/forms/core/FormUsuario.vue';
-
-export interface IDialogFormUsuarioExpose {
-  exibicaoDialog: (pItem?: IUsuario) => void;
-  concluirSalvo: () => void;
-}
 
 type TProps = {
   modoEdicao: boolean;
 };
-
 const props = defineProps<TProps>();
 
 type TEmits = {
   salvar: [];
 };
-
 const emit = defineEmits<TEmits>();
 
+// Composables
 const { t } = useI18n();
 
+// Reativas - Model
 const exibirDialog = defineModel<boolean>('exibirDialog', { required: true });
 const usuario = defineModel<IUsuario>('usuario', { required: false, default: {} });
 
+// Reativas - ref
 const refFormUser = ref<InstanceType<typeof FormUsuario> | null>(null);
 const isFormValid = ref(false);
 const salvando = ref(false);
 
+// Funções
 function resetarFormUsuario(): void {
   refFormUser.value?.refreshForm();
 }
 
+/**
+ * @description O método de submeterFormUsuario é acionado pelo botão de salvar do BaseDialog implementado,
+ * ele apenas faz o submit do form, quem realmente realiza as regras de validação do objeto e dispara o emit 'salvar'.
+ */
 function submeterFormUsuario(): void {
   refFormUser.value?.submit();
 }
 
+/**
+ * @description O método de salvarUsuario é sempre quem dispara o emit 'salvar', é ele quem manipula o objeto.
+ */
 function salvarUsuario(): void {
   salvando.value = true;
   emit('salvar');
@@ -120,13 +128,7 @@ function exibicaoDialog(pItem?: IUsuario): void {
   exibirDialog.value = true;
 }
 
-watch(exibirDialog, (pExibindo) => {
-  if (!pExibindo) {
-    usuario.value = criarUsuarioPadrao();
-    isFormValid.value = false;
-  }
-});
-
+// Computadas
 const titulo = computed(() =>
   props.modoEdicao
     ? t('messages.forms.formUsers.editingUserId', { id: usuario.value?.id })
@@ -135,8 +137,17 @@ const titulo = computed(() =>
 
 const icon = computed(() => (props.modoEdicao ? 'mdi-account-edit' : 'mdi-account-plus'));
 
+// Observadores
+watch(exibirDialog, (pExibindo) => {
+  if (!pExibindo) {
+    usuario.value = criarUsuarioPadrao();
+    isFormValid.value = false;
+  }
+});
+
+// Expose
 defineExpose({
   exibicaoDialog,
   concluirSalvo,
-} satisfies IDialogFormUsuarioExpose);
+} satisfies IDialogFormExposeBase<IUsuario>);
 </script>

@@ -13,9 +13,9 @@
     :maxHeight="maxHeight"
     :zIndex="zIndex"
   >
-    <template #activator="{ props }">
+    <template #activator="{ props: dialogProps }">
       <slot
-        :props="props"
+        :props="dialogProps"
         name="activator"
       />
     </template>
@@ -107,17 +107,13 @@
 </template>
 
 <script setup lang="ts">
+// Ecossistema Vue
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+// Models
+import type { IBaseDialogExpose } from '@/models/components/exposes/IBaseDialogExpose';
 import type { IPropsBaseDialog } from '@/models/components/props/IPropsBaseDialog';
-
-export interface IBaseDialogExpose {
-  abrir: () => void;
-  fechar: () => void;
-  cancelar: () => void;
-  salvar: () => void;
-}
 
 const props = withDefaults(defineProps<IPropsBaseDialog>(), {
   persistent: false,
@@ -141,10 +137,13 @@ type TEmits = {
 };
 const emits = defineEmits<TEmits>();
 
+// Composables
 const { t } = useI18n();
 
+// Reativas
 const dialogModel = defineModel<boolean>('exibirDialog', { default: false });
 
+// Funções
 function abrir(): void {
   dialogModel.value = true;
 }
@@ -163,6 +162,7 @@ function salvar(): void {
   emits('salvar');
 }
 
+// Computadas
 const contentStyles = computed(() => {
   if (props.fullscreen) return {};
   return {
@@ -172,10 +172,12 @@ const contentStyles = computed(() => {
 });
 
 const mostrarAcoesDialog = computed(() => props.mostrarAcoes ?? true);
+
 const tituloDialog = computed(() =>
   props.titulo === 'Dialog' ? t('components.baseDialog.tituloPadrao') : props.titulo,
 );
 
+// Expose
 defineExpose({
   abrir,
   fechar,
