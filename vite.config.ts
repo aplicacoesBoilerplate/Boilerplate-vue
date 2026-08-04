@@ -10,25 +10,31 @@ import { fileURLToPath, URL } from 'node:url';
 let lastCommitDate = '';
 try {
   lastCommitDate = execSync('git log -1 --format=%cI').toString().trim();
-} catch (e) {
+} catch {
   lastCommitDate = new Date().toISOString();
 }
 
-// https://vite.dev/config/
+/**
+ * @description Para saber mais sobre as configurações do vite, acesse: https://vite.dev/config/
+ * @property {} server - Configurações do servidor vite durante a execução da aplicação compilada em dev.
+ * @property {} server.allowedHosts - Origens confiáveis para a aplicação responder.
+ * @property {} server.watch - Configurações para o watcher de mudanças na aplicação durante o processo de execução em dev.
+ */
 export default defineConfig({
   server: {
-    port: 5200,
     allowedHosts: ['host.docker.internal'],
     watch: {
       ignored: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/dev-dist/**']
     }
   },
   optimizeDeps: {
-    include: [],
+    include: [
+
+    ],
   },
   plugins: [
     vue(),
-    // vueDevTools(),
+    // vueDevTools(), // Ativar o DevTools somente quando necessário utilizar.
     vuetify({
       autoImport: true,
     }),
