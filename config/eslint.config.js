@@ -44,9 +44,9 @@ export default tseslint.config(
             ['^\\u0000'],
             [
               '^vue$',
+              '^vue-router',
               '^vue-i18n',
               '^pinia',
-              '^vue-router',
               '^vuetify',
               '^@mdi',
               '^axios',

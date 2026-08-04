@@ -1,17 +1,13 @@
-// Ecossistema Vue
-import type { RouteRecordRaw } from 'vue-router';
-
 // Enums
 import { ERecursosFiltro } from '@/models/filters/enums/ERecursosFiltro';
-
 // Types e Interfaces
 import type { TCamposFiltroRbac } from '@/models/model/core/rbac/rbac.model';
 import type { TCamposFiltroUsuario } from '@/models/model/core/usuario.model';
 import type { TCamposFiltroErros } from '@/models/model/errors/MapeamentoFiltrosErros';
+import type { RouteRecordRaw } from 'vue-router';
 
 // Classes
 import { CMapeamentosFiltro } from '@/classes/filters/CMapeamentosFiltro';
-
 // Views
 import HomeView from '@/views/HomeView.vue';
 import PaginaFallbackView from '@/views/PaginaFallbackView.vue';

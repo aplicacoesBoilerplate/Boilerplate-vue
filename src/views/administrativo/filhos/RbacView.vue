@@ -40,7 +40,7 @@
 
       <template #default="{ items }">
         <GenericInfiniteListItem
-          v-for="cargo in items as ICargoRbac[]"
+          v-for="cargo in (items as ICargoRbac[])"
           :key="cargo.id"
           :item="cargo"
           itemKey="id"
@@ -100,33 +100,35 @@ import { useDisplay } from 'vuetify';
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
 
-// Types e Interfaces
+// Models
 import { criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/core/rbac/rbac.model';
 import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 import type { IUsuario, TPapel } from '@/models/model/core/usuario.model';
 
-import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
 // Composables
+import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
 import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
 // Services
 import { CRbacService } from '@/services/core/CRbacService';
 import { CUsuarioService } from '@/services/core/CUsuarioService';
 
+// Componentes
+import DetalhesCargo from '@/components/core/rbac/DetalhesCargo.vue';
 import DialogFormCargoRbac from '@/components/dialogs/core/DialogFormCargoRbac.vue';
 import DialogAuditoriaRegistro from '@/components/dialogs/DialogAuditoriaRegistro.vue';
 import GenericInfiniteListItem from '@/components/layouts/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
-// Componentes
 import GenericView from '@/components/layouts/generic/GenericView.vue';
-import DetalhesCargo from '@/components/core/rbac/DetalhesCargo.vue';
 
 // Constantes
 const CONTEXTO_LISTA_CARGOS = 'lista-cargos-rbac';
 
+// Stores
+const authStore = useAuthStore();
+
 // Composables
 const { mdAndDown } = useDisplay();
 const requisicaoService = useRequisicaoService();
-const authStore = useAuthStore();
 const { possuiPermissaoGeral, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
 

@@ -6,40 +6,38 @@ import { i18n } from '@/plugins/i18n';
 // Guards
 import { authGuard } from './guards/auth.guard';
 import { rbacGuard } from './guards/roles.guard';
-
 // Routes
 import { routes } from './routes';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  scrollBehavior(to, from, savedPosition) {
-    if (savedPosition) {
-      return savedPosition;
+  scrollBehavior(pTo, pFrom, pSavedPosition) {
+    if (pSavedPosition) {
+      return pSavedPosition;
     }
-    if (to.hash) {
-      return { el: to.hash, behavior: 'smooth' };
+    if (pTo.hash) {
+      return { el: pTo.hash, behavior: 'smooth' };
     }
     return { top: 0 };
   },
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  const title = to.meta.title as string;
-  // @ts-ignore
+router.beforeEach((pTo, pFrom, pNext) => {
+  const title = pTo.meta.title as string;
+  // @ts-expect-error Instância do plugin i18-n muito profunda e possivelmente indefinida.
   const defaultTitle = i18n.global.t('app.title');
 
   if (title) {
-    // @ts-ignore
     const translatedTitle = i18n.global.t(title);
     document.title = `${translatedTitle} - ${defaultTitle}`;
   } else {
     document.title = defaultTitle;
   }
-  next();
+  pNext();
 });
 
-// router.beforeEach(authGuard);
-// router.beforeEach(rbacGuard);
+router.beforeEach(authGuard);
+router.beforeEach(rbacGuard);
 
 export default router;

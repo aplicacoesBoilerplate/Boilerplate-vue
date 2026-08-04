@@ -1,8 +1,8 @@
-// Ecossistema Vue
-import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
-
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
+
+// Types e Interfaces
+import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
 
 const ROTAS_PUBLICAS = new Set([
   'Login',
