@@ -11,7 +11,7 @@
           v-else
           color="primary"
           class="font-weight-bold"
-          >{{ letraInicial }}
+        >{{ letraInicial }}
         </v-avatar>
       </template>
 
@@ -29,7 +29,7 @@
             color="primary"
             size="x-small"
             label
-            >{{ authStore.user?.papel }}
+          >{{ authStore.user?.papel }}
           </v-chip>
         </v-sheet>
       </template>

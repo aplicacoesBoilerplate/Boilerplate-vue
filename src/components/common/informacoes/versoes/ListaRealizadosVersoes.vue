@@ -99,7 +99,7 @@
 
                       <v-list
                         class="pa-0"
-                        bg-color="transparent"
+                        bgColor="transparent"
                         density="compact"
                       >
                         <v-list-item
@@ -109,8 +109,8 @@
                         >
                           <template #prepend>
                             <v-icon
-                              icon="mdi-check-circle-outline"
                               :color="secao.cor"
+                              icon="mdi-check-circle-outline"
                               size="x-small"
                             />
                           </template>

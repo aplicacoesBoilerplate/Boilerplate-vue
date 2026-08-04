@@ -1,8 +1,8 @@
 <template>
   <v-card
-    flat
     height="100%"
     width="100%"
+    flat
   >
     <section class="d-flex flex-column fill-height overflow-hidden">
       <template v-if="$slots['default']">
@@ -119,9 +119,9 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 import type { TMetodoExportacaoDados } from '@/models/components/IExportacaoDados';
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
+import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 import type { TOrdem } from '@/models/filters/IConsultaRegistrosFiltro';
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
 

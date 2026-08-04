@@ -1,10 +1,10 @@
+// Ecossistema Vue
 import { type Ref, ref } from 'vue';
 
-import { useGenericFilterStore } from '@/stores/genericFilter.store';
+// Store
 import { useSnackbarStore } from '@/stores/Snackbar.store';
 
-import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+// Models
 import type { IPropsSnackbarQueue } from '@/models/components/props/IPropsSnackbarQueue';
 
 export type TMetodoRequisicao<TParametros, TResposta> = (pParametros: TParametros) => Promise<TResposta>;
@@ -40,11 +40,14 @@ function normalizarMensagemErro(pErro: unknown): string {
 }
 
 export function useRequisicaoService(): TUseRequisicaoServiceReturn {
+  // Stores
   const snackbarStore = useSnackbarStore();
 
+  // Reativas
   const carregando = ref(false);
   const erro = ref<unknown>(null);
 
+  // Funções
   async function executar<TParametros, TResposta>(
     pOptions: IExecutarRequisicaoOptions<TParametros, TResposta>,
   ): Promise<TResposta> {

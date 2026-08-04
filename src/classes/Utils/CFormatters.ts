@@ -1,5 +1,5 @@
 export class CFormatters {
-  static formatarGenerico(pValue: any): string {
+  static formatarGenerico(pValue: object | string): string {
     return String(pValue ?? '').trim() || 'N/A';
   }
 
@@ -8,12 +8,12 @@ export class CFormatters {
     return stringFormatada.charAt(0).toUpperCase() + stringFormatada.slice(1);
   }
 
-  static formatarInteiroParaBooleano(pValue: any): boolean {
+  static formatarInteiroParaBooleano(pValue: number): boolean {
     return pValue === 1 ? true : false;
   }
 
   /**
-   * Converte uma string de data (ex: "2024-05-20 14:30:00") em objeto Date (UTC)
+   * @description Converte uma string de data (ex: "2024-05-20 14:30:00") em objeto Date (UTC)
    * e formata para exibição no fuso horário do usuário.
    * @param pData String da data no formato "YYYY-MM-DD HH:MM:SS"
    * @param pLocale Locale para formatação (ex: "pt-BR")

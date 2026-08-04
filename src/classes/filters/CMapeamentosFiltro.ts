@@ -1,11 +1,7 @@
-// Enums
+// Models
 import { ERecursosFiltro } from '@/models/filters/enums/ERecursosFiltro';
-
-// Types e Interfaces
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
-
-// Constantes
 import { MAPEAMENTO_FILTROS } from '@/models/filters/MapeamentoFiltros';
+import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 
 /** @description Classe responsável por disponibilizar os mapeamentos de filtros. */
 export class CMapeamentosFiltro {
@@ -15,7 +11,7 @@ export class CMapeamentosFiltro {
    * @param pRecurso Enum do recurso.
    * @returns Array de mapeamentos ou array vazio caso não exista.
    */
-  static getMapeamento<T, TRegistroConsulta extends object = any>(
+  static getMapeamento<T, TRegistroConsulta extends object = object>(
     pRecurso?: ERecursosFiltro,
   ): ICampoFiltro<T, TRegistroConsulta>[] {
     // Verifica se o recurso foi informado antes de retornar o mapeamento.

@@ -97,7 +97,7 @@
 import { mergeProps, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-// Types
+// Models
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 
 // Utils
@@ -110,8 +110,7 @@ type TProps = {
   auditoria?: IAuditoriaRegistro;
   tooltip?: string;
 };
-
-const props = withDefaults(defineProps<TProps>(), {
+withDefaults(defineProps<TProps>(), {
   auditoria: undefined,
   tooltip: 'Visualizar auditoria',
 });
@@ -132,13 +131,8 @@ function formatarData(pData?: string | Date | null): string {
 }
 
 function formatarResponsavel(pId?: number | null, pReferencia?: string | null): string {
-  if (pReferencia) {
-    return pReferencia;
-  }
-
-  if (pId) {
-    return `Usuário #${pId}`;
-  }
+  if (pReferencia) return pReferencia;
+  if (pId) return `Usuário #${pId}`;
 
   return 'Sistema';
 }

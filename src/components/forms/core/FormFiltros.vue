@@ -55,7 +55,7 @@
                   variant="elevated"
                   type="submit"
                   height="40"
-                  >ADICIONAR FILTRO
+                >ADICIONAR FILTRO
                 </v-btn>
               </div>
             </BaseForm>

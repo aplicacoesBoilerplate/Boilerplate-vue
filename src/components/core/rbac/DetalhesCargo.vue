@@ -28,7 +28,9 @@
     </template>
 
     <template #avatar-prepend-card>
-      <v-avatar :color="cargo.ativo ? 'primary' : 'grey'" class="text-white">
+      <v-avatar
+        :color="cargo.ativo ? 'primary' : 'grey'"
+        class="text-white">
         <v-icon :icon="cargo.icone" />
       </v-avatar>
     </template>

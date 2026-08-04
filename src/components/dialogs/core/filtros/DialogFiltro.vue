@@ -87,8 +87,7 @@
           :camposDisponiveis="camposDisponiveis"
         />
 
-        <v-main
-          :class="['dialog-filtro-main ma-2', { 'dialog-filtro-main--consulta-aberta': deveExibirConsultaRegistros }]"
+        <v-main :class="['dialog-filtro-main ma-2', { 'dialog-filtro-main--consulta-aberta': deveExibirConsultaRegistros }]"
         >
           <div class="dialog-filtro-main__formulario">
             <FormFiltros
@@ -184,7 +183,7 @@ import DrawerFiltroRight from './fixtures/drawers/DrawerFiltroRight.vue';
  */
 type TProps = {
   registros?: object[];
-  camposDisponiveis: ICampoFiltro<any>[];
+  camposDisponiveis: ICampoFiltro<object>[];
   contextoLocal?: string;
   filtrosIniciais?: IFiltrosConsulta[];
   modoLocal?: boolean;
@@ -230,6 +229,7 @@ function aplicarFiltros(): void {
   if (props.modoLocal) {
     emits('onAplicarFiltros', filtros);
     exibirFiltros.value = false;
+
     return;
   }
 
@@ -252,8 +252,8 @@ const tamanhoBotaoAcao = computed(() => (smAndDown.value ? 'small' : 'default'))
 // Observadores
 watch(
   () => genericFilterStore.appliedCount,
-  (newValue) => {
-    toggleRightDrawer.value = newValue > 0;
+  (pNewValue) => {
+    toggleRightDrawer.value = pNewValue > 0;
   },
   { immediate: true },
 );

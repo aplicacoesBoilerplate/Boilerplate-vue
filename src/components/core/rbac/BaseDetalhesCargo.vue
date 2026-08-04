@@ -8,8 +8,8 @@
   >
     <template #activator="{ props }">
       <slot
-        name="activator"
         :props="props"
+        name="activator"
       >
         <v-chip
           v-bind="props"
@@ -53,8 +53,8 @@
 
       <v-list bgColor="blue-grey-darken-4">
         <slot
-          name="content"
           :fechar="fecharMenu"
+          name="content"
         >
           <v-list-item
             prependIcon="mdi-briefcase"

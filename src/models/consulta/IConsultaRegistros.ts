@@ -1,5 +1,5 @@
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 import type { TOrdem } from '@/models/filters/IConsultaRegistrosFiltro';
+import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
 
 export interface IConsultaRegistros<TFiltros = IFiltrosConsulta[]> {
   filtros: TFiltros;
