@@ -25,7 +25,7 @@
         v-if="possuiDados"
         class="w-100"
       >
-        <VueApexCharts
+        <componenteVueApexCharts
           :key="chaveRenderizacao"
           :type="tipoGraficoApex"
           :height="altura"
@@ -50,23 +50,26 @@
 </template>
 
 <script setup lang="ts">
+// Ecossistema Vue
 import { computed, defineAsyncComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTheme } from 'vuetify';
 
+// Models
 import type { IValorGrafico } from '@/models/components/IValorGrafico';
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
 import type { TDadoGrafico } from '@/models/components/TDadoGrafico';
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 import type { ApexOptions } from 'apexcharts';
 
-import { gerarCores } from '@/utils/generateColors';
+// Utils
+import { gerarCores } from '@/utils/gerarCores.ts';
 
+// Componentes
 import ChartControls from './ChartControls.vue';
 
 type TTipoGrafico = 'donut' | 'pie' | 'bar' | 'barHorizontal' | 'line' | 'radialBar';
 type TTipoGraficoApex = 'donut' | 'pie' | 'bar' | 'line' | 'radialBar';
-
 type TMapeamentoCoresGrafico = Record<string, string>;
 
 type TProps = {
@@ -77,7 +80,6 @@ type TProps = {
   tipoInicial?: TTipoGrafico;
   mapeamentoCores?: TMapeamentoCoresGrafico;
 };
-
 const props = withDefaults(defineProps<TProps>(), {
   configuracaoAtiva: undefined,
   altura: 320,
@@ -85,18 +87,54 @@ const props = withDefaults(defineProps<TProps>(), {
   mapeamentoCores: () => ({}),
 });
 
+// Composables
 const theme = useTheme();
 const { t } = useI18n();
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const VueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'));
+// Importação dinâmica do componente vue3-apexcharts
+const componenteVueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'));
 
+// Reativas - Model
 const filtroSelecionado = defineModel<string>('filtroSelecionado', { required: true });
 
+// Reativas - ref
 const tipoGrafico = ref<TTipoGrafico>(props.tipoInicial);
 const exibirLegenda = ref(true);
 const exibirRotulos = ref(true);
 
+// Funções
+function extrairRotulo(pItem: IValorGrafico | TDadoGrafico): string {
+  if ('titulo' in pItem) {
+    const valorOriginal = pItem.valorOriginal ?? pItem.titulo;
+    if (props.configuracaoAtiva?.chartFormatter) {
+      return props.configuracaoAtiva.chartFormatter(valorOriginal);
+    }
+    return formatarNumeroOuTexto(valorOriginal);
+  }
+  return pItem.rotulo;
+}
+
+function formatarNumero(pValor: number): string {
+  return pValor.toLocaleString();
+}
+
+function formatarNumeroOuTexto(pValor: unknown): string {
+  if (typeof pValor === 'boolean') return pValor ? t('messages.yes') : t('messages.no');
+  if (typeof pValor === 'number') return pValor.toLocaleString();
+  return String(pValor);
+}
+
+function formatarRotuloDados(pValor: number): string {
+  if (ehTipoCircular.value) return `${Number(pValor).toFixed(1)}%`;
+  return formatarNumero(pValor);
+}
+
+function calcularPorcentagem(pValor: number): string {
+  if (!totalValor.value) return '0';
+  return ((pValor / totalValor.value) * 100).toFixed(1);
+}
+
+// Computadas
 const possuiDados = computed(() => props.dados.length > 0);
 const ehBarraHorizontal = computed(() => tipoGrafico.value === 'barHorizontal');
 const ehTipoCircular = computed(() => tipoGrafico.value === 'donut' || tipoGrafico.value === 'pie');
@@ -122,7 +160,7 @@ const tituloAgrupamento = computed(() => {
 });
 
 const labelsGrafico = computed(() => props.dados.map((pItem) => extrairRotulo(pItem)));
-const coresGrafico = computed(() => props.dados.map((pItem) => resolverCor(pItem)));
+const coresGrafico = computed(() => gerarCores(props.dados.length));
 const chaveRenderizacao = computed(() => `${tipoGrafico.value}-${filtroSelecionado.value}`);
 
 const seriesGrafico = computed<number[] | { name: string; data: number[] }[]>(() => {
@@ -276,53 +314,4 @@ const opcoesGrafico = computed<ApexOptions>(() => {
     },
   };
 });
-
-function extrairRotulo(pItem: IValorGrafico | TDadoGrafico): string {
-  if ('titulo' in pItem) {
-    const valorOriginal = pItem.valorOriginal ?? pItem.titulo;
-    if (props.configuracaoAtiva?.chartFormatter) {
-      return props.configuracaoAtiva.chartFormatter(valorOriginal);
-    }
-    return formatarNumeroOuTexto(valorOriginal);
-  }
-  return pItem.rotulo;
-}
-
-function formatarNumero(pValor: number): string {
-  return pValor.toLocaleString();
-}
-
-function formatarNumeroOuTexto(pValor: unknown): string {
-  if (typeof pValor === 'boolean') return pValor ? t('messages.yes') : t('messages.no');
-  if (typeof pValor === 'number') return pValor.toLocaleString();
-  return String(pValor);
-}
-
-function formatarRotuloDados(pValor: number): string {
-  if (ehTipoCircular.value) return `${Number(pValor).toFixed(1)}%`;
-  return formatarNumero(pValor);
-}
-
-function calcularPorcentagem(pValor: number): string {
-  if (!totalValor.value) return '0';
-  return ((pValor / totalValor.value) * 100).toFixed(1);
-}
-
-function resolverCor(pItem: IValorGrafico | TDadoGrafico): string {
-  const rotulo = 'titulo' in pItem ? String(pItem.valorOriginal ?? pItem.titulo) : pItem.rotulo;
-
-  if (props.mapeamentoCores[rotulo]) {
-    return theme.current.value.colors[props.mapeamentoCores[rotulo]] ?? props.mapeamentoCores[rotulo];
-  }
-
-  if ('cor' in pItem && pItem.cor && !['#000000', '#000', 'black'].includes(pItem.cor.toLowerCase())) {
-    return temaCor(pItem.cor);
-  }
-
-  return gerarCores(rotulo);
-}
-
-function temaCor(pCor: string): string {
-  return theme.current.value.colors[pCor] ?? pCor;
-}
 </script>
