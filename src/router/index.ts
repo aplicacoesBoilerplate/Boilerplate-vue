@@ -1,7 +1,8 @@
 // Ecossistema Vue
 import { createRouter, createWebHistory } from 'vue-router';
 
-import { i18n } from '@/plugins/i18n';
+// Utils
+import { CTradutor } from '@/classes/Utils/CTradutor';
 
 // Guards
 import { authGuard } from './guards/auth.guard';
@@ -25,11 +26,10 @@ const router = createRouter({
 
 router.beforeEach((pTo, pFrom, pNext) => {
   const title = pTo.meta.title as string;
-  // @ts-expect-error Instância do plugin i18-n muito profunda e possivelmente indefinida.
-  const defaultTitle = i18n.global.t('app.title');
+  const defaultTitle = CTradutor.traduzir('app.title');
 
   if (title) {
-    const translatedTitle = i18n.global.t(title);
+    const translatedTitle = CTradutor.traduzir(title);
     document.title = `${translatedTitle} - ${defaultTitle}`;
   } else {
     document.title = defaultTitle;
