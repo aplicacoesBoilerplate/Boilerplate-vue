@@ -84,7 +84,7 @@ import { useI18n } from 'vue-i18n';
 // Enumns
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 // Types e Interfaces
-import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 import type {
   IConsultaRegistrosFiltro,
@@ -218,7 +218,7 @@ function pesquisarRegistros(pTermoPesquisa: string): void {
 
 async function buscarRegistros(
   pPayload: IConsultaRegistros,
-): Promise<IResultadoConsultaRegistros<TRegistroConsulta>> {
+): Promise<IRespostaConsultaRegistros<TRegistroConsulta>> {
   const resultado = await configuracaoConsulta.value.buscarRegistros({
     campo: String(props.campoSelecionado?.valor ?? ''),
     condicao: props.condicao,
