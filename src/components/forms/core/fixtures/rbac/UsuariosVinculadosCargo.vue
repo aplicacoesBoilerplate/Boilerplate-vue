@@ -72,7 +72,7 @@
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 // Types e Interfaces
 import type { ICargoRbac } from '@/models/model/core/rbac/rbac.model';
 import type { IUsuario, TPapel } from '@/models/model/core/usuario.model';
@@ -116,7 +116,7 @@ const papeisOriginaisUsuarios = ref(new Map<string, TPapel>());
  */
 async function buscarUsuarios(
   pPayload: IConsultaRegistros & { termoPesquisa: string },
-): Promise<IResultadoConsultaRegistros<IUsuario>> {
+): Promise<IRespostaConsultaRegistros<IUsuario>> {
   const usuariosFiltrados = filtrarUsuariosPorCargoEPesquisa(pPayload.termoPesquisa);
   const inicio = (pPayload.proximaEntrada as number) || 0;
   const limite = pPayload.limite || 10;

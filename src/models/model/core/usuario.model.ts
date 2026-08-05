@@ -1,4 +1,4 @@
-// Types e Interfaces
+// Models
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
@@ -7,7 +7,7 @@ import type { IConsultaRegistrosFiltro } from '@/models/filters/IConsultaRegistr
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 
 // Services
-import { CConsultaUsuariosFiltroService } from '@/services/core/filters/CConsultaUsuariosFiltroService';
+import { usuarioService } from '@/services/core/CUsuarioService';
 
 // Plugins
 import { i18n } from '@/plugins/i18n';
@@ -147,28 +147,28 @@ const CONSULTA_REGISTROS_FILTRO_USUARIO: Partial<Record<TCamposFiltroUsuario, IC
   id: {
     atributoValor: 'id',
     atributoDescricao: 'nome',
-    buscarRegistros: CConsultaUsuariosFiltroService.buscarRegistros,
+    buscarRegistros: usuarioService.consultar,
     limiteInicial: 5,
     textoVazio: 'Nenhum usuário encontrado.',
   },
   nome: {
     atributoValor: 'nome',
     atributoDescricao: 'nome',
-    buscarRegistros: CConsultaUsuariosFiltroService.buscarRegistros,
+    buscarRegistros: usuarioService.consultar,
     limiteInicial: 5,
     textoVazio: 'Nenhum usuário encontrado.',
   },
   email: {
     atributoValor: 'email',
     atributoDescricao: 'nome',
-    buscarRegistros: CConsultaUsuariosFiltroService.buscarRegistros,
+    buscarRegistros: usuarioService.consultar,
     limiteInicial: 5,
     textoVazio: 'Nenhum usuário encontrado.',
   },
   telefone: {
     atributoValor: 'telefone',
     atributoDescricao: 'nome',
-    buscarRegistros: CConsultaUsuariosFiltroService.buscarRegistros,
+    buscarRegistros: usuarioService.consultar,
     limiteInicial: 5,
     textoVazio: 'Nenhum usuário encontrado.',
   },
@@ -267,6 +267,5 @@ export const MAPEAMENTO_USUARIO = {
 } as const;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export const MAPEAMENTO_CAMPOS_FILTROS_USUARIO: import('@/models/filters/ICampoFiltro').ICampoFiltro<any, any>[] =
+export const MAPEAMENTO_CAMPOS_FILTROS_USUARIO: ICampoFiltro<object, object>[] =
   Object.values(MAPEAMENTO_USUARIO.FILTERS) as any;
-/* eslint-enable @typescript-eslint/no-explicit-any */

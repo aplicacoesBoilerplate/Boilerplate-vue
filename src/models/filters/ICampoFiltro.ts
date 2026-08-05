@@ -1,7 +1,7 @@
 // Types e Interfaces
+import type { IConsultaRegistros } from '../consulta/IConsultaRegistros';
 import type { EOperadoresFiltro } from './enums/EOperadoresFiltro';
 import type { ETipoFiltro } from './enums/ETipoFiltro';
-import type { IConsultaRegistrosFiltro } from './IConsultaRegistrosFiltro';
 
 export interface IOpcaoSelecao {
   valor: unknown;
@@ -13,6 +13,7 @@ export interface IOpcaoSelecao {
  * @description Interface genérica responsável por representar os campos disponíveis para o filtro.
  * @template T - O tipo do valor do campo.
  * @template TRegistroConsulta - O tipo do registro de consulta auxiliar.
+ * 
  * @property {T} valor - O valor da opção do campo selecionado que será utilizado no filtro
  * @property {string} descricao - A descrição do campo que será exibida no filtro
  * @property {string} icone - O ícone que será exibido no filtro
@@ -35,6 +36,6 @@ export interface ICampoFiltro<T, TRegistroConsulta extends object = Record<strin
   operadores?: EOperadoresFiltro[];
   pesquisaPadrao?: boolean;
   operadorPesquisaPadrao?: EOperadoresFiltro;
-  consultaRegistros?: IConsultaRegistrosFiltro<TRegistroConsulta>;
+  consultaRegistros?: IConsultaRegistros<TRegistroConsulta>;
   disponivelAgrupamento?: boolean;
 }

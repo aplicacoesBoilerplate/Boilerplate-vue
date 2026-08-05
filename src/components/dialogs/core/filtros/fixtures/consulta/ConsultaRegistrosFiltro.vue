@@ -217,7 +217,7 @@ function pesquisarRegistros(pTermoPesquisa: string): void {
 }
 
 async function buscarRegistros(
-  pPayload: IConsultaRegistros,
+  pPayload: IConsultaRegistros<TRegistroConsulta>,
 ): Promise<IRespostaConsultaRegistros<TRegistroConsulta>> {
   const resultado = await configuracaoConsulta.value.buscarRegistros({
     campo: String(props.campoSelecionado?.valor ?? ''),

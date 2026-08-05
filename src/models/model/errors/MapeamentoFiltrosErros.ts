@@ -1,6 +1,5 @@
-// Types e Interfaces
+// Models
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
-// Enums
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 import type { IErros } from './IErros';
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
@@ -8,7 +7,7 @@ import type { IConsultaRegistrosFiltro } from '@/models/filters/IConsultaRegistr
 import type { IUsuario } from '@/models/model/core/usuario.model';
 
 // Services
-import { CConsultaUsuariosFiltroService } from '@/services/core/filters/CConsultaUsuariosFiltroService';
+import { usuarioService } from '@/services/core/CUsuarioService';
 
 export type TCamposFiltroErros = Omit<IErros, 'idError'>;
 type TCampoFiltroErro = keyof TCamposFiltroErros | 'usuario.idUsuario';
@@ -56,14 +55,14 @@ const CONSULTA_REGISTROS_FILTRO_ERROS: Partial<Record<TCampoFiltroErro, IConsult
   'usuario.idUsuario': {
     atributoValor: 'id',
     atributoDescricao: 'nome',
-    buscarRegistros: CConsultaUsuariosFiltroService.buscarRegistros,
+    buscarRegistros: usuarioService.consultar,
     limiteInicial: 5,
     textoVazio: 'Nenhum usuário encontrado.',
   },
   usuarioReferencia: {
     atributoValor: 'email',
     atributoDescricao: 'nome',
-    buscarRegistros: CConsultaUsuariosFiltroService.buscarRegistros,
+    buscarRegistros: usuarioService.consultar,
     limiteInicial: 5,
     textoVazio: 'Nenhum usuário encontrado.',
   },

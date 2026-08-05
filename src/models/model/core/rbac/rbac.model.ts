@@ -1,3 +1,4 @@
+// Models
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 import type { IPermissaoCargoRbac, IRedirecionamentoInicialRbac, TComportamentoPadraoPermissao } from './rbac.types';
@@ -7,7 +8,7 @@ import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistr
 import type { TPapel } from '@/models/model/core/usuario.model';
 
 // Services
-import { CConsultaCargosFiltroService } from '@/services/core/filters/CConsultaCargosFiltroService';
+import { cargoRbacService } from '@/services/core/CCargoRbacService';
 
 /**
  * @description Define um cargo com suas permissões.
@@ -148,7 +149,7 @@ const CONSULTA_REGISTROS_FILTRO_RBAC: Partial<Record<TCamposFiltroRbac, IConsult
   nome: {
     atributoValor: 'nome',
     atributoDescricao: 'nome',
-    buscarRegistros: CConsultaCargosFiltroService.buscarRegistros,
+    buscarRegistros: cargoRbacService.consultar,
     limiteInicial: 5,
     textoVazio: 'Nenhum cargo encontrado.',
   },
