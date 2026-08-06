@@ -1,3 +1,6 @@
+// Models
+import type { IAcaoRecursoRbac, IEndpointApiRbac, IMapeamentoRotaApiRbac } from './rbac.types';
+
 /**
  * @description Ações de API liberadas automaticamente para a rota inicial do cargo.
  */
@@ -98,5 +101,3 @@ export function montarAcaoEndpointApiRbac(pEndpoint: Pick<IEndpointApiRbac, 'met
 export function montarChavePermissaoRbac(pRecurso: string, pAcao: string): string {
   return `${pRecurso}::${pAcao}`;
 }
-
-import type { IAcaoRecursoRbac, IEndpointApiRbac, IMapeamentoRotaApiRbac } from './rbac.types';

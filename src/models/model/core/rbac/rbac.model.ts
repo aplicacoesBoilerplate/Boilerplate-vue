@@ -1,14 +1,20 @@
 // Models
+import { type IConfiguracaoCampo, obterEntradasMapeamentoCampos, type TMapeamentoCampos } from '@/models/components/IMapeamentoCampos';
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 import type { IPermissaoCargoRbac, IRedirecionamentoInicialRbac, TComportamentoPadraoPermissao } from './rbac.types';
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
-import type { IConsultaRegistrosFiltro } from '@/models/filters/IConsultaRegistrosFiltro';
+import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 import type { TPapel } from '@/models/model/core/usuario.model';
 
+import { criarCabecalhosTabela, criarCamposFiltro } from '@/utils/MapeamentoCampos';
+
 // Services
 import { cargoRbacService } from '@/services/core/CCargoRbacService';
+
+import { CFormatters } from '@/classes/Utils/CFormatters';
+// Utils
+import { CTradutor } from '@/classes/Utils/CTradutor';
 
 /**
  * @description Define um cargo com suas permissões.
@@ -36,21 +42,8 @@ export interface ICargoRbac {
   auditoria?: IAuditoriaRegistro;
 }
 
-/**
- * @description Mapeamento das opções de comportamento padrão no caso de uma permissão não estar configurada de forma explícita.
- * @property {TComportamentoPadraoPermissao} valor - Identificador estável do comportamento padrão.
- * @property {string} descricao - Texto exibido para o usuário.
- * @property {string} icone - Ícone usado na interface.
- * @property {string} cor - Cor usada na interface.
- */
-export interface IComportamentoPadrao {
-  valor: TComportamentoPadraoPermissao;
-  descricao: string;
-  icone: string;
-  cor: string;
-}
-
-export const COMPORTAMENTOS_PADRAO_PERMISSAO: IComportamentoPadrao[] = [
+// Mapeamentos das opções para seleção de comportamento padrão do RBAC quanto as permissões.
+export const COMPORTAMENTOS_PADRAO_PERMISSAO: IOpcaoSelecao<TComportamentoPadraoPermissao>[] = [
   {
     valor: 'bloquear',
     descricao: 'Bloquear por padrão',
@@ -89,95 +82,84 @@ export function criarCargoRbacPadrao(pDados: Partial<ICargoRbac> = {}): ICargoRb
   };
 }
 
-/**
- * @description Normaliza um valor string para ser usado como papel de cargo.
- * @param pValor - Valor string a ser normalizado.
- * @returns Papel de cargo normalizado.
- */
-export function normalizarPapelCargo(pValor: string): TPapel {
-  return pValor
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9_ -]/g, '')
-    .replace(/[\s-]+/g, '_')
-    .toUpperCase() as TPapel;
-}
-
-/**
- * @description Verifica se uma permissão específica está liberada para um cargo.
- * @param pCargo - Cargo RBAC a ser verificado.
- * @param pRecurso - Recurso da permissão.
- * @param pAcao - Ação da permissão.
- * @returns True se a permissão estiver liberada, false caso contrário.
- */
-// -------- Mapeamento de Filtros (type-safe sem any) ----------
-
 export type TCamposFiltroRbac = keyof Pick<ICargoRbac, 'nome' | 'descricao' | 'comportamentoPadrao' | 'ativo'>;
+type TMapeamentoRbac = TMapeamentoCampos<
+  TCamposFiltroRbac,
+  IConfiguracaoCampo<TCamposFiltroRbac, ICargoRbac>
+>;
 
-type TMapeamentoFiltroRbac = Omit<ICampoFiltro<TCamposFiltroRbac, ICargoRbac>, 'valor'>;
-
-const DESCRICAO_CAMPOS_FILTRO_RBAC: Record<TCamposFiltroRbac, string> = {
-  nome: 'Nome',
-  descricao: 'Descrição',
-  comportamentoPadrao: 'Comportamento padrão',
-  ativo: 'Ativo',
-};
-
-const ICONE_CAMPOS_FILTRO_RBAC: Record<TCamposFiltroRbac, string> = {
-  nome: 'mdi-shield-account-outline',
-  descricao: 'mdi-text-box-outline',
-  comportamentoPadrao: 'mdi-lock-check-outline',
-  ativo: 'mdi-check-circle',
-};
-
-const TIPOS_CAMPOS_FILTRO_RBAC: Record<TCamposFiltroRbac, ETipoFiltro[]> = {
-  nome: [ETipoFiltro.STRING],
-  descricao: [ETipoFiltro.STRING],
-  comportamentoPadrao: [ETipoFiltro.SELECT],
-  ativo: [ETipoFiltro.BOOLEAN],
-};
-
-const OPCOES_CAMPOS_FILTRO_RBAC: Partial<Record<TCamposFiltroRbac, { valor: unknown; descricao: string }[]>> = {
-  comportamentoPadrao: COMPORTAMENTOS_PADRAO_PERMISSAO.map((pComportamento) => ({
-    valor: pComportamento.valor,
-    descricao: pComportamento.descricao,
-  })),
-};
-
-const CONSULTA_REGISTROS_FILTRO_RBAC: Partial<Record<TCamposFiltroRbac, IConsultaRegistrosFiltro<ICargoRbac>>> = {
+const MAPEAMENTO_MODEL_RBAC = {
   nome: {
-    atributoValor: 'nome',
-    atributoDescricao: 'nome',
-    buscarRegistros: cargoRbacService.consultar,
-    limiteInicial: 5,
-    textoVazio: 'Nenhum cargo encontrado.',
-  },
-};
-
-export const MAPEAMENTO_RBAC = {
-  FILTERS: (Object.keys(DESCRICAO_CAMPOS_FILTRO_RBAC) as TCamposFiltroRbac[]).reduce(
-    (pAcc, pCampo) => {
-      pAcc[pCampo] = {
-        descricao: DESCRICAO_CAMPOS_FILTRO_RBAC[pCampo],
-        icone: ICONE_CAMPOS_FILTRO_RBAC[pCampo],
-        tipos: TIPOS_CAMPOS_FILTRO_RBAC[pCampo],
-        opcoes: OPCOES_CAMPOS_FILTRO_RBAC[pCampo],
-        pesquisaPadrao: pCampo === 'nome',
-        operadorPesquisaPadrao: pCampo === 'nome' ? EOperadoresFiltro.CONTEM : undefined,
-        consultaRegistros: CONSULTA_REGISTROS_FILTRO_RBAC[pCampo],
-      } as TMapeamentoFiltroRbac;
-      return pAcc;
+    rotulo: CTradutor.traduzir('', 'Nome'),
+    filtro: {
+      icone: 'mdi-shield-account-outline',
+      tipos: [ETipoFiltro.STRING],
+      pesquisaPadrao: true,
+      operadorPesquisaPadrao: EOperadoresFiltro.CONTEM,
+      consultaRegistros: {
+        atributoValor: 'nome',
+        atributoDescricao: 'nome',
+        buscarRegistros: cargoRbacService.consultar,
+        limiteInicial: 5,
+        textoVazio: 'Nenhum cargo encontrado.',
+      }
     },
-    {} as Record<TCamposFiltroRbac, TMapeamentoFiltroRbac>,
-  ),
-  VALID_FILTER_FIELDS: new Set<TCamposFiltroRbac>(['nome', 'descricao', 'comportamentoPadrao', 'ativo']),
-} as const;
+    tabela: {
+      width: 200,
+      maxWidth: 300,
+      sortable: true
+    }
+  },
+  descricao: {
+    rotulo: CTradutor.traduzir('', 'Descrição'),
+    filtro: {
+      icone: 'mdi-text-box-outline',
+      tipos: [ETipoFiltro.STRING]
+    },
+    tabela: {
+      width: 300,
+      maxWidth: 600,
+      sortable: true
+    }
+  },
+  comportamentoPadrao: {
+    rotulo: CTradutor.traduzir('', 'Comportamento Padrão'),
+    filtro: {
+      icone: 'mdi-lock-check-outline',
+      tipos: [ETipoFiltro.SELECT],
+      opcoes: COMPORTAMENTOS_PADRAO_PERMISSAO,
+    },
+    tabela:  {
+      width: 150,
+      maxWidth: 200,
+      sortable: true,
+    }
+  },
+  ativo: {
+    rotulo: CTradutor.traduzir('', 'Ativo'),
+    filtro: {
+      icone: 'mdi-check-circle',
+      tipos: [ETipoFiltro.BOOLEAN],
+      disponivelAgrupamento: true,
+    },
+    tabela: {
+      align: 'center',
+      width: 50,
+      maxWidth: 100,
+      sortable: true,
+      value: (pItem: ICargoRbac) => CFormatters.formatarBooleano(pItem.ativo),
+      chartFormatter: CFormatters.formatarBooleano,
+    }
+  },
+} satisfies TMapeamentoRbac;
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export const MAPEAMENTO_CAMPOS_FILTROS_RBAC: import('@/models/filters/ICampoFiltro').ICampoFiltro<any, any>[] =
-  Object.values(MAPEAMENTO_RBAC.FILTERS) as any;
-/* eslint-enable @typescript-eslint/no-explicit-any */
+const ENTRADAS_MAPEAMENTO_RBAC = obterEntradasMapeamentoCampos<
+  TCamposFiltroRbac,
+  IConfiguracaoCampo<TCamposFiltroRbac, ICargoRbac>
+>(MAPEAMENTO_MODEL_RBAC);
+
+export const CAMPOS_FILTRO_RBAC = criarCamposFiltro(ENTRADAS_MAPEAMENTO_RBAC);
+export const CABECALHOS_TABELA_RBAC = criarCabecalhosTabela(ENTRADAS_MAPEAMENTO_RBAC);
 
 /**
  * @description Verifica se uma permissão específica está liberada para um cargo.

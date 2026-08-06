@@ -1,3 +1,6 @@
+// Models
+import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+
 export type TComportamentoPadraoPermissao = 'bloquear' | 'liberar';
 
 export const METODOS_HTTP_PERMISSAO_API_RBAC = ['GET', 'POST', 'PUT', 'DELETE'] as const;
@@ -59,5 +62,3 @@ export interface IRedirecionamentoInicialRbac {
   name?: string;
   filtros: IFiltrosConsulta[];
 }
-
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';

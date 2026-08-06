@@ -3,7 +3,7 @@ import { ERecursosFiltro } from '@/models/filters/enums/ERecursosFiltro';
 // Types e Interfaces
 import type { TCamposFiltroRbac } from '@/models/model/core/rbac/rbac.model';
 import type { TCamposFiltroUsuario } from '@/models/model/core/usuario.model';
-import type { TCamposFiltroErros } from '@/models/model/errors/MapeamentoFiltrosErros';
+import type { TCamposFiltroErro } from '@/models/model/errors/MapeamentoFiltrosErros';
 import type { RouteRecordRaw } from 'vue-router';
 
 // Classes
@@ -107,7 +107,7 @@ export const routes: Array<RouteRecordRaw> = [
           icon: 'mdi-sync-alert',
           hotkey: 'cmd+shift+e',
           filterContext: ERecursosFiltro.ERROS,
-          filterResource: CMapeamentosFiltro.getMapeamento<TCamposFiltroErros>(ERecursosFiltro.ERROS),
+          filterResource: CMapeamentosFiltro.getMapeamento<TCamposFiltroErro>(ERecursosFiltro.ERROS),
         },
       },
       {

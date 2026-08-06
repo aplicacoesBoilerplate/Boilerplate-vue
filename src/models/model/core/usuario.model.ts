@@ -1,18 +1,21 @@
 // Models
+import { type IConfiguracaoCampo, obterEntradasMapeamentoCampos, type TMapeamentoCampos } from '@/models/components/IMapeamentoCampos';
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
-import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
-import type { IConsultaRegistrosFiltro } from '@/models/filters/IConsultaRegistrosFiltro';
+import type { ICargoRbac } from './rbac/rbac.model';
+import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 
+// Utils
+import { criarCabecalhosTabela, criarCamposFiltro } from '@/utils/MapeamentoCampos';
+
 // Services
+import { cargoRbacService } from '@/services/core/CCargoRbacService';
 import { usuarioService } from '@/services/core/CUsuarioService';
 
-// Plugins
-import { i18n } from '@/plugins/i18n';
-
-// -------- Tipos e Constantes ----------
+// Classes
+import { CFormatters } from '@/classes/Utils/CFormatters';
+import { CTradutor } from '@/classes/Utils/CTradutor';
 
 export const PAPEIS_VALIDOS = ['ADMIN', 'USER'] as const;
 export type TPapelPadrao = (typeof PAPEIS_VALIDOS)[number];
@@ -23,26 +26,15 @@ export const DESCRICAO_PAPEL: Record<TPapelPadrao, string> = {
   USER: 'Usuário',
 };
 
-export const ICONE_PAPEL: Record<TPapelPadrao, string> = {
-  ADMIN: 'mdi-account-tie',
-  USER: 'mdi-account',
-};
-
-type TMapeamentoPapeis = {
-  valor: string;
-  label: string;
-  icone: string;
-};
-
-export const MAPEAMENTO_PAPEIS: Record<TPapelPadrao, TMapeamentoPapeis> = {
+export const MAPEAMENTO_OPCOES_PAPEIS_PADROES: Record<TPapelPadrao, IOpcaoSelecao> = {
   ADMIN: {
     valor: 'ADMIN',
-    label: 'Administrador',
+    descricao: 'Administrador',
     icone: 'mdi-account-tie',
   },
   USER: {
     valor: 'USER',
-    label: 'Usuário',
+    descricao: 'Usuário',
     icone: 'mdi-account',
   },
 };
@@ -92,180 +84,158 @@ export function criarUsuarioPadrao(pDados: Partial<IUsuario> = {}): IUsuario {
   };
 }
 
-// -------- Formatação ----------
+export type TCamposMapeamentoUsuario = keyof Omit<IUsuario, 'auditoria'>;
+export type TCamposFiltroUsuario = keyof Exclude<IUsuario, 'avatar' | 'notificar' | 'auditoria'>;
 
-function traduzir(pChave: string): string {
-  const tradutor = i18n.global as unknown as { t: (pChaveTraducao: string) => string };
-  return tradutor.t(pChave);
-}
+// A consulta auxiliar pode usar consulta de cargos para os filtros de usuários.
+type TConfiguracaoCampoUsuario =
+  | IConfiguracaoCampo<TCamposMapeamentoUsuario, IUsuario>
+  | IConfiguracaoCampo<TCamposMapeamentoUsuario, ICargoRbac>;
 
-export function formatarBooleanoUsuario(pValor?: boolean): string {
-  return pValor ? traduzir('messages.yes') : traduzir('messages.no');
-}
+type TMapeamentoUsuario = TMapeamentoCampos<
+  TCamposMapeamentoUsuario,
+  TConfiguracaoCampoUsuario
+>;
 
-// -------- Mapeamento de Filtros (type-safe sem any) ----------
-
-export type TCamposFiltroUsuario = keyof Omit<IUsuario, 'avatar' | 'notificar' | 'auditoria'>;
-
-type TMapeamentoFiltroUsuario = Omit<ICampoFiltro<TCamposFiltroUsuario, IUsuario>, 'valor'>;
-
-const DESCRICAO_CAMPOS_FILTRO_USUARIO: Record<TCamposFiltroUsuario, string> = {
-  id: 'Código',
-  nome: 'Nome',
-  email: 'Email',
-  papel: 'Cargo',
-  telefone: 'Telefone',
-  ativo: 'Ativo',
-};
-
-const ICONE_CAMPOS_FILTRO_USUARIO: Record<TCamposFiltroUsuario, string> = {
-  id: 'mdi-pound',
-  nome: 'mdi-account',
-  email: 'mdi-email',
-  papel: 'mdi-badge-account',
-  telefone: 'mdi-phone',
-  ativo: 'mdi-check-circle',
-};
-
-const TIPOS_CAMPOS_FILTRO_USUARIO: Record<TCamposFiltroUsuario, ETipoFiltro[]> = {
-  id: [ETipoFiltro.NUMBER, ETipoFiltro.SELECT],
-  nome: [ETipoFiltro.STRING, ETipoFiltro.SELECT],
-  email: [ETipoFiltro.STRING, ETipoFiltro.SELECT],
-  papel: [ETipoFiltro.SELECT],
-  telefone: [ETipoFiltro.STRING, ETipoFiltro.SELECT],
-  ativo: [ETipoFiltro.BOOLEAN],
-};
-
-const OPCOES_CAMPOS_FILTRO_USUARIO: Partial<Record<TCamposFiltroUsuario, { valor: unknown; descricao: string }[]>> = {
-  papel: PAPEIS_VALIDOS.map((pPapel) => ({
-    valor: pPapel,
-    descricao: DESCRICAO_PAPEL[pPapel],
-  })),
-};
-
-const CONSULTA_REGISTROS_FILTRO_USUARIO: Partial<Record<TCamposFiltroUsuario, IConsultaRegistrosFiltro<IUsuario>>> = {
+const MAPEAMENTO_MODEL_USUARIO = {
   id: {
-    atributoValor: 'id',
-    atributoDescricao: 'nome',
-    buscarRegistros: usuarioService.consultar,
-    limiteInicial: 5,
-    textoVazio: 'Nenhum usuário encontrado.',
+    rotulo: CTradutor.traduzir('', 'Código'),
+    filtro: {
+      icone: 'mdi-pound',
+      tipos: [ETipoFiltro.NUMBER, ETipoFiltro.SELECT],
+      consultaRegistros: {
+        atributoValor: 'id',
+        atributoDescricao: 'nome',
+        buscarRegistros: usuarioService.consultar,
+        limiteInicial: 5,
+        textoVazio: 'Nenhum usuário encontrado.',
+      }
+    },
+    tabela: {
+      width: 50,
+      maxWidth: 100,
+      sortable: true
+    }
   },
   nome: {
-    atributoValor: 'nome',
-    atributoDescricao: 'nome',
-    buscarRegistros: usuarioService.consultar,
-    limiteInicial: 5,
-    textoVazio: 'Nenhum usuário encontrado.',
+    rotulo: CTradutor.traduzir('', 'Nome'),
+    filtro: {
+      icone: 'mdi-account',
+      tipos: [ETipoFiltro.STRING, ETipoFiltro.SELECT],
+      pesquisaPadrao: true,
+      operadorPesquisaPadrao: EOperadoresFiltro.CONTEM,
+      consultaRegistros: {
+        atributoValor: 'nome',
+        atributoDescricao: 'nome',
+        buscarRegistros: usuarioService.consultar,
+        limiteInicial: 5,
+        textoVazio: 'Nenhum usuário encontrado.',
+      }
+    },
+    tabela: {
+      width: 200,
+      maxWidth: 300,
+      sortable: true
+    }
   },
   email: {
-    atributoValor: 'email',
-    atributoDescricao: 'nome',
-    buscarRegistros: usuarioService.consultar,
-    limiteInicial: 5,
-    textoVazio: 'Nenhum usuário encontrado.',
+    rotulo: CTradutor.traduzir('', 'E-mail'),
+    filtro: {
+      icone: 'mdi-email',
+      tipos: [ETipoFiltro.STRING, ETipoFiltro.SELECT],      
+      consultaRegistros: {
+        atributoValor: 'email',
+        atributoDescricao: 'nome',
+        buscarRegistros: usuarioService.consultar,
+        limiteInicial: 5,
+        textoVazio: 'Nenhum usuário encontrado.',
+      }
+    },
+    tabela: {
+      width: 200,
+      maxWidth: 350,
+      sortable: true
+    }
+  },
+  avatar: {
+    rotulo: CTradutor.traduzir('', 'Avatar'),
+    tabela: {
+      width: 150,
+      maxWidth: 200,
+      height: 200,
+      maxHeigth: 300
+    }
   },
   telefone: {
-    atributoValor: 'telefone',
-    atributoDescricao: 'nome',
-    buscarRegistros: usuarioService.consultar,
-    limiteInicial: 5,
-    textoVazio: 'Nenhum usuário encontrado.',
-  },
-};
-
-const DISPONIVEL_AGRUPAMENTO_CAMPOS_FILTRO_USUARIO: Partial<Record<TCamposFiltroUsuario, boolean>> = {
-  papel: true,
-  ativo: true,
-};
-
-// -------- Mapeamento de Tabela ----------
-
-export const MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO: Partial<Record<keyof IUsuario, Record<string, string>>> = {
-  ativo: {
-    true: 'success',
-    false: 'error',
-  },
-};
-
-export const MAPEAMENTO_TABELA_USUARIO: IHeadersDataTable[] = [
-  {
-    title: traduzir('dataTable.users.headers.id'),
-    align: 'start',
-    key: 'id',
-    width: 50,
-  },
-  {
-    title: traduzir('dataTable.users.headers.username'),
-    align: 'start',
-    key: 'nome',
-    width: 250,
-  },
-  {
-    title: traduzir('dataTable.users.headers.email'),
-    align: 'start',
-    key: 'email',
-    width: 200,
-  },
-  {
-    title: traduzir('dataTable.users.headers.role'),
-    align: 'start',
-    key: 'papel',
-    width: 'auto',
-    maxWidth: 100,
-  },
-  {
-    title: traduzir('dataTable.users.headers.phoneNumber'),
-    align: 'end',
-    key: 'telefone',
-    width: 'auto',
-    maxWidth: 200,
-  },
-  {
-    title: traduzir('dataTable.users.headers.receiveNotifications'),
-    key: 'notificar',
-    align: 'center',
-    value: (pItem: IUsuario) => formatarBooleanoUsuario(pItem.notificar),
-    chartFormatter: formatarBooleanoUsuario,
-  },
-  {
-    title: traduzir('dataTable.users.headers.active'),
-    key: 'ativo',
-    align: 'center',
-    value: (pItem: IUsuario) => formatarBooleanoUsuario(pItem.ativo),
-    chartFormatter: formatarBooleanoUsuario,
-  },
-  {
-    title: traduzir('dataTable.headersDefault.actions'),
-    key: 'actions',
-    align: 'center',
-  },
-];
-
-// -------- Mapeamento Consolidado ----------
-
-export const MAPEAMENTO_USUARIO = {
-  FILTERS: (Object.keys(DESCRICAO_CAMPOS_FILTRO_USUARIO) as TCamposFiltroUsuario[]).reduce(
-    (pAcc, pCampo) => {
-      pAcc[pCampo] = {
-        descricao: DESCRICAO_CAMPOS_FILTRO_USUARIO[pCampo],
-        icone: ICONE_CAMPOS_FILTRO_USUARIO[pCampo],
-        tipos: TIPOS_CAMPOS_FILTRO_USUARIO[pCampo],
-        opcoes: OPCOES_CAMPOS_FILTRO_USUARIO[pCampo],
-        pesquisaPadrao: pCampo === 'nome',
-        operadorPesquisaPadrao: pCampo === 'nome' ? EOperadoresFiltro.CONTEM : undefined,
-        consultaRegistros: CONSULTA_REGISTROS_FILTRO_USUARIO[pCampo],
-        disponivelAgrupamento: DISPONIVEL_AGRUPAMENTO_CAMPOS_FILTRO_USUARIO[pCampo],
-      } as TMapeamentoFiltroUsuario;
-      return pAcc;
+    rotulo: CTradutor.traduzir('', 'Telefone'),
+    filtro: {
+      icone: 'mdi-card-account-phone',
+      tipos: [ETipoFiltro.STRING, ETipoFiltro.SELECT],
+      consultaRegistros: {
+        atributoValor: 'telefone',
+        atributoDescricao: 'nome',
+        buscarRegistros: usuarioService.consultar,
+        limiteInicial: 5,
+        textoVazio: 'Nenhum usuário encontrado.',
+      }
     },
-    {} as Record<TCamposFiltroUsuario, TMapeamentoFiltroUsuario>,
-  ),
-  TABLE: MAPEAMENTO_TABELA_USUARIO,
-  CHART_COLORS: MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO,
-  VALID_FILTER_FIELDS: new Set<TCamposFiltroUsuario>(['id', 'nome', 'email', 'papel', 'telefone', 'ativo']),
-} as const;
+    tabela: {
+      width: 150,
+      maxWidth: 200,
+      sortable: true
+    }
+  },
+  notificar: {
+    rotulo: CTradutor.traduzir('', 'Notificar'),
+    tabela: {
+      width: 150,
+      maxWidth: 200,
+      sortable: true,
+      value: (pItem: IUsuario) => CFormatters.formatarBooleano(pItem.notificar)
+    }
+  },
+  ativo: {
+    rotulo: CTradutor.traduzir('', 'Ativo'),
+    filtro: {
+      icone: 'mdi-check-circle',
+      tipos: [ETipoFiltro.BOOLEAN],
+      disponivelAgrupamento: true,
+    },
+    tabela: {
+      align: 'center',
+      width: 50,
+      maxWidth: 100,
+      sortable: true,
+      value: (pItem: IUsuario) => CFormatters.formatarBooleano(pItem.ativo),
+      chartFormatter: CFormatters.formatarBooleano,
+    }
+  },
+  papel: {
+    rotulo: CTradutor.traduzir('', 'Cargo'),
+    filtro: {
+      icone: 'mdi-badge-account',
+      tipos: [ETipoFiltro.SELECT],
+      consultaRegistros: {
+        atributoValor: 'papel',
+        atributoDescricao: 'nome',
+        buscarRegistros: cargoRbacService.consultar,
+        limiteInicial: 5,
+        textoVazio: 'Nenhum cargo encontrado.'
+      },
+      disponivelAgrupamento: true,
+    },
+    tabela: {
+      width: 150,
+      maxWidth: 200,
+      sortable: true
+    }
+  }
+} satisfies TMapeamentoUsuario;
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export const MAPEAMENTO_CAMPOS_FILTROS_USUARIO: ICampoFiltro<object, object>[] =
-  Object.values(MAPEAMENTO_USUARIO.FILTERS) as any;
+const ENTRADAS_MAPEAMENTO_USUARIO = obterEntradasMapeamentoCampos<
+  TCamposMapeamentoUsuario,
+  TConfiguracaoCampoUsuario
+>(MAPEAMENTO_MODEL_USUARIO);
+
+export const CAMPOS_FILTRO_USUARIO = criarCamposFiltro(ENTRADAS_MAPEAMENTO_USUARIO);
+export const CABECALHOS_TABELA_USUARIO = criarCabecalhosTabela(ENTRADAS_MAPEAMENTO_USUARIO);

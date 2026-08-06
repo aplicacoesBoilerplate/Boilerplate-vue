@@ -1,12 +1,22 @@
-// Types e Interfaces
-import type { IConsultaRegistros } from '../consulta/IConsultaRegistros';
+// Models
+import type { IConsultaAuxiliarRegistros } from '../consulta/IConsultaRegistros';
 import type { EOperadoresFiltro } from './enums/EOperadoresFiltro';
 import type { ETipoFiltro } from './enums/ETipoFiltro';
 
-export interface IOpcaoSelecao {
-  valor: unknown;
+/**
+ * @description Todo e qualquer objeto que possa ser representado como opção de um componente AutocompleteSelecionarOpcao.vue.
+ * @template T É o tipo válido para os valores das opções.
+ * 
+ * @property {T = unknown} valor - O real valor da opção.
+ * @property {string} descricao - A descrição amigável da opção.
+ * @property {string} icone - Um ícone opcional a ser renderizado no slot append das opções.
+ * @property {string} cor - Uma cor opcional a ser renderizado nos ícones das opções.
+ */
+export interface IOpcaoSelecao<T = unknown> {
+  valor: T;
   descricao: string;
   icone?: string;
+  cor?: string;
 }
 
 /**
@@ -23,7 +33,7 @@ export interface IOpcaoSelecao {
  * @property {EOperadoresFiltro[]} operadores - Operadores específicos permitidos para este campo
  * @property {boolean} pesquisaPadrao - Indica se este é o campo utilizado por padrão quando o usuário usar a barra de busca rápida (Ex: Nome)
  * @property {EOperadoresFiltro} operadorPesquisaPadrao - Operador utilizado pela busca rápida para o campo padrão (Ex: CONTEM, IGUAL)
- * @property {IConsultaRegistrosFiltro<TRegistroConsulta>} consultaRegistros - Configuração da consulta auxiliar de registros disponível para este campo
+ * @property {IConsultaAuxiliarRegistros<TRegistroConsulta>} consultaRegistros - Configuração da consulta auxiliar de registros disponível para este campo
  * @property {boolean} disponivelAgrupamento - Indica se este campo está disponível para agrupamento no gráfico.
  */
 export interface ICampoFiltro<T, TRegistroConsulta extends object = Record<string, unknown>> {
@@ -36,6 +46,6 @@ export interface ICampoFiltro<T, TRegistroConsulta extends object = Record<strin
   operadores?: EOperadoresFiltro[];
   pesquisaPadrao?: boolean;
   operadorPesquisaPadrao?: EOperadoresFiltro;
-  consultaRegistros?: IConsultaRegistros<TRegistroConsulta>;
+  consultaRegistros?: IConsultaAuxiliarRegistros<TRegistroConsulta>;
   disponivelAgrupamento?: boolean;
 }
