@@ -59,14 +59,14 @@
                   :text="t('tooltips.forms.create')"
                   location="bottom"
                 >
-                  <template #activator="{ props }">
+                  <template #activator="{ props: propsTooltip }">
                     <slot
                       :acionarNovoRegistro="() => emitirNovoRegistro({ modoEdicao: false })"
-                      :tooltipProps="props"
+                      :tooltipProps="propsTooltip"
                       name="activator-novo-registro"
                     >
                       <v-btn
-                        v-bind="props"
+                        v-bind="propsTooltip"
                         color="primary"
                         icon="mdi-plus"
                         size="x-small"
@@ -77,10 +77,8 @@
                 </v-tooltip>
               </div>
             </BtnActionDrawer>
-          </div>
+          </template>
         </v-card-title>
-
-
       </template>
 
       <section class="fill-height d-flex flex-column overflow-y-auto">
@@ -115,14 +113,15 @@
   </v-card>
 </template>
 
-<script setup lang="ts">
-import { computed, ref } from 'vue';
+<script setup lang="ts" generic="TInterfaceRegistro extends object">
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import type { IGenericInfiniteListExpose } from '@/models/components/exposes/IGenericInfiniteListExpose.ts';
 import type { TMetodoExportacaoDados } from '@/models/components/IExportacaoDados';
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
-import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
-import type { TOrdem } from '@/models/filters/IConsultaRegistrosFiltro';
+import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { TOrdem } from '@/models/consulta/IConsultaRegistros';
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
 
 import BtnActionDrawer from '@/components/layouts/base/appbar/fixtures/BtnActionDrawer.vue';
@@ -141,7 +140,7 @@ type TProps = {
   ordemInicial?: TOrdem;
   itemKey?: string;
   opcoesLimite?: number[];
-  serviceFetch: (payload: IConsultaRegistros) => Promise<IResultadoConsultaRegistros>;
+  serviceFetch: (pPayload: IConsultaRegistros<TInterfaceRegistro>) => Promise<IRespostaConsultaRegistros<TInterfaceRegistro>>;
   serviceExportacao?: TMetodoExportacaoDados;
   parametrosExportacao?: Record<string, unknown>;
   colunasExportacao?: IHeadersDataTable[];
@@ -153,8 +152,7 @@ type TProps = {
   titulo?: string;
   usarFiltrosGlobais?: boolean;
 };
-
-const props = withDefaults(defineProps<TProps>(), {
+withDefaults(defineProps<TProps>(), {
   cacheTtlMs: 15 * 60 * 1000,
   textoVazio: undefined,
   textoFinal: undefined,
@@ -184,7 +182,7 @@ const emits = defineEmits<TEmits>();
 
 const { t } = useI18n();
 
-const infiniteListRef = ref<InstanceType<typeof GenericInfiniteList> | null>(null);
+const infiniteListRef = ref<IGenericInfiniteListExpose | null>(null);
 const exibirGraficosAtivos = ref(false);
 
 function emitirNovoRegistro(pParams: { modoEdicao: boolean }): void {
@@ -196,16 +194,12 @@ function alternarGraficos(): void {
   emits('toggleChart');
 }
 
-const textoVazioPadrao = computed(() => props.textoVazio ?? t('components.genericInfiniteList.textoVazio'));
-const textoFinalPadrao = computed(() => props.textoFinal ?? t('components.genericInfiniteList.textoFinal'));
-const textoErrorPadrao = computed(() => props.textoError ?? t('components.genericInfiniteList.textoErro'));
-
 defineExpose({
   infiniteListRef,
-  loadMore: (...pArgs: Parameters<InstanceType<typeof GenericInfiniteList>['loadMore']>) =>
+  loadMore: (...pArgs: Parameters<IGenericInfiniteListExpose['loadMore']>) =>
     infiniteListRef.value?.loadMore(...pArgs),
   resetAndLoad: () => infiniteListRef.value?.resetAndLoad(),
-  carregarMaisRegistros: (...pArgs: Parameters<InstanceType<typeof GenericInfiniteList>['carregarMaisRegistros']>) =>
+  carregarMaisRegistros: (...pArgs: Parameters<IGenericInfiniteListExpose['carregarMaisRegistros']>) =>
     infiniteListRef.value?.carregarMaisRegistros(...pArgs),
   resetarECarregar: () => infiniteListRef.value?.resetarECarregar(),
   inserirItem: (pItem: unknown) => infiniteListRef.value?.inserirItem(pItem),

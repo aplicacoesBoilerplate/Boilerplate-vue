@@ -94,7 +94,7 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
-import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 
 // Componentes
 import InputDebouncer from '@/components/forms/fixtures/InputDebouncer.vue';
@@ -170,7 +170,7 @@ type TProps = {
   /**
    * Método responsável por consultar os registros com paginação e termo local.
    */
-  buscarRegistros: (pPayload: TPayloadConsultaVinculos) => Promise<IResultadoConsultaRegistros<TRegistroVinculo>>;
+  buscarRegistros: (pPayload: TPayloadConsultaVinculos) => Promise<IRespostaConsultaRegistros<TRegistroVinculo>>;
 };
 
 const props = withDefaults(defineProps<TProps>(), {
@@ -211,7 +211,7 @@ function pesquisar(pTermoPesquisa: string): void {
  */
 async function buscarRegistros(
   pPayload: IConsultaRegistros,
-): Promise<IResultadoConsultaRegistros<TRegistroVinculo>> {
+): Promise<IRespostaConsultaRegistros<TRegistroVinculo>> {
   return props.buscarRegistros({
     ...pPayload,
     termoPesquisa: termoPesquisa.value,
