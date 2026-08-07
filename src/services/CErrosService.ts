@@ -1,5 +1,5 @@
 // Models
-import type { IErros } from '@/models/model/errors/IErros';
+import type { IErros } from '@/models/model/common/IErros';
 
 // Classes
 import { CBaseConsultaApiService } from './base/CBaseConsultaApiService';

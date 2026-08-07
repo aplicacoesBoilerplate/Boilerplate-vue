@@ -72,20 +72,15 @@
 // Ecossistema Vue
 import { ref } from 'vue';
 
+/**
+ * @description Propriedade do componente que recebe a implementação da exibição dos detalhes de um cargo.
+ * @property {string} avatar - Imagem usada pelo activator padrão e pelo cabeçalho do card.
+ * @property {string} titulo - Título principal exibido no resumo e nos detalhes.
+ * @property {string} subtitulo - Texto auxiliar exibido abaixo do título.
+ */
 type TProps = {
-  /**
-   * Imagem usada pelo activator padrão e pelo cabeçalho do card.
-   */
   avatar?: string;
-
-  /**
-   * Título principal exibido no resumo e nos detalhes.
-   */
   titulo: string;
-
-  /**
-   * Texto auxiliar exibido abaixo do título.
-   */
   subtitulo?: string;
 };
 defineProps<TProps>();

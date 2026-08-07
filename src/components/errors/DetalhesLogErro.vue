@@ -117,11 +117,8 @@
 </template>
 
 <script setup lang="ts">
-// Ecossistema Vue
-// Types e Interfaces
-import { useI18n } from 'vue-i18n';
-
-import type { IErros } from '@/models/model/errors/IErros';
+// Models
+import type { IErros } from '@/models/model/common/IErros';
 
 // Utils
 import { CFormatters } from '@/classes/Utils/CFormatters';
@@ -133,11 +130,7 @@ import { CFormatters } from '@/classes/Utils/CFormatters';
 type TProps = {
   erro: IErros;
 };
-
-const props = defineProps<TProps>();
-
-// Composables
-const { locale } = useI18n();
+defineProps<TProps>();
 
 // Funções
 /**
@@ -146,7 +139,7 @@ const { locale } = useI18n();
  * @returns A data formatada para exibição.
  */
 function formatarData(pData: string | Date): string {
-  return CFormatters.formatarDataHora(pData, locale.value, true);
+  return CFormatters.formatarDataHora(pData, true);
 }
 </script>
 
