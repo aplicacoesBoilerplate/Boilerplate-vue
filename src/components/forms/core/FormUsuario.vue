@@ -77,8 +77,11 @@ import { ref, toRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRules } from 'vuetify/labs/rules';
 
-// Types e Interfaces
+// Models
 import { criarUsuarioPadrao, type IUsuario } from '@/models/model/core/usuario.model';
+
+// Utils
+import { deepClone } from '@/utils/deepClone';
 
 // Componentes
 import BaseForm from '@/components/forms/base/BaseForm.vue';
@@ -109,9 +112,9 @@ const usuario = defineModel<IUsuario>('usuario', { required: true });
 
 // Reativas - Ref
 const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
+const usuarioOriginal = ref<IUsuario>(deepClone(toRaw(usuario.value)));
 
-const usuarioOriginal = ref<IUsuario>(structuredClone(toRaw(usuario.value)));
-
+// Funções
 async function refreshForm(): Promise<void> {
   if (!baseFormRef.value) return;
   await baseFormRef.value.refreshForm(() => {

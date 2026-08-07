@@ -7,6 +7,7 @@ import { defineStore } from 'pinia';
 import type { IPreferences, IPreferencesTheme } from '@/models/components/IPreferences';
 import type { IPreferenciaUsuario } from '@/models/services/IPreferenciaUsuario';
 
+import { deepClone } from '@/utils/deepClone';
 // Utilitários
 import { ClassManagerStorage } from '@/utils/ManagerStorage';
 
@@ -31,9 +32,6 @@ const defaultPreferences: IPreferences = {
   },
 };
 
-/**
- * Store de preferências.
- */
 export const usePreferencesStore = defineStore('preferences', () => {
   // Reativas
   const preferences = ref<IPreferences>(ClassManagerStorage.get(STORAGE_KEY, defaultPreferences, STORAGE_OPTIONS));
@@ -43,8 +41,8 @@ export const usePreferencesStore = defineStore('preferences', () => {
   // Observadores
   watch(
     preferences,
-    (value) => {
-      ClassManagerStorage.set(STORAGE_KEY, value, STORAGE_OPTIONS);
+    (pValue) => {
+      ClassManagerStorage.set(STORAGE_KEY, pValue, STORAGE_OPTIONS);
     },
     { deep: true },
   );
@@ -66,7 +64,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
   }
 
   function clearPreferences(): void {
-    preferences.value = structuredClone(defaultPreferences);
+    preferences.value = deepClone(defaultPreferences);
     ClassManagerStorage.clear(STORAGE_KEY, STORAGE_OPTIONS);
     void salvarPreferenciasBackend();
   }
@@ -86,7 +84,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
   function aplicarPreferenciaBackend(pPreferencia: IPreferenciaUsuario): void {
     try {
       preferences.value = {
-        ...structuredClone(defaultPreferences),
+        ...deepClone(defaultPreferences),
         ...JSON.parse(pPreferencia.valorJson),
       };
     } catch (pErro) {

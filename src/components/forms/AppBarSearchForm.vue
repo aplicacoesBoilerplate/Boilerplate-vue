@@ -20,7 +20,7 @@
     >
       <template #prepend-inner>
         <div
-          v-if="hasFilters"
+          v-if="possuiFiltros"
           class="d-flex flex-row"
         >
           <DialogFiltro
@@ -61,8 +61,8 @@
 <script setup lang="ts">
 // Ecossistema vue
 import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useHotkey } from 'vuetify';
 
 // Stores
@@ -71,6 +71,7 @@ import { useGenericFilterStore } from '@/stores/genericFilter.store';
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 // Types e Interfaces
 import type { TParametrosBusca } from '@/models/filters/TParametrosBusca';
+import type { VInput } from 'vuetify/components';
 
 // Componentes
 import DialogFiltro from '@/components/dialogs/core/filtros/DialogFiltro.vue';
@@ -85,31 +86,35 @@ const emits = defineEmits<TEmits>();
 const route = useRoute();
 const { t } = useI18n();
 
+useHotkey('ctrl+k', () => {
+  inputRef.value?.focus();
+});
+
 // Stores
 const genericFilterStore = useGenericFilterStore();
 
 // Reativas - ref
-const inputRef = ref<any>(null);
+const inputRef = ref<typeof VInput | null>(null);
 const searchQuery = ref('');
 const exibirFiltros = ref<boolean>(false);
 
 // Funções
 function onSubmit() {
   if (searchQuery.value) {
-    const campoPadrao = genericFilterStore.camposDisponiveis.find((c) => c.pesquisaPadrao);
+    const lCampoPadrao = genericFilterStore.camposDisponiveis.find((pCampo) => pCampo.pesquisaPadrao);
 
-    if (campoPadrao) {
-      const condicaoFiltro = campoPadrao.operadorPesquisaPadrao || EOperadoresFiltro.CONTEM;
-      const indexFiltroExistente = genericFilterStore.filtersApplied.findIndex(
-        (f) => f.campo === campoPadrao.valor && f.condicao === condicaoFiltro,
+    if (lCampoPadrao) {
+      const lCondicaoFiltro = lCampoPadrao.operadorPesquisaPadrao || EOperadoresFiltro.CONTEM;
+      const lIndexFiltroExistente = genericFilterStore.filtersApplied.findIndex(
+        (pFiltro) => pFiltro.campo === lCampoPadrao.valor && pFiltro.condicao === lCondicaoFiltro,
       );
 
-      if (indexFiltroExistente !== -1) {
-        genericFilterStore.filtersApplied[indexFiltroExistente].valor = searchQuery.value;
+      if (lIndexFiltroExistente !== -1) {
+        genericFilterStore.filtersApplied[lIndexFiltroExistente].valor = searchQuery.value;
       } else {
         genericFilterStore.filtersApplied.push({
-          campo: campoPadrao.valor as string,
-          condicao: condicaoFiltro,
+          campo: lCampoPadrao.valor as string,
+          condicao: lCondicaoFiltro,
           valor: searchQuery.value,
           dataInicio: '',
           dataFinal: '',
@@ -126,13 +131,8 @@ function onSubmit() {
 }
 
 // Computadas
-const hasFilters = computed(() => {
+const possuiFiltros = computed(() => {
   return !!route.meta?.filterResource;
-});
-
-// Observadores e Hooks
-useHotkey('ctrl+k', () => {
-  inputRef.value?.focus();
 });
 </script>
 
