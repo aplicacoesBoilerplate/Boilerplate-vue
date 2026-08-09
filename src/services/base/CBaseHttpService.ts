@@ -32,7 +32,7 @@ export abstract class CBaseHttpService {
    * @param {IBaseParamsRequest} pParametros - Parâmetros base.
    * @returns A interface da resposta é transmitida no template do método.
    */
-  protected async get<TResposta extends object = object>(
+  protected async get<TResposta = unknown>(
     pParametros: IBaseParamsRequest
   ): Promise<TResposta> {
     const lSafeUrl = pParametros.pathUrl.startsWith('/api/v1/') ? pParametros.pathUrl : `/api/v1/${pParametros.pathUrl}`;
@@ -48,7 +48,7 @@ export abstract class CBaseHttpService {
    * @param {IBodyParamsRequest<TBody>} pParametros - Parâmetros base.
    * @returns A interface da resposta é transmitida no template do método.
    */
-  protected async post<TBody extends object = object, TResposta extends object = object>(
+  protected async post<TBody extends object = object, TResposta = unknown>(
     pParametros: IBodyParamsRequest<TBody>
   ): Promise<TResposta> {
     const lSafeUrl = pParametros.pathUrl.startsWith('/api/v1/') ? pParametros.pathUrl : `/api/v1/${pParametros.pathUrl}`;
@@ -64,7 +64,7 @@ export abstract class CBaseHttpService {
    * @param {IBodyParamsRequest<TBody>} pParametros - Parâmetros base.
    * @returns A interface da resposta é transmitida no template do método.
    */
-  protected async put<TBody extends object = object, TResposta extends object = object>(
+  protected async put<TBody extends object = object, TResposta = unknown>(
     pParametros: IBodyParamsRequest<TBody>
   ): Promise<TResposta> {
     const lSafeUrl = pParametros.pathUrl.startsWith('/api/v1/') ? pParametros.pathUrl : `/api/v1/${pParametros.pathUrl}`;
@@ -80,7 +80,7 @@ export abstract class CBaseHttpService {
    * @param {IBodyParamsRequest<TBody>} pParametros - Parâmetros base.
    * @returns A interface da resposta é transmitida no template do método.
    */
-  protected async patch<TBody extends object = object, TResposta extends object = object>(
+  protected async patch<TBody extends object = object, TResposta = unknown>(
     pParametros: IBodyParamsRequest<TBody>
   ): Promise<TResposta> {
     const lSafeUrl = pParametros.pathUrl.startsWith('/api/v1/') ? pParametros.pathUrl : `/api/v1/${pParametros.pathUrl}`;

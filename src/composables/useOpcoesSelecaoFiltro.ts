@@ -2,7 +2,8 @@
 import { computed, type ComputedRef, type Ref } from 'vue';
 
 // Types e Interfaces
-import type { ICampoFiltro, IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 type TRegistroFiltro = object;
 
@@ -12,7 +13,7 @@ type TOpcaoSelecaoVuetify = {
 };
 
 type TUseOpcoesSelecaoFiltroParams = {
-  campoSelecionado: ComputedRef<ICampoFiltro<unknown> | null> | Ref<ICampoFiltro<unknown> | null>;
+  campoSelecionado: ComputedRef<TCampoFiltroMapeado | null> | Ref<TCampoFiltroMapeado | null>;
   registros: ComputedRef<TRegistroFiltro[]> | Ref<TRegistroFiltro[]>;
 };
 

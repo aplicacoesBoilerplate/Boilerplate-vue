@@ -58,7 +58,7 @@
               maxWidth="180"
               minWidth="160"
               hideDetails
-              @update:model-value="atualizarCargoUsuario(usuario, String($event))"
+              @update:modelValue="atualizarCargoUsuario(usuario, String($event))"
             />
           </template>
         </v-list-item>
@@ -111,11 +111,12 @@ const papeisOriginaisUsuarios = ref(new Map<string, TPapel>());
 
 // Funções
 /**
- * Busca usuários vinculados ao cargo atual ou com alteração pendente no formulário.
- * @param pPayload
+ * @description Busca usuários vinculados ao cargo atual ou com alteração pendente no formulário.
+ * @param pPayload - Consulta paginada acompanhada do termo de pesquisa local.
+ * @returns Resposta paginada com os usuários compatíveis com o cargo atual.
  */
 async function buscarUsuarios(
-  pPayload: IConsultaRegistros & { termoPesquisa: string },
+  pPayload: IConsultaRegistros<IUsuario> & { termoPesquisa: string },
 ): Promise<IRespostaConsultaRegistros<IUsuario>> {
   const usuariosFiltrados = filtrarUsuariosPorCargoEPesquisa(pPayload.termoPesquisa);
   const inicio = (pPayload.proximaEntrada as number) || 0;
@@ -123,6 +124,7 @@ async function buscarUsuarios(
   const dados = usuariosFiltrados.slice(inicio, inicio + limite);
 
   return {
+    ...pPayload,
     registros: dados,
     possuiMais: inicio + dados.length < usuariosFiltrados.length,
     proximaEntrada: inicio + dados.length < usuariosFiltrados.length ? inicio + dados.length : undefined,
@@ -130,9 +132,9 @@ async function buscarUsuarios(
 }
 
 /**
- * Atualiza o cargo do usuário em memória e controla se há alteração pendente.
- * @param pUsuario
- * @param pPapelCargo
+ * @description Atualiza o cargo do usuário em memória e controla se há alteração pendente.
+ * @param pUsuario - Usuário cujo vínculo será atualizado.
+ * @param pPapelCargo - Papel selecionado para o usuário.
  */
 function atualizarCargoUsuario(pUsuario: IUsuario, pPapelCargo: string): void {
   const chaveUsuario = obterChaveUsuario(pUsuario);
@@ -157,8 +159,9 @@ function atualizarCargoUsuario(pUsuario: IUsuario, pPapelCargo: string): void {
 }
 
 /**
- * Filtra usuários pelo cargo aberto no formulário, mantendo os registros alterados até o submit.
- * @param pTermoPesquisa
+ * @description Filtra usuários pelo cargo aberto no formulário, mantendo os registros alterados até o submit.
+ * @param pTermoPesquisa - Termo aplicado sobre nome, e-mail ou papel do usuário.
+ * @returns Usuários pertencentes ao cargo ou com alterações pendentes compatíveis com a pesquisa.
  */
 function filtrarUsuariosPorCargoEPesquisa(pTermoPesquisa: string): IUsuario[] {
   const termoPesquisa = normalizarTexto(pTermoPesquisa);
@@ -182,16 +185,18 @@ function filtrarUsuariosPorCargoEPesquisa(pTermoPesquisa: string): IUsuario[] {
 }
 
 /**
- * Indica se o usuário possui alteração de cargo ainda não salva.
- * @param pUsuario
+ * @description Indica se o usuário possui alteração de cargo ainda não salva.
+ * @param pUsuario - Usuário a ser verificado.
+ * @returns Indica se o vínculo do usuário foi alterado no formulário.
  */
 function usuarioComAlteracaoPendente(pUsuario: IUsuario): boolean {
   return chavesUsuariosAlterados.value.has(obterChaveUsuario(pUsuario));
 }
 
 /**
- * Resolve o papel atual do usuário a partir do model editável do formulário.
- * @param pUsuario
+ * @description Resolve o papel atual do usuário a partir do model editável do formulário.
+ * @param pUsuario - Usuário para o qual o papel será resolvido.
+ * @returns Papel presente no model editável ou o valor original do usuário.
  */
 function obterPapelUsuario(pUsuario: IUsuario): TPapel {
   return (
@@ -201,16 +206,18 @@ function obterPapelUsuario(pUsuario: IUsuario): TPapel {
 }
 
 /**
- * Usa o id quando disponível e o e-mail como fallback estável para usuários mockados.
- * @param pUsuario
+ * @description Usa o id quando disponível e o e-mail como fallback estável para usuários mockados.
+ * @param pUsuario - Usuário para o qual será gerada a chave estável.
+ * @returns Chave textual única do usuário no contexto do formulário.
  */
 function obterChaveUsuario(pUsuario: IUsuario): string {
   return String(pUsuario.id ?? pUsuario.email);
 }
 
 /**
- * Normaliza valores textuais para comparação simples na busca local.
- * @param pValor
+ * @description Normaliza valores textuais para comparação simples na busca local.
+ * @param pValor - Valor a ser convertido para texto normalizado.
+ * @returns Texto sem acentos e em caixa alta para comparação.
  */
 function normalizarTexto(pValor: unknown): string {
   return String(pValor ?? '')
@@ -220,7 +227,8 @@ function normalizarTexto(pValor: unknown): string {
 }
 
 /**
- * Captura o papel original dos usuários para detectar quando uma alteração foi desfeita.
+ * @description Captura o papel original dos usuários para detectar quando uma alteração foi desfeita.
+ * @returns Nenhum valor.
  */
 function inicializarPapeisOriginaisUsuarios(): void {
   papeisOriginaisUsuarios.value = new Map(

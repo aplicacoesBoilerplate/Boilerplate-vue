@@ -87,14 +87,14 @@ import pkg from '../../../package.json';
 import BaseDialog from './base/BaseDialog.vue';
 
 // Composables
-const { t, locale } = useI18n();
+const { t } = useI18n();
 
 // Reativas
 const dialogLicenceOpen = defineModel<boolean>('dialogLicenceOpen', { required: true });
 
 // Computadas
 const formattedVersionDate = computed(() => {
-  return CFormatters.formatarDataHora(APP_BUILD_DATE, locale.value, true);
+  return CFormatters.formatarDataHora(APP_BUILD_DATE, true);
 });
 
 const systemVersion = computed(() => pkg.version);

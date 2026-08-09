@@ -17,3 +17,10 @@ export interface IFiltrosConsulta<T = object> {
   dataFinal?: Date | string | null;
   valoresSelecionados?: unknown[];
 }
+
+/**
+ * @description Representa um filtro transitado entre componentes, store, URL e storage sem conhecer o registro da rota.
+ * Usa chaves textuais para preservar a serialização; antes da requisição, a lista converte o filtro
+ * para o contrato tipado do service consumidor.
+ */
+export type TFiltroConsultaSerializado = IFiltrosConsulta<Record<string, unknown>>;

@@ -32,7 +32,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // Dados locais
-import packageJson from '../../../package.json';
+import packageJson from '../../../../package.json';
 
 // Composables
 const { t } = useI18n();

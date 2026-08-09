@@ -41,13 +41,13 @@ import { useGenericFilterStore } from '@/stores/genericFilter.store';
 
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 // Types e Interfaces
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 // Componentes
 import InputDebouncer from '@/components/forms/fixtures/InputDebouncer.vue';
 
 type TProps = {
-  camposDisponiveis: ICampoFiltro<any>[];
+  camposDisponiveis: TCampoFiltroMapeado[];
 };
 const props = defineProps<TProps>();
 
@@ -62,10 +62,10 @@ const { t, te } = useI18n();
 const toggleLeftDrawer = defineModel<boolean>('toggleLeftDrawer', { required: true });
 
 // Reativas - ref
-const camposFiltrados = ref<ICampoFiltro<any>[]>(props.camposDisponiveis);
+const camposFiltrados = ref<TCampoFiltroMapeado[]>(props.camposDisponiveis);
 
 // Funções
-function obterDescricaoCampo(pCampo: ICampoFiltro<any>): string {
+function obterDescricaoCampo(pCampo: TCampoFiltroMapeado): string {
   const chave = `components.dialogFiltro.campos.${pCampo.valor}`;
   return te(chave) ? t(chave) : pCampo.descricao;
 }
@@ -78,15 +78,15 @@ function onSearchCampo(pTermoPesquisa: string) {
 
   const searchUpper = pTermoPesquisa.toUpperCase();
   camposFiltrados.value = props.camposDisponiveis.filter(
-    (campo) =>
-      String(campo.valor).toUpperCase().includes(searchUpper) ||
-      obterDescricaoCampo(campo).toUpperCase().includes(searchUpper),
+    (pCampo) =>
+      String(pCampo.valor).toUpperCase().includes(searchUpper) ||
+      obterDescricaoCampo(pCampo).toUpperCase().includes(searchUpper),
   );
 }
 
-function onSelecionarCampo(pCampo: ICampoFiltro<any>) {
+function onSelecionarCampo(pCampo: TCampoFiltroMapeado) {
   genericFilterStore.filterModel = {
-    campo: pCampo.valor as string,
+    campo: pCampo.valor,
     condicao: EOperadoresFiltro.IGUAL,
     valor: undefined,
   };

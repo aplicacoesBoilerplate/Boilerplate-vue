@@ -81,49 +81,77 @@
         </v-card-title>
       </template>
 
-      <section class="fill-height d-flex flex-column overflow-y-auto">
-        <GenericInfiniteList
-          ref="infiniteListRef"
-          :cacheTtlMs="cacheTtlMs"
-          :contexto="contexto"
-          :itemKey="itemKey"
-          :limite="limite"
-          :opcoesLimite="opcoesLimite"
-          :ordemInicial="ordemInicial"
-          :serviceFetch="serviceFetch"
-          :storage="storage"
-          :textoError="textoError"
-          :textoFinal="textoFinal"
-          :textoVazio="textoVazio"
-          :usarFiltrosGlobais="usarFiltrosGlobais"
-          @novoRegistro="emitirNovoRegistro({ modoEdicao: false })"
-        >
-          <template #default="slotProps">
-            <slot
-              :items="slotProps.items"
-              name="default"
+      <GridDataChart
+        :hiddenChart="!exibirGraficos || !exibirGraficosAtivos"
+        @toggleChart="alternarGraficos"
+      >
+        <template #dataTable>
+          <section class="fill-height d-flex flex-column overflow-y-auto">
+            <GenericInfiniteList
+              ref="infiniteListRef"
+              :cacheTtlMs="cacheTtlMs"
+              :contexto="contexto"
+              :itemKey="itemKey"
+              :limite="limite"
+              :opcoesLimite="opcoesLimite"
+              :ordemInicial="ordemInicial"
+              :serviceFetch="serviceFetch"
+              :storage="storage"
+              :textoError="textoError"
+              :textoFinal="textoFinal"
+              :textoVazio="textoVazio"
+              :usarFiltrosGlobais="usarFiltrosGlobais"
+              @novoRegistro="emitirNovoRegistro({ modoEdicao: false })"
+            >
+              <template #default="slotProps">
+                <slot
+                  :items="slotProps.items"
+                  name="default"
+                />
+              </template>
+              <template #error>
+                <slot name="error" />
+              </template>
+            </GenericInfiniteList>
+          </section>
+        </template>
+
+        <template #dataChart>
+          <slot name="data-chart">
+            <BaseApexChart
+              v-model:filtroSelecionado="filtroGraficoSelecionado"
+              :altura="alturaGrafico"
+              :configuracaoAtiva="configuracaoGraficoAtiva"
+              :dados="dadosGrafico"
+              :mapeamentoCores="mapeamentoCoresGrafico"
+              :opcoesFiltro="opcoesFiltroGrafico"
             />
-          </template>
-          <template #error>
-            <slot name="error" />
-          </template>
-        </GenericInfiniteList>
-      </section>
+          </slot>
+        </template>
+      </GridDataChart>
     </section>
   </v-card>
 </template>
 
 <script setup lang="ts" generic="TInterfaceRegistro extends object">
+// Ecossistema Vue
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import type { IGenericInfiniteListExpose } from '@/models/components/exposes/IGenericInfiniteListExpose.ts';
+// Models
+import type { IGenericInfiniteListExpose } from '@/models/components/exposes/IGenericInfiniteListExpose';
+import type { IGenericViewExpose } from '@/models/components/exposes/IGenericViewExpose';
 import type { TMetodoExportacaoDados } from '@/models/components/IExportacaoDados';
+import type { IValorGrafico } from '@/models/components/IValorGrafico';
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
+import type { TDadoGrafico } from '@/models/components/TDadoGrafico';
 import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 import type { TOrdem } from '@/models/consulta/IConsultaRegistros';
+import type { ICampoAgrupamento } from '@/models/filters/ICampoFiltro';
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
 
+import BaseApexChart from '@/components/common/charts/BaseApexChart.vue';
+// Componentes
 import BtnActionDrawer from '@/components/layouts/base/appbar/fixtures/BtnActionDrawer.vue';
 import GridDataChart from '@/components/layouts/GridDataChart.vue';
 
@@ -132,6 +160,9 @@ import GenericInfiniteList from './GenericInfiniteList/GenericInfiniteList.vue';
 
 type TProps = {
   cacheTtlMs?: number;
+  dadosGrafico?: IValorGrafico[] | TDadoGrafico[];
+  alturaGrafico?: number;
+  configuracaoGraficoAtiva?: IHeadersDataTable;
   contexto: string;
   textoVazio?: string;
   textoFinal?: string;
@@ -139,6 +170,8 @@ type TProps = {
   limite?: number;
   ordemInicial?: TOrdem;
   itemKey?: string;
+  mapeamentoCoresGrafico?: Record<string, string>;
+  opcoesFiltroGrafico?: ICampoAgrupamento[];
   opcoesLimite?: number[];
   serviceFetch: (pPayload: IConsultaRegistros<TInterfaceRegistro>) => Promise<IRespostaConsultaRegistros<TInterfaceRegistro>>;
   serviceExportacao?: TMetodoExportacaoDados;
@@ -154,12 +187,17 @@ type TProps = {
 };
 withDefaults(defineProps<TProps>(), {
   cacheTtlMs: 15 * 60 * 1000,
+  dadosGrafico: () => [],
+  alturaGrafico: 320,
+  configuracaoGraficoAtiva: undefined,
   textoVazio: undefined,
   textoFinal: undefined,
   textoError: undefined,
   limite: undefined,
   ordemInicial: undefined,
   itemKey: undefined,
+  mapeamentoCoresGrafico: () => ({}),
+  opcoesFiltroGrafico: () => [],
   opcoesLimite: () => [10, 25, 50, 100],
   serviceExportacao: undefined,
   parametrosExportacao: () => ({}),
@@ -177,13 +215,15 @@ type TEmits = {
   novoRegistro: [{ modoEdicao: boolean }];
   toggleChart: [];
 };
-
 const emits = defineEmits<TEmits>();
 
+// Composables
 const { t } = useI18n();
 
+// Reativas
 const infiniteListRef = ref<IGenericInfiniteListExpose | null>(null);
 const exibirGraficosAtivos = ref(false);
+const filtroGraficoSelecionado = ref('');
 
 function emitirNovoRegistro(pParams: { modoEdicao: boolean }): void {
   emits('novoRegistro', pParams);
@@ -194,15 +234,27 @@ function alternarGraficos(): void {
   emits('toggleChart');
 }
 
+async function carregarMaisRegistros(
+  ...pArgs: Parameters<IGenericInfiniteListExpose['carregarMaisRegistros']>
+): Promise<void> {
+  await infiniteListRef.value?.carregarMaisRegistros(...pArgs);
+}
+
+async function resetarECarregar(): Promise<void> {
+  await infiniteListRef.value?.resetarECarregar();
+}
+
 defineExpose({
   infiniteListRef,
-  loadMore: (...pArgs: Parameters<IGenericInfiniteListExpose['loadMore']>) =>
-    infiniteListRef.value?.loadMore(...pArgs),
-  resetAndLoad: () => infiniteListRef.value?.resetAndLoad(),
-  carregarMaisRegistros: (...pArgs: Parameters<IGenericInfiniteListExpose['carregarMaisRegistros']>) =>
-    infiniteListRef.value?.carregarMaisRegistros(...pArgs),
-  resetarECarregar: () => infiniteListRef.value?.resetarECarregar(),
-  inserirItem: (pItem: unknown) => infiniteListRef.value?.inserirItem(pItem),
+  loadMore: async (...pArgs) => {
+    await carregarMaisRegistros(...pArgs);
+  },
+  resetAndLoad: async () => {
+    await resetarECarregar();
+  },
+  carregarMaisRegistros,
+  resetarECarregar,
+  inserirItem: (pItem: object) => infiniteListRef.value?.inserirItem(pItem),
   atualizarItem: <TItem extends object>(
     pIdField: keyof TItem,
     pIdValue: TItem[keyof TItem],
@@ -212,5 +264,5 @@ defineExpose({
     infiniteListRef.value?.removerItem(pIdField, pIdValue),
   exibirGraficosAtivos,
   alternarGraficos,
-});
+} satisfies IGenericViewExpose);
 </script>

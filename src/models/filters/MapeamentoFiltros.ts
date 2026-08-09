@@ -10,6 +10,13 @@ type TMapeamentoFiltros = {
   [ERecursosFiltro.ERROS]: typeof CAMPOS_FILTRO_ERRO;
 };
 
+/**
+ * @description União dos campos de filtro configurados para todos os recursos da aplicação.
+ * Preserva o tipo concreto da consulta auxiliar de cada campo, permitindo que a interface
+ * compartilhe os metadados comuns sem colapsar buscas de usuários, cargos ou erros.
+ */
+export type TCampoFiltroMapeado = (typeof MAPEAMENTO_FILTROS)[ERecursosFiltro][number];
+
 export const MAPEAMENTO_FILTROS = {
   [ERecursosFiltro.USUARIOS]: CAMPOS_FILTRO_USUARIO,
   [ERecursosFiltro.RBAC]: CAMPOS_FILTRO_RBAC,

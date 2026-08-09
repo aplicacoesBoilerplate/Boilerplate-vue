@@ -1,5 +1,5 @@
 // Types e Interfaces
-import type { ICampoFiltro } from '../filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '../filters/MapeamentoFiltros';
 
 /**
  * @description Metadados associados a cada rota do sistema, usados para navegação, filtros e controle de exibição.
@@ -11,7 +11,7 @@ import type { ICampoFiltro } from '../filters/ICampoFiltro';
  * @property {boolean} hidden - Se verdadeiro, a rota não aparece na navegação e usa layout Default.
  * @property {boolean} requiresAuth - Se a rota requer autenticação.
  * @property {IRouteMeta[]} children - Rotas filhas para agrupamento na navegação.
- * @property {ICampoFiltro<any>[]} filterResource - Campos disponíveis para filtro nesta rota.
+ * @property {TCampoFiltroMapeado[]} filterResource - Campos disponíveis para filtro nesta rota.
  * @property {string} filterContext - Contexto usado para isolar filtros aplicados por recurso.
  */
 export interface IRouteMeta {
@@ -23,6 +23,6 @@ export interface IRouteMeta {
   hidden?: boolean;
   requiresAuth?: boolean;
   children?: IRouteMeta[];
-  filterResource?: ICampoFiltro<any>[];
+  filterResource?: TCampoFiltroMapeado[];
   filterContext?: string;
 }

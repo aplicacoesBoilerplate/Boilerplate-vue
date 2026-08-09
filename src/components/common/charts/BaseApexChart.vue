@@ -59,7 +59,7 @@ import { useTheme } from 'vuetify';
 import type { IValorGrafico } from '@/models/components/IValorGrafico';
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
 import type { TDadoGrafico } from '@/models/components/TDadoGrafico';
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import type { ICampoAgrupamento } from '@/models/filters/ICampoFiltro';
 import type { ApexOptions } from 'apexcharts';
 
 // Utils
@@ -74,7 +74,7 @@ type TMapeamentoCoresGrafico = Record<string, string>;
 
 type TProps = {
   dados: IValorGrafico[] | TDadoGrafico[];
-  opcoesFiltro: ICampoFiltro<unknown>[];
+  opcoesFiltro: ICampoAgrupamento[];
   configuracaoAtiva?: IHeadersDataTable;
   altura?: number;
   tipoInicial?: TTipoGrafico;

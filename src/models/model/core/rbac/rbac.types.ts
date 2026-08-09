@@ -1,5 +1,5 @@
 // Models
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
 
 export type TComportamentoPadraoPermissao = 'bloquear' | 'liberar';
 
@@ -55,10 +55,10 @@ export interface IMapeamentoRotaApiRbac {
  * @description Define a rota e os filtros usados no redirecionamento inicial do cargo.
  * @property {string} path - Caminho da rota inicial.
  * @property {string} name - Nome técnico da rota inicial.
- * @property {IFiltrosConsulta[]} filtros - Filtros iniciais aplicados na URL da rota inicial.
+ * @property {TFiltroConsultaSerializado[]} filtros - Filtros serializáveis aplicados na URL da rota inicial.
  */
 export interface IRedirecionamentoInicialRbac {
   path: string;
   name?: string;
-  filtros: IFiltrosConsulta[];
+  filtros: TFiltroConsultaSerializado[];
 }

@@ -1,14 +1,14 @@
 // Ecossistema Vue
 import { computed, ref, toRaw, watch } from 'vue';
+import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router';
 // Pinia
 import { defineStore } from 'pinia';
-import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router';
 
 // Enums
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 // Types e Interfaces
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 // Stores
 import { useSnackbarStore } from './Snackbar.store';
@@ -20,8 +20,8 @@ import { useSnackbarStore } from './Snackbar.store';
  * @property {string} pesquisaDrawerLeft - Pesquisa do drawer esquerdo isolada por contexto.
  */
 interface IEstadoFiltrosContexto {
-  filtrosAplicados: IFiltrosConsulta[];
-  modeloFiltro: Partial<IFiltrosConsulta>;
+  filtrosAplicados: TFiltroConsultaSerializado[];
+  modeloFiltro: Partial<TFiltroConsultaSerializado>;
   pesquisaDrawerLeft: string;
 }
 
@@ -43,7 +43,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
 
   // Reativas
   const estadosPorContexto = ref<Record<string, IEstadoFiltrosContexto>>({});
-  const camposDisponiveisTemporarios = ref<ICampoFiltro<any>[] | null>(null);
+  const camposDisponiveisTemporarios = ref<TCampoFiltroMapeado[] | null>(null);
   const contextoFiltroTemporario = ref<string | null>(null);
   const versaoAplicacaoFiltros = ref(0);
 
@@ -51,12 +51,12 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   const drawerFilterOpen = ref(false);
 
   /** Campos disponíveis fornecidos pela view atual baseados nos metadados da rota. */
-  const camposDisponiveis = computed(() => {
+  const camposDisponiveis = computed<TCampoFiltroMapeado[]>(() => {
     if (camposDisponiveisTemporarios.value) {
       return camposDisponiveisTemporarios.value;
     }
 
-    return (route.meta.filterResource as ICampoFiltro<any>[]) || [];
+    return (route.meta.filterResource as TCampoFiltroMapeado[] | undefined) ?? [];
   });
 
   /** Campos disponíveis para agrupamento na view atual baseados nos metadados da rota. */
@@ -75,7 +75,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   const estadoFiltroAtual = computed(() => obterEstadoContexto(contextoFiltroAtual.value));
 
   /** Array contendo os filtros consolidados e aplicados na view atual. */
-  const filtersApplied = computed<IFiltrosConsulta[]>({
+  const filtersApplied = computed<TFiltroConsultaSerializado[]>({
     get: () => estadoFiltroAtual.value.filtrosAplicados,
     set: (pFiltros) => {
       estadoFiltroAtual.value.filtrosAplicados = pFiltros;
@@ -84,7 +84,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   });
 
   /** Filtro em construção no formulário (rascunho). */
-  const filterModel = computed<Partial<IFiltrosConsulta>>({
+  const filterModel = computed<Partial<TFiltroConsultaSerializado>>({
     get: () => estadoFiltroAtual.value.modeloFiltro,
     set: (pFiltro) => {
       estadoFiltroAtual.value.modeloFiltro = pFiltro;
@@ -102,7 +102,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   });
 
   /** Campo selecionado no rascunho atual do filtro. */
-  const campoSelecionado = computed<ICampoFiltro<any> | null>(() => {
+  const campoSelecionado = computed<TCampoFiltroMapeado | null>(() => {
     const campoAtual = filterModel.value.campo;
 
     if (!campoAtual) {
@@ -247,7 +247,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
       return;
     }
 
-    const novosFiltros: IFiltrosConsulta[] = [];
+    const novosFiltros: TFiltroConsultaSerializado[] = [];
     const chavesFiltros = obterChavesCamposFiltro();
 
     Object.entries(route.query).forEach(([campo, valorQuery]) => {
@@ -310,7 +310,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
       return;
     }
 
-    filtersApplied.value.push(rawFilter as IFiltrosConsulta);
+    filtersApplied.value.push(rawFilter as TFiltroConsultaSerializado);
     filterModel.value = { campo: rawFilter.campo, condicao: rawFilter.condicao };
     persistirContextoAtual();
   }
@@ -350,8 +350,8 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
    */
   function ativarContextoTemporario(
     pContexto: string,
-    pCamposDisponiveis: ICampoFiltro<any>[],
-    pFiltrosIniciais: IFiltrosConsulta[] = [],
+    pCamposDisponiveis: TCampoFiltroMapeado[],
+    pFiltrosIniciais: TFiltroConsultaSerializado[] = [],
   ): void {
     const contexto = `${CONTEXTO_TEMPORARIO_PREFIX}${pContexto}`;
 

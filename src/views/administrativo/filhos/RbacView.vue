@@ -102,7 +102,8 @@ import { useAuthStore } from '@/stores/auth.store';
 
 // Models
 import { criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/core/rbac/rbac.model';
-import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { IGenericViewExpose } from '@/models/components/exposes/IGenericViewExpose';
+import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 import type { IUsuario, TPapel } from '@/models/model/core/usuario.model';
 
 // Composables
@@ -110,8 +111,8 @@ import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
 import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
 // Services
-import { CRbacService } from '@/services/core/CRbacService';
-import { CUsuarioService } from '@/services/core/CUsuarioService';
+import { cargoRbacService } from '@/services/core/CCargoRbacService';
+import { usuarioService } from '@/services/core/CUsuarioService';
 
 // Componentes
 import DetalhesCargo from '@/components/core/rbac/DetalhesCargo.vue';
@@ -133,7 +134,7 @@ const { possuiPermissaoGeral, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
 
 // Reativas
-const genericViewRef = ref<InstanceType<typeof GenericView> | null>(null);
+const genericViewRef = ref<IGenericViewExpose | null>(null);
 const cargos = ref<ICargoRbac[]>([]);
 const usuarios = ref<IUsuario[]>([]);
 const exibirDialogCargo = ref(false);
@@ -144,8 +145,8 @@ const papelCargoAntesEdicao = ref<TPapel | null>(null);
 const papeisOriginaisUsuarios = ref(new Map<number, TPapel>());
 
 // Funções
-async function buscarCargos(pPayload: IConsultaRegistros): Promise<IResultadoConsultaRegistros<ICargoRbac>> {
-  return CRbacService.consultar(pPayload);
+async function buscarCargos(pPayload: IConsultaRegistros<ICargoRbac>): Promise<IRespostaConsultaRegistros<ICargoRbac>> {
+  return cargoRbacService.consultar(pPayload);
 }
 
 async function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoRbac }): Promise<void> {
@@ -204,7 +205,9 @@ async function salvarCargo(): Promise<void> {
 
   const cargoNormalizado = criarCargoRbacPadrao(modelFormCargo.value);
   const cargoSalvo = await requisicaoService.executar({
-    metodo: modoEdicaoCargo.value && cargoNormalizado.id ? CRbacService.atualizar : CRbacService.salvar,
+    metodo: modoEdicaoCargo.value && cargoNormalizado.id
+      ? (pCargo: ICargoRbac) => cargoRbacService.editar(pCargo)
+      : (pCargo: ICargoRbac) => cargoRbacService.cadastrar(pCargo),
     parametros: cargoNormalizado,
     sucesso: {
       mensagem: modoEdicaoCargo.value ? 'Cargo atualizado com sucesso.' : 'Cargo criado com sucesso.',
@@ -245,7 +248,7 @@ async function excluirCargo(pCargo: ICargoRbac): Promise<void> {
   await reatribuirUsuariosDoCargoParaUsuarioPadrao(pCargo.papel);
 
   await requisicaoService.executar({
-    metodo: CRbacService.excluir,
+    metodo: (pIdCargo: number) => cargoRbacService.excluir(pIdCargo),
     parametros: pCargo.id,
     sucesso: {
       mensagem: 'Cargo removido com sucesso.',
@@ -275,7 +278,8 @@ function podeRemoverCargo(pCargo: ICargoRbac): boolean {
 }
 
 async function carregarCargos(): Promise<void> {
-  cargos.value = await CRbacService.listarTodos();
+  const resposta = await cargoRbacService.consultarTodosRegistros();
+  cargos.value = resposta.registros;
 }
 
 async function carregarUsuariosParaVinculo(): Promise<void> {
@@ -284,7 +288,7 @@ async function carregarUsuariosParaVinculo(): Promise<void> {
   let temMaisRegistros = true;
 
   while (temMaisRegistros) {
-    const pagina = await CUsuarioService.buscarTodos({
+    const pagina = await usuarioService.consultar({
       limite: 100,
       ordenacao: 'asc',
       proximaEntrada,
@@ -319,7 +323,7 @@ async function salvarUsuariosComCargoAlterado(pCargoSalvo: ICargoRbac): Promise<
     })
     .filter((pAtualizacao) => pAtualizacao.papelOriginal && pAtualizacao.usuario.papel !== pAtualizacao.papelOriginal);
 
-  await Promise.all(atualizacoes.map((pAtualizacao) => CUsuarioService.atualizar(pAtualizacao.usuario)));
+  await Promise.all(atualizacoes.map((pAtualizacao) => usuarioService.editar(pAtualizacao.usuario)));
 }
 
 function resolverPapelUsuarioAposSalvarCargo(
@@ -339,7 +343,7 @@ async function reatribuirUsuariosDoCargoParaUsuarioPadrao(pPapelCargo: TPapel): 
 
   await Promise.all(
     usuariosDoCargo.map((pUsuario) =>
-      CUsuarioService.atualizar({
+      usuarioService.editar({
         ...pUsuario,
         papel: 'USER',
       }),

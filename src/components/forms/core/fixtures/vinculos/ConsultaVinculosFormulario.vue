@@ -28,7 +28,7 @@
       :contexto="contextoConsulta"
       :limite="limite"
       :opcoesLimite="[limite]"
-      :serviceFetch="buscarRegistros"
+      :serviceFetch="consultarRegistros"
       :textoVazio="textoVazioPadrao"
       :textoFinal="textoFinalPadrao"
       :usarFiltrosGlobais="false"
@@ -88,7 +88,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="TRegistroVinculo extends object">
 // Ecossistema Vue
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -100,79 +100,43 @@ import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/co
 import InputDebouncer from '@/components/forms/fixtures/InputDebouncer.vue';
 import GenericInfiniteList from '@/components/layouts/generic/GenericInfiniteList/GenericInfiniteList.vue';
 
-type TRegistroVinculo = object;
-
-type TPayloadConsultaVinculos = IConsultaRegistros & {
+type TPayloadConsultaVinculos<TRegistro extends object> = IConsultaRegistros<TRegistro> & {
   termoPesquisa: string;
 };
 
+/**
+ * @description Define as propriedades da consulta paginada de vínculos.
+ * @property {string} contexto - Contexto usado pela lista genérica para cache e paginação.
+ * @property {string} titulo - Título exibido acima da consulta.
+ * @property {string} subtitulo - Texto auxiliar exibido abaixo do título.
+ * @property {string} rotuloPesquisa - Rótulo do campo de busca.
+ * @property {string} iconePesquisa - Ícone do campo de busca.
+ * @property {string} textoVazio - Texto exibido quando não houver registros.
+ * @property {string} textoFinal - Texto exibido quando todas as páginas forem carregadas.
+ * @property {string} iconeVazio - Ícone exibido no estado vazio.
+ * @property {number} limite - Limite de registros por página.
+ * @property {string} atributoChave - Campo usado no fallback para obter a chave do registro.
+ * @property {string} atributoTitulo - Campo usado no fallback para obter o título do registro.
+ * @property {string} atributoSubtitulo - Campo usado no fallback para obter o subtítulo do registro.
+ * @property {(TPayloadConsultaVinculos<TRegistroVinculo>) => Promise<IRespostaConsultaRegistros<TRegistroVinculo>>} buscarRegistros - Método responsável por consultar os registros com paginação e termo local.
+ */
 type TProps = {
-  /**
-   * Contexto usado pela lista genérica para cache e paginação.
-   */
   contexto: string;
-
-  /**
-   * Título exibido acima da consulta.
-   */
   titulo: string;
-
-  /**
-   * Texto auxiliar exibido abaixo do título.
-   */
   subtitulo?: string;
-
-  /**
-   * Rótulo do campo de busca.
-   */
   rotuloPesquisa?: string;
-
-  /**
-   * Ícone do campo de busca.
-   */
   iconePesquisa?: string;
-
-  /**
-   * Texto exibido quando não houver registros.
-   */
   textoVazio?: string;
-
-  /**
-   * Texto exibido quando todas as páginas forem carregadas.
-   */
   textoFinal?: string;
-
-  /**
-   * Ícone exibido no estado vazio.
-   */
   iconeVazio?: string;
-
-  /**
-   * Limite de registros por página.
-   */
   limite?: number;
-
-  /**
-   * Campo usado no fallback para obter a chave do registro.
-   */
   atributoChave?: string;
-
-  /**
-   * Campo usado no fallback para obter o título do registro.
-   */
   atributoTitulo?: string;
-
-  /**
-   * Campo usado no fallback para obter o subtítulo do registro.
-   */
   atributoSubtitulo?: string;
-
-  /**
-   * Método responsável por consultar os registros com paginação e termo local.
-   */
-  buscarRegistros: (pPayload: TPayloadConsultaVinculos) => Promise<IRespostaConsultaRegistros<TRegistroVinculo>>;
+  buscarRegistros: (
+    pPayload: TPayloadConsultaVinculos<TRegistroVinculo>
+  ) => Promise<IRespostaConsultaRegistros<TRegistroVinculo>>;
 };
-
 const props = withDefaults(defineProps<TProps>(), {
   subtitulo: '',
   rotuloPesquisa: undefined,
@@ -198,19 +162,20 @@ const termoPesquisa = ref('');
 
 // Funções
 /**
- * Atualiza o termo que será enviado para a próxima consulta paginada.
- * @param pTermoPesquisa
+ * @description Atualiza o termo que será enviado para a próxima consulta paginada.
+ * @param pTermoPesquisa - Valor que será utilizado na consulta.
  */
 function pesquisar(pTermoPesquisa: string): void {
   termoPesquisa.value = pTermoPesquisa;
 }
 
 /**
- * Encapsula o payload da lista genérica adicionando o termo digitado no facilitador.
- * @param pPayload
+ * @description Encapsula o payload da lista genérica adicionando o termo digitado no facilitador.
+ * @param pPayload - Montagem do body da requisição de consulta.
+ * @returns Retorna a resposta da requisição.
  */
-async function buscarRegistros(
-  pPayload: IConsultaRegistros,
+async function consultarRegistros(
+  pPayload: IConsultaRegistros<TRegistroVinculo>,
 ): Promise<IRespostaConsultaRegistros<TRegistroVinculo>> {
   return props.buscarRegistros({
     ...pPayload,
@@ -219,24 +184,27 @@ async function buscarRegistros(
 }
 
 /**
- * Obtém a chave do registro para o fallback de renderização da lista.
- * @param pRegistro
+ * @description Obtém a chave do registro para o fallback de renderização da lista.
+ * @param pRegistro - Registro que será usado para obter a chave.
+ * @returns Atributo chave do objeto de registro.
  */
 function obterChaveRegistro(pRegistro: TRegistroVinculo): unknown {
   return (pRegistro as Record<string, unknown>)[props.atributoChave];
 }
 
 /**
- * Obtém o título do registro para o fallback de renderização da lista.
- * @param pRegistro
+ * @description Obtém o título do registro para o fallback de renderização da lista.
+ * @param pRegistro - Registro que será usado para obter o Título.
+ * @returns Atributo título.
  */
 function obterTituloRegistro(pRegistro: TRegistroVinculo): string {
   return String((pRegistro as Record<string, unknown>)[props.atributoTitulo] ?? '');
 }
 
 /**
- * Obtém o subtítulo do registro para o fallback de renderização da lista.
- * @param pRegistro
+ * @description Obtém o subtítulo do registro para o fallback de renderização da lista.
+ * @param pRegistro - Registro que será usado para obter o Subtítulo.
+ * @returns Atributo Subtítulo.
  */
 function obterSubtituloRegistro(pRegistro: TRegistroVinculo): string {
   return String((pRegistro as Record<string, unknown>)[props.atributoSubtitulo] ?? '');

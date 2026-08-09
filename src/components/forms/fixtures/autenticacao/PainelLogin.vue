@@ -30,7 +30,7 @@
 import { nextTick, ref } from 'vue';
 
 // Types e Interfaces
-import type { ILogin } from '@/models/model/core/autenticacao.model';
+import type { TLogin } from '@/models/model/core/autenticacao.model';
 
 import FormLogin from '@/components/forms/FormLogin.vue';
 
@@ -88,7 +88,7 @@ type TEmits = {
 const emits = defineEmits<TEmits>();
 
 // Reativas - Model
-const login = defineModel<ILogin>('login', { required: true });
+const login = defineModel<TLogin>('login', { required: true });
 const formularioValido = defineModel<boolean>('valid', { default: false });
 
 // Reativas - Ref

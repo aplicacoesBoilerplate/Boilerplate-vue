@@ -1,14 +1,14 @@
 // Types e Interfaces
 import type {
-  IAlterPassword,
-  IConfirmPassword,
-  ILogin,
-  ILoginGoogle,
-  IRedefinicaoSenhaRecuperacao,
   IRespostaLogin,
   IRespostaUsuarioAutenticado,
-  ISolicitacaoRecuperacaoSenha,
-  IVerificacaoCodigoRecuperacaoSenha,
+  TAlterarSenha,
+  TConfirmarSenha,
+  TEmailAuth,
+  TLogin,
+  TLoginGoogle,
+  TRecuperacaoSenha,
+  TRedefinicaoRecuperacaoSenha,
 } from '@/models/model/core/autenticacao.model';
 import type { ICargoRbac } from '@/models/model/core/rbac/rbac.model';
 import type { IUsuario } from '@/models/model/core/usuario.model';
@@ -16,116 +16,115 @@ import type { IUsuarioSolicitacaoAcesso } from '@/models/model/core/usuario.soli
 
 // Services
 import { CBaseHttpService } from '@/services/base/CBaseHttpService';
-import { CUsuarioService } from '@/services/core/CUsuarioService';
+import { usuarioService } from '@/services/core/CUsuarioService';
 
 /**
  * Centraliza os contratos HTTP de autenticação.
  */
 export class CAutenticacaoService extends CBaseHttpService {
   /**
-   * Altera a senha do usuário autenticado.
-   * @param pAlteracao
+   * @description Altera a senha do usuário autenticado.
+   * @param pAlteracao - Dados da nova senha e sua confirmação.
+   * @returns Indica se a alteração foi concluída.
    */
-  public static async alterarSenha(pAlteracao: IAlterPassword): Promise<boolean> {
-    return CAutenticacaoService.put<boolean, IAlterPassword>('/auth/senha', pAlteracao);
+  public async alterarSenha(pAlteracao: TAlterarSenha): Promise<boolean> {
+    return this.put<TAlterarSenha, boolean>({ pathUrl: '/auth/senha', body: pAlteracao });
   }
 
   /**
-   * Consulta os dados do usuário autenticado.
+   * @description Consulta os dados do usuário autenticado.
+   * @returns Usuário correspondente à sessão atual.
    */
-  public static async buscarUsuarioAutenticado(): Promise<IUsuario> {
-    const resposta = await CAutenticacaoService.get<IRespostaUsuarioAutenticado>('/auth/me');
+  public async buscarUsuarioAutenticado(): Promise<IUsuario> {
+    const resposta = await this.get<IRespostaUsuarioAutenticado>({ pathUrl: '/auth/me' });
 
-    return CUsuarioService.buscarPorId(resposta.idUsuario);
+    return usuarioService.buscarPorId(resposta.idUsuario);
   }
 
   /**
-   * Consulta o cargo e as permissões do usuário autenticado sem exigir acesso administrativo ao RBAC.
+   * @description Consulta o cargo e as permissões do usuário autenticado sem exigir acesso administrativo ao RBAC.
+   * @returns Cargo e permissões do usuário autenticado.
    */
-  public static async buscarCargoUsuarioAutenticado(): Promise<ICargoRbac> {
-    return CAutenticacaoService.get<ICargoRbac>('/auth/me/cargo');
+  public async buscarCargoUsuarioAutenticado(): Promise<ICargoRbac> {
+    return this.get<ICargoRbac>({ pathUrl: '/auth/me/cargo' });
   }
 
   /**
-   * Confirma a senha do usuário autenticado.
-   * @param pConfirmacao
+   * @description Confirma a senha do usuário autenticado.
+   * @param pConfirmacao - Senha informada para confirmação.
+   * @returns Indica se a senha foi confirmada.
    */
-  public static async confirmarSenha(pConfirmacao: IConfirmPassword): Promise<boolean> {
-    const usuario = await CAutenticacaoService.buscarUsuarioAutenticado();
+  public async confirmarSenha(pConfirmacao: TConfirmarSenha): Promise<boolean> {
+    const usuario = await this.buscarUsuarioAutenticado();
 
-    return CAutenticacaoService.post<boolean, IConfirmPassword>('/auth/senha/confirmar', {
-      ...pConfirmacao,
-      email: usuario.email,
-    });
+    return this.post<TConfirmarSenha, boolean>({ pathUrl: '/auth/senha/confirmar', body: { ...pConfirmacao, email: usuario.email } });
   }
 
   /**
-   * Encerra a sessão no backend quando o projeto implementar invalidação remota.
+   * @description Encerra a sessão no backend quando o projeto implementar invalidação remota.
+   * @returns Finaliza quando o logout remoto for concluído.
    */
-  public static async logout(): Promise<void> {
-    return CAutenticacaoService.post<void>('/auth/logout');
+  public async logout(): Promise<void> {
+    await this.post<object, void>({ pathUrl: '/auth/logout', body: {} });
   }
 
   /**
-   * Autentica o usuário com e-mail e senha.
-   * @param pLogin
+   * @description Autentica o usuário com identificação de acesso e senha.
+   * @param pLogin - Credenciais de autenticação.
+   * @returns Token JWT emitido pelo backend.
    */
-  public static async login(pLogin: ILogin): Promise<string> {
-    const resposta = await CAutenticacaoService.post<IRespostaLogin, ILogin>('/auth/login', pLogin);
+  public async login(pLogin: TLogin): Promise<string> {
+    const resposta = await this.post<TLogin, IRespostaLogin>({ pathUrl: '/auth/login', body: pLogin });
 
     return resposta.tokenJWT;
   }
 
   /**
-   * Autentica o usuário usando a credencial retornada pelo Google.
-   * @param pLoginGoogle
+   * @description Autentica o usuário usando a credencial retornada pelo Google.
+   * @param pLoginGoogle - Credencial emitida pelo Google Identity Services.
+   * @returns Token JWT emitido pelo backend.
    */
-  public static async loginGoogle(pLoginGoogle: ILoginGoogle): Promise<string> {
-    const resposta = await CAutenticacaoService.post<IRespostaLogin, ILoginGoogle>('/auth/login/google', pLoginGoogle);
+  public async loginGoogle(pLoginGoogle: TLoginGoogle): Promise<string> {
+    const resposta = await this.post<TLoginGoogle, IRespostaLogin>({ pathUrl: '/auth/login/google', body: pLoginGoogle });
 
     return resposta.tokenJWT;
   }
 
   /**
-   * Redefine a senha usando o código recebido por e-mail.
-   * @param pRedefinicao
+   * @description Redefine a senha usando o código recebido por e-mail.
+   * @param pRedefinicao - E-mail, código e nova senha para recuperação.
+   * @returns Indica se a senha foi redefinida.
    */
-  public static async redefinirSenhaRecuperacao(pRedefinicao: IRedefinicaoSenhaRecuperacao): Promise<boolean> {
-    return CAutenticacaoService.post<boolean, IRedefinicaoSenhaRecuperacao>(
-      '/auth/recuperacao-senha/redefinir',
-      pRedefinicao,
-    );
+  public async redefinirSenhaRecuperacao(pRedefinicao: TRedefinicaoRecuperacaoSenha): Promise<boolean> {
+    return this.post<TRedefinicaoRecuperacaoSenha, boolean>({ pathUrl: '/auth/recuperacao-senha/redefinir', body: pRedefinicao });
   }
 
   /**
-   * Solicita acesso para criação de uma nova conta.
-   * @param pSolicitacao
+   * @description Solicita acesso para criação de uma nova conta.
+   * @param pSolicitacao - Dados do usuário que solicita acesso.
+   * @returns Indica se a solicitação foi registrada.
    */
-  public static async solicitarAcesso(pSolicitacao: IUsuarioSolicitacaoAcesso): Promise<boolean> {
-    return CAutenticacaoService.post<boolean, IUsuarioSolicitacaoAcesso>('/auth/solicitacoes-acesso', pSolicitacao);
+  public async solicitarAcesso(pSolicitacao: IUsuarioSolicitacaoAcesso): Promise<boolean> {
+    return this.post<IUsuarioSolicitacaoAcesso, boolean>({ pathUrl: '/auth/solicitacoes-acesso', body: pSolicitacao });
   }
 
   /**
-   * Solicita o envio do código de recuperação de senha.
-   * @param pSolicitacao
+   * @description Solicita o envio do código de recuperação de senha.
+   * @param pSolicitacao - E-mail para o qual o código será enviado.
+   * @returns Indica se o código foi solicitado.
    */
-  public static async solicitarRecuperacaoSenha(pSolicitacao: ISolicitacaoRecuperacaoSenha): Promise<boolean> {
-    return CAutenticacaoService.post<boolean, ISolicitacaoRecuperacaoSenha>(
-      '/auth/recuperacao-senha/solicitar',
-      pSolicitacao,
-    );
+  public async solicitarRecuperacaoSenha(pSolicitacao: TEmailAuth): Promise<boolean> {
+    return this.post<TEmailAuth, boolean>({ pathUrl: '/auth/recuperacao-senha/solicitar', body: pSolicitacao });
   }
 
   /**
-   * Verifica se o código de recuperação informado é válido.
-   * @param pVerificacao
+   * @description Verifica se o código de recuperação informado é válido.
+   * @param pVerificacao - E-mail e código de recuperação informados.
+   * @returns Indica se o código é válido.
    */
-  public static async verificarCodigoRecuperacaoSenha(
-    pVerificacao: IVerificacaoCodigoRecuperacaoSenha,
-  ): Promise<boolean> {
-    return CAutenticacaoService.post<boolean, IVerificacaoCodigoRecuperacaoSenha>(
-      '/auth/recuperacao-senha/verificar',
-      pVerificacao,
-    );
+  public async verificarCodigoRecuperacaoSenha(pVerificacao: TRecuperacaoSenha): Promise<boolean> {
+    return this.post<TRecuperacaoSenha, boolean>({ pathUrl: '/auth/recuperacao-senha/verificar', body: pVerificacao });
   }
 }
+
+export const autenticacaoService = new CAutenticacaoService();

@@ -118,12 +118,12 @@
 import { computed, mergeProps, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import type { ICampoAgrupamento } from '@/models/filters/ICampoFiltro';
 
 type TTipoGrafico = 'donut' | 'pie' | 'bar' | 'barHorizontal' | 'line' | 'radialBar';
 
 type TProps = {
-  opcoesFiltro: ICampoFiltro<unknown>[];
+  opcoesFiltro: ICampoAgrupamento[];
   modelValue: TTipoGrafico;
 };
 

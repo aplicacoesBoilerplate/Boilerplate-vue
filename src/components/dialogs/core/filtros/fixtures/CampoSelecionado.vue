@@ -56,10 +56,10 @@ import { useI18n } from 'vue-i18n';
 
 import type { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 // Types e Interfaces
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 type TProps = {
-  campoSelecionado: ICampoFiltro<any> | null;
+  campoSelecionado: TCampoFiltroMapeado | null;
 };
 const props = defineProps<TProps>();
 

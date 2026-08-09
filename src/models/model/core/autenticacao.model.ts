@@ -16,6 +16,9 @@ export interface ILoginBaseModel {
 
 export type TLogin = Pick<ILoginBaseModel, 'identificacaoAcesso' | 'senha'>;
 export type TEmailAuth = Pick<ILoginBaseModel, 'email'>;
+export type TLoginGoogle = Pick<ILoginBaseModel, 'credential'>;
+export type TAlterarSenha = Pick<ILoginBaseModel, 'senha' | 'confirmarSenha'>;
+export type TConfirmarSenha = TEmailAuth & Pick<ILoginBaseModel, 'senha'>;
 
 /**
  * @property {string} codigo - Código OTP enviado para o e-mail informado.
@@ -27,11 +30,16 @@ export type TRecuperacaoSenha = TEmailAuth & {
 /**
  * @property {string} novaSenha - Campo para a redefinição de senha, a rule de equals de confirmarSenha deve apontar para este atributo.
  */
-export type TRedefinicaoRecuperacaoSenha = Pick<ILoginBaseModel, 'email' | 'senha' | 'confirmarSenha'> & {
-  novaSenha: string;
-};
+export type TRedefinicaoRecuperacaoSenha = TRecuperacaoSenha & Pick<ILoginBaseModel, 'senha' | 'confirmarSenha'>;
 
-export type TConfirmarSenha = Pick<ILoginBaseModel, 'identificacaoAcesso' | 'senha' | 'confirmarSenha'>;
+export interface IRespostaUsuarioAutenticado {
+  idUsuario: number;
+}
+
+export interface ILoginGoogleSolicitacaoAcesso {
+  nome: string;
+  email: string;
+}
 
 /**
  * @property {string} tokenJWT - Token JWT emitido pelo backend.

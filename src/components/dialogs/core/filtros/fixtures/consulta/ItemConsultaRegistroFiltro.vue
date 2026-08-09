@@ -51,6 +51,6 @@ type TEmits = {
 const emits = defineEmits<TEmits>();
 
 // Computadas
-const descricaoRegistro = computed(() => CFormatters.formatarGenerico(props.registro[props.atributoDescricao]));
-const valorRegistro = computed(() => CFormatters.formatarGenerico(props.registro[props.atributoValor]));
+const descricaoRegistro = computed(() => CFormatters.formatarGenerico(String(props.registro[props.atributoDescricao] ?? '')));
+const valorRegistro = computed(() => CFormatters.formatarGenerico(String(props.registro[props.atributoValor] ?? '')));
 </script>

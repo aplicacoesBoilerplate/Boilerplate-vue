@@ -13,8 +13,8 @@ export interface IExecutarExportacaoDadosOptions<
 > {
   formato: TFormatoExportacaoDados;
   contexto: string;
-  metodo: TMetodoExportacaoDados<TParametros & Partial<IConsultaRegistros>, TItem>;
-  parametros?: TParametros & Partial<IConsultaRegistros>;
+  metodo: TMetodoExportacaoDados<TParametros & Partial<IConsultaRegistros<Record<string, unknown>>>, TItem>;
+  parametros?: TParametros & Partial<IConsultaRegistros<Record<string, unknown>>>;
   colunas?: IHeadersDataTable[];
   nomeArquivo?: string;
 }

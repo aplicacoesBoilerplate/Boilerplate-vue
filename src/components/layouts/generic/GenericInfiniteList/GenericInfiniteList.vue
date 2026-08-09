@@ -286,7 +286,10 @@ async function carregarMaisRegistros({ done: pDone, force: pForce }: { done?: TL
 
   try {
     const payloadRequisicao: IConsultaRegistros<TInterfaceRegistro> = {
-      filtros: props.usarFiltrosGlobais ? genericFilterStore.filtersApplied : [],
+      // O contexto global armazena campos como string; o tipo concreto é conhecido pelo service consumidor.
+      filtros: props.usarFiltrosGlobais
+        ? (genericFilterStore.filtersApplied as unknown as IConsultaRegistros<TInterfaceRegistro>['filtros'])
+        : [],
       limite: limiteAtual.value,
       proximaEntrada: proximaEntrada.value,
       ordenacao: ordemAtual.value,
@@ -320,7 +323,7 @@ async function carregarMaisRegistros({ done: pDone, force: pForce }: { done?: TL
  * @description Insere um item na lista em memória, discartando a necessidade de recarregar a lista para que o item seja exibido e, consequentemente, perdendo todo o progresso do scroll.
  * @param pItem - Item a ser inserido.
  */
-function inserirItem(pItem: unknown): void {
+function inserirItem(pItem: object): void {
   if (ordemAtual.value === 'asc') {
     genericListStore.appendItem(props.contexto, pItem);
     return;

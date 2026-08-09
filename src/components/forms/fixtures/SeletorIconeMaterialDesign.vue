@@ -27,9 +27,9 @@
         :text="t('forms.seletorIconeMaterialDesign.tooltipPaginaIcones')"
         location="bottom"
       >
-        <template #activator="{ props }">
+        <template #activator="{ props: tooltipProps }">
           <v-icon
-            v-bind="props"
+            v-bind="tooltipProps"
             icon="mdi-search-web"
             @click.stop="consultarPaginaIcones"
           />
@@ -116,17 +116,15 @@ const icone = defineModel<string>({ default: '' });
 const ICONE_PADRAO = 'mdi-shield-account-outline';
 
 // Funções
-/**
- * Abre a documentação oficial de ícones MDI em uma nova aba.
- */
 function consultarPaginaIcones(): void {
   window.open('https://pictogrammers.com/library/mdi/', '_blank');
 }
 
 /**
- * Monta a estrutura visual consumida pelo combobox a partir do sufixo do ícone.
- * @param pSufixo
- * @param pTitulo
+ * @description Monta a estrutura visual consumida pelo combobox a partir do sufixo do ícone.
+ * @param {string} pSufixo - O Sufixo é o valor inicial de todo ícone, no nosso caso, usamos 'mdi-'.
+ * @param {string} pTitulo - É de fato o ícone que é carregado.
+ * @returns Objeto para a seleção de um ícone.
  */
 function criarItemIcone(pSufixo: string, pTitulo: string): TItemIconeMaterialDesign {
   return {
@@ -137,12 +135,13 @@ function criarItemIcone(pSufixo: string, pTitulo: string): TItemIconeMaterialDes
 }
 
 /**
- * Garante que qualquer valor digitado ou selecionado seja salvo no formato aceito pelo v-icon.
+ * @description Garante que qualquer valor digitado ou selecionado seja salvo no formato aceito pelo v-icon.
  * @param pValor
+ * @returns
  */
 function normalizarIcone(pValor: unknown): string {
-  const sufixo = obterSufixoIcone(pValor);
-  return sufixo ? `mdi-${sufixo}` : '';
+  const lSufixo = obterSufixoIcone(pValor);
+  return lSufixo ? `mdi-${lSufixo}` : '';
 }
 
 /**
@@ -182,9 +181,7 @@ const valorCombobox = computed<TValorSeletorIcone>({
 });
 
 const hintPadrao = computed(() => props.hint ?? t('forms.seletorIconeMaterialDesign.hint'));
-
 const labelPadrao = computed(() => props.label ?? t('forms.seletorIconeMaterialDesign.label'));
-
 const iconeNormalizadoAtual = computed(() => normalizarIcone(valorCombobox.value) || ICONE_PADRAO);
 
 const iconesMaterialDesign = computed<TItemIconeMaterialDesign[]>(() => [

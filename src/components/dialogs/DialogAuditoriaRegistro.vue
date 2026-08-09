@@ -95,7 +95,6 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { mergeProps, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 
 // Models
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
@@ -115,9 +114,6 @@ withDefaults(defineProps<TProps>(), {
   tooltip: 'Visualizar auditoria',
 });
 
-// Composables
-const { locale } = useI18n();
-
 // Reativas
 const dialogAuditoriaOpen = ref(false);
 
@@ -127,7 +123,7 @@ function formatarData(pData?: string | Date | null): string {
     return '-';
   }
 
-  return CFormatters.formatarDataHora(pData, locale.value, true);
+  return CFormatters.formatarDataHora(pData, true);
 }
 
 function formatarResponsavel(pId?: number | null, pReferencia?: string | null): string {

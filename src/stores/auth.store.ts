@@ -6,13 +6,13 @@ import { defineStore } from 'pinia';
 import { usePreferencesStore } from '@/stores/preferences.store';
 
 // Types e Interfaces
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
 import type {
-  ILogin,
-  ILoginGoogle,
-  IRedefinicaoSenhaRecuperacao,
-  ISolicitacaoRecuperacaoSenha,
-  IVerificacaoCodigoRecuperacaoSenha,
+  TEmailAuth,
+  TLogin,
+  TLoginGoogle,
+  TRecuperacaoSenha,
+  TRedefinicaoRecuperacaoSenha,
 } from '@/models/model/core/autenticacao.model';
 import type { ICargoRbac } from '@/models/model/core/rbac/rbac.model';
 import type { IUsuario } from '@/models/model/core/usuario.model';
@@ -23,7 +23,7 @@ import type { LocationQueryRaw, RouteLocationRaw } from 'vue-router';
 import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
 // Services
-import { CAutenticacaoService } from '@/services/core/CAutenticacaoService';
+import { autenticacaoService } from '@/services/core/CAutenticacaoService';
 
 // Stores
 import { useListaCacheStore } from './listaCache.store';
@@ -87,7 +87,7 @@ export const useAuthStore = defineStore('auth', () => {
     };
   }
 
-  function serializarFiltrosParaQuery(pFiltros: IFiltrosConsulta[]): LocationQueryRaw {
+  function serializarFiltrosParaQuery(pFiltros: TFiltroConsultaSerializado[]): LocationQueryRaw {
     return pFiltros.reduce<LocationQueryRaw>((pQuery, pFiltro) => {
       if (!pFiltro.campo || !pFiltro.condicao) {
         return pQuery;
@@ -117,7 +117,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function carregarUsuarioAutenticado(): Promise<IUsuario> {
     const usuarioAutenticado = await requisicaoService.executar({
-      metodo: async () => CAutenticacaoService.buscarUsuarioAutenticado(),
+      metodo: async () => autenticacaoService.buscarUsuarioAutenticado(),
       parametros: undefined,
     });
 
@@ -136,7 +136,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     try {
-      cargoAtual.value = await CAutenticacaoService.buscarCargoUsuarioAutenticado();
+      cargoAtual.value = await autenticacaoService.buscarCargoUsuarioAutenticado();
       return cargoAtual.value;
     } catch (pErro) {
       if (pPropagarErro) {
@@ -159,9 +159,9 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function login(pLogin: ILogin): Promise<IUsuario> {
+  async function login(pLogin: TLogin): Promise<IUsuario> {
     const tokenAutenticacao = await requisicaoService.executar({
-      metodo: CAutenticacaoService.login,
+      metodo: (pLoginPayload: TLogin) => autenticacaoService.login(pLoginPayload),
       parametros: pLogin,
     });
 
@@ -171,12 +171,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function loginGoogle(pCredential: string): Promise<IUsuario> {
-    const parametros: ILoginGoogle = {
+    const parametros: TLoginGoogle = {
       credential: pCredential,
     };
 
     const tokenAutenticacao = await requisicaoService.executar({
-      metodo: CAutenticacaoService.loginGoogle,
+      metodo: (pLoginGooglePayload: TLoginGoogle) => autenticacaoService.loginGoogle(pLoginGooglePayload),
       parametros,
     });
 
@@ -185,9 +185,9 @@ export const useAuthStore = defineStore('auth', () => {
     return carregarUsuarioAutenticado();
   }
 
-  async function redefinirSenhaRecuperacao(pRedefinicao: IRedefinicaoSenhaRecuperacao): Promise<boolean> {
+  async function redefinirSenhaRecuperacao(pRedefinicao: TRedefinicaoRecuperacaoSenha): Promise<boolean> {
     return requisicaoService.executar({
-      metodo: CAutenticacaoService.redefinirSenhaRecuperacao,
+      metodo: (pRedefinicaoPayload: TRedefinicaoRecuperacaoSenha) => autenticacaoService.redefinirSenhaRecuperacao(pRedefinicaoPayload),
       parametros: pRedefinicao,
       sucesso: {
         mensagem: 'Senha redefinida com sucesso.',
@@ -198,7 +198,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function solicitarAcesso(pSolicitacao: IUsuarioSolicitacaoAcesso): Promise<boolean> {
     return requisicaoService.executar({
-      metodo: CAutenticacaoService.solicitarAcesso,
+      metodo: (pSolicitacaoPayload: IUsuarioSolicitacaoAcesso) => autenticacaoService.solicitarAcesso(pSolicitacaoPayload),
       parametros: pSolicitacao,
       sucesso: {
         mensagem: 'Solicitação de acesso registrada. Aguarde a liberação de um administrador.',
@@ -208,12 +208,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function solicitarRecuperacaoSenha(pEmail: string): Promise<boolean> {
-    const parametros: ISolicitacaoRecuperacaoSenha = {
+    const parametros: TEmailAuth = {
       email: pEmail,
     };
 
     return requisicaoService.executar({
-      metodo: CAutenticacaoService.solicitarRecuperacaoSenha,
+      metodo: (pSolicitacaoPayload: TEmailAuth) => autenticacaoService.solicitarRecuperacaoSenha(pSolicitacaoPayload),
       parametros,
       sucesso: {
         mensagem: 'Código de recuperação enviado.',
@@ -222,9 +222,9 @@ export const useAuthStore = defineStore('auth', () => {
     });
   }
 
-  async function verificarCodigoRecuperacaoSenha(pVerificacao: IVerificacaoCodigoRecuperacaoSenha): Promise<boolean> {
+  async function verificarCodigoRecuperacaoSenha(pVerificacao: TRecuperacaoSenha): Promise<boolean> {
     return requisicaoService.executar({
-      metodo: CAutenticacaoService.verificarCodigoRecuperacaoSenha,
+      metodo: (pVerificacaoPayload: TRecuperacaoSenha) => autenticacaoService.verificarCodigoRecuperacaoSenha(pVerificacaoPayload),
       parametros: pVerificacao,
       sucesso: {
         mensagem: 'Código validado com sucesso.',

@@ -104,7 +104,7 @@ import packageJson from '../../package.json';
 const abaAtual = ref<TAbaSistema>('geral');
 
 // Composables
-const { locale, t } = useI18n();
+const { t } = useI18n();
 
 // Funções
 
@@ -122,7 +122,7 @@ function extrairVersoesChangelog(pConteudo: string): TVersaoChangelog[] {
 
     return {
       numero: pSecao[1],
-      data: CFormatters.formatarDataHora(pSecao[2], locale.value),
+      data: CFormatters.formatarDataHora(pSecao[2], false),
       secoes,
       totalItens: secoes.reduce((pTotal, pSecaoChangelog) => pTotal + pSecaoChangelog.itens.length, 0),
     };

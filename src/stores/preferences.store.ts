@@ -12,7 +12,7 @@ import { deepClone } from '@/utils/deepClone';
 import { ClassManagerStorage } from '@/utils/ManagerStorage';
 
 // Services
-import { CPreferenciaUsuarioService } from '@/services/CPreferenciaUsuarioService';
+import { preferenciaUsuarioService } from '@/services/CPreferenciaUsuarioService';
 
 // Constantes
 const STORAGE_KEY = 'boilerplate.preferences';
@@ -101,7 +101,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
     erroRemoto.value = null;
 
     try {
-      const resposta = await CPreferenciaUsuarioService.buscarPreferenciasUsuarioAutenticado();
+      const resposta = await preferenciaUsuarioService.buscarPreferenciasUsuarioAutenticado();
       const preferencia = resposta.preferencias.find(
         (pPreferencia) => pPreferencia.contexto === CONTEXTO_PREFERENCIAS && pPreferencia.chave === CHAVE_PREFERENCIAS,
       );
@@ -125,7 +125,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
     }
 
     try {
-      await CPreferenciaUsuarioService.salvarPreferenciaUsuarioAutenticado(montarPreferenciaBackend());
+      await preferenciaUsuarioService.salvarPreferenciaUsuarioAutenticado(montarPreferenciaBackend());
     } catch (pErro) {
       erroRemoto.value = pErro;
     }

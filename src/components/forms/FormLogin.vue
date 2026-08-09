@@ -7,7 +7,7 @@
     <v-row dense>
       <v-col cols="12">
         <v-text-field
-          v-model="loginForm.email"
+          v-model="loginForm.identificacaoAcesso"
           :rules="[rules.required(), rules.email()]"
           :label="t('forms.formLogin.inputEmail.label')"
           variant="outlined"
@@ -19,7 +19,7 @@
 
       <v-col cols="12">
         <v-text-field
-          v-model="loginForm.password"
+          v-model="loginForm.senha"
           :rules="[rules.required()]"
           :type="mostrarSenha ? 'text' : 'password'"
           :label="t('forms.formLogin.inputPassword.label')"
@@ -51,7 +51,7 @@ import { useI18n } from 'vue-i18n';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
-import { criarLoginPadrao, type ILogin } from '@/models/model/core/autenticacao.model';
+import { criarLoginPadrao, type TLogin } from '@/models/model/core/autenticacao.model';
 
 // Componentes
 import BaseForm from '@/components/forms/base/BaseForm.vue';
@@ -76,7 +76,7 @@ const rules = useRules();
 const { t } = useI18n();
 
 // Reativas - Model
-const loginForm = defineModel<ILogin>('login', { required: true });
+const loginForm = defineModel<TLogin>('login', { required: true });
 const formIsValid = defineModel<boolean>('valid', { default: false });
 
 // Reativas - ref

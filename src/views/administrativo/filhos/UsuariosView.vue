@@ -12,7 +12,7 @@
           ref="genericViewRef"
           :contexto="CONTEXTO_LISTA_USUARIOS"
           :serviceFetch="buscarUsuarios"
-          :serviceExportacao="CUsuarioService.consultarTodosRegistros"
+          :serviceExportacao="exportarUsuarios"
           :colunasExportacao="headersExportacao"
           nomeArquivoExportacao="usuarios"
           @novoRegistro="gerenciarRegistro"
@@ -133,7 +133,6 @@
           :dados="chartDataComputed"
           :opcoesFiltro="camposAgrupamento"
           :configuracaoAtiva="activeHeaderConfig"
-          :mapeamentoCores="mapeamentoCoresAgrupamento"
         />
       </template>
     </GridDataChart>
@@ -151,10 +150,10 @@ import { useGenericFilterStore } from '@/stores/genericFilter.store';
 import { useGenericListStore } from '@/stores/genericList.store';
 
 // Types e Interfaces
-import { criarUsuarioPadrao, type IUsuario } from '@/models/model/core/usuario.model';
+import { CABECALHOS_TABELA_USUARIO, criarUsuarioPadrao, type IUsuario } from '@/models/model/core/usuario.model';
+import type { IGenericViewExpose } from '@/models/components/exposes/IGenericViewExpose';
 // Mapeamentos
-import { MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO, MAPEAMENTO_TABELA_USUARIO } from '@/models/model/core/usuario.model';
-import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 
 // Composables
 import { useChartHelpers } from '@/composables/useChartHelpers';
@@ -162,7 +161,7 @@ import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
 import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
 // Services
-import { CUsuarioService } from '@/services/core/CUsuarioService';
+import { usuarioService } from '@/services/core/CUsuarioService';
 
 import BaseChart from '@/components/common/charts/BaseApexChart.vue';
 import DialogFormUsuario from '@/components/dialogs/core/DialogFormUsuario.vue';
@@ -182,12 +181,12 @@ const { t } = useI18n();
 
 // Constantes e Dados Base
 const CONTEXTO_LISTA_USUARIOS = 'lista-usuarios';
-const headers = MAPEAMENTO_TABELA_USUARIO;
-const headersExportacao = headers.filter((pHeader) => pHeader.key !== 'actions');
+const headers = CABECALHOS_TABELA_USUARIO;
+const headersExportacao = headers;
 const camposAgrupamento = computed(() => genericFilterStore.camposAgrupadoresDisponiveis);
 
 // Reativas
-const genericViewRef = ref<InstanceType<typeof GenericView> | null>(null);
+const genericViewRef = ref<IGenericViewExpose | null>(null);
 const hiddenChart = ref(true);
 const selectedChartFilter = ref<string>(camposAgrupamento.value.length > 0 ? camposAgrupamento.value[0].valor : '');
 
@@ -227,8 +226,14 @@ function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: IUsuario }): 
   exibirDialogUsuario.value = true;
 }
 
-async function buscarUsuarios(pPayload: IConsultaRegistros): Promise<IResultadoConsultaRegistros<IUsuario>> {
-  return CUsuarioService.buscarTodos(pPayload);
+async function buscarUsuarios(pPayload: IConsultaRegistros<IUsuario>): Promise<IRespostaConsultaRegistros<IUsuario>> {
+  return usuarioService.consultar(pPayload);
+}
+
+async function exportarUsuarios(): Promise<IUsuario[]> {
+  const resposta = await usuarioService.consultarTodosRegistros();
+
+  return resposta.registros;
 }
 
 async function salvarUsuario(): Promise<void> {
@@ -241,7 +246,7 @@ async function salvarUsuario(): Promise<void> {
 
   if (modoEdicaoUsuario.value && usuarioNormalizado.id) {
     const usuarioAtualizado = await requisicaoService.executar({
-      metodo: CUsuarioService.atualizar,
+      metodo: (pUsuario: IUsuario) => usuarioService.editar(pUsuario),
       parametros: usuarioNormalizado,
       sucesso: {
         mensagem: 'Usuário atualizado com sucesso.',
@@ -255,7 +260,7 @@ async function salvarUsuario(): Promise<void> {
     }
   } else {
     const usuarioCriado = await requisicaoService.executar({
-      metodo: CUsuarioService.criar,
+      metodo: (pUsuario: IUsuario) => usuarioService.cadastrar(pUsuario),
       parametros: usuarioNormalizado,
       sucesso: {
         mensagem: 'Usuário criado com sucesso.',
@@ -288,7 +293,7 @@ async function excluirUsuario(pUsuario: IUsuario): Promise<void> {
   }
 
   await requisicaoService.executar({
-    metodo: CUsuarioService.excluir,
+    metodo: (pIdUsuario: number) => usuarioService.excluir(pIdUsuario),
     parametros: pUsuario.id,
     sucesso: {
       mensagem: 'Usuário removido com sucesso.',
@@ -310,15 +315,11 @@ const podeGerenciarRegistros = computed(() => possuiPermissaoGeral('gerenciarReg
 const podeVisualizarGraficos = computed(() => possuiPermissaoGeral('visualizarGraficos'));
 const usuarioAutenticadoId = computed(() => authStore.user?.id);
 const activeHeaderConfig = computed(() => {
-  return headers.find((h) => h.key === selectedChartFilter.value);
-});
-
-const mapeamentoCoresAgrupamento = computed(() => {
-  return MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO[selectedChartFilter.value as keyof IUsuario] ?? {};
+  return headers.find((pHeader) => pHeader.key === selectedChartFilter.value);
 });
 
 const chartDataComputed = computed(() => {
-  const items = (listStore.contexts[CONTEXTO_LISTA_USUARIOS]?.items as IUsuario[]) || [];
+  const items = (listStore.contexts[CONTEXTO_LISTA_USUARIOS]?.registros as IUsuario[]) || [];
   const key = selectedChartFilter.value;
   const strategy = activeHeaderConfig.value?.chartAggregator || 'count';
   return useChartHelpers(items, key, strategy);

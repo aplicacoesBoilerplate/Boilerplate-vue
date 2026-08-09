@@ -20,6 +20,21 @@ export interface IOpcaoSelecao<T = unknown> {
 }
 
 /**
+ * @description Metadados mínimos de um campo disponível para agrupamento em gráficos.
+ *
+ * @property {string} valor - Chave do campo usada para agrupar os dados.
+ * @property {string} descricao - Rótulo exibido nos controles do gráfico.
+ * @property {string} icone - Ícone exibido ao selecionar o agrupamento.
+ * @property {boolean} disponivelAgrupamento - Indica se o campo pode ser selecionado para agrupamento.
+ */
+export interface ICampoAgrupamento {
+  valor: string;
+  descricao: string;
+  icone?: string;
+  disponivelAgrupamento?: boolean;
+}
+
+/**
  * @description Interface genérica responsável por representar os campos disponíveis para o filtro.
  * @template T - O tipo do valor do campo.
  * @template TRegistroConsulta - O tipo do registro de consulta auxiliar.

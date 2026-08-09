@@ -34,7 +34,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { MAPEAMENTO_PAPEIS, type TPapel, type TPapelPadrao } from '@/models/model/core/usuario.model';
+import { MAPEAMENTO_OPCOES_PAPEIS_PADROES, type TPapel, type TPapelPadrao } from '@/models/model/core/usuario.model';
 // Types e Interfaces
 import type { ValidationRule } from 'vuetify';
 
@@ -125,7 +125,7 @@ const labelExibido = computed((): string => {
 });
 
 const itensSelect = computed(() => {
-  return props.itens ?? Object.values(MAPEAMENTO_PAPEIS);
+  return props.itens ?? Object.values(MAPEAMENTO_OPCOES_PAPEIS_PADROES);
 });
 
 const iconeSelecionado = computed((): string | undefined => {
@@ -135,7 +135,7 @@ const iconeSelecionado = computed((): string | undefined => {
 
   return (
     itensSelect.value.find((pItem) => pItem.valor === papelSelecionado.value)?.icone ??
-    MAPEAMENTO_PAPEIS[papelSelecionado.value as TPapelPadrao]?.icone
+    MAPEAMENTO_OPCOES_PAPEIS_PADROES[papelSelecionado.value as TPapelPadrao]?.icone
   );
 });
 </script>

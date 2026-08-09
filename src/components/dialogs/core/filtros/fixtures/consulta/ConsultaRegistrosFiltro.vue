@@ -90,7 +90,7 @@ import type {
   IConsultaRegistros,
   IRespostaConsultaRegistros,
 } from '@/models/consulta/IConsultaRegistros';
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 // Componentes
 import InputDebouncer from '@/components/forms/fixtures/InputDebouncer.vue';
@@ -108,7 +108,7 @@ const CACHE_TTL_CONSULTA_MS = 60 * 1000;
  * @property {string} condicao - Condição selecionada no formulário de filtros.
  */
 type TProps = {
-  campoSelecionado: ICampoFiltro<unknown> | null;
+  campoSelecionado: TCampoFiltroMapeado | null;
   condicao?: string;
 };
 const props = defineProps<TProps>();
@@ -223,7 +223,7 @@ async function buscarRegistros(
 
 // Computadas
 const configuracaoConsulta = computed<IConsultaAuxiliarRegistros<TRegistroConsulta>>(() => {
-  return props.campoSelecionado?.consultaRegistros as IConsultaAuxiliarRegistros<TRegistroConsulta>;
+  return props.campoSelecionado?.consultaRegistros as unknown as IConsultaAuxiliarRegistros<TRegistroConsulta>;
 });
 
 const limiteConsulta = computed(() => configuracaoConsulta.value?.limiteInicial ?? 10);

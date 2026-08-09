@@ -4,7 +4,8 @@ import { computed, type ComputedRef, type Ref } from 'vue';
 import { EOperadoresFiltro, MAPEAMENTO_OPERADORES } from '@/models/filters/enums/EOperadoresFiltro';
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 // Types e Interfaces
-import type { ICampoFiltro, IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 // Constantes
 const OPERADORES_BOOLEANOS = [EOperadoresFiltro.VERDADEIRO, EOperadoresFiltro.FALSO];
@@ -31,7 +32,7 @@ const OPERADORES_TEXTO = [
 ];
 
 type TUseOperadoresFiltroParams = {
-  campoSelecionado: ComputedRef<ICampoFiltro<unknown> | null> | Ref<ICampoFiltro<unknown> | null>;
+  campoSelecionado: ComputedRef<TCampoFiltroMapeado | null> | Ref<TCampoFiltroMapeado | null>;
 };
 
 /**

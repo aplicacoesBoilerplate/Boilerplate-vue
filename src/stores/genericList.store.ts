@@ -2,9 +2,9 @@
 import { computed, ref, toRaw } from 'vue';
 import { defineStore } from 'pinia';
 
-// Types e Interfaces
+// Models
 import type { IGenericListContext, IGenericListContextOptions } from '@/models/components/IGenericListContext';
-import type { TOrdem } from '@/models/filters/IConsultaRegistrosFiltro';
+import type { TOrdem } from '@/models/consulta/IConsultaRegistros';
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
 
 // Utils
@@ -22,30 +22,31 @@ type TResolvedContextOptions = Required<
 >;
 
 /**
- * Função para criar um contexto vazio.
+ * @description Função para criar um contexto vazio.
  * @param pContextId O ID do contexto.
  * @param pLimit O número máximo de itens a serem recuperados por página.
  * @param pOrder A ordem em que os itens devem ser recuperados.
  * @returns Um contexto vazio.
  */
-function createEmptyContext<TItem = unknown>(
+function createEmptyContext<TItem extends object = object>(
   pContextId: string,
   pLimit = DEFAULT_LIMIT,
   pOrder: TOrdem = DEFAULT_ORDER,
 ): IGenericListContext<TItem> {
   return {
     contexto: pContextId,
-    items: [],
+    filtros: [],
+    registros: [],
     proximaEntrada: null,
-    temMaisRegistros: true,
+    possuiMais: true,
     limite: pLimit,
-    ordem: pOrder,
+    ordenacao: pOrder,
     atualizadoEm: Date.now(),
   };
 }
 
 /**
- * Função para obter a chave de armazenamento.
+ * @description Função para obter a chave de armazenamento.
  * @param pContextId O ID do contexto.
  * @returns A chave de armazenamento.
  */
@@ -55,7 +56,7 @@ function getStorageKey(pContextId: string) {
 }
 
 /**
- * Função para resolver as opções do contexto.
+ * @description Função para resolver as opções do contexto.
  * @param pOptions As opções do contexto.
  * @returns As opções resolvidas.
  */
@@ -68,9 +69,6 @@ function resolveOptions(pOptions?: IGenericListContextOptions): TResolvedContext
   };
 }
 
-/**
- * Store para gerenciar contextos de listas.
- */
 export const useGenericListStore = defineStore('genericList', () => {
   // Reativas
   const contexts = ref<Record<string, IGenericListContext>>({});
@@ -79,11 +77,11 @@ export const useGenericListStore = defineStore('genericList', () => {
   const contextOptions = new Map<string, TResolvedContextOptions>();
 
   /**
-   * Inicializa um novo contexto de lista.
+   * @description Inicializa um novo contexto de lista.
    * @param pContextId O ID do contexto.
    * @param pOptions As opções do contexto.
    */
-  function initContext<TItem = unknown>(pContextId: string, pOptions?: IGenericListContextOptions) {
+  function initContext<TItem extends object = object>(pContextId: string, pOptions?: IGenericListContextOptions) {
     const resolvedOptions = resolveOptions(pOptions);
     const storageKey = getStorageKey(pContextId);
 
@@ -97,8 +95,9 @@ export const useGenericListStore = defineStore('genericList', () => {
     );
 
     // ManagerStorage ja remove valores expirados; se voltar null, a lista comeca limpa.
-    contexts.value[pContextId] =
-      storedContext ?? createEmptyContext<TItem>(pContextId, resolvedOptions.limite, resolvedOptions.ordem);
+    // O storage não preserva o generic do registro; a recuperação tipada ocorre em getContext().
+    contexts.value[pContextId] = (storedContext ??
+      createEmptyContext<TItem>(pContextId, resolvedOptions.limite, resolvedOptions.ordem)) as unknown as IGenericListContext;
 
     if (!storedContext) {
       persistContext(pContextId);
@@ -106,30 +105,30 @@ export const useGenericListStore = defineStore('genericList', () => {
   }
 
   /**
-   * Recupera um contexto de lista pelo ID.
+   * @description Recupera um contexto de lista pelo ID.
    * @param pContextId O ID do contexto.
    * @returns O contexto de lista.
    */
-  function getContext<TItem = unknown>(pContextId: string): IGenericListContext<TItem> {
+  function getContext<TItem extends object = object>(pContextId: string): IGenericListContext<TItem> {
     if (!contexts.value[pContextId]) {
       // Acesso defensivo para stores/componentes que consultem antes do onMounted da lista.
       initContext<TItem>(pContextId);
     }
 
-    return contexts.value[pContextId] as IGenericListContext<TItem>;
+    return contexts.value[pContextId] as unknown as IGenericListContext<TItem>;
   }
 
   /**
-   * Recupera os itens de um contexto de lista.
+   * @description Recupera os itens de um contexto de lista.
    * @param pContextId O ID do contexto.
    * @returns Os itens do contexto.
    */
-  function getItems<TItem = unknown>(pContextId: string): TItem[] {
-    return getContext<TItem>(pContextId).items;
+  function getItems<TItem extends object = object>(pContextId: string): TItem[] {
+    return getContext<TItem>(pContextId).registros;
   }
 
   /**
-   * Recupera o próximo item de um contexto de lista.
+   * @description Recupera o próximo item de um contexto de lista.
    * @param pContextId O ID do contexto.
    * @returns O próximo item do contexto.
    */
@@ -138,16 +137,16 @@ export const useGenericListStore = defineStore('genericList', () => {
   }
 
   /**
-   * Recupera se ha mais itens de um contexto de lista.
+   * @description Recupera se ha mais itens de um contexto de lista.
    * @param pContextId O ID do contexto.
    * @returns Se ha mais itens no contexto.
    */
   function getHasMore(pContextId: string) {
-    return getContext(pContextId).temMaisRegistros;
+    return getContext(pContextId).possuiMais;
   }
 
   /**
-   * Recupera o limite de itens de um contexto de lista.
+   * @description Recupera o limite de itens de um contexto de lista.
    * @param pContextId O ID do contexto.
    * @returns O limite de itens do contexto.
    */
@@ -156,16 +155,16 @@ export const useGenericListStore = defineStore('genericList', () => {
   }
 
   /**
-   * Recupera a ordem de itens de um contexto de lista.
+   * @description Recupera a ordem de itens de um contexto de lista.
    * @param pContextId O ID do contexto.
    * @returns A ordem de itens do contexto.
    */
   function getOrder(pContextId: string) {
-    return getContext(pContextId).ordem;
+    return getContext(pContextId).ordenacao;
   }
 
   /**
-   * Define o limite de itens de um contexto de lista.
+   * @description Define o limite de itens de um contexto de lista.
    * @param pContextId O ID do contexto.
    * @param pLimit O limite de itens.
    */
@@ -183,7 +182,7 @@ export const useGenericListStore = defineStore('genericList', () => {
   }
 
   /**
-   * Define a ordem de itens de um contexto de lista.
+   * @description Define a ordem de itens de um contexto de lista.
    * @param pContextId O ID do contexto.
    * @param pOrder A ordem de itens.
    */
@@ -196,49 +195,49 @@ export const useGenericListStore = defineStore('genericList', () => {
       ordem: pOrder,
     });
 
-    getContext(pContextId).ordem = pOrder;
+    getContext(pContextId).ordenacao = pOrder;
     persistContext(pContextId);
   }
 
   /**
-   * Adiciona itens a um contexto de lista.
+   * @description Adiciona itens a um contexto de lista.
    * @param pContextId O ID do contexto.
    * @param pNewItems Os novos itens.
    * @param pNextEntry O próximo item.
    * @param pHasMore Se ha mais itens.
    */
-  function addItems<TItem = unknown>(pContextId: string, pNewItems: TItem[], pNextEntry: unknown, pHasMore: boolean) {
+  function addItems<TItem extends object = object>(pContextId: string, pNewItems: TItem[], pNextEntry: unknown, pHasMore: boolean) {
     const context = getContext<TItem>(pContextId);
 
     // Acumula paginas ja consultadas para que o retorno de rota nao dependa de nova chamada.
-    context.items.push(...pNewItems);
+    context.registros.push(...pNewItems);
     context.proximaEntrada = pNextEntry;
-    context.temMaisRegistros = pHasMore;
+    context.possuiMais = pHasMore;
     context.atualizadoEm = Date.now();
 
     persistContext(pContextId);
   }
 
   /**
-   * Substitui os itens de um contexto de lista.
+   * @description Substitui os itens de um contexto de lista.
    * @param pContextId O ID do contexto.
    * @param pItems Os itens.
    * @param pNextEntry O próximo item.
    * @param pHasMore Se ha mais itens.
    */
-  function replaceItems<TItem = unknown>(pContextId: string, pItems: TItem[], pNextEntry: unknown, pHasMore: boolean) {
+  function replaceItems<TItem extends object = object>(pContextId: string, pItems: TItem[], pNextEntry: unknown, pHasMore: boolean) {
     const context = getContext<TItem>(pContextId);
 
-    context.items = pItems;
+    context.registros = pItems;
     context.proximaEntrada = pNextEntry;
-    context.temMaisRegistros = pHasMore;
+    context.possuiMais = pHasMore;
     context.atualizadoEm = Date.now();
 
     persistContext(pContextId);
   }
 
   /**
-   * Reseta um contexto de lista.
+   * @description Reseta um contexto de lista.
    * @param pContextId O ID do contexto.
    */
   function resetContext(pContextId: string) {
@@ -250,7 +249,7 @@ export const useGenericListStore = defineStore('genericList', () => {
   }
 
   /**
-   * Remove um contexto de lista.
+   * @description Remove um contexto de lista.
    * @param pContextId O ID do contexto.
    */
   function removeContext(pContextId: string) {
@@ -259,7 +258,7 @@ export const useGenericListStore = defineStore('genericList', () => {
   }
 
   /**
-   * Limpa os contextos expirados.
+   * @description Limpa os contextos expirados.
    */
   function clearExpiredContexts() {
     // Limpeza util para ser chamada na inicializacao de areas que usam muitas listas.
@@ -267,7 +266,7 @@ export const useGenericListStore = defineStore('genericList', () => {
   }
 
   /**
-   * Limpa todos os contextos.
+   * @description Limpa todos os contextos.
    */
   function clearAllContexts() {
     contexts.value = {};
@@ -275,31 +274,31 @@ export const useGenericListStore = defineStore('genericList', () => {
   }
 
   /**
-   * Adiciona um item no inicio de um contexto de lista.
+   * @description Adiciona um item no inicio de um contexto de lista.
    * @param pContextId O ID do contexto.
    * @param pItem O item a ser adicionado.
    */
-  function prependItem<TItem = unknown>(pContextId: string, pItem: TItem) {
+  function prependItem<TItem extends object = object>(pContextId: string, pItem: TItem) {
     const context = getContext<TItem>(pContextId);
-    context.items = [pItem, ...context.items];
+    context.registros = [pItem, ...context.registros];
     context.atualizadoEm = Date.now();
     persistContext(pContextId);
   }
 
   /**
-   * Adiciona um item no fim de um contexto de lista.
+   * @description Adiciona um item no fim de um contexto de lista.
    * @param pContextId O ID do contexto.
    * @param pItem O item a ser adicionado.
    */
-  function appendItem<TItem = unknown>(pContextId: string, pItem: TItem) {
+  function appendItem<TItem extends object = object>(pContextId: string, pItem: TItem) {
     const context = getContext<TItem>(pContextId);
-    context.items = [...context.items, pItem];
+    context.registros = [...context.registros, pItem];
     context.atualizadoEm = Date.now();
     persistContext(pContextId);
   }
 
   /**
-   * Remove um item de um contexto de lista.
+   * @description Remove um item de um contexto de lista.
    * @param pContextId O ID do contexto.
    * @param pIdField O campo de identificacao.
    * @param pIdValue O valor de identificacao.
@@ -307,13 +306,13 @@ export const useGenericListStore = defineStore('genericList', () => {
   function removeItem<TItem extends object>(pContextId: string, pIdField: keyof TItem, pIdValue: TItem[keyof TItem]) {
     const context = getContext<TItem>(pContextId);
 
-    context.items = context.items.filter((pItem) => pItem[pIdField] !== pIdValue);
+    context.registros = context.registros.filter((pItem) => pItem[pIdField] !== pIdValue);
     context.atualizadoEm = Date.now();
     persistContext(pContextId);
   }
 
   /**
-   * Atualiza um item em um contexto de lista.
+   * @description Atualiza um item em um contexto de lista.
    * @param pContextId O ID do contexto.
    * @param pIdField O campo de identificacao.
    * @param pIdValue O valor de identificacao.
@@ -326,7 +325,7 @@ export const useGenericListStore = defineStore('genericList', () => {
     pNewValues: Partial<TItem>,
   ) {
     const context = getContext<TItem>(pContextId);
-    const item = context.items.find((currentItem) => currentItem[pIdField] === pIdValue);
+    const item = context.registros.find((pCurrentItem) => pCurrentItem[pIdField] === pIdValue);
 
     if (!item) return;
 
@@ -336,7 +335,7 @@ export const useGenericListStore = defineStore('genericList', () => {
   }
 
   /**
-   * Obtem as opcoes de um contexto.
+   * @description Obtem as opcoes de um contexto.
    * @param pContextId O ID do contexto.
    * @returns As opcoes do contexto.
    */
@@ -354,7 +353,7 @@ export const useGenericListStore = defineStore('genericList', () => {
   }
 
   /**
-   * Persiste um contexto de lista.
+   * @description Persiste um contexto de lista.
    * @param pContextId O ID do contexto.
    */
   function persistContext(pContextId: string) {

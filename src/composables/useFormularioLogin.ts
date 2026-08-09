@@ -2,7 +2,7 @@
 import { reactive } from 'vue';
 
 // Types e Interfaces
-import type { ILogin } from '@/models/model/core/autenticacao.model';
+import type { TLogin } from '@/models/model/core/autenticacao.model';
 
 // Utils
 import { ClassManagerStorage } from '@/utils/ManagerStorage';
@@ -11,30 +11,30 @@ const EMAIL_ACESSO_STORAGE_KEY = 'access_email';
 const EMAIL_ACESSO_PADRAO = '@gmail.com';
 
 export function useFormularioLogin(): {
-  login: ILogin;
+  login: TLogin;
   resetarLogin: () => void;
   salvarPreferenciaEmail: () => void;
 } {
-  const login = reactive<ILogin>(criarLoginPadrao());
+  const login = reactive<TLogin>(criarLoginPadrao());
 
-  function criarLoginPadrao(): ILogin {
+  function criarLoginPadrao(): TLogin {
     return {
-      email: ClassManagerStorage.get<string>(EMAIL_ACESSO_STORAGE_KEY, EMAIL_ACESSO_PADRAO, 'local') ?? '',
-      password: '',
+      identificacaoAcesso: ClassManagerStorage.get<string>(EMAIL_ACESSO_STORAGE_KEY, EMAIL_ACESSO_PADRAO, 'local') ?? '',
+      senha: '',
     };
   }
 
   function resetarLogin(): void {
     Object.assign(login, {
-      email: EMAIL_ACESSO_PADRAO,
-      password: '',
+      identificacaoAcesso: EMAIL_ACESSO_PADRAO,
+      senha: '',
     });
 
     ClassManagerStorage.set(EMAIL_ACESSO_STORAGE_KEY, EMAIL_ACESSO_PADRAO, 'local');
   }
 
   function salvarPreferenciaEmail(): void {
-    ClassManagerStorage.set(EMAIL_ACESSO_STORAGE_KEY, login.email, 'local');
+    ClassManagerStorage.set(EMAIL_ACESSO_STORAGE_KEY, login.identificacaoAcesso, 'local');
   }
 
   return {

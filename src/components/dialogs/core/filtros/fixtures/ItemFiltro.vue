@@ -59,14 +59,14 @@
 import { useI18n } from 'vue-i18n';
 
 import { MAPEAMENTO_OPERADORES } from '@/models/filters/enums/EOperadoresFiltro';
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 // Types e Interfaces
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 type TProps = {
-  filtro: IFiltrosConsulta;
+  filtro: TFiltroConsultaSerializado;
   index: number;
-  camposDisponiveis: ICampoFiltro<any>[];
+  camposDisponiveis: TCampoFiltroMapeado[];
 };
 
 const props = defineProps<TProps>();
@@ -83,21 +83,21 @@ const { t, te } = useI18n();
 // Funções
 const getIconCampo = () => {
   if (props.filtro.campo) {
-    const campoEncontrado = props.camposDisponiveis.find((c) => c.valor === props.filtro.campo);
+    const campoEncontrado = props.camposDisponiveis.find((pCampo) => pCampo.valor === props.filtro.campo);
     return campoEncontrado?.icone || 'mdi-filter-variant';
   }
 };
 
 const getIconOperador = () => {
   if (props.filtro.condicao) {
-    const operadorEncontrado = MAPEAMENTO_OPERADORES.find((o) => o.valor === props.filtro.condicao);
+    const operadorEncontrado = MAPEAMENTO_OPERADORES.find((pOperador) => pOperador.valor === props.filtro.condicao);
     return operadorEncontrado?.icone || 'mdi-filter';
   }
 };
 
 const getDescricaoCampo = (): string => {
   if (props.filtro.campo) {
-    const campoEncontrado = props.camposDisponiveis.find((c) => c.valor === props.filtro.campo);
+    const campoEncontrado = props.camposDisponiveis.find((pCampo) => pCampo.valor === props.filtro.campo);
     if (!campoEncontrado) return props.filtro.campo;
 
     const chave = `components.dialogFiltro.campos.${campoEncontrado.valor}`;
@@ -108,7 +108,7 @@ const getDescricaoCampo = (): string => {
 
 const getDescricaoOperador = (): string => {
   if (props.filtro.condicao) {
-    const operadorEncontrado = MAPEAMENTO_OPERADORES.find((o) => o.valor === props.filtro.condicao);
+    const operadorEncontrado = MAPEAMENTO_OPERADORES.find((pOperador) => pOperador.valor === props.filtro.condicao);
     if (!operadorEncontrado) return props.filtro.condicao;
 
     const chave = `components.dialogFiltro.operadores.${operadorEncontrado.valor}`;

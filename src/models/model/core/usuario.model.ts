@@ -26,6 +26,11 @@ export const DESCRICAO_PAPEL: Record<TPapelPadrao, string> = {
   USER: 'Usuário',
 };
 
+export const ICONE_PAPEL: Record<TPapelPadrao, string> = {
+  ADMIN: 'mdi-account-tie',
+  USER: 'mdi-account',
+};
+
 export const MAPEAMENTO_OPCOES_PAPEIS_PADROES: Record<TPapelPadrao, IOpcaoSelecao> = {
   ADMIN: {
     valor: 'ADMIN',
