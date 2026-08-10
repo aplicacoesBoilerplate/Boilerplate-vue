@@ -1,5 +1,8 @@
 <template>
-  <v-snackbar-queue v-model="messages">
+  <v-snackbar-queue
+    v-model="messages"
+    :totalVisible="3"
+  >
     <template #actions="{ props, item }">
       <v-btn
         v-if="(item as any).actionUrl"
