@@ -25,17 +25,17 @@ export abstract class CBaseConsultaApiService<TInterfaceRegistro extends object>
     };
   }
 
-  public async consultar(
-    pParametros: Partial<IConsultaRegistros<TInterfaceRegistro>> = {}
-  ): Promise<IRespostaConsultaRegistros<TInterfaceRegistro>> {
+  public consultar = async (
+    pParametros: Partial<IConsultaRegistros<TInterfaceRegistro>> = {},
+  ): Promise<IRespostaConsultaRegistros<TInterfaceRegistro>> => {
     return await this.post<
       IConsultaRegistros<TInterfaceRegistro>,
       IRespostaConsultaRegistros<TInterfaceRegistro>
     >({
       pathUrl: `${this.pathRecurso}/consulta`,
-      body: this.normalizarBodyConsulta(pParametros)
+      body: this.normalizarBodyConsulta(pParametros),
     });
-  }
+  };
 
   public async consultarTodosRegistros(
     pParametros: Partial<IConsultaRegistros<TInterfaceRegistro>> = {}

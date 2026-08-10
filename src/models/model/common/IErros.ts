@@ -16,7 +16,7 @@ import { CTradutor } from '@/classes/Utils/CTradutor';
 
 /**
  * @description Interface para representar a consulta pelo registros de erros do sistema.
- * @property {number} idError - Identificador do registro de falha.
+ * @property {number} idErro - Identificador do registro de falha.
  * @property {string} mensagem - Mensagem de erro.
  * @property {string} arquivo - Arquivo onde o erro ocorreu.
  * @property {string} classe - Classe onde o erro ocorreu.

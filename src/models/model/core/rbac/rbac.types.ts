@@ -3,7 +3,7 @@ import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsul
 
 export type TComportamentoPadraoPermissao = 'bloquear' | 'liberar';
 
-export const METODOS_HTTP_PERMISSAO_API_RBAC = ['GET', 'POST', 'PUT', 'DELETE'] as const;
+export const METODOS_HTTP_PERMISSAO_API_RBAC = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const;
 export type TMetodoHttpPermissaoApi = (typeof METODOS_HTTP_PERMISSAO_API_RBAC)[number];
 
 export const ACOES_API_RBAC = ['consultar', 'gravar', 'editar', 'remover'] as const;

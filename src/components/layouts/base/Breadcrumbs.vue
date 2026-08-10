@@ -15,8 +15,8 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 // Composables
 const route = useRoute();

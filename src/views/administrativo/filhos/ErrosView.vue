@@ -10,7 +10,7 @@
       :colunasExportacao="CABECALHOS_TABELA_ERRO"
       :exibirNovoRegistro="false"
       nomeArquivoExportacao="erros-sistema"
-      itemKey="idError"
+      itemKey="idErro"
       textoVazio="Nenhum erro registrado."
       textoFinal="Todos os erros foram carregados."
     >
@@ -20,7 +20,7 @@
             v-for="erro in items as IErros[]"
             :key="erro.idErro"
             :item="erro"
-            itemKey="idError"
+            itemKey="idErro"
             class="w-100 mb-2"
           >
             <v-expansion-panel class="border rounded">

@@ -53,7 +53,7 @@
       <template #mensagem>
         <div class="text-subtitle-1 font-weight-bold">Consultando health-check</div>
 
-        <div class="text-body-2 text-medium-emphasis text-center">
+        <div class="text-body-2 text-white text-center">
           Aguarde enquanto buscamos o retorno atualizado do servidor.
         </div>
       </template>

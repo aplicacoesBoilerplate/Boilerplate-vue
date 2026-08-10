@@ -81,7 +81,7 @@
       <template #mensagem>
         <div class="text-subtitle-1 font-weight-bold">Preparando acesso</div>
 
-        <div class="text-body-2 text-medium-emphasis text-center">Validando credenciais e rota inicial.</div>
+        <div class="text-body-2 text-white text-center">Validando credenciais e rota inicial.</div>
       </template>
     </OverlayFullscream>
   </v-container>
@@ -90,8 +90,8 @@
 <script lang="ts" setup>
 // Ecossistema Vue
 import { computed, nextTick, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 // Stores
 import { useAuthStore } from '@/stores/auth.store';

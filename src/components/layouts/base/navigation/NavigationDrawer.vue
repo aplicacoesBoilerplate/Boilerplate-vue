@@ -97,8 +97,8 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, mergeProps, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
 // Stores

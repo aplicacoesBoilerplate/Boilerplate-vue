@@ -11,7 +11,7 @@
       <template #mensagem>
         <div class="text-subtitle-1 font-weight-bold">Verificando servidor</div>
 
-        <div class="text-body-2 text-medium-emphasis text-center">
+        <div class="text-body-2 text-white text-center">
           Aguarde enquanto validamos a disponibilidade da API.
         </div>
       </template>

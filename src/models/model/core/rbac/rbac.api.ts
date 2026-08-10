@@ -44,7 +44,10 @@ export const MAPEAMENTO_ROTAS_API_RBAC: Partial<Record<string, IMapeamentoRotaAp
         { metodo: 'POST', path: '/usuarios/search' },
       ],
       gravar: [{ metodo: 'POST', path: '/usuarios' }],
-      editar: [{ metodo: 'PUT', path: '/usuarios/**' }],
+      editar: [
+        { metodo: 'PUT', path: '/usuarios' },
+        { metodo: 'PATCH', path: '/usuarios' },
+      ],
       remover: [{ metodo: 'DELETE', path: '/usuarios/**' }],
     },
   },
@@ -55,7 +58,10 @@ export const MAPEAMENTO_ROTAS_API_RBAC: Partial<Record<string, IMapeamentoRotaAp
         { metodo: 'POST', path: '/rbac/cargos/consulta' },
       ],
       gravar: [{ metodo: 'POST', path: '/rbac/cargos' }],
-      editar: [{ metodo: 'PUT', path: '/rbac/cargos/**' }],
+      editar: [
+        { metodo: 'PUT', path: '/rbac/cargos' },
+        { metodo: 'PATCH', path: '/rbac/cargos' },
+      ],
       remover: [{ metodo: 'DELETE', path: '/rbac/cargos/**' }],
     },
   },

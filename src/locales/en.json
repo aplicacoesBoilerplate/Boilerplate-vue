@@ -133,8 +133,18 @@
     },
     "seletorIconeMaterialDesign": {
       "label": "Icon",
-      "hint": "Select or search for an icon.",
+      "hint": "Click to select an icon.",
+      "previewAriaLabel": "Preview of icon {icone}",
+      "selecionarAriaLabel": "Select icon {icone}",
       "tooltipPaginaIcones": "Open the page with all accepted icons",
+      "dialog": {
+        "titulo": "Select icon",
+        "buscarLabel": "Search by name or alias",
+        "carregando": "Loading icon catalog...",
+        "erroCarregamento": "The icon catalog could not be loaded.",
+        "tentarNovamente": "Try again",
+        "semResultados": "No icons found."
+      },
       "icones": {
         "escudoConta": "Account shield",
         "escudoChave": "Key shield",

@@ -1,7 +1,7 @@
 // Ecossistema
 import { computed, type ComputedRef, type Ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { type RouteRecordRaw, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 // Mapeamentos
 import {

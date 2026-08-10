@@ -89,7 +89,7 @@ export const routes: Array<RouteRecordRaw> = [
         meta: {
           title: 'routes.adm.children.rbac.title',
           icon: 'mdi-shield-key',
-          hotkey: 'cmd+shift+r',
+          hotkey: 'cmd+alt+r',
           filterContext: ERecursosFiltro.RBAC,
           filterResource: CMapeamentosFiltro.getMapeamento(ERecursosFiltro.RBAC),
         },

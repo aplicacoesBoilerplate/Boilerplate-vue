@@ -133,8 +133,18 @@
     },
     "seletorIconeMaterialDesign": {
       "label": "Ícono",
-      "hint": "Seleccione o busque un ícono.",
+      "hint": "Haga clic para seleccionar un ícono.",
+      "previewAriaLabel": "Vista previa del ícono {icone}",
+      "selecionarAriaLabel": "Seleccionar ícono {icone}",
       "tooltipPaginaIcones": "Abrir la página con todos los íconos aceptados",
+      "dialog": {
+        "titulo": "Seleccionar ícono",
+        "buscarLabel": "Buscar por nombre o alias",
+        "carregando": "Cargando catálogo de íconos...",
+        "erroCarregamento": "No se pudo cargar el catálogo de íconos.",
+        "tentarNovamente": "Intentar nuevamente",
+        "semResultados": "No se encontraron íconos."
+      },
       "icones": {
         "escudoConta": "Escudo de cuenta",
         "escudoChave": "Escudo con llave",

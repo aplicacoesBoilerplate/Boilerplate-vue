@@ -66,8 +66,8 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
