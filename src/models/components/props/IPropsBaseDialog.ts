@@ -5,6 +5,7 @@
  * @property {boolean} persistent - Impede que o dialog feche ao clicar fora (overlay).
  * @property {boolean} scrollable - Permite scroll na area de conteudo (`v-card-text`) enquanto cabecalho/rodape ficam fixos.
  * @property {boolean} fullscreen - Expande o dialog para ocupar 100% da tela.
+ * @property {string} transition - Transição aplicada na abertura e fechamento do dialog.
  * @property {string|number} minWidth - Largura minima do dialog.
  * @property {string|number} width - Largura desejada do dialog.
  * @property {string|number} maxWidth - Largura maxima permitida do dialog.
@@ -22,6 +23,7 @@ export interface IPropsBaseDialog {
   persistent?: boolean;
   scrollable?: boolean;
   fullscreen?: boolean;
+  transition?: string;
   minWidth?: string | number;
   width?: string | number;
   maxWidth?: string | number;

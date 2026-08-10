@@ -162,7 +162,7 @@ import BaseForm from '@/components/forms/base/BaseForm.vue';
 import ConfiguracaoRedirecionamentoCargo from '@/components/forms/core/fixtures/rbac/ConfiguracaoRedirecionamentoCargo.vue';
 import ControlePermissoesCargo from '@/components/forms/core/fixtures/rbac/ControlePermissoesCargo.vue';
 import UsuariosVinculadosCargo from '@/components/forms/core/fixtures/rbac/UsuariosVinculadosCargo.vue';
-import SeletorIconeMaterialDesign from '@/components/forms/fixtures/SeletorIconeMaterialDesign.vue';
+import SeletorIconeMaterialDesign from '@/components/forms/fixtures/SeletorIcone/SeletorIconeMaterialDesign.vue';
 
 // Classes
 import { CNormalizadores } from '@/classes/Utils/CNormalizadores';

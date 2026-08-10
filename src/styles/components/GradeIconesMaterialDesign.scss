@@ -1,0 +1,33 @@
+.grade-icones-material-design {
+  min-height: 0;
+
+  &__linha {
+    display: grid;
+    gap: 12px;
+    height: 152px;
+    padding: 6px;
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 140px;
+    min-width: 0;
+    padding: 12px;
+    text-transform: none;
+
+    &--selecionado {
+      box-shadow: inset 0 0 0 2px rgb(var(--v-theme-primary));
+    }
+  }
+
+  &__nome {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

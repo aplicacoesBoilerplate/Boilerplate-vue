@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="dialogModel"
-    :transition="fullscreen ? 'dialog-bottom-transition' : 'dialog-transition'"
+    :transition="transicaoDialog"
     :persistent="persistent"
     :scrollable="scrollable"
     :fullscreen="fullscreen"
@@ -119,6 +119,7 @@ const props = withDefaults(defineProps<IPropsBaseDialog>(), {
   persistent: false,
   scrollable: true,
   fullscreen: false,
+  transition: undefined,
 
   maxWidth: 720,
   maxHeight: 650,
@@ -172,6 +173,10 @@ const contentStyles = computed(() => {
 });
 
 const mostrarAcoesDialog = computed(() => props.mostrarAcoes ?? true);
+
+const transicaoDialog = computed(() =>
+  props.transition ?? (props.fullscreen ? 'dialog-bottom-transition' : 'dialog-transition'),
+);
 
 const tituloDialog = computed(() =>
   props.titulo === 'Dialog' ? t('components.baseDialog.tituloPadrao') : props.titulo,
