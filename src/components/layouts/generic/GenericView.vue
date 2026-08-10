@@ -18,24 +18,6 @@
           </slot>
 
           <template v-if="$slots['activator-novo-registro'] || exibirGraficos">
-            <div v-if="exibirGraficos">
-              <v-tooltip
-                :text="t('components.genericView.toggleChart')"
-                location="bottom"
-              >
-                <template #activator="{ props: tooltipProps }">
-                  <v-btn
-                    v-bind="tooltipProps"
-                    :icon="exibirGraficosAtivos ? 'mdi-chart-bar' : 'mdi-chart-bar-off'"
-                    color="primary"
-                    size="x-small"
-                    variant="tonal"
-                    @click="alternarGraficos"
-                  />
-                </template>
-              </v-tooltip>
-            </div>
-
             <BtnActionDrawer
               top="28px"
               right="6px"
@@ -44,6 +26,23 @@
             >
               <div class="d-flex flex-row ga-2">
                 <slot name="list-header-actions" />
+
+                <v-tooltip
+                  v-if="exibirGraficos"
+                  :text="t('components.genericView.toggleChart')"
+                  location="bottom"
+                >
+                  <template #activator="{ props: tooltipProps }">
+                    <v-btn
+                      v-bind="tooltipProps"
+                      :icon="exibirGraficosAtivos ? 'mdi-chart-bar' : 'mdi-chart-bar-off'"
+                      color="primary"
+                      size="x-small"
+                      variant="tonal"
+                      @click="alternarGraficos"
+                    />
+                  </template>
+                </v-tooltip>
 
                 <MenuExportacaoDados
                   v-if="exibirExportacao && serviceExportacao"
