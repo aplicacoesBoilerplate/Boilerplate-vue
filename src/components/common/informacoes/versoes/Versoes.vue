@@ -1,5 +1,5 @@
 <template>
-  <v-row density="comfortable">
+  <v-row>
     <ResumoVersoes
       :totalAlteracoes="totalAlteracoes"
       :versaoAtual="versaoAtual"

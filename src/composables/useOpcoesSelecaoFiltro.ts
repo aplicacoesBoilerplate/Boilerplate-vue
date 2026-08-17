@@ -41,8 +41,9 @@ function compararOpcoes(pPrimeiraOpcao: TOpcaoSelecaoVuetify, pSegundaOpcao: TOp
 }
 
 /**
- * Centraliza a montagem das opções usadas por operadores de seleção.
- * @param pParams
+ * @description Centraliza a montagem das opções usadas por operadores de seleção.
+ * @param pParams Campo selecionado e registros usados para derivar as opções.
+ * @returns Opções de seleção calculadas para o campo atual.
  */
 export function useOpcoesSelecaoFiltro(pParams: TUseOpcoesSelecaoFiltroParams): {
   opcoesSelecaoValoresDoCampo: ComputedRef<TOpcaoSelecaoVuetify[]>;

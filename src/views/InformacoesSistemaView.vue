@@ -109,7 +109,7 @@ const { t } = useI18n();
 // Funções
 
 /**
- * Extrai as versões do changelog em ordem cronológica inversa via Regex
+ * @description Extrai as versões do changelog em ordem cronológica inversa via Regex.
  * @param pConteudo Conteúdo do arquivo CHANGELOG.md
  * @returns Array de versões do changelog
  */
@@ -130,7 +130,7 @@ function extrairVersoesChangelog(pConteudo: string): TVersaoChangelog[] {
 }
 
 /**
- * Extrai as seções de uma versão do changelog via Regex
+ * @description Extrai as seções de uma versão do changelog via Regex.
  * @param pBloco Bloco de texto contendo o changelog de uma versão
  * @returns Array de seções do changelog
  */
@@ -151,7 +151,7 @@ function extrairSecoesChangelog(pBloco: string): TSecaoChangelog[] {
 }
 
 /**
- * Extrai os itens de uma seção do changelog via Regex
+ * @description Extrai os itens de uma seção do changelog via Regex.
  * @param pBloco Bloco de texto contendo o changelog de uma seção
  * @returns Array de itens do changelog
  */
@@ -164,7 +164,7 @@ function extrairItensSecao(pBloco: string): string[] {
 }
 
 /**
- * Mapeia o título de uma seção do changelog para metadados
+ * @description Mapeia o título de uma seção do changelog para seus metadados visuais.
  * @param pTitulo Título da seção
  * @returns Metadados da seção
  */
@@ -203,7 +203,7 @@ function mapearSecaoChangelog(pTitulo: string): TMetadadosSecaoChangelog {
 }
 
 /**
- * Limpa uma linha do changelog, removendo marcadores e links
+ * @description Limpa uma linha do changelog, removendo marcadores e links.
  * @param pLinha Linha do changelog a ser limpa
  * @returns Linha limpa do changelog
  */
@@ -216,7 +216,7 @@ function limparLinhaChangelog(pLinha: string): string {
 }
 
 /**
- * Limpa o título de uma seção do changelog, removendo caracteres especiais
+ * @description Limpa o título de uma seção do changelog, removendo caracteres especiais.
  * @param pTitulo Título da seção
  * @returns Título limpo da seção
  */

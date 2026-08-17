@@ -21,8 +21,8 @@
       <v-list-item v-bind="itemProps">
         <template #append>
           <v-icon
-            v-if="item.raw.icone"
-            :icon="item.raw.icone"
+            v-if="item.icone"
+            :icon="item.icone"
             size="small"
             class="text-grey-darken-1"
           />
@@ -47,10 +47,10 @@ import type { TVuetifyRule } from '@/utils/rules';
  * @property {'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'} variant - Variante visual.
  * @property {boolean} multiple - Permite seleção múltipla.
  * @property {boolean} clearable - Exibe botão de limpar.
- * @property {boolean} hideDetails - Oculta detalhes de validação.
+ * @property {boolean | 'auto'} hideDetails - Oculta detalhes de validação.
  * @property {string} appendInnerIcon - Ícone exibido ao final do campo.
  * @property {boolean} desabilitado - Desabilita o campo.
- * @property {TVuetifyRule[]} rules - Regras de validação.
+ * @property {readonly TVuetifyRule[]} rules - Regras de validação.
  * @property {Record<string, unknown>} menuProps - Propriedades adicionais do menu.
  * @property {unknown} valor - Valor selecionado (model).
  */
@@ -61,10 +61,10 @@ type TProps = {
   variant?: 'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain';
   multiple?: boolean;
   clearable?: boolean;
-  hideDetails?: boolean;
+  hideDetails?: boolean | 'auto';
   appendInnerIcon?: string;
   desabilitado?: boolean;
-  rules?: TVuetifyRule[];
+  rules?: readonly TVuetifyRule[];
   menuProps?: Record<string, unknown>;
 };
 const props = withDefaults(defineProps<TProps>(), {
@@ -81,7 +81,7 @@ const props = withDefaults(defineProps<TProps>(), {
 });
 
 /**
- * @property {[]} onEnter - Ao pressionar enter, o evento é disparado.
+ * @description Eventos emitidos pelo autocomplete de opções.
  */
 type TEmits = {
   onEnter: [];

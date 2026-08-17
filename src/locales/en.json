@@ -6,6 +6,107 @@
     "updateDate": "Updated on",
     "software": "Software"
   },
+  "common": {
+    "actions": {
+      "close": "Close",
+      "clear": "Clear",
+      "confirm": "Confirm",
+      "back": "Back",
+      "home": "Go to Home",
+      "addFilter": "Add filter",
+      "resetForm": "Reset form",
+      "resetPasswords": "Reset passwords",
+      "openDetails": "Open details"
+    },
+    "app": {
+      "checkingServer": "Checking server",
+      "checkingServerDescription": "Please wait while we check API availability."
+    },
+    "login": {
+      "loginTab": "Login",
+      "registerTab": "Register",
+      "accessTitle": "Access system",
+      "requestAccessTitle": "Request access",
+      "preparingAccess": "Preparing access",
+      "validatingAccess": "Validating credentials and initial route.",
+      "googleNotConfigured": "Configure VITE_GOOGLE_CLIENT_ID to enable Google login."
+    },
+    "health": {
+      "description": "Current response from the API administrative endpoint.",
+      "apiStatus": "API status: {status}",
+      "unavailable": "Unavailable",
+      "loading": "Checking health endpoint",
+      "loadingDescription": "Please wait while we fetch the latest server response."
+    },
+    "audit": {
+      "title": "Record audit",
+      "tooltip": "View audit",
+      "createdAt": "Created at",
+      "createdBy": "Created by",
+      "updatedAt": "Last edited",
+      "updatedBy": "Edited by",
+      "userReference": "User #{id}",
+      "system": "System"
+    },
+    "dateTime": {
+      "selectDate": "Select the date",
+      "selectTime": "Select the time"
+    },
+    "rbacTabs": {
+      "data": "Data",
+      "permissions": "Permissions",
+      "users": "Users"
+    },
+    "fallback": {
+      "forbiddenTitle": "Access denied",
+      "forbiddenMessage": "You do not have permission to access this area. Contact an administrator if you believe this is an error.",
+      "serverTitle": "Internal error",
+      "serverMessage": "Something went wrong on our servers. Please try again later.",
+      "notFoundTitle": "Page not found",
+      "notFoundMessage": "We could not find the page you are looking for."
+    },
+    "filters": {
+      "clearCurrent": "Clear current filter values",
+      "selectField": "Select a field from the side menu to begin."
+    },
+    "dataTable": {
+      "loading": "Loading records..."
+    },
+    "fields": {
+      "user": { "id": "Code", "name": "Name", "email": "E-mail", "avatar": "Avatar", "phone": "Phone", "notify": "Notify", "active": "Active", "role": "Role" },
+      "rbac": { "name": "Name", "description": "Description", "defaultBehavior": "Default behavior", "active": "Active" },
+      "error": { "id": "Code", "message": "Message", "file": "File", "class": "Class", "method": "Method", "line": "Line", "status": "Request status", "userId": "User code", "userReference": "User reference", "time": "Error time" }
+    },
+    "empty": { "users": "No users found.", "roles": "No roles found." },
+    "roles": { "admin": "Administrator", "user": "User" },
+    "messages": {
+      "manageDenied": "You do not have permission to manage records.",
+      "chartsDenied": "You do not have permission to view charts.",
+      "exportDenied": "You do not have permission to export data.",
+      "rootUserRemoval": "The application root user cannot be removed.",
+      "ownAccountRemoval": "You cannot remove your own account.",
+      "defaultRoleRemoval": "The default ADMIN and USER roles cannot be removed.",
+      "userUpdated": "User updated successfully.",
+      "userCreated": "User created successfully.",
+      "userRemoved": "User removed successfully.",
+      "roleRemoved": "Role removed successfully.",
+      "selectFieldCondition": "Select the field and condition!",
+      "duplicateFilterTitle": "Duplicate filter",
+      "duplicateFilter": "You have already added this condition.",
+      "actionDenied": "You do not have permission to perform this action.",
+      "requestFailed": "The request could not be completed.",
+      "exportStarted": "The export has started and will continue in the background.",
+      "exportCompleted": "Export completed with {count} record(s).",
+      "exportFailed": "The export could not be completed.",
+      "googleCancelled": "Login was cancelled or no Google credential was received.",
+      "passwordReset": "Password reset successfully.",
+      "accessRequested": "Access request registered. Please wait for administrator approval.",
+      "recoverySent": "Recovery code sent.",
+      "recoveryValidated": "Code validated successfully.",
+      "invalidDate": "Invalid date format",
+      "invalidComparisonDate": "Invalid comparison date"
+    }
+  },
   "routes": {
     "home": {
       "title": "Home"
@@ -183,7 +284,8 @@
       "subtitulo": "Change a user's role directly from this helper.",
       "rotuloPesquisa": "Search users",
       "textoVazio": "No user is linked to this role.",
-      "alteracaoPendente": "Pending change"
+      "alteracaoPendente": "Pending change",
+      "vincularAoCargo": "Link to role {cargo}"
     },
     "controlePermissoesCargo": {
       "rotas": {
@@ -315,11 +417,9 @@
       "textoFinalCargos": "All roles have been loaded."
     },
     "baseChart": {
-      "inputAgrupamento": {
-        "label": "Group by"
-      },
       "tooltipConfiguracao": "Configure chart",
       "secoes": {
+        "agrupamento": "Group by",
         "visualizacao": "View",
         "controles": "Controls"
       },
@@ -331,7 +431,9 @@
         "donut": "Donut",
         "pizza": "Pie",
         "colunas": "Columns",
-        "barras": "Bars"
+        "barras": "Bars",
+        "linha": "Line",
+        "radial": "Radial"
       },
       "semDados": "No data to display",
       "totalAcumulado": "Accumulated total",

@@ -73,7 +73,7 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth.store';
 
 // Utils
-import { ClassManagerStorage } from '@/utils/ManagerStorage';
+import { CManagerStorage } from '@/utils/ManagerStorage';
 
 // Componentes
 import EtapaCodigoRecuperacaoSenha from '@/components/forms/fixtures/autenticacao/EtapaCodigoRecuperacaoSenha.vue';
@@ -94,7 +94,6 @@ type TFormularioRecuperacaoSenha = {
 type TEstadoRecuperacaoSenhaPersistido = {
   etapaAtual: number;
   email: string;
-  codigoOtp: string;
   expiraEm: number;
 };
 
@@ -177,25 +176,24 @@ function persistirEstadoRecuperacaoSenha(): void {
   }
 
   const estado: TEstadoRecuperacaoSenhaPersistido = {
-    etapaAtual: etapaAtual.value,
+    etapaAtual: etapaAtual.value === 3 ? 2 : etapaAtual.value,
     email: formulario.value.email,
-    codigoOtp: codigoOtp.value,
     expiraEm: expiracaoCodigo.value,
   };
 
-  ClassManagerStorage.set(RECUPERACAO_SENHA_STORAGE_KEY, estado, {
+  CManagerStorage.set(RECUPERACAO_SENHA_STORAGE_KEY, estado, {
     storage: 'local',
     expiresAt: estado.expiraEm,
   });
 }
 
 function limparEstadoRecuperacaoSenha(): void {
-  ClassManagerStorage.clear(RECUPERACAO_SENHA_STORAGE_KEY, 'local');
+  CManagerStorage.clear(RECUPERACAO_SENHA_STORAGE_KEY, 'local');
   expiracaoCodigo.value = null;
 }
 
 function restaurarEstadoRecuperacaoSenha(): void {
-  const estado = ClassManagerStorage.get<TEstadoRecuperacaoSenhaPersistido | null>(
+  const estado = CManagerStorage.get<TEstadoRecuperacaoSenhaPersistido | null>(
     RECUPERACAO_SENHA_STORAGE_KEY,
     null,
     'local',
@@ -210,8 +208,8 @@ function restaurarEstadoRecuperacaoSenha(): void {
     ...criarFormularioPadrao(),
     email: estado.email,
   };
-  codigoOtp.value = estado.codigoOtp ?? '';
-  etapaAtual.value = estado.etapaAtual === 3 ? 3 : 2;
+  codigoOtp.value = '';
+  etapaAtual.value = 2;
   emailValido.value = true;
   iniciarTimer(estado.expiraEm);
 }
@@ -316,7 +314,7 @@ const tituloAtual = computed(() => {
 });
 
 // Observadores
-watch([etapaAtual, () => formulario.value.email, codigoOtp], () => {
+watch([etapaAtual, () => formulario.value.email], () => {
   persistirEstadoRecuperacaoSenha();
 });
 
@@ -327,5 +325,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   pararTimer();
+  codigoOtp.value = '';
 });
 </script>

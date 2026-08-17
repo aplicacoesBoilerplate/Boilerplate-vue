@@ -3,7 +3,7 @@ import { createI18n } from 'vue-i18n';
 import { en, es, pt } from 'vuetify/locale';
 
 // Utils
-import { ClassManagerStorage } from '@/utils/ManagerStorage';
+import { CManagerStorage } from '@/utils/ManagerStorage';
 
 // Locales
 import { availableLocales } from '@/locales/AvailableLocales';
@@ -46,7 +46,7 @@ const messages = {
  * @returns Locale padrão.
  */
 function initLocaleDefault(): string {
-  const savedLocale = ClassManagerStorage.get<string>('user_locale', '', 'local');
+  const savedLocale = CManagerStorage.get<string>('user_locale', '', 'local');
   const supportedLocales = availableLocales.map((pLocale) => pLocale.value);
 
   if (savedLocale && supportedLocales.includes(savedLocale)) {

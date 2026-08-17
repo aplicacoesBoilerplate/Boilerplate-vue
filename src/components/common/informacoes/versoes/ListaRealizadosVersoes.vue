@@ -66,9 +66,7 @@
                 class="pa-1"
                 color="surface"
               >
-                <v-row
-                  v-if="versao.secoes.length"
-                  density="comfortable"
+                <v-row v-if="versao.secoes.length"
                 >
                   <v-col
                     v-for="secao in versao.secoes"

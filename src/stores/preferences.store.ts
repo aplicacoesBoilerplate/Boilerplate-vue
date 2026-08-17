@@ -4,12 +4,12 @@ import { ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 
 // Types e Interfaces
-import type { IPreferences, IPreferencesTheme } from '@/models/components/IPreferences';
+import type { IChartPreferences, IPreferences, IPreferencesTheme } from '@/models/components/IPreferences';
 import type { IPreferenciaUsuario } from '@/models/services/IPreferenciaUsuario';
 
 import { deepClone } from '@/utils/deepClone';
 // Utilitários
-import { ClassManagerStorage } from '@/utils/ManagerStorage';
+import { CManagerStorage } from '@/utils/ManagerStorage';
 
 // Services
 import { preferenciaUsuarioService } from '@/services/CPreferenciaUsuarioService';
@@ -30,11 +30,13 @@ const defaultPreferences: IPreferences = {
   theme: {
     currentTheme: 'dark',
   },
+  charts: {},
 };
 
 export const usePreferencesStore = defineStore('preferences', () => {
+  let suspendLocalPersistence = false;
   // Reativas
-  const preferences = ref<IPreferences>(ClassManagerStorage.get(STORAGE_KEY, defaultPreferences, STORAGE_OPTIONS));
+  const preferences = ref<IPreferences>(CManagerStorage.get(STORAGE_KEY, defaultPreferences, STORAGE_OPTIONS));
   const carregandoRemoto = ref(false);
   const erroRemoto = ref<unknown>(null);
 
@@ -42,7 +44,8 @@ export const usePreferencesStore = defineStore('preferences', () => {
   watch(
     preferences,
     (pValue) => {
-      ClassManagerStorage.set(STORAGE_KEY, pValue, STORAGE_OPTIONS);
+      if (suspendLocalPersistence) return;
+      CManagerStorage.set(STORAGE_KEY, pValue, STORAGE_OPTIONS);
     },
     { deep: true },
   );
@@ -63,10 +66,41 @@ export const usePreferencesStore = defineStore('preferences', () => {
     void salvarPreferenciasBackend();
   }
 
+  function getChartPreferences(pContexto: string, pPadrao: IChartPreferences): IChartPreferences {
+    return {
+      ...pPadrao,
+      ...(preferences.value.charts?.[pContexto] ?? {}),
+    };
+  }
+
+  function updateChartPreferences(
+    pContexto: string,
+    pAlteracoes: Partial<IChartPreferences>,
+    pPadrao: IChartPreferences,
+  ): void {
+    preferences.value.charts ??= {};
+    preferences.value.charts[pContexto] = {
+      ...pPadrao,
+      ...(preferences.value.charts[pContexto] ?? {}),
+      ...pAlteracoes,
+    };
+    void salvarPreferenciasBackend();
+  }
+
   function clearPreferences(): void {
     preferences.value = deepClone(defaultPreferences);
-    ClassManagerStorage.clear(STORAGE_KEY, STORAGE_OPTIONS);
+    CManagerStorage.clear(STORAGE_KEY, STORAGE_OPTIONS);
     void salvarPreferenciasBackend();
+  }
+
+  function clearLocalPreferences(): void {
+    suspendLocalPersistence = true;
+    preferences.value = deepClone(defaultPreferences);
+    erroRemoto.value = null;
+    CManagerStorage.clear(STORAGE_KEY, STORAGE_OPTIONS);
+    queueMicrotask(() => {
+      suspendLocalPersistence = false;
+    });
   }
 
   function usuarioPossuiToken(): boolean {
@@ -86,6 +120,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
       preferences.value = {
         ...deepClone(defaultPreferences),
         ...JSON.parse(pPreferencia.valorJson),
+        charts: JSON.parse(pPreferencia.valorJson).charts ?? {},
       };
     } catch (pErro) {
       erroRemoto.value = pErro;
@@ -138,7 +173,10 @@ export const usePreferencesStore = defineStore('preferences', () => {
     setDesktopDrawerVisible,
     setDrawerPinned,
     setTheme,
+    getChartPreferences,
+    updateChartPreferences,
     clearPreferences,
+    clearLocalPreferences,
     carregarPreferenciasBackend,
     salvarPreferenciasBackend,
   };

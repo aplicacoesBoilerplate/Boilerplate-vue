@@ -3,8 +3,13 @@ import type { IConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 
 export type TFormatoExportacaoDados = 'txt' | 'pdf' | 'excel';
 
+export interface IMetodoExportacaoDadosOptions {
+  signal?: AbortSignal;
+}
+
 export type TMetodoExportacaoDados<TParametros extends object = Record<string, unknown>, TItem = unknown> = (
   pParametros?: TParametros,
+  pOptions?: IMetodoExportacaoDadosOptions,
 ) => Promise<TItem[]>;
 
 export interface IExecutarExportacaoDadosOptions<
@@ -17,6 +22,9 @@ export interface IExecutarExportacaoDadosOptions<
   parametros?: TParametros & Partial<IConsultaRegistros<Record<string, unknown>>>;
   colunas?: IHeadersDataTable[];
   nomeArquivo?: string;
+  signal?: AbortSignal;
+  maxRecords?: number;
+  maxEstimatedBytes?: number;
 }
 
 export interface IColunaNormalizadaExportacao<TItem = unknown> {

@@ -34,7 +34,7 @@ import { computed, nextTick, ref, watch } from 'vue';
 
 import type { ValidationRule } from 'vuetify';
 
-interface Props {
+interface IProps {
   modelValue: string;
   style: {
     icon?: string | 'mdi-magnify';
@@ -53,7 +53,7 @@ interface Props {
   rules?: ValidationRule[] | undefined;
 }
 
-const props = defineProps<Props>();
+const props = defineProps<IProps>();
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
   (e: 'on-prepend-click'): void;
@@ -68,8 +68,8 @@ const localValue = ref((props.modelValue ?? '').toUpperCase());
 // Sincroniza localValue quando a prop externa muda
 watch(
   () => props.modelValue,
-  (newVal) => {
-    localValue.value = (newVal ?? '').toUpperCase();
+  (pNewValue) => {
+    localValue.value = (pNewValue ?? '').toUpperCase();
   },
 );
 
@@ -81,8 +81,8 @@ const dynamicStyle = computed(() => {
 });
 
 // Emite o valor convertido
-function handleInput(event: Event) {
-  const target = event.target as HTMLInputElement;
+function handleInput(pEvent: Event) {
+  const target = pEvent.target as HTMLInputElement;
 
   const original = target.value;
   const transformed = original.toUpperCase();

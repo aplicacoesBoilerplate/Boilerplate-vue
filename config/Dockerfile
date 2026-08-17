@@ -1,5 +1,5 @@
 # Stage 1 - Build com Node
-FROM node:22.12 AS build-stage 
+FROM node:22.22 AS build-stage
 LABEL maintainer="Gerson f. Ribeiro"
 
 WORKDIR /app
@@ -18,6 +18,7 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 COPY config/nginx.conf /etc/nginx/conf.d/default.conf
 COPY config/entrypoint.sh /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod 0755 /entrypoint.sh
 
 # Executa entrypoint antes de iniciar nginx
 ENTRYPOINT ["/entrypoint.sh"]

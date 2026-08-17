@@ -12,7 +12,7 @@
         icon="mdi-card-account-details-outline"
         start
       />
-      Dados
+      {{ t('common.rbacTabs.data') }}
     </v-tab>
     <v-tab
       value="permissoes"
@@ -22,7 +22,7 @@
         icon="mdi-shield-key-outline"
         start
       />
-      Permissões
+      {{ t('common.rbacTabs.permissions') }}
     </v-tab>
     <v-tab
       value="usuarios"
@@ -32,12 +32,15 @@
         icon="mdi-account-switch-outline"
         start
       />
-      Usuários
+      {{ t('common.rbacTabs.users') }}
     </v-tab>
   </v-tabs>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
 export type TAbas = 'dados' | 'permissoes' | 'usuarios';
 const abaAtual = defineModel<TAbas>('abaAtual', { required: true, default: 'dados' });
+const { t } = useI18n();
 </script>

@@ -1,0 +1,16 @@
+# Logs e dependencias
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Arquivos de sistema e de IDE
+.git
+.idea
+.vscode
+*.suo
+*.user
+
+# Arquivos de build local e configuracao local
+dist
+.env
+.env.local

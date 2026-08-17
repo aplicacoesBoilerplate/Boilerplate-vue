@@ -31,19 +31,19 @@
         <template #selection="{ item }">
           <div class="d-flex align-center ga-2">
             <v-icon
-              :icon="item.raw.icone"
+              :icon="item.icone"
               size="small"
             />
-            <span>{{ item.raw.titulo }}</span>
+            <span>{{ item.titulo }}</span>
           </div>
         </template>
 
         <template #item="{ props: itemProps, item }">
           <v-list-item
             v-bind="itemProps"
-            :title="item.raw.titulo"
-            :subtitle="`${item.raw.name} • ${item.raw.path}`"
-            :prependIcon="item.raw.icone"
+            :title="item.titulo"
+            :subtitle="`${item.name} • ${item.path}`"
+            :prependIcon="item.icone"
           />
         </template>
 

@@ -44,7 +44,7 @@
             :color="padraoLiberado ? 'error' : 'success'"
             :disabled="somenteLeitura"
             density="compact"
-            @update:model-value="alternarPermissaoRota(rota, Boolean($event))"
+            @update:modelValue="alternarPermissaoRota(rota, Boolean($event))"
           />
         </template>
 
@@ -127,7 +127,7 @@
             :color="padraoLiberado ? 'error' : 'success'"
             :disabled="somenteLeitura"
             density="compact"
-            @update:model-value="alternarPermissaoGeral(permissao.valor, Boolean($event))"
+            @update:modelValue="alternarPermissaoGeral(permissao.valor, Boolean($event))"
           />
         </template>
 
@@ -154,6 +154,9 @@ import { useI18n } from 'vue-i18n';
 import { PERMISSOES_GERAIS_RBAC, RECURSO_PERMISSAO_GERAL_RBAC } from '@/models/model/core/rbac/rbac.api';
 import { ACOES_API_RBAC } from '@/models/model/core/rbac/rbac.types';
 // Types e Interfaces
+import type {
+  IItemPermissaoRota,
+} from '@/composables/useControlePermissoesCargo';
 import type {
   IPermissaoCargoRbac,
   TAcaoApiRbac,
@@ -203,22 +206,22 @@ const padraoLiberado = computed(() => props.comportamentoPadrao === 'liberar');
 
 // Funções de Alternância Visual/Lógica para Checkboxes
 
-function isRotaCheckboxSelecionado(pRota: any): boolean {
+function isRotaCheckboxSelecionado(pRota: IItemPermissaoRota): boolean {
   return padraoLiberado.value ? !permissaoRotaLiberada(pRota) : permissaoRotaLiberada(pRota);
 }
 
-function alternarPermissaoRota(pRota: any, pMarcado: boolean): void {
+function alternarPermissaoRota(pRota: IItemPermissaoRota, pMarcado: boolean): void {
   atualizarPermissaoRota(pRota, padraoLiberado.value ? !pMarcado : pMarcado);
 }
 
-function isAcaoApiCheckboxSelecionado(pRota: any, pAcao: TAcaoApiRbac): boolean {
+function isAcaoApiCheckboxSelecionado(pRota: IItemPermissaoRota, pAcao: TAcaoApiRbac): boolean {
   if (!acaoApiDisponivel(pRota, pAcao)) {
     return false;
   }
   return padraoLiberado.value ? !acaoApiLiberada(pRota, pAcao) : acaoApiLiberada(pRota, pAcao);
 }
 
-function alternarPermissaoAcaoRota(pRota: any, pAcao: TAcaoApiRbac): void {
+function alternarPermissaoAcaoRota(pRota: IItemPermissaoRota, pAcao: TAcaoApiRbac): void {
   atualizarPermissaoAcaoRota(pRota, pAcao, !acaoApiLiberada(pRota, pAcao));
 }
 

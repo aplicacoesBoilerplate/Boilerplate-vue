@@ -2,24 +2,25 @@
 import type { IValorGrafico } from '@/models/components/IValorGrafico';
 
 export function useChartHelpers(
-  items: any[],
-  campoAgrupamento: string,
-  chartAgregacao: 'sum' | 'count' = 'count',
+  pItems: readonly object[],
+  pCampoAgrupamento: string,
+  pChartAgregacao: 'sum' | 'count' = 'count',
 ): IValorGrafico[] {
-  if (!items || items.length === 0) {
+  if (!pItems || pItems.length === 0) {
     return [];
   }
 
   const agrupado = new Map<string, { valor: number; valorOriginal: unknown }>();
 
-  items.forEach((item) => {
-    const valorOriginal = item[campoAgrupamento];
+  pItems.forEach((pItem) => {
+    const item = pItem as Record<string, unknown>;
+    const valorOriginal = item[pCampoAgrupamento];
     const chave = String(valorOriginal);
 
     let valorInicial = 1;
 
-    if (chartAgregacao === 'sum') {
-      valorInicial = Number(item[campoAgrupamento]) || 0;
+    if (pChartAgregacao === 'sum') {
+      valorInicial = Number(item[pCampoAgrupamento]) || 0;
     }
 
     if (!agrupado.has(chave)) {
@@ -35,10 +36,10 @@ export function useChartHelpers(
     }
   });
 
-  return Array.from(agrupado.entries()).map(([key, grupo], index) => ({
-    id: index,
-    titulo: key,
-    valorOriginal: grupo.valorOriginal,
-    valor: grupo.valor,
+  return Array.from(agrupado.entries()).map(([pKey, pGrupo], pIndex) => ({
+    id: pIndex,
+    titulo: pKey,
+    valorOriginal: pGrupo.valorOriginal,
+    valor: pGrupo.valor,
   }));
 }

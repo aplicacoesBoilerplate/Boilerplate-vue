@@ -15,8 +15,8 @@
     width="auto"
     maxWidth="650"
   >
-    <template #activator="{ props }">
-      <div v-bind="props" />
+    <template #activator="{ props: activatorProps }">
+      <div v-bind="activatorProps" />
     </template>
 
     <v-card max-height="650">
@@ -28,15 +28,15 @@
           v-if="step === 1"
           v-model="date"
           :min="minDate"
-          title="Selecione a data"
+          :title="t('common.dateTime.selectDate')"
           @update:modelValue="step = 2"
         />
 
         <v-time-picker
           v-if="step === 2"
           v-model="time"
+          :title="t('common.dateTime.selectTime')"
           format="24hr"
-          title="Selecione o horário"
         />
       </div>
 
@@ -46,7 +46,7 @@
           text
           @click="clear"
         >
-          <v-icon class="pt-1">mdi-refresh</v-icon>Limpar
+          <v-icon class="pt-1">mdi-refresh</v-icon>{{ t('common.actions.clear') }}
         </v-btn>
 
         <v-spacer />
@@ -78,7 +78,7 @@
           text
           @click="confirm"
         >
-          <v-icon>mdi-check</v-icon>Confirmar
+          <v-icon>mdi-check</v-icon>{{ t('common.actions.confirm') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -87,6 +87,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import dayjs from 'dayjs';
 
 const props = defineProps<{
@@ -101,6 +102,8 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
 }>();
 
+const { t } = useI18n();
+
 const dialog = ref(false);
 const step = ref(1);
 const date = ref<Date | null>(null);
@@ -108,14 +111,14 @@ const time = ref<string | null>(null);
 
 watch(
   () => props.modelValue,
-  (val) => {
-    if (!val) {
+  (pValue) => {
+    if (!pValue) {
       date.value = null;
       time.value = null;
       return;
     }
 
-    const [datePart, timePart] = val.split(' ');
+    const [datePart, timePart] = pValue.split(' ');
     const [day, month, year] = datePart.split('/');
     const [hour, minute] = timePart.split(':');
 

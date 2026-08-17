@@ -1,9 +1,16 @@
 // Models
-import type { IConsultaRegistros, IRespostaConsultaRegistros } from "../consulta/IConsultaRegistros";
+import type {
+  IConsultaRegistros,
+  IConsultaTodosRegistrosOptions,
+  IRespostaConsultaRegistros,
+} from "../consulta/IConsultaRegistros";
 
 export interface IServiceConsulta<T extends object> {
-  consultar(pParametros?: Partial<IConsultaRegistros<T>>): Promise<IRespostaConsultaRegistros<T>>;
-  consultarTodosRegistros(pParametros?: Partial<IConsultaRegistros<T>>): Promise<IRespostaConsultaRegistros<T>>;
+  consultar(pParametros?: Partial<IConsultaRegistros<T>>, pSignal?: AbortSignal): Promise<IRespostaConsultaRegistros<T>>;
+  consultarTodosRegistros(
+    pParametros?: Partial<IConsultaRegistros<T>>,
+    pOptions?: IConsultaTodosRegistrosOptions,
+  ): Promise<IRespostaConsultaRegistros<T>>;
   buscarPorId(pIdRegistro: number): Promise<T>
 }
 

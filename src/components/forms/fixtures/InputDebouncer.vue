@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { watch } from 'vue';
+import { onBeforeUnmount, watch } from 'vue';
 
 type TProps = {
   label?: string;
@@ -78,11 +78,16 @@ function handleOnSearch(pTermoPesquisa: string | null) {
 }
 
 // Observadores
-watch(pesquisa, (newValue, oldValue) => {
-  if (!newValue) {
+watch(pesquisa, (pNewValue, pOldValue) => {
+  if (!pNewValue) {
     handleOnSearch(null);
-  } else if (newValue?.toUpperCase() !== oldValue?.toUpperCase()) {
-    handleOnSearch(newValue);
+  } else if (pNewValue.toUpperCase() !== pOldValue?.toUpperCase()) {
+    handleOnSearch(pNewValue);
   }
+});
+
+onBeforeUnmount(() => {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = null;
 });
 </script>

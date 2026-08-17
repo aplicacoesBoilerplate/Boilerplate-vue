@@ -7,7 +7,7 @@
     :items="registros"
     :fixedHeader="fixedHeader"
     :headers="headersMarcados"
-    :loadingText="loadingText"
+    :loadingText="loadingTextExibido"
     :height="height"
     :class="customClass"
     :itemsPerPage="disablePagination ? -1 : 10"
@@ -34,33 +34,39 @@
 <script setup lang="ts" generic="T">
 // Ecossistema Vue
 import { computed, onBeforeMount } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Types e Interfaces
 import type { IPropsBaseDataTable } from '@/models/components/props/IPropsBaseDataTable';
+import type { DataTableSortItem } from 'vuetify';
 
 const props = withDefaults(defineProps<IPropsBaseDataTable<T> & { onLoad?: () => Promise<T[] | void> }>(), {
   density: 'compact',
   multiSort: true,
   fixedHeader: true,
   disablePagination: true,
-  loadingText: 'Carregando registros...',
+  loadingText: undefined,
   height: undefined,
   customClass: '',
+  onLoad: undefined,
 });
 
 type TEmits = {
-  (e: 'update:camposOrdenacao', value: any[]): void;
+  (e: 'update:camposOrdenacao', value: DataTableSortItem[]): void;
 };
 const emits = defineEmits<TEmits>();
+const { t } = useI18n();
 
 // Computadas
+const loadingTextExibido = computed(() => props.loadingText ?? t('common.dataTable.loading'));
+
 /**
  * Propriedade computada com get/set para manter a reatividade bidirecional (v-model)
  * da ordenação selecionada no frontend, que pode ser despachada para o backend.
  */
 const ordenacaoSincronizada = computed({
   get: () => props.camposOrdenacao || [],
-  set: (novoValor) => emits('update:camposOrdenacao', novoValor),
+  set: (pNovoValor) => emits('update:camposOrdenacao', pNovoValor),
 });
 
 // Lifecycle Hooks

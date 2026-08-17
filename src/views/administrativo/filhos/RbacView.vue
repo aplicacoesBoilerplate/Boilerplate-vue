@@ -4,6 +4,22 @@
     class="pb-0 overflow-hidden"
     fluid
   >
+    <DialogFormCargoRbac
+      ref="refDialogFormCargo"
+      v-model:exibirDialog="exibirDialogCargo"
+      v-model:cargo="modelFormCargo"
+      v-model:usuarios="usuarios"
+      :modoEdicao="modoEdicaoCargo"
+      :modoVisualizacao="modoVisualizacaoCargo"
+      :cargosDisponiveis="cargos"
+      @salvar="salvarCargo"
+      @editar="habilitarEdicaoCargo"
+    >
+      <template #activator>
+        <span class="d-none" />
+      </template>
+    </DialogFormCargoRbac>
+
     <GenericView
       ref="genericViewRef"
       :contexto="CONTEXTO_LISTA_CARGOS"
@@ -14,28 +30,15 @@
       @novoRegistro="gerenciarRegistro"
     >
       <template #activator-novo-registro="{ acionarNovoRegistro, tooltipProps }">
-        <DialogFormCargoRbac
-          v-model:exibirDialog="exibirDialogCargo"
-          v-model:cargo="modelFormCargo"
-          v-model:usuarios="usuarios"
-          :modoEdicao="modoEdicaoCargo"
-          :modoVisualizacao="modoVisualizacaoCargo"
-          :cargosDisponiveis="cargos"
-          @salvar="salvarCargo"
-          @editar="habilitarEdicaoCargo"
-        >
-          <template #activator="{ props: DialogProps }">
-            <v-btn
-              v-bind="mergeProps(tooltipProps, DialogProps)"
-              :disabled="!podeGerenciarRegistros"
-              color="primary"
-              icon="mdi-plus"
-              size="x-small"
-              variant="tonal"
-              @click="acionarNovoRegistro"
-            />
-          </template>
-        </DialogFormCargoRbac>
+        <v-btn
+          v-bind="tooltipProps"
+          :disabled="!podeGerenciarRegistros"
+          color="primary"
+          icon="mdi-plus"
+          size="x-small"
+          variant="tonal"
+          @click="acionarNovoRegistro"
+        />
       </template>
 
       <template #default="{ items }">
@@ -93,7 +96,7 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed, mergeProps, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
@@ -135,6 +138,7 @@ const { t } = useI18n();
 
 // Reativas
 const genericViewRef = ref<IGenericViewExpose | null>(null);
+const refDialogFormCargo = ref<InstanceType<typeof DialogFormCargoRbac> | null>(null);
 const cargos = ref<ICargoRbac[]>([]);
 const usuarios = ref<IUsuario[]>([]);
 const exibirDialogCargo = ref(false);
@@ -151,7 +155,7 @@ async function buscarCargos(pPayload: IConsultaRegistros<ICargoRbac>): Promise<I
 
 async function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoRbac }): Promise<void> {
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
@@ -189,7 +193,7 @@ async function visualizarCargo(pCargo: ICargoRbac): Promise<void> {
 
 function habilitarEdicaoCargo(): void {
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
@@ -199,7 +203,7 @@ function habilitarEdicaoCargo(): void {
 
 async function salvarCargo(): Promise<void> {
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
@@ -225,6 +229,7 @@ async function salvarCargo(): Promise<void> {
   }
 
   await authStore.fetchUser();
+  refDialogFormCargo.value?.concluirSalvo();
   modoVisualizacaoCargo.value = false;
   papelCargoAntesEdicao.value = null;
 }
@@ -235,12 +240,12 @@ async function excluirCargo(pCargo: ICargoRbac): Promise<void> {
   }
 
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
   if (cargoEhPadrao(pCargo)) {
-    notificarPermissaoNegada('Os cargos padrão ADMIN e USER não podem ser removidos.');
+    notificarPermissaoNegada(t('common.messages.defaultRoleRemoval'));
     return;
   }
 
@@ -251,7 +256,7 @@ async function excluirCargo(pCargo: ICargoRbac): Promise<void> {
     metodo: (pIdCargo: number) => cargoRbacService.excluir(pIdCargo),
     parametros: pCargo.id,
     sucesso: {
-      mensagem: 'Cargo removido com sucesso.',
+      mensagem: t('common.messages.roleRemoved'),
       tipo: 'success',
     },
   });
@@ -283,22 +288,8 @@ async function carregarCargos(): Promise<void> {
 }
 
 async function carregarUsuariosParaVinculo(): Promise<void> {
-  const registros: IUsuario[] = [];
-  let proximaEntrada: unknown = undefined;
-  let temMaisRegistros = true;
-
-  while (temMaisRegistros) {
-    const pagina = await usuarioService.consultar({
-      limite: 100,
-      ordenacao: 'asc',
-      proximaEntrada,
-      filtros: [],
-    });
-
-    registros.push(...pagina.registros);
-    proximaEntrada = pagina.proximaEntrada;
-    temMaisRegistros = (pagina.possuiMais ?? false) && pagina.registros.length > 0;
-  }
+  const resposta = await usuarioService.consultarTodosRegistros({ ordenacao: 'asc' });
+  const registros = resposta.registros;
 
   usuarios.value = registros;
   papeisOriginaisUsuarios.value = new Map(

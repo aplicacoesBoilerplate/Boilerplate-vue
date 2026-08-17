@@ -1,0 +1,49 @@
+%% Fonte: fluxo de autenticacao e administracao encontrado no frontend.
+flowchart LR
+    subgraph UI[Camada de interface]
+        LoginView[LoginView]
+        UsuariosView[UsuariosView]
+        RbacView[RbacView]
+        GenericView[GenericView]
+    end
+
+    subgraph Estado[Estado e comportamento]
+        AuthStore[useAuthStore]
+        Requisicao[useRequisicaoService]
+        Permissoes[usePermissoesRbac]
+        PreferencesStore[usePreferencesStore]
+        ListaStore[useGenericListStore]
+    end
+
+    subgraph Servicos[Servicos HTTP]
+        AuthService[CAutenticacaoService]
+        UsuarioService[CUsuarioService]
+        CargoService[CCargoRbacService]
+        PreferenciaService[CPreferenciaUsuarioService]
+        BaseCrud[CBaseCrudApiService]
+        BaseHttp[CBaseHttpService]
+    end
+
+    API[(Backend /api/v1)]
+
+    LoginView --> AuthStore
+    UsuariosView --> GenericView
+    UsuariosView --> Requisicao
+    UsuariosView --> Permissoes
+    UsuariosView --> UsuarioService
+    UsuariosView --> ListaStore
+    RbacView --> Requisicao
+    RbacView --> Permissoes
+    RbacView --> CargoService
+    RbacView --> UsuarioService
+    AuthStore --> Requisicao
+    AuthStore --> AuthService
+    AuthStore --> PreferencesStore
+    PreferencesStore --> PreferenciaService
+    AuthService --> UsuarioService
+    UsuarioService --> BaseCrud
+    CargoService --> BaseCrud
+    BaseCrud --> BaseHttp
+    AuthService --> BaseHttp
+    PreferenciaService --> BaseHttp
+    BaseHttp --> API

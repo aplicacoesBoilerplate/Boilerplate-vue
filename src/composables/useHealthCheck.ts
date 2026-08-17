@@ -28,6 +28,7 @@ export type TUseHealthCheckReturn = {
 
 /**
  * @description Centraliza a execução do health-check e o redirecionamento de indisponibilidade da API.
+ * @returns Estado e função para executar o health-check.
  */
 export function useHealthCheck(): TUseHealthCheckReturn {
   const router = useRouter();

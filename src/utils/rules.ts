@@ -2,6 +2,8 @@
 // Models
 import type { VTextField } from 'vuetify/components';
 
+import { CTradutor } from '@/classes/Utils/CTradutor';
+
 export type TVuetifyRule = NonNullable<InstanceType<typeof VTextField>['$props']['rules']>[number];
 type TRuleFactory = (...args: any[]) => TVuetifyRule;
 
@@ -61,8 +63,8 @@ export const rulesPersonalizadas = {
       const lValorInputDate = new Date(pValor);
       const lValorComparacaoDate = new Date(lComparacao);
 
-      if (isNaN(lValorInputDate.getTime())) return 'Formato de data inválido';
-      if (isNaN(lValorComparacaoDate.getTime())) return 'Erro na data de comparação';
+      if (isNaN(lValorInputDate.getTime())) return CTradutor.traduzir('common.messages.invalidDate');
+      if (isNaN(lValorComparacaoDate.getTime())) return CTradutor.traduzir('common.messages.invalidComparisonDate');
 
       if (ignorarComparacaoHora) {
         lValorInputDate.setHours(0, 0, 0, 0);

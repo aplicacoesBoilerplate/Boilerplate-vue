@@ -4,7 +4,7 @@
     @onSubmit="emits('onSubmit')"
     @update:isValid="formIsValid = $event"
   >
-    <v-row dense>
+    <v-row density="compact">
       <v-col
         cols="12"
         md="6"

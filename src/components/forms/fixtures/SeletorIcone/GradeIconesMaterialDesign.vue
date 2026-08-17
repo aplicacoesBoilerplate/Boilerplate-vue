@@ -1,7 +1,7 @@
 <template>
   <v-virtual-scroll
     :items="linhasIcones"
-    :itemHeight="152"
+    :itemHeight="160"
     class="grade-icones-material-design h-100"
   >
     <template #default="{ item: linhaIcones, index }">
@@ -20,11 +20,18 @@
           variant="tonal"
           @click="emits('selecionar', icone.valor)"
         >
-          <v-icon
-            :icon="icone.valor"
-            size="48"
-          />
-          <span class="grade-icones-material-design__nome">{{ icone.valor }}</span>
+          <span class="grade-icones-material-design__corpo">
+            <v-icon
+              :icon="icone.valor"
+              size="64"
+            />
+          </span>
+          <span
+            :title="icone.valor"
+            class="grade-icones-material-design__rodape"
+          >
+            <span class="grade-icones-material-design__nome">{{ icone.nome }}</span>
+          </span>
         </v-btn>
       </div>
     </template>

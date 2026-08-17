@@ -1,11 +1,11 @@
 <template>
-  <div class="d-flex align-center justify-center w-100">
+  <div class="d-flex align-center justify-center">
     <GoogleLogin
       v-if="googleConfigurado"
       :clientId="clientId"
       :callback="handleGoogleCallback"
       :buttonConfig="CONFIGURACAO_BOTAO_GOOGLE"
-      prompt
+      class="login-google"
     />
 
     <v-btn
@@ -24,6 +24,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 // Componentes
 import { GoogleLogin } from 'vue3-google-login';
 
@@ -33,7 +34,7 @@ import { GoogleLogin } from 'vue3-google-login';
 type TProps = {
   carregando?: boolean;
 };
-const props = withDefaults(defineProps<TProps>(), {
+withDefaults(defineProps<TProps>(), {
   carregando: false,
 });
 
@@ -67,26 +68,39 @@ const CONFIGURACAO_BOTAO_GOOGLE = {
   text: 'signin_with',
   shape: 'pill',
   logo_alignment: 'left',
-  width: '220',
+  width: '220px',
 } as const;
 
 // Computadas
 const clientId = computed(() => window.env?.VITE_GOOGLE_CLIENT_ID || import.meta.env.VITE_GOOGLE_CLIENT_ID || '');
 const googleConfigurado = computed(() => !!clientId.value);
+const { t } = useI18n();
 
 // Funções
 
 /**
- * Função callback acionada quando o Google retorna uma resposta.
+ * @description Processa a credencial retornada pelo Google.
  * @param pResposta - Resposta do Google.
  * @property {string} credential - Credencial do Google.
  */
 function handleGoogleCallback(pResposta: TRespostaCredencialGoogle): void {
   if (!pResposta.credential) {
-    emits('erro', 'Login cancelado ou credencial do Google não recebida.');
+    emits('erro', t('common.messages.googleCancelled'));
     return;
   }
 
   emits('autenticado', pResposta.credential);
 }
 </script>
+
+<style scoped>
+.login-google {
+  border-radius: 9999px;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.login-google :deep(iframe) {
+  display: block;
+}
+</style>

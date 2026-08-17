@@ -7,6 +7,8 @@ import { useSnackbarStore } from '@/stores/Snackbar.store';
 // Models
 import type { IPropsSnackbarQueue } from '@/models/components/props/IPropsSnackbarQueue';
 
+import { CTradutor } from '@/classes/Utils/CTradutor';
+
 export type TMetodoRequisicao<TParametros, TResposta> = (pParametros: TParametros) => Promise<TResposta>;
 
 export interface IExecutarRequisicaoOptions<TParametros, TResposta> {
@@ -36,7 +38,7 @@ function normalizarMensagemErro(pErro: unknown): string {
     return String((pErro as { mensagem?: unknown }).mensagem);
   }
 
-  return 'Não foi possível concluir a requisição.';
+  return CTradutor.traduzir('common.messages.requestFailed');
 }
 
 export function useRequisicaoService(): TUseRequisicaoServiceReturn {

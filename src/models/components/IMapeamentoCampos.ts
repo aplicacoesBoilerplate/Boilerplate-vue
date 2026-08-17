@@ -11,7 +11,8 @@ import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
  * @property {Omit<IHeadersDataTable, 'key' | 'title'>} tabela - Mapeamentos para os atributos de tabela de um Model.
  */
 export interface IConfiguracaoCampo<TCampo extends string, TRegistro extends object> {
-  rotulo: string;
+  rotulo?: string;
+  rotuloChave?: string;
   filtro?: Omit<ICampoFiltro<TCampo, TRegistro>, 'valor' | 'descricao'>;
   tabela?: Omit<IHeadersDataTable, 'key' | 'title'>;
 }

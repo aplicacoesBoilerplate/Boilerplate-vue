@@ -1,5 +1,5 @@
 <template>
-  <v-row density="comfortable">
+  <v-row>
     <v-col
       v-for="item in cardsInformacoesSistema"
       :key="item.titulo"

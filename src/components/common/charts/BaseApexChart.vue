@@ -20,10 +20,10 @@
       />
     </v-card-title>
 
-    <v-card-text class="pa-0 flex-grow-1 d-flex flex-column justify-center overflow-hidden">
+    <v-card-text class="chart-content pa-0 flex-grow-1 d-flex flex-column justify-center">
       <div
         v-if="possuiDados"
-        class="w-100"
+        class="chart-container w-100"
       >
         <componenteVueApexCharts
           :key="chaveRenderizacao"
@@ -51,13 +51,14 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed, defineAsyncComponent, ref } from 'vue';
+import { computed, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTheme } from 'vuetify';
 
 // Models
 import type { IValorGrafico } from '@/models/components/IValorGrafico';
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
+import type { TChartType } from '@/models/components/TChartType';
 import type { TDadoGrafico } from '@/models/components/TDadoGrafico';
 import type { ICampoAgrupamento } from '@/models/filters/ICampoFiltro';
 import type { ApexOptions } from 'apexcharts';
@@ -68,7 +69,6 @@ import { gerarCores } from '@/utils/gerarCores.ts';
 // Componentes
 import ChartControls from './ChartControls.vue';
 
-type TTipoGrafico = 'donut' | 'pie' | 'bar' | 'barHorizontal' | 'line' | 'radialBar';
 type TTipoGraficoApex = 'donut' | 'pie' | 'bar' | 'line' | 'radialBar';
 type TMapeamentoCoresGrafico = Record<string, string>;
 
@@ -77,7 +77,7 @@ type TProps = {
   opcoesFiltro: ICampoAgrupamento[];
   configuracaoAtiva?: IHeadersDataTable;
   altura?: number;
-  tipoInicial?: TTipoGrafico;
+  tipoInicial?: TChartType;
   mapeamentoCores?: TMapeamentoCoresGrafico;
 };
 const props = withDefaults(defineProps<TProps>(), {
@@ -96,11 +96,15 @@ const componenteVueApexCharts = defineAsyncComponent(() => import('vue3-apexchar
 
 // Reativas - Model
 const filtroSelecionado = defineModel<string>('filtroSelecionado', { required: true });
-
-// Reativas - ref
-const tipoGrafico = ref<TTipoGrafico>(props.tipoInicial);
-const exibirLegenda = ref(true);
-const exibirRotulos = ref(true);
+const tipoGraficoModel = defineModel<TChartType>('tipoGrafico');
+const exibirLegenda = defineModel<boolean>('exibirLegenda', { default: true });
+const exibirRotulos = defineModel<boolean>('exibirRotulos', { default: true });
+const tipoGrafico = computed<TChartType>({
+  get: () => tipoGraficoModel.value ?? props.tipoInicial,
+  set: (pTipo) => {
+    tipoGraficoModel.value = pTipo;
+  },
+});
 
 // Funções
 function extrairRotulo(pItem: IValorGrafico | TDadoGrafico): string {
@@ -160,6 +164,7 @@ const tituloAgrupamento = computed(() => {
 });
 
 const labelsGrafico = computed(() => props.dados.map((pItem) => extrairRotulo(pItem)));
+const valoresBrutos = computed(() => props.dados.map((pItem) => (pItem as IValorGrafico).valor));
 const coresGrafico = computed(() => gerarCores(props.dados.length));
 const chaveRenderizacao = computed(() => `${tipoGrafico.value}-${filtroSelecionado.value}`);
 
@@ -174,7 +179,8 @@ const seriesGrafico = computed<number[] | { name: string; data: number[] }[]>(()
   }
 
   if (ehTipoRadial.value) {
-    return props.dados.map((pItem) => (pItem as IValorGrafico).valor);
+    if (!totalValor.value) return valoresBrutos.value.map(() => 0);
+    return valoresBrutos.value.map((pValor) => (pValor / totalValor.value) * 100);
   }
 
   if (tipoGrafico.value === 'bar' || ehBarraHorizontal.value) {
@@ -199,7 +205,7 @@ const opcoesGrafico = computed<ApexOptions>(() => {
       animations: { enabled: true, speed: 300 },
     },
     colors: coresGrafico.value,
-    labels: ehTipoRadial.value ? undefined : labelsGrafico.value,
+    labels: labelsGrafico.value,
     legend: {
       show: exibirLegenda.value,
       position: 'bottom',
@@ -213,8 +219,20 @@ const opcoesGrafico = computed<ApexOptions>(() => {
       theme: theme.current.value.dark ? 'dark' : 'light',
       fillSeriesColor: false,
       marker: { show: true },
+      fixed: {
+        enabled: true,
+        position: 'topRight',
+        offsetX: -8,
+        offsetY: 8,
+      },
       y: {
-        formatter: (pValor: number) => `${formatarNumero(pValor)} (${calcularPorcentagem(pValor)}%)`,
+        formatter: (pValor: number, pContexto) => {
+          const valorBruto = ehTipoRadial.value
+            ? valoresBrutos.value[pContexto?.seriesIndex ?? 0] ?? 0
+            : pValor;
+          const porcentagem = ehTipoRadial.value ? pValor.toFixed(1) : calcularPorcentagem(pValor);
+          return `${formatarNumero(valorBruto)} (${porcentagem}%)`;
+        },
       },
     },
     noData: { text: t('components.baseChart.semDados') },
@@ -250,7 +268,11 @@ const opcoesGrafico = computed<ApexOptions>(() => {
           track: { background: theme.current.value.dark ? '#2a2a2a' : '#e0e0e0' },
           dataLabels: {
             name: { show: true, fontSize: '14px' },
-            value: { show: true, fontSize: '18px', formatter: (pValor: number) => `${pValor}%` },
+            value: {
+              show: true,
+              fontSize: '18px',
+              formatter: (pValor: number) => `${Number(pValor).toFixed(1)}%`,
+            },
             total: {
               show: true,
               label: labelCentro.value,
@@ -315,3 +337,19 @@ const opcoesGrafico = computed<ApexOptions>(() => {
   };
 });
 </script>
+
+<style scoped>
+.chart-content,
+.chart-container {
+  overflow: visible;
+  position: relative;
+}
+
+.chart-container {
+  z-index: 1;
+}
+
+:deep(.apexcharts-tooltip) {
+  z-index: 20 !important;
+}
+</style>

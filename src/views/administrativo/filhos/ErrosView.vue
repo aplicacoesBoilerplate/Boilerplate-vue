@@ -81,11 +81,15 @@ const CONTEXTO_LISTA_ERROS = 'lista-erros';
 
 // Funções
 /**
+ * @param pParametros - Parâmetros opcionais recebidos pelo contrato genérico de exportação.
+ * @param pOptions - Opções de cancelamento da exportação.
+ * @param pOptions.signal - Sinal que cancela a paginação em andamento.
  * @description Consulta todos os erros e retorna somente os registros para exportação.
  * @returns Lista de erros disponível para o exportador.
  */
-async function exportarErros(): Promise<IErros[]> {
-  const resposta = await errosService.consultarTodosRegistros();
+async function exportarErros(pParametros?: Record<string, unknown>, pOptions?: { signal?: AbortSignal }): Promise<IErros[]> {
+  void pParametros;
+  const resposta = await errosService.consultarTodosRegistros({}, { signal: pOptions?.signal });
 
   return resposta.registros;
 }

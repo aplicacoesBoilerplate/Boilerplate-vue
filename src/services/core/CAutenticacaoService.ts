@@ -62,10 +62,19 @@ export class CAutenticacaoService extends CBaseHttpService {
 
   /**
    * @description Encerra a sessão no backend quando o projeto implementar invalidação remota.
+   * @param pToken - Credencial capturada antes da limpeza local imediata.
+   * @param pSignal - Sinal que limita o melhor-esforço de revogação remota.
    * @returns Finaliza quando o logout remoto for concluído.
    */
-  public async logout(): Promise<void> {
-    await this.post<object, void>({ pathUrl: '/auth/logout', body: {} });
+  public async logout(pToken: string, pSignal?: AbortSignal): Promise<void> {
+    await this.post<object, void>({
+      pathUrl: '/auth/logout',
+      body: {},
+      axiosConfig: {
+        signal: pSignal,
+        headers: { Authorization: `Bearer ${pToken}` },
+      },
+    });
   }
 
   /**

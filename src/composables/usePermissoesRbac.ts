@@ -1,4 +1,6 @@
 // Stores
+import { useI18n } from 'vue-i18n';
+
 import { useAuthStore } from '@/stores/auth.store';
 import { useSnackbarStore } from '@/stores/Snackbar.store';
 
@@ -26,6 +28,7 @@ export function usePermissoesRbac(): TUsePermissoesRbacReturn {
   // Stores
   const authStore = useAuthStore();
   const snackbarStore = useSnackbarStore();
+  const { t } = useI18n();
 
   function possuiPermissaoGeral(pAcao: TAcaoPermissaoGeralRbac): boolean {
     if (!authStore.cargoAtual) {
@@ -35,7 +38,7 @@ export function usePermissoesRbac(): TUsePermissoesRbacReturn {
     return permissaoEstaLiberada(authStore.cargoAtual, RECURSO_PERMISSAO_GERAL_RBAC, pAcao);
   }
 
-  function notificarPermissaoNegada(pMensagem = 'Você não tem permissão para executar esta ação.'): void {
+  function notificarPermissaoNegada(pMensagem = t('common.messages.actionDenied')): void {
     snackbarStore.adicionar({
       tipo: 'warning',
       mensagem: pMensagem,

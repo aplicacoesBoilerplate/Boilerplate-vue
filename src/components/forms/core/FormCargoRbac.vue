@@ -9,7 +9,7 @@
       class="pt-4"
     >
       <v-window-item value="dados">
-        <v-row density="comfortable">
+        <v-row>
           <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
             <v-text-field
               :modelValue="cargo.nome"
@@ -63,18 +63,18 @@
               <template #selection="{ item }">
                 <div class="d-flex align-center ga-2">
                   <v-icon
-                    :color="item.raw.cor"
-                    :icon="item.raw.icone"
+                    :color="item.cor"
+                    :icon="item.icone"
                     size="small"
                   />
-                  <span>{{ item.raw.descricao }}</span>
+                  <span>{{ item.descricao }}</span>
                 </div>
               </template>
 
               <template #item="{ props: itemProps, item }">
                 <v-list-item
                   v-bind="itemProps"
-                  :prependIcon="item.raw.icone"
+                  :prependIcon="item.icone"
                 />
               </template>
             </v-select>

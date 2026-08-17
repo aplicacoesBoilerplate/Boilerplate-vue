@@ -3,10 +3,7 @@
     class="pa-0"
     fluid
   >
-    <v-row
-      density="comfortable"
-      justify="center"
-      class="ma-0"
+    <v-row class="ma-0 justify-center"
     >
       <v-col cols="12">
         <v-card
@@ -32,7 +29,7 @@
 
               <div class="mt-2 d-flex align-center">
                 <v-tooltip
-                  text="Limpar Valor(es) do Filtro Atual"
+                  :text="t('common.filters.clearCurrent')"
                   location="bottom"
                 >
                   <template #activator="{ props: tooltipProps }">
@@ -55,7 +52,7 @@
                   variant="elevated"
                   type="submit"
                   height="40"
-                >ADICIONAR FILTRO
+                >{{ t('common.actions.addFilter') }}
                 </v-btn>
               </div>
             </BaseForm>
@@ -71,7 +68,7 @@
             size="large"
             class="mb-2"
           />
-          <span class="text-center">Selecione um campo no menu lateral para iniciar.</span>
+          <span class="text-center">{{ t('common.filters.selectField') }}</span>
         </div>
       </v-col>
     </v-row>
@@ -81,6 +78,7 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Stores
 import { useGenericFilterStore } from '@/stores/genericFilter.store';
@@ -103,6 +101,7 @@ const props = withDefaults(defineProps<TProps>(), {
 
 // Stores
 const genericFilterStore = useGenericFilterStore();
+const { t } = useI18n();
 
 // Reativas
 const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
