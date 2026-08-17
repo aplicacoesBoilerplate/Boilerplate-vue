@@ -1,0 +1,247 @@
+@layer vuetify-core.reset {
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  a:active,
+  a:hover {
+    outline-width: 0;
+  }
+
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: monospace;
+  }
+
+  pre {
+    font-size: 1em;
+  }
+
+  small {
+    font-size: 80%;
+  }
+
+  sub,
+  sup {
+    position: relative;
+    font-size: 75%;
+    line-height: 0;
+    vertical-align: baseline;
+  }
+
+  sub {
+    bottom: -0.25em;
+  }
+
+  sup {
+    top: -0.5em;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    background-color: transparent;
+    border-style: none;
+  }
+
+  select {
+    appearance: none;
+  }
+
+  legend {
+    display: table;
+    max-width: 100%;
+    white-space: normal;
+  }
+}
+
+:root {
+  --v3-elevation-0: 0 0 0 0 rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(0, 0, 0, 0.14),
+    0 0 0 0 rgba(0, 0, 0, 0.12);
+  --v3-elevation-1: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+    0 1px 3px 0 rgba(0, 0, 0, 0.12);
+  --v3-elevation-2: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  --v3-elevation-4: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+    0 1px 10px 0 rgba(0, 0, 0, 0.12);
+  --v3-elevation-6: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14),
+    0 1px 18px 0 rgba(0, 0, 0, 0.12);
+  --v3-elevation-8: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  --v3-elevation-12: 0 7px 8px -4px rgba(0, 0, 0, 0.2), 0 12px 17px 2px rgba(0, 0, 0, 0.14),
+    0 5px 22px 4px rgba(0, 0, 0, 0.12);
+  --v3-elevation-16: 0 8px 10px -5px rgba(0, 0, 0, 0.2), 0 16px 24px 2px rgba(0, 0, 0, 0.14),
+    0 6px 30px 5px rgba(0, 0, 0, 0.12);
+  --v3-elevation-24: 0 11px 15px -7px rgba(0, 0, 0, 0.2), 0 24px 38px 3px rgba(0, 0, 0, 0.14),
+    0 9px 46px 8px rgba(0, 0, 0, 0.12);
+}
+
+@layer vuetify-overrides {
+  // Restaura o grid do Vuetify 3: margens negativas na linha e padding nas colunas.
+  .v-row {
+    gap: unset;
+    margin: calc(var(--v-col-gap-y) * -0.5) calc(var(--v-col-gap-x) * -0.5);
+  }
+
+  .v-row + .v-row {
+    margin-top: calc(var(--v-col-gap-y) * 0.5);
+  }
+
+  .v-col {
+    flex-basis: var(--v-col-is-size, calc(100% * var(--v-col-size) / var(--v-col-size-columns)))
+      var(--v-col-is-auto, auto) var(--v-col-is-grow, 0);
+    padding: calc(var(--v-col-gap-y) * 0.5) calc(var(--v-col-gap-x) * 0.5);
+  }
+
+  .v-col:where([class*='v-col--offset-']) {
+    margin-inline-start: calc(100% * var(--v-col-offset) / var(--v-col-size-columns));
+  }
+
+  // fill-height centralizava seu conteúdo verticalmente no Vuetify 3.
+  .v-container.fill-height {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  // Restaura a estrutura e a tipografia MD2 dos botões.
+  .v-btn {
+    display: inline-grid;
+    grid-template-areas: 'prepend content append';
+    grid-template-columns: max-content auto max-content;
+    letter-spacing: 0.0892857143em;
+    text-indent: 0.0892857143em;
+    text-transform: uppercase;
+  }
+
+  .v-locale--is-rtl .v-btn {
+    text-indent: -0.0892857143em;
+  }
+
+  .v-btn__prepend {
+    grid-area: prepend;
+  }
+
+  .v-btn__content {
+    grid-area: content;
+  }
+
+  .v-btn__append {
+    grid-area: append;
+  }
+
+  // Mantém as métricas tipográficas específicas que não seguem o mapa global no Vuetify 3.
+  .v-list-item-title {
+    letter-spacing: 0.009375em;
+  }
+
+  .v-breadcrumbs {
+    line-height: 1.6;
+  }
+
+  // No Vuetify 4 o lado vazio da rolagem infinita perde o padding; no 3 ele
+  // reservava 8px nas duas extremidades.
+  .v-infinite-scroll__side:empty,
+  .v-infinite-scroll__side:has(> div:only-child:empty) {
+    padding: 8px;
+  }
+
+  // O Vuetify 4 reduziu a escala de elevação para 0–5. Estes componentes voltam
+  // a usar as elevações MD2 que possuíam no Vuetify 3.
+  .v-field--variant-solo,
+  .v-field--variant-solo-filled,
+  .v-field--variant-solo-inverted {
+    box-shadow: var(--v3-elevation-2);
+  }
+
+  .v-card--variant-elevated {
+    box-shadow: var(--v3-elevation-1);
+  }
+
+  .v-card--hover::before {
+    box-shadow: var(--v3-elevation-1);
+  }
+
+  .v-card--hover::after,
+  .v-card--hover:hover {
+    box-shadow: var(--v3-elevation-8);
+  }
+
+  .v-app-bar.v-toolbar:not(.v-toolbar--flat) {
+    box-shadow: var(--v3-elevation-4);
+  }
+
+  .v-autocomplete__content,
+  .v-select__content {
+    box-shadow: var(--v3-elevation-4);
+  }
+
+  .v-menu > .v-overlay__content > .v-card,
+  .v-menu > .v-overlay__content > .v-sheet,
+  .v-menu > .v-overlay__content > .v-list {
+    box-shadow: var(--v3-elevation-8);
+  }
+
+  .v-dialog > .v-overlay__content > .v-card,
+  .v-dialog > .v-overlay__content > .v-sheet,
+  .v-dialog > .v-overlay__content > form > .v-card,
+  .v-dialog > .v-overlay__content > form > .v-sheet {
+    box-shadow: var(--v3-elevation-24);
+  }
+
+  .v-navigation-drawer--temporary.v-navigation-drawer--active {
+    box-shadow: var(--v3-elevation-16);
+  }
+
+  .v-snackbar--variant-elevated {
+    box-shadow: var(--v3-elevation-6);
+  }
+
+  .v-switch:not(.v-switch--inset) .v-switch__thumb {
+    box-shadow: var(--v3-elevation-4);
+  }
+
+  .elevation-0 {
+    box-shadow: var(--v3-elevation-0) !important;
+  }
+
+  .elevation-1 {
+    box-shadow: var(--v3-elevation-1) !important;
+  }
+
+  .elevation-2 {
+    box-shadow: var(--v3-elevation-2) !important;
+  }
+
+  .elevation-4 {
+    box-shadow: var(--v3-elevation-4) !important;
+  }
+
+  .elevation-6 {
+    box-shadow: var(--v3-elevation-6) !important;
+  }
+
+  .elevation-8 {
+    box-shadow: var(--v3-elevation-8) !important;
+  }
+
+  .elevation-12 {
+    box-shadow: var(--v3-elevation-12) !important;
+  }
+
+  .elevation-16 {
+    box-shadow: var(--v3-elevation-16) !important;
+  }
+
+  .elevation-24 {
+    box-shadow: var(--v3-elevation-24) !important;
+  }
+}

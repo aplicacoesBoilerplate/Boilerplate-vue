@@ -2,17 +2,22 @@
 import { computed, type ComputedRef, type Ref } from 'vue';
 
 // Types e Interfaces
-import type { ICampoFiltro, IOpcaoFiltro } from '@/models/filters/ICampoFiltro';
-import type { IOpcaoSelecaoFiltro } from '@/models/filters/IOpcaoSelecaoFiltro';
+import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 type TRegistroFiltro = object;
 
+type TOpcaoSelecaoVuetify = {
+  title: string;
+  value: unknown;
+};
+
 type TUseOpcoesSelecaoFiltroParams = {
-  campoSelecionado: ComputedRef<ICampoFiltro<unknown> | null> | Ref<ICampoFiltro<unknown> | null>;
+  campoSelecionado: ComputedRef<TCampoFiltroMapeado | null> | Ref<TCampoFiltroMapeado | null>;
   registros: ComputedRef<TRegistroFiltro[]> | Ref<TRegistroFiltro[]>;
 };
 
-function montarOpcaoMapeada(pOpcao: IOpcaoFiltro): IOpcaoSelecaoFiltro {
+function montarOpcaoMapeada(pOpcao: IOpcaoSelecao): TOpcaoSelecaoVuetify {
   return {
     title: pOpcao.descricao,
     value: pOpcao.valor,
@@ -27,7 +32,7 @@ function normalizarTituloOpcao(pValor: unknown): string {
   return String(pValor);
 }
 
-function compararOpcoes(pPrimeiraOpcao: IOpcaoSelecaoFiltro, pSegundaOpcao: IOpcaoSelecaoFiltro): number {
+function compararOpcoes(pPrimeiraOpcao: TOpcaoSelecaoVuetify, pSegundaOpcao: TOpcaoSelecaoVuetify): number {
   if (typeof pPrimeiraOpcao.value === 'number' && typeof pSegundaOpcao.value === 'number') {
     return pPrimeiraOpcao.value - pSegundaOpcao.value;
   }
@@ -36,12 +41,14 @@ function compararOpcoes(pPrimeiraOpcao: IOpcaoSelecaoFiltro, pSegundaOpcao: IOpc
 }
 
 /**
- * Centraliza a montagem das opções usadas por operadores de seleção.
+ * @description Centraliza a montagem das opções usadas por operadores de seleção.
+ * @param pParams Campo selecionado e registros usados para derivar as opções.
+ * @returns Opções de seleção calculadas para o campo atual.
  */
 export function useOpcoesSelecaoFiltro(pParams: TUseOpcoesSelecaoFiltroParams): {
-  opcoesSelecaoValoresDoCampo: ComputedRef<IOpcaoSelecaoFiltro[]>;
+  opcoesSelecaoValoresDoCampo: ComputedRef<TOpcaoSelecaoVuetify[]>;
 } {
-  const opcoesSelecaoValoresDoCampo = computed<IOpcaoSelecaoFiltro[]>(() => {
+  const opcoesSelecaoValoresDoCampo = computed<TOpcaoSelecaoVuetify[]>(() => {
     const campoSelecionado = pParams.campoSelecionado.value;
 
     if (!campoSelecionado) {

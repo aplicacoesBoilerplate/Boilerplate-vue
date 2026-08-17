@@ -4,10 +4,10 @@
     @onSubmit="emits('onSubmit')"
     @update:isValid="formIsValid = $event"
   >
-    <v-row dense>
+    <v-row density="compact">
       <v-col cols="12">
         <v-text-field
-          v-model="loginForm.email"
+          v-model="loginForm.identificacaoAcesso"
           :rules="[rules.required(), rules.email()]"
           :label="t('forms.formLogin.inputEmail.label')"
           variant="outlined"
@@ -19,7 +19,7 @@
 
       <v-col cols="12">
         <v-text-field
-          v-model="loginForm.password"
+          v-model="loginForm.senha"
           :rules="[rules.required()]"
           :type="mostrarSenha ? 'text' : 'password'"
           :label="t('forms.formLogin.inputPassword.label')"
@@ -51,10 +51,20 @@ import { useI18n } from 'vue-i18n';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
-import type { ILogin } from '@/models/model/autenticacao/autenticacao.models';
+import { criarLoginPadrao, type TLogin } from '@/models/model/core/autenticacao.model';
 
 // Componentes
 import BaseForm from '@/components/forms/base/BaseForm.vue';
+
+/**
+ * @description Métodos expostos pelo formulário de login.
+ * @property {() => Promise<void>} refreshForm - Restaura o estado original do formulário.
+ * @property {() => void} submit - Dispara a validação e submit do formulário.
+ */
+export interface IFormLoginExpose {
+  refreshForm: () => Promise<void>;
+  submit: () => void;
+}
 
 type TEmits = {
   onSubmit: [];
@@ -66,16 +76,21 @@ const rules = useRules();
 const { t } = useI18n();
 
 // Reativas - Model
-const loginForm = defineModel<ILogin>('login', { required: true });
+const loginForm = defineModel<TLogin>('login', { required: true });
 const formIsValid = defineModel<boolean>('valid', { default: false });
 
 // Reativas - ref
 const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
 const mostrarSenha = ref(false);
 
+async function refreshForm(): Promise<void> {
+  if (!baseFormRef.value) return;
+  await baseFormRef.value.refreshForm(() => criarLoginPadrao());
+}
+
 // Expose
 defineExpose({
-  reset: () => baseFormRef.value?.resetValidation(),
+  refreshForm,
   submit: () => baseFormRef.value?.submit(),
-});
+} satisfies IFormLoginExpose);
 </script>

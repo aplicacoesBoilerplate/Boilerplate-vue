@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text-body-2 text-center mb-6">
-      {{ t('forgotPassword.stepVerify.instruction') }}<br>
+      {{ t('forgotPassword.stepVerify.instruction') }}<br />
       <strong>{{ email }}</strong>
     </div>
 
@@ -85,7 +85,7 @@ type TProps = {
   tempoFormatado: string;
   tempoRestante: number;
 };
-const props = withDefaults(defineProps<TProps>(), {
+withDefaults(defineProps<TProps>(), {
   carregando: false,
 });
 

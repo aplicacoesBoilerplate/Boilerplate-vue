@@ -1,5 +1,5 @@
 // Types e Interfaces
-import type { IHealthCheckResultado, IHealthCheckResponse } from '@/models/services/IHealthCheck';
+import type { IHealthCheckResponse, IHealthCheckResultado } from '@/models/services/IHealthCheck';
 
 // Services
 import http from '@/services/base/axios';
@@ -14,7 +14,7 @@ export class CHealthCheckService {
    */
   public static async verificarSimplificado(): Promise<IHealthCheckResultado> {
     try {
-      const response = await http.get<IHealthCheckResponse>('/actuator/health-check', {
+      const response = await http.get<IHealthCheckResponse>('/api/v1/actuator/health-check/public', {
         validateStatus: () => true,
       });
 

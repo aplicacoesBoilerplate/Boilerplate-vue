@@ -1,28 +1,17 @@
-// Ecossistema Vue
-import { ref, type Ref } from 'vue';
+import { type Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-// Stores
-import { useGenericFilterStore } from '@/stores/genericFilter.store';
 import { useSnackbarStore } from '@/stores/Snackbar.store';
 
-// Types e Interfaces
-import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
-import type { IGenericListFetchReturn, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
 import type {
   IColunaNormalizadaExportacao,
   IExecutarExportacaoDadosOptions,
   TFormatoExportacaoDados,
 } from '@/models/components/IExportacaoDados';
+import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
 
-// Constantes
-const LIMITE_EXPORTACAO_DADOS = 100;
+import { CTradutor } from '@/classes/Utils/CTradutor';
 
-/**
- * @description Tipo que retorna as constantes usadas pelo composable useExportacaoDados.
- * @property {Ref<boolean>} exportando - Indica se existe uma exportação em andamento.
- * @property {Ref<unknown>} erro - Erro da última tentativa de exportação.
- * @property {function(): Promise<void>} exportarDados - Executa a consulta paginada e gera o arquivo de exportação.
- */
 type TUseExportacaoDadosReturn = {
   exportando: Ref<boolean>;
   erro: Ref<unknown>;
@@ -31,21 +20,38 @@ type TUseExportacaoDadosReturn = {
   ) => Promise<void>;
 };
 
-/**
- * Consulta listas paginadas em série e gera arquivos de exportação sem acoplar a origem dos dados.
- */
+export function assertExportWithinBudget<TItem>(
+  pRecords: TItem[],
+  pOptions: { signal?: AbortSignal; maxRecords?: number; maxEstimatedBytes?: number } = {},
+): void {
+  if (pOptions.signal?.aborted) {
+    throw new DOMException('Exportacao cancelada.', 'AbortError');
+  }
+
+  const maxRecords = pOptions.maxRecords ?? 5_000;
+  const maxEstimatedBytes = pOptions.maxEstimatedBytes ?? 10 * 1024 * 1024;
+  if (pRecords.length > maxRecords) {
+    throw new Error(`Exportacao excede o limite de ${maxRecords} registros; use o processamento no backend.`);
+  }
+
+  let estimatedBytes: number;
+  try {
+    estimatedBytes = new TextEncoder().encode(JSON.stringify(pRecords)).byteLength;
+  } catch {
+    throw new Error('Nao foi possivel estimar os bytes da exportacao com seguranca.');
+  }
+  if (estimatedBytes > maxEstimatedBytes) {
+    throw new Error(`Exportacao excede o limite estimado de bytes (${maxEstimatedBytes}).`);
+  }
+}
+
 export function useExportacaoDados(): TUseExportacaoDadosReturn {
-  const genericFilterStore = useGenericFilterStore();
   const snackbarStore = useSnackbarStore();
+  const { t } = useI18n();
 
   const exportando = ref(false);
   const erro = ref<unknown>(null);
 
-  /**
-   * @description Executa a exportação de dados, consultando registros em série e gerando o arquivo.
-   * @param {IExecutarExportacaoDadosOptions<TParametros, TItem>} pOptions Opções de execução da exportação de dados.
-   * @returns {Promise<void>} Promise que será resolvida quando a exportação for concluída.
-   */
   async function exportarDados<TParametros extends object, TItem>(
     pOptions: IExecutarExportacaoDadosOptions<TParametros, TItem>,
   ): Promise<void> {
@@ -54,12 +60,14 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
 
     snackbarStore.adicionar({
       tipo: 'info',
-      mensagem: 'A exportação foi iniciada e continuará em segundo plano.',
+      mensagem: t('common.messages.exportStarted'),
       timeout: 3000,
     });
 
     try {
-      const registros = await consultarTodosRegistros(pOptions);
+      assertExportWithinBudget([], pOptions);
+      const registros = await pOptions.metodo(pOptions.parametros, { signal: pOptions.signal });
+      assertExportWithinBudget(registros, pOptions);
       const colunas = normalizarColunas(registros, pOptions.colunas);
       const nomeArquivo = normalizarNomeArquivo(pOptions.nomeArquivo ?? pOptions.contexto);
 
@@ -72,7 +80,7 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
 
       snackbarStore.adicionar({
         tipo: 'success',
-        mensagem: `Exportação concluída com ${registros.length.toLocaleString()} registro(s).`,
+        mensagem: t('common.messages.exportCompleted', { count: registros.length.toLocaleString() }),
       });
     } catch (pErro) {
       erro.value = pErro;
@@ -87,65 +95,6 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
     }
   }
 
-  /**
-   * @description Consulta todos os registros paginados usando o método especificado.
-   * @param {IExecutarExportacaoDadosOptions<TParametros, TItem>} pOptions Opções de execução da exportação de dados.
-   * @returns {Promise<TItem[]>} Lista de todos os registros.
-   */
-  async function consultarTodosRegistros<TParametros extends object, TItem>(
-    pOptions: IExecutarExportacaoDadosOptions<TParametros, TItem>,
-  ): Promise<TItem[]> {
-    const registros: TItem[] = [];
-    let proximaEntrada: unknown;
-    let temMaisRegistros = true;
-
-    while (temMaisRegistros) {
-      const resposta = await pOptions.metodo({
-        ...(pOptions.parametros ?? ({} as TParametros)),
-        contexto: pOptions.contexto,
-        limite: LIMITE_EXPORTACAO_DADOS,
-        proximaEntrada,
-        ordem: pOptions.ordem ?? 'asc',
-        filtros: pOptions.filtros ?? genericFilterStore.filtersApplied,
-      });
-
-      const respostaNormalizada = normalizarResposta(resposta);
-
-      registros.push(...respostaNormalizada.items);
-      proximaEntrada = respostaNormalizada.proximaEntrada;
-      temMaisRegistros = respostaNormalizada.temMaisRegistros ?? respostaNormalizada.items.length >= LIMITE_EXPORTACAO_DADOS;
-
-      if (temMaisRegistros && respostaNormalizada.items.length === 0) {
-        throw new Error('A exportação foi interrompida porque a paginação não avançou.');
-      }
-    }
-
-    return registros;
-  }
-
-  /**
-   * @description Normaliza a resposta da consulta paginada.
-   * @param {TGenericListFetchResponse<TItem>} pResposta Resposta da consulta paginada.
-   * @returns {IGenericListFetchReturn<TItem>} Resposta normalizada.
-   */
-  function normalizarResposta<TItem>(pResposta: TGenericListFetchResponse<TItem>): IGenericListFetchReturn<TItem> {
-    if (Array.isArray(pResposta)) {
-      return {
-        items: pResposta,
-        proximaEntrada: undefined,
-        temMaisRegistros: pResposta.length >= LIMITE_EXPORTACAO_DADOS,
-      };
-    }
-
-    return pResposta;
-  }
-
-  /**
-   * @description Normaliza as colunas para exportação.
-   * @param {TItem[]} pRegistros Registros que serão usados para normalizar as colunas.
-   * @param {IHeadersDataTable[]} pColunas Colunas usadas para montar cabeçalhos e valores exportados.
-   * @returns {IColunaNormalizadaExportacao<TItem>[]} Colunas normalizadas para exportação.
-   */
   function normalizarColunas<TItem>(
     pRegistros: TItem[],
     pColunas?: IHeadersDataTable[],
@@ -172,15 +121,6 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
     }));
   }
 
-  /**
-   * @description Gera o arquivo de exportação com base no formato escolhido.
-   * @param {object} pOptions Opções de geração do arquivo de exportação.
-   * @param {TFormatoExportacaoDados} pOptions.formato Formato do arquivo que será gerado para download.
-   * @param {TItem[]} pOptions.registros Registros que serão exportados.
-   * @param {IColunaNormalizadaExportacao<TItem>[]} pOptions.colunas Colunas usadas para montar cabeçalhos e valores exportados.
-   * @param {string} pOptions.nomeArquivo Nome base do arquivo gerado, sem extensão.
-   * @returns {Promise<void>} Promise que será resolvida quando o arquivo for gerado.
-   */
   async function gerarArquivoExportacao<TItem>(pOptions: {
     formato: TFormatoExportacaoDados;
     registros: TItem[];
@@ -200,12 +140,6 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
     gerarTxt(pOptions.registros, pOptions.colunas, pOptions.nomeArquivo);
   }
 
-  /**
-   * @description Gera o arquivo TXT com os registros e colunas especificados.
-   * @param {TItem[]} pRegistros Registros que serão exportados.
-   * @param {IColunaNormalizadaExportacao<TItem>[]} pColunas Colunas usadas para montar cabeçalhos e valores exportados.
-   * @param {string} pNomeArquivo Nome base do arquivo gerado, sem extensão.
-   */
   function gerarTxt<TItem>(
     pRegistros: TItem[],
     pColunas: IColunaNormalizadaExportacao<TItem>[],
@@ -221,43 +155,25 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
     baixarArquivo(`\uFEFF${linhas.join('\n')}`, `${pNomeArquivo}.txt`, 'text/plain;charset=utf-8');
   }
 
-  /**
-   * @description Gera o arquivo Excel com os registros e colunas especificados.
-   * @param {TItem[]} pRegistros Registros que serão exportados.
-   * @param {IColunaNormalizadaExportacao<TItem>[]} pColunas Colunas usadas para montar cabeçalhos e valores exportados.
-   * @param {string} pNomeArquivo Nome base do arquivo gerado, sem extensão.
-   */
   async function gerarExcel<TItem>(
     pRegistros: TItem[],
     pColunas: IColunaNormalizadaExportacao<TItem>[],
     pNomeArquivo: string,
   ): Promise<void> {
-    const XLSX = await import('xlsx');
-    const linhas = pRegistros.map((pRegistro) => {
-      return pColunas.reduce<Record<string, string>>((pLinha, pColuna) => {
-        pLinha[pColuna.titulo] = formatarValorExportacao(obterValorCelula(pRegistro, pColuna));
+    const { default: writeExcelFile } = await import('write-excel-file/browser');
+    const linhas = [
+      pColunas.map((pColuna) => ({ value: pColuna.titulo, fontWeight: 'bold' as const })),
+      ...pRegistros.map((pRegistro) =>
+        pColunas.map((pColuna) => formatarValorExportacao(obterValorCelula(pRegistro, pColuna))),
+      ),
+    ];
 
-        return pLinha;
-      }, {});
-    });
-    const planilha = XLSX.utils.json_to_sheet(linhas, {
-      header: pColunas.map((pColuna) => pColuna.titulo),
-    });
-    const pastaTrabalho = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(pastaTrabalho, planilha, 'Registros');
-    XLSX.writeFile(pastaTrabalho, `${pNomeArquivo}.xlsx`, {
-      bookType: 'xlsx',
-      compression: true,
-    });
+    await writeExcelFile(linhas, {
+      columns: pColunas.map((pColuna) => ({ width: Math.min(50, Math.max(12, pColuna.titulo.length + 2)) })),
+      sheet: 'Registros',
+    }).toFile(`${pNomeArquivo}.xlsx`);
   }
 
-  /**
-   * @description Gera o arquivo PDF com os registros e colunas especificados.
-   * @param {TItem[]} pRegistros Registros que serão exportados.
-   * @param {IColunaNormalizadaExportacao<TItem>[]} pColunas Colunas usadas para montar cabeçalhos e valores exportados.
-   * @param {string} pNomeArquivo Nome base do arquivo gerado, sem extensão.
-   */
   async function gerarPdf<TItem>(
     pRegistros: TItem[],
     pColunas: IColunaNormalizadaExportacao<TItem>[],
@@ -311,15 +227,6 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
     documento.save(`${pNomeArquivo}.pdf`);
   }
 
-  /**
-   * @description Renderiza o cabeçalho do PDF.
-   * @param pDocumento Documento PDF onde o cabeçalho será renderizado.
-   * @param pColunas Colunas usadas para montar cabeçalhos e valores exportados.
-   * @param pMargem Margem do cabeçalho em relação às bordas do documento.
-   * @param pPosicaoY Posição Y onde o cabeçalho será renderizado.
-   * @param pLarguraColuna Largura de cada coluna.
-   * @param pAlturaLinha Altura de cada linha.
-   */
   function renderizarCabecalhoPdf<TItem>(
     pDocumento: InstanceType<typeof import('jspdf').jsPDF>,
     pColunas: IColunaNormalizadaExportacao<TItem>[],
@@ -340,12 +247,6 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
     pDocumento.setTextColor(0, 0, 0);
   }
 
-  /**
-   * @description Obtém o valor de uma célula com base no registro e na coluna especificados.
-   * @param {TItem} pRegistro Registro que será usado para obter o valor.
-   * @param {IColunaNormalizadaExportacao<TItem>} pColuna Coluna usada para obter o valor.
-   * @returns {unknown} Valor da célula.
-   */
   function obterValorCelula<TItem>(pRegistro: TItem, pColuna: IColunaNormalizadaExportacao<TItem>): unknown {
     if (pColuna.valor) {
       return pColuna.valor(pRegistro);
@@ -358,11 +259,6 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
     return '';
   }
 
-  /**
-   * @description Formata o valor de uma célula para exportação.
-   * @param {unknown} pValor Valor que será formatado.
-   * @returns {string} Valor formatado.
-   */
   function formatarValorExportacao(pValor: unknown): string {
     if (pValor === null || pValor === undefined) {
       return '';
@@ -379,21 +275,12 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
     return String(pValor);
   }
 
-  /**
-   * @description Normaliza o texto de uma célula para texto plano.
-   * @param {unknown} pValor Valor que será normalizado.
-   * @returns {string} Texto plano normalizado.
-   */
   function normalizarTextoPlano(pValor: unknown): string {
-    return formatarValorExportacao(pValor).replace(/\r?\n|\r/g, ' ').replace(/\t/g, ' ');
+    return formatarValorExportacao(pValor)
+      .replace(/\r?\n|\r/g, ' ')
+      .replace(/\t/g, ' ');
   }
 
-  /**
-   * @description Baixa um arquivo com o conteúdo especificado.
-   * @param {BlobPart} pConteudo Conteúdo do arquivo que será baixado.
-   * @param {string} pNomeArquivo Nome do arquivo que será baixado.
-   * @param {string} pMimeType Tipo MIME do arquivo que será baixado.
-   */
   function baixarArquivo(pConteudo: BlobPart, pNomeArquivo: string, pMimeType: string): void {
     const blob = new Blob([pConteudo], { type: pMimeType });
     const url = URL.createObjectURL(blob);
@@ -411,11 +298,6 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
     }, 0);
   }
 
-  /**
-   * @description Normaliza o nome do arquivo para exportação.
-   * @param {string} pNomeArquivo Nome do arquivo que será normalizado.
-   * @returns {string} Nome do arquivo normalizado.
-   */
   function normalizarNomeArquivo(pNomeArquivo: string): string {
     const nomeNormalizado = pNomeArquivo
       .trim()
@@ -428,11 +310,6 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
     return nomeNormalizado || 'exportacao';
   }
 
-  /**
-   * @description Normaliza a mensagem de erro para exportação.
-   * @param {unknown} pErro Erro que será normalizado.
-   * @returns {string} Mensagem de erro normalizada.
-   */
   function normalizarMensagemErro(pErro: unknown): string {
     if (typeof pErro === 'string') {
       return pErro;
@@ -446,7 +323,7 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
       return String((pErro as { mensagem?: unknown }).mensagem);
     }
 
-    return 'Não foi possível concluir a exportação.';
+    return CTradutor.traduzir('common.messages.exportFailed');
   }
 
   return {

@@ -6,7 +6,7 @@
     divider="/"
     style="position: sticky; top: 0; z-index: 10"
   >
-    <template v-slot:title="{ item }">
+    <template #title="{ item }">
       {{ item.title }}
     </template>
   </v-breadcrumbs>
@@ -14,9 +14,9 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed } from "vue";
-import { useRoute } from "vue-router";
-import { useI18n } from "vue-i18n";
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 // Composables
 const route = useRoute();
@@ -24,28 +24,24 @@ const { t } = useI18n();
 
 // Computadas
 const items = computed(() => {
-  const matchedRoutes = route.matched.filter((r) => r.meta && r.meta.title);
+  const matchedRoutes = route.matched.filter((pRoute) => pRoute.meta && pRoute.meta.title);
 
-  const breadcrumbs = matchedRoutes.map((r, index) => ({
-    title: t(r.meta.title as string),
-    disabled: index === matchedRoutes.length - 1,
-    to: { name: r.name },
+  const breadcrumbs = matchedRoutes.map((pRoute, pIndex) => ({
+    title: t(pRoute.meta.title as string),
+    disabled: pIndex === matchedRoutes.length - 1,
+    to: { name: pRoute.name },
     exact: true,
   }));
 
-  if (
-    breadcrumbs.length > 0 &&
-    breadcrumbs[0].title !== t("routes.home.title")
-  ) {
+  if (breadcrumbs.length > 0 && breadcrumbs[0].title !== t('routes.home.title')) {
     breadcrumbs.unshift({
-      title: t("routes.home.title"),
+      title: t('routes.home.title'),
       disabled: false,
-      to: { name: "Inicio" },
+      to: { name: 'Inicio' },
       exact: true,
     });
   }
 
   return breadcrumbs;
 });
-
 </script>

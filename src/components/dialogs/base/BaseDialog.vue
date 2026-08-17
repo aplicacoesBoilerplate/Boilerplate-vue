@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="dialogModel"
-    :transition="fullscreen ? 'dialog-bottom-transition' : 'dialog-transition'"
+    :transition="transicaoDialog"
     :persistent="persistent"
     :scrollable="scrollable"
     :fullscreen="fullscreen"
@@ -13,23 +13,23 @@
     :maxHeight="maxHeight"
     :zIndex="zIndex"
   >
-    <template #activator="{ props }">
+    <template #activator="{ props: dialogProps }">
       <slot
+        :props="dialogProps"
         name="activator"
-        :props="props"
       />
     </template>
 
     <v-card
-      class="base-dialog d-flex flex-column"
       :class="{ 'fill-height': fullscreen }"
       :rounded="fullscreen ? '0' : 'lg'"
+      class="base-dialog d-flex flex-column"
     >
       <slot
-        name="titulo"
         :title="tituloDialog"
         :titulo="tituloDialog"
         :onFechar="fechar"
+        name="titulo"
       >
         <v-toolbar
           :title="tituloDialog"
@@ -76,27 +76,27 @@
 
         <v-card-actions>
           <slot
-            name="actions"
             :title="tituloDialog"
             :titulo="tituloDialog"
             :onFechar="fechar"
             :onSalvar="salvar"
             :onCancelar="cancelar"
+            name="actions"
           >
             <v-btn
+              :text="t('tooltips.forms.cancel')"
               color="error"
               variant="tonal"
-              :text="t('tooltips.forms.cancel')"
               @click="cancelar"
             />
 
             <v-spacer />
 
             <v-btn
+              :loading="loading"
+              :text="t('tooltips.forms.save')"
               color="primary"
               variant="flat"
-              :text="t('tooltips.forms.save')"
-              :loading="loading"
               @click="salvar"
             />
           </slot>
@@ -107,17 +107,19 @@
 </template>
 
 <script setup lang="ts">
-// Ecossistema vue
+// Ecossistema Vue
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-// Types e Interfaces
-import type { IPropsBaseDialog } from '@/models/IPropsBaseDialog';
+// Models
+import type { IBaseDialogExpose } from '@/models/components/exposes/IBaseDialogExpose';
+import type { IPropsBaseDialog } from '@/models/components/props/IPropsBaseDialog';
 
 const props = withDefaults(defineProps<IPropsBaseDialog>(), {
   persistent: false,
   scrollable: true,
   fullscreen: false,
+  transition: undefined,
 
   maxWidth: 720,
   maxHeight: 650,
@@ -143,17 +145,13 @@ const { t } = useI18n();
 const dialogModel = defineModel<boolean>('exibirDialog', { default: false });
 
 // Funções
-function definirAbertura(pAberto: boolean): void {
-  dialogModel.value = pAberto;
-}
-
 function abrir(): void {
-  definirAbertura(true);
+  dialogModel.value = true;
 }
 
 function fechar(): void {
   emits('fechar');
-  definirAbertura(false);
+  dialogModel.value = false;
 }
 
 function cancelar(): void {
@@ -175,21 +173,22 @@ const contentStyles = computed(() => {
 });
 
 const mostrarAcoesDialog = computed(() => props.mostrarAcoes ?? true);
-const tituloDialog = computed(() => props.titulo === 'Dialog' ? t('components.baseDialog.tituloPadrao') : props.titulo);
+
+const transicaoDialog = computed(() =>
+  props.transition ?? (props.fullscreen ? 'dialog-bottom-transition' : 'dialog-transition'),
+);
+
+const tituloDialog = computed(() =>
+  props.titulo === 'Dialog' ? t('components.baseDialog.tituloPadrao') : props.titulo,
+);
 
 // Expose
 defineExpose({
   abrir,
   fechar,
-  definirAbertura,
   cancelar,
   salvar,
-  open: abrir,
-  close: fechar,
-  setOpen: definirAbertura,
-  handleCancelar: cancelar,
-  handleSalvar: salvar,
-});
+} satisfies IBaseDialogExpose);
 </script>
 
 <style src="./BaseDialog.scss" scoped lang="scss"></style>

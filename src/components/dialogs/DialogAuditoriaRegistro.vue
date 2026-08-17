@@ -2,7 +2,7 @@
   <BaseDialog
     v-model:exibirDialog="dialogAuditoriaOpen"
     :maxWidth="420"
-    titulo="Auditoria do registro"
+    :titulo="t('common.audit.title')"
     iconePrependTitulo="mdi-history"
   >
     <template #activator="{ props: dialogProps }">
@@ -25,8 +25,8 @@
     <template #content>
       <v-list density="compact">
         <v-list-item
-          title="Criado em"
           :subtitle="formatarData(auditoria?.criadoEm)"
+          :title="t('common.audit.createdAt')"
         >
           <template #prepend>
             <v-icon
@@ -38,8 +38,8 @@
         </v-list-item>
 
         <v-list-item
-          title="Criado por"
           :subtitle="formatarResponsavel(auditoria?.criadoPor, auditoria?.criadoPorReferencia)"
+          :title="t('common.audit.createdBy')"
         >
           <template #prepend>
             <v-icon
@@ -53,8 +53,8 @@
         <v-divider class="my-2" />
 
         <v-list-item
-          title="Última edição"
           :subtitle="formatarData(auditoria?.atualizadoEm)"
+          :title="t('common.audit.updatedAt')"
         >
           <template #prepend>
             <v-icon
@@ -66,8 +66,8 @@
         </v-list-item>
 
         <v-list-item
-          title="Editado por"
           :subtitle="formatarResponsavel(auditoria?.atualizadoPor, auditoria?.atualizadoPorReferencia)"
+          :title="t('common.audit.updatedBy')"
         >
           <template #prepend>
             <v-icon
@@ -82,9 +82,9 @@
 
     <template #actions="{ onFechar }">
       <v-btn
+        :text="t('common.actions.close')"
         color="primary"
         variant="tonal"
-        text="Fechar"
         class="ml-auto"
         @click="onFechar"
       />
@@ -94,10 +94,10 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { mergeProps, ref } from 'vue';
+import { computed, mergeProps, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-// Types
+// Models
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 
 // Utils
@@ -110,14 +110,10 @@ type TProps = {
   auditoria?: IAuditoriaRegistro;
   tooltip?: string;
 };
+const { auditoria = undefined, tooltip: tooltipPersonalizado = undefined } = defineProps<TProps>();
 
-const props = withDefaults(defineProps<TProps>(), {
-  auditoria: undefined,
-  tooltip: 'Visualizar auditoria',
-});
-
-// Composables
-const { locale } = useI18n();
+const { t } = useI18n();
+const tooltip = computed(() => tooltipPersonalizado ?? t('common.audit.tooltip'));
 
 // Reativas
 const dialogAuditoriaOpen = ref(false);
@@ -128,18 +124,13 @@ function formatarData(pData?: string | Date | null): string {
     return '-';
   }
 
-  return CFormatters.formatarDataHora(pData, locale.value, true);
+  return CFormatters.formatarDataHora(pData, true);
 }
 
 function formatarResponsavel(pId?: number | null, pReferencia?: string | null): string {
-  if (pReferencia) {
-    return pReferencia;
-  }
+  if (pReferencia) return pReferencia;
+  if (pId) return t('common.audit.userReference', { id: pId });
 
-  if (pId) {
-    return `Usuário #${pId}`;
-  }
-
-  return 'Sistema';
+  return t('common.audit.system');
 }
 </script>

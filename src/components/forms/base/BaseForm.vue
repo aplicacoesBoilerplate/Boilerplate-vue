@@ -1,7 +1,7 @@
 <template>
   <v-form
     ref="formRef"
-    v-model="isFormValid"
+    v-model="vuetifyFormValid"
     @submit.prevent="handleOnSubmit"
   >
     <slot></slot>
@@ -13,39 +13,52 @@
 </template>
 
 <script setup lang="ts">
-// Ecossistema vue
-import { nextTick, ref, watch } from "vue";
+import { computed, nextTick, ref } from 'vue';
+
+import type { VForm } from 'vuetify/components';
+
+export interface IBaseFormExpose<TModel = unknown> {
+  refreshForm: (criarObjetoModel: (pData?: TModel) => TModel) => Promise<void>;
+  submit: () => void;
+  isValid: () => boolean;
+}
 
 type TEmits = {
   onSubmit: [];
-  onInvalid: [errors: any[]];
-  "update:isValid": [isValid: boolean];
+  onInvalid: [errors: unknown[]];
 };
 const emits = defineEmits<TEmits>();
 
-// Reativas
-const formRef = ref<any>(null);
-const isFormValid = ref(false);
+const formModel = defineModel<unknown>('formModel', { default: undefined });
+const isFormValid = defineModel<boolean>('isValid', { default: false });
+const vuetifyFormValid = computed<boolean | null>({
+  get: () => isFormValid.value,
+  set: (pValor) => {
+    isFormValid.value = pValor === true;
+  },
+});
 
-// Funções
+const formRef = ref<VForm | null>(null);
+
 async function handleOnSubmit() {
-  const { valid, errors } = await formRef.value.validate();
-  if (valid) emits("onSubmit");
-  else emits("onInvalid", errors);
+  const resultado = await formRef.value?.validate();
+  const valido = resultado?.valid ?? false;
+  const erros = resultado?.errors ?? [];
+  if (valido) emits('onSubmit');
+  else emits('onInvalid', erros);
 }
 
-// Observadores
-watch(isFormValid, (novoValor) => {
-  emits("update:isValid", novoValor);
-});
+async function refreshForm(pCriarObjetoModel: (pData?: unknown) => unknown): Promise<void> {
+  if (formModel.value !== undefined) {
+    formModel.value = pCriarObjetoModel();
+  }
+  await nextTick();
+  formRef.value?.resetValidation();
+}
 
-// Expose
 defineExpose({
-  resetValidation: async () => {
-    await nextTick();
-    formRef.value?.resetValidation();
-  },
+  refreshForm,
   submit: handleOnSubmit,
-  isValid: () => isFormValid.value,
-});
+  isValid: () => isFormValid.value === true,
+} satisfies IBaseFormExpose);
 </script>

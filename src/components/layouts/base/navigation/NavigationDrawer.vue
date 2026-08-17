@@ -41,7 +41,7 @@
             v-else
             :value="item.title"
           >
-            <template v-slot:activator="{ props }">
+            <template #activator="{ props }">
               <v-tooltip
                 :disabled="!deveExibirTooltipItem(item)"
                 :text="obterTituloItem(item)"
@@ -77,7 +77,7 @@
       </template>
     </v-list>
 
-    <template v-slot:append>
+    <template #append>
       <v-list
         density="compact"
         nav
@@ -96,24 +96,25 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed, mergeProps, ref } from "vue";
-import { useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
-import { useDisplay } from "vuetify";
+import { computed, mergeProps, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useDisplay } from 'vuetify';
 
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
-import { usePreferencesStore } from "@/stores/preferences.store";
-
-// Composables
-import { useNavigation } from "@/composables/useNavigation";
+import { usePreferencesStore } from '@/stores/preferences.store';
 
 // Types e Interfaces
-import type { IRouteMeta } from "@/models/model/IRouteMeta";
+import type { IRouteMeta } from '@/models/model/IRouteMeta';
+
+// Composables
+import { useNavigation } from '@/composables/useNavigation';
+
+import DrawerItemNavigation from '@/components/layouts/base/navigation/fixtures/DrawerItemNavigation.vue';
 
 // Componentes
-import DrawerItemUsuario from "./fixtures/DrawerItemUsuario.vue";
-import DrawerItemNavigation from "@/components/layouts/base/navigation/fixtures/DrawerItemNavigation.vue";
+import DrawerItemUsuario from './fixtures/DrawerItemUsuario.vue';
 
 // Stores
 const authStore = useAuthStore();
@@ -134,7 +135,7 @@ const drawerEmHover = ref(false);
 // Funções
 function sair(): void {
   authStore.logout();
-  router.push({ name: "Login" });
+  router.push({ name: 'Login' });
 }
 
 /**
@@ -148,14 +149,18 @@ function itemEstaAtivo(pItem: IRouteMeta): boolean {
 }
 
 /**
- * Resolve o título traduzido do item antes de renderizar ou exibir tooltip.
+ * @description Resolve o título traduzido do item antes de renderizar ou exibir o tooltip.
+ * @param pItem Item de navegação cujo título será traduzido.
+ * @returns Título traduzido do item.
  */
 function obterTituloItem(pItem: IRouteMeta): string {
   return t(pItem.title || '');
 }
 
 /**
- * Exibe tooltip quando o drawer está compacto ou quando o texto tende a truncar.
+ * @description Indica se o tooltip deve aparecer quando o drawer está compacto ou o texto tende a truncar.
+ * @param pItem Item de navegação avaliado.
+ * @returns `true` quando o item precisa de tooltip.
  */
 function deveExibirTooltipItem(pItem: IRouteMeta): boolean {
   return drawerCompacto.value || obterTituloItem(pItem).length > LIMITE_CARACTERES_TOOLTIP;
@@ -167,9 +172,7 @@ const drawerVisivel = computed({
   set: (pValor) => preferencesStore.setDesktopDrawerVisible(pValor),
 });
 
-const menuFixado = computed(
-  () => preferencesStore.preferences.drawer.isDrawerPinned,
-);
+const menuFixado = computed(() => preferencesStore.preferences.drawer.isDrawerPinned);
 
 const itensNavegacao = computed(() => menuItems.value);
 const drawerCompacto = computed(() => !menuFixado.value && mdAndUp.value && !drawerEmHover.value);

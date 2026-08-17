@@ -1,5 +1,8 @@
 <template>
-  <v-form @submit.prevent="onSubmit" class="w-100">
+  <v-form
+    class="w-100"
+    @submit.prevent="onSubmit"
+  >
     <v-text-field
       ref="inputRef"
       v-model="searchQuery"
@@ -16,24 +19,27 @@
       clearable
     >
       <template #prepend-inner>
-        <div class="d-flex flex-row" v-if="hasFilters">
+        <div
+          v-if="possuiFiltros"
+          class="d-flex flex-row"
+        >
           <DialogFiltro
             v-model:exibirFiltros="exibirFiltros"
             :camposDisponiveis="genericFilterStore.camposDisponiveis"
           />
 
           <v-divider
-            vertical
+            :thickness="2"
             class="mx-1 me-2 my-auto"
             style="height: 24px"
-            :thickness="2"
+            vertical
           />
         </div>
 
         <v-hotkey
           v-if="$vuetify.display.mdAndUp"
           keys="ctrl+k"
-          display-mode="icon"
+          displayMode="icon"
           variant="contained"
           platform="auto"
           class="mr-2"
@@ -42,8 +48,8 @@
 
       <template #append-inner>
         <v-btn
-          icon="mdi-magnify"
           v-tooltip="t('tooltips.appBar.search')"
+          icon="mdi-magnify"
           variant="plain"
           @click="onSubmit"
         />
@@ -54,20 +60,21 @@
 
 <script setup lang="ts">
 // Ecossistema vue
-import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useHotkey } from 'vuetify'
+import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useHotkey } from 'vuetify';
 
 // Stores
-import { useGenericFilterStore } from '@/stores/genericFilter.store'
+import { useGenericFilterStore } from '@/stores/genericFilter.store';
 
+import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 // Types e Interfaces
 import type { TParametrosBusca } from '@/models/filters/TParametrosBusca';
-import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
+import type { VInput } from 'vuetify/components';
 
 // Componentes
-import DialogFiltro from '../dialogs/filtros/DialogFiltro.vue'
+import DialogFiltro from '@/components/dialogs/core/filtros/DialogFiltro.vue';
 
 type TProps = { loading: boolean };
 defineProps<TProps>();
@@ -79,54 +86,54 @@ const emits = defineEmits<TEmits>();
 const route = useRoute();
 const { t } = useI18n();
 
+useHotkey('ctrl+k', () => {
+  inputRef.value?.focus();
+});
+
 // Stores
 const genericFilterStore = useGenericFilterStore();
 
 // Reativas - ref
-const inputRef = ref<any>(null)
+const inputRef = ref<typeof VInput | null>(null);
 const searchQuery = ref('');
 const exibirFiltros = ref<boolean>(false);
 
 // Funções
 function onSubmit() {
   if (searchQuery.value) {
-    const campoPadrao = genericFilterStore.camposDisponiveis.find((c) => c.pesquisaPadrao);
-    
-    if (campoPadrao) {
-      const condicaoFiltro = campoPadrao.operadorPesquisaPadrao || EOperadoresFiltro.CONTEM;
-      const indexFiltroExistente = genericFilterStore.filtersApplied.findIndex(
-        (f) => f.campo === campoPadrao.valor && f.condicao === condicaoFiltro
+    const lCampoPadrao = genericFilterStore.camposDisponiveis.find((pCampo) => pCampo.pesquisaPadrao);
+
+    if (lCampoPadrao) {
+      const lCondicaoFiltro = lCampoPadrao.operadorPesquisaPadrao || EOperadoresFiltro.CONTEM;
+      const lIndexFiltroExistente = genericFilterStore.filtersApplied.findIndex(
+        (pFiltro) => pFiltro.campo === lCampoPadrao.valor && pFiltro.condicao === lCondicaoFiltro,
       );
 
-      if (indexFiltroExistente !== -1) {
-        genericFilterStore.filtersApplied[indexFiltroExistente].valor = searchQuery.value;
+      if (lIndexFiltroExistente !== -1) {
+        genericFilterStore.filtersApplied[lIndexFiltroExistente].valor = searchQuery.value;
       } else {
         genericFilterStore.filtersApplied.push({
-          campo: campoPadrao.valor as string,
-          condicao: condicaoFiltro,
+          campo: lCampoPadrao.valor as string,
+          condicao: lCondicaoFiltro,
           valor: searchQuery.value,
           dataInicio: '',
           dataFinal: '',
-          valoresSelecionados: []
+          valoresSelecionados: [],
         });
       }
       genericFilterStore.confirmarAplicacaoFiltros();
     } else {
       emits('search', { queryBasica: searchQuery.value });
     }
-    
+
     searchQuery.value = '';
   }
 }
 
 // Computadas
-const hasFilters = computed(() => { return !!route.meta?.filterResource; });
-
-// Observadores e Hooks
-useHotkey('ctrl+k', () => {
-  inputRef.value?.focus()
-})
-
+const possuiFiltros = computed(() => {
+  return !!route.meta?.filterResource;
+});
 </script>
 
 <style scoped>

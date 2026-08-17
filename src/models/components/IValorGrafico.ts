@@ -1,10 +1,10 @@
 /**
- * @description Interface genérica responsável por representar os itens de dados do gráfico.
+ * @description Item de dados para renderização de gráficos categóricos (pizza, donut, barras).
  * @property {number} id - Identificador único do item no gráfico.
  * @property {string} titulo - Rótulo exibido no gráfico e na legenda.
- * @property {any} valorOriginal - Valor original antes de ser convertido para rótulo textual.
- * @property {number} valor - Valor numérico agregado para o gráfico.
- * @property {string} cor - Cor sugerida para renderização do gráfico.
+ * @property {unknown} valorOriginal - Valor original antes da formatação para exibição.
+ * @property {number} valor - Valor numérico agregado usado na renderização.
+ * @property {string} cor - Cor sugerida para renderização (hex ou token do tema).
  */
 export interface IValorGrafico {
   id: number;

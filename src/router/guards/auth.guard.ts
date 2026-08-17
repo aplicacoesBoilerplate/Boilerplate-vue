@@ -1,9 +1,17 @@
-import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
-
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
 
-const ROTAS_PUBLICAS = new Set(['Login', 'RecuperacaoSenha', 'InformacoesSistema', 'ServerError', 'NotFound', 'forbidden']);
+// Types e Interfaces
+import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
+
+const ROTAS_PUBLICAS = new Set([
+  'Login',
+  'RecuperacaoSenha',
+  'InformacoesSistema',
+  'ServerError',
+  'NotFound',
+  'forbidden',
+]);
 
 function rotaExigeAutenticacao(pTo: RouteLocationNormalized): boolean {
   if (pTo.meta.requiresAuth !== undefined) {
@@ -16,7 +24,7 @@ function rotaExigeAutenticacao(pTo: RouteLocationNormalized): boolean {
 export const authGuard = async (
   pTo: RouteLocationNormalized,
   pFrom: RouteLocationNormalized,
-  pNext: NavigationGuardNext
+  pNext: NavigationGuardNext,
 ) => {
   void pFrom;
 

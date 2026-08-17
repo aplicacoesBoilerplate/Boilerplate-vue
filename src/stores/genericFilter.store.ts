@@ -1,19 +1,19 @@
 // Ecossistema Vue
 import { computed, ref, toRaw, watch } from 'vue';
-import { useRoute, useRouter, type LocationQueryRaw } from 'vue-router';
-
+import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router';
 // Pinia
 import { defineStore } from 'pinia';
 
-// Stores
-import { useSnackbarStore } from './Snackbar.store';
-
-// Types e Interfaces
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
-
 // Enums
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
+// Types e Interfaces
+import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
+
+import { CTradutor } from '@/classes/Utils/CTradutor';
+
+// Stores
+import { useSnackbarStore } from './Snackbar.store';
 
 /**
  * @description Gerencia o estado de filtros aplicados em uma view específica (contexto).
@@ -22,8 +22,8 @@ import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
  * @property {string} pesquisaDrawerLeft - Pesquisa do drawer esquerdo isolada por contexto.
  */
 interface IEstadoFiltrosContexto {
-  filtrosAplicados: IFiltrosConsulta[];
-  modeloFiltro: Partial<IFiltrosConsulta>;
+  filtrosAplicados: TFiltroConsultaSerializado[];
+  modeloFiltro: Partial<TFiltroConsultaSerializado>;
   pesquisaDrawerLeft: string;
 }
 
@@ -45,7 +45,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
 
   // Reativas
   const estadosPorContexto = ref<Record<string, IEstadoFiltrosContexto>>({});
-  const camposDisponiveisTemporarios = ref<ICampoFiltro<any>[] | null>(null);
+  const camposDisponiveisTemporarios = ref<TCampoFiltroMapeado[] | null>(null);
   const contextoFiltroTemporario = ref<string | null>(null);
   const versaoAplicacaoFiltros = ref(0);
 
@@ -53,17 +53,17 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   const drawerFilterOpen = ref(false);
 
   /** Campos disponíveis fornecidos pela view atual baseados nos metadados da rota. */
-  const camposDisponiveis = computed(() => {
+  const camposDisponiveis = computed<TCampoFiltroMapeado[]>(() => {
     if (camposDisponiveisTemporarios.value) {
       return camposDisponiveisTemporarios.value;
     }
 
-    return (route.meta.filterResource as ICampoFiltro<any>[]) || [];
+    return (route.meta.filterResource as TCampoFiltroMapeado[] | undefined) ?? [];
   });
 
   /** Campos disponíveis para agrupamento na view atual baseados nos metadados da rota. */
   const camposAgrupadoresDisponiveis = computed(() => {
-    return camposDisponiveis.value.filter(campo => campo.disponivelAgrupamento);
+    return camposDisponiveis.value.filter((pCampo) => pCampo.disponivelAgrupamento);
   });
 
   const contextoFiltroAtual = computed(() => {
@@ -77,7 +77,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   const estadoFiltroAtual = computed(() => obterEstadoContexto(contextoFiltroAtual.value));
 
   /** Array contendo os filtros consolidados e aplicados na view atual. */
-  const filtersApplied = computed<IFiltrosConsulta[]>({
+  const filtersApplied = computed<TFiltroConsultaSerializado[]>({
     get: () => estadoFiltroAtual.value.filtrosAplicados,
     set: (pFiltros) => {
       estadoFiltroAtual.value.filtrosAplicados = pFiltros;
@@ -86,7 +86,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   });
 
   /** Filtro em construção no formulário (rascunho). */
-  const filterModel = computed<Partial<IFiltrosConsulta>>({
+  const filterModel = computed<Partial<TFiltroConsultaSerializado>>({
     get: () => estadoFiltroAtual.value.modeloFiltro,
     set: (pFiltro) => {
       estadoFiltroAtual.value.modeloFiltro = pFiltro;
@@ -104,7 +104,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   });
 
   /** Campo selecionado no rascunho atual do filtro. */
-  const campoSelecionado = computed<ICampoFiltro<any> | null>(() => {
+  const campoSelecionado = computed<TCampoFiltroMapeado | null>(() => {
     const campoAtual = filterModel.value.campo;
 
     if (!campoAtual) {
@@ -202,7 +202,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   }
 
   /**
-   * Sincroniza a URL com o array `filtersApplied` de modo a manter a persistência
+   * @description Sincroniza a URL com o array `filtersApplied` de modo a manter a persistência
    * em reloads ou compartilhamento de links. Ignora limit/nextEntry.
    */
   function syncToUrl(): void {
@@ -213,13 +213,13 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     const query = removerFiltrosDaQueryAtual();
     persistirContextoAtual();
 
-    filtersApplied.value.forEach((filtro) => {
-      if (!filtro.campo || !filtro.condicao) return;
+    filtersApplied.value.forEach((pFiltro) => {
+      if (!pFiltro.campo || !pFiltro.condicao) return;
 
-      const campoChave = filtro.campo;
+      const campoChave = pFiltro.campo;
       // Serializa no formato: "condicao:valor" (ex: "contains:joao")
-      const valorFiltro = Array.isArray(filtro.valor) ? filtro.valor.join(',') : filtro.valor ?? '';
-      const valorConvertido = `${filtro.condicao}:${valorFiltro}`;
+      const valorFiltro = Array.isArray(pFiltro.valor) ? pFiltro.valor.join(',') : (pFiltro.valor ?? '');
+      const valorConvertido = `${pFiltro.condicao}:${valorFiltro}`;
 
       if (query[campoChave]) {
         if (Array.isArray(query[campoChave])) {
@@ -242,36 +242,35 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   }
 
   /**
-   * Le a query da rota atual e recria o estado em `filtersApplied`.
+   * @description Lê a query da rota atual e recria o estado em `filtersApplied`.
    */
   function loadFromUrl(): void {
     if (contextoFiltroTemporario.value) {
       return;
     }
 
-    const novosFiltros: IFiltrosConsulta[] = [];
+    const novosFiltros: TFiltroConsultaSerializado[] = [];
     const chavesFiltros = obterChavesCamposFiltro();
 
-    Object.entries(route.query).forEach(([campo, valorQuery]) => {
-      if (!chavesFiltros.has(campo)) return;
+    Object.entries(route.query).forEach(([pCampo, pValorQuery]) => {
+      if (!chavesFiltros.has(pCampo)) return;
 
-      const arrayDeValores = Array.isArray(valorQuery) ? valorQuery : [valorQuery];
+      const arrayDeValores = Array.isArray(pValorQuery) ? pValorQuery : [pValorQuery];
 
-      arrayDeValores.forEach((val) => {
-        if (val) {
-          const splitVal = String(val).split(':');
+      arrayDeValores.forEach((pValue) => {
+        if (pValue) {
+          const splitVal = String(pValue).split(':');
           if (splitVal.length >= 2) {
             const condition = splitVal[0];
             const value = splitVal.slice(1).join(':');
-            const valoresSelecionados = [
-              EOperadoresFiltro.SELECAO,
-              EOperadoresFiltro.EXCECAO,
-            ].includes(condition as EOperadoresFiltro)
+            const valoresSelecionados = [EOperadoresFiltro.SELECAO, EOperadoresFiltro.EXCECAO].includes(
+              condition as EOperadoresFiltro,
+            )
               ? value.split(',').filter(Boolean)
               : [];
 
             novosFiltros.push({
-              campo: campo,
+              campo: pCampo,
               condicao: condition,
               valor: value,
               dataInicio: '',
@@ -289,59 +288,88 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   }
 
   /**
-   * Salva o rascunho (`filterModel`) para o array efetivo (`filtersApplied`).
+   * @description Salva o rascunho (`filterModel`) para o array efetivo (`filtersApplied`).
    * Valida duplicidades antes de aplicar.
    */
   function applyFilterModel(): void {
     const rawFilter = toRaw(filterModel.value);
 
     if (!rawFilter.campo || !rawFilter.condicao) {
-      snackbarStore.adicionar({ tipo: 'warning', mensagem: 'Selecione o campo e a condição!' });
+      snackbarStore.adicionar({ tipo: 'warning', mensagem: CTradutor.traduzir('common.messages.selectFieldCondition') });
       return;
     }
 
     const isDuplicate = filtersApplied.value.some(
-      (f) => f.campo === rawFilter.campo && f.condicao === rawFilter.condicao && f.valor === rawFilter.valor,
+      (pFiltro) =>
+        pFiltro.campo === rawFilter.campo &&
+        pFiltro.condicao === rawFilter.condicao &&
+        pFiltro.valor === rawFilter.valor,
     );
 
     if (isDuplicate) {
-      snackbarStore.adicionar({ tipo: 'info', titulo: 'Filtro duplicado', mensagem: 'Você já adicionou esta condição.' });
+      snackbarStore.adicionar({
+        tipo: 'info',
+        titulo: CTradutor.traduzir('common.messages.duplicateFilterTitle'),
+        mensagem: CTradutor.traduzir('common.messages.duplicateFilter'),
+      });
       return;
     }
 
-    filtersApplied.value.push(rawFilter as IFiltrosConsulta);
+    filtersApplied.value.push(rawFilter as TFiltroConsultaSerializado);
     filterModel.value = { campo: rawFilter.campo, condicao: rawFilter.condicao };
     persistirContextoAtual();
   }
 
-  /** Remove um filtro ativo no indice especificado. */
-  function removeFilter(index: number): void {
-    filtersApplied.value.splice(index, 1);
+  /**
+   * @description Remove um filtro ativo no índice especificado.
+   * @param pIndex Índice do filtro na coleção ativa.
+   */
+  function removeFilter(pIndex: number): void {
+    filtersApplied.value.splice(pIndex, 1);
     persistirContextoAtual();
   }
 
-  /** Move um filtro ativo devolta para o formulario (rascunho). */
-  function editFilter(index: number): void {
-    const filtro = filtersApplied.value.splice(index, 1)[0];
+  /**
+   * @description Move um filtro ativo de volta para o formulário como rascunho.
+   * @param pIndex Índice do filtro que será editado.
+   */
+  function editFilter(pIndex: number): void {
+    const filtro = filtersApplied.value.splice(pIndex, 1)[0];
     if (!filtro) return;
     filterModel.value = { ...filtro };
     persistirContextoAtual();
   }
 
-  /** Apaga todos os filtros, incluindo o rascunho. */
+  /** @description Apaga todos os filtros, incluindo o rascunho. */
   function clearAll(): void {
     filtersApplied.value = [];
     filterModel.value = {};
     removerContextoPersistido(contextoFiltroAtual.value);
   }
 
+  function clearAllContexts(): void {
+    estadosPorContexto.value = {};
+    camposDisponiveisTemporarios.value = null;
+    contextoFiltroTemporario.value = null;
+    drawerFilterOpen.value = false;
+
+    const persistedKeys = Array.from({ length: localStorage.length }, (pUnused, pIndex) => {
+      void pUnused;
+      return localStorage.key(pIndex);
+    }).filter((pKey): pKey is string => typeof pKey === 'string' && pKey.startsWith(STORAGE_PREFIX));
+    persistedKeys.forEach((pKey) => localStorage.removeItem(pKey));
+  }
+
   /**
-   * Ativa um contexto descartável para montar filtros sem afetar a rota atual.
+   * @description Ativa um contexto descartável para montar filtros sem afetar a rota atual.
+   * @param pContexto Identificador base do contexto temporário.
+   * @param pCamposDisponiveis Campos que podem ser usados no contexto.
+   * @param pFiltrosIniciais Filtros carregados inicialmente no contexto.
    */
   function ativarContextoTemporario(
     pContexto: string,
-    pCamposDisponiveis: ICampoFiltro<any>[],
-    pFiltrosIniciais: IFiltrosConsulta[] = [],
+    pCamposDisponiveis: TCampoFiltroMapeado[],
+    pFiltrosIniciais: TFiltroConsultaSerializado[] = [],
   ): void {
     const contexto = `${CONTEXTO_TEMPORARIO_PREFIX}${pContexto}`;
 
@@ -355,7 +383,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   }
 
   /**
-   * Remove o contexto descartável usado por dialogs locais.
+   * @description Remove o contexto descartável usado por dialogs locais.
    */
   function desativarContextoTemporario(): void {
     if (contextoFiltroTemporario.value) {
@@ -371,13 +399,17 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   const appliedCount = computed(() => filtersApplied.value.length);
 
   // Observadores
-  watch(() => [contextoFiltroAtual.value, route.fullPath], () => {
-    obterEstadoContexto(contextoFiltroAtual.value);
+  watch(
+    () => [contextoFiltroAtual.value, route.fullPath],
+    () => {
+      obterEstadoContexto(contextoFiltroAtual.value);
 
-    if (possuiFiltrosNaUrl()) {
-      loadFromUrl();
-    }
-  }, { immediate: true });
+      if (possuiFiltrosNaUrl()) {
+        loadFromUrl();
+      }
+    },
+    { immediate: true },
+  );
 
   return {
     estadosPorContexto,
@@ -399,6 +431,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     removeFilter,
     editFilter,
     clearAll,
+    clearAllContexts,
     versaoAplicacaoFiltros,
   };
 });

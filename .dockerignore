@@ -1,6 +1,4 @@
-# .dockerignore
-
-# Logs e dependências
+# Logs e dependencias
 node_modules
 npm-debug.log
 yarn-error.log
@@ -12,7 +10,7 @@ yarn-error.log
 *.suo
 *.user
 
-# Arquivos de build local
+# Arquivos de build local e configuracao local
 dist
 .env
 .env.local

@@ -2,7 +2,7 @@
   <v-container class="fill-height d-flex align-center justify-center text-center">
     <v-sheet
       elevation="0"
-      max-width="600"
+      maxWidth="600"
       class="bg-transparent"
     >
       <v-icon
@@ -28,21 +28,21 @@
           variant="outlined"
           color="primary"
           size="large"
-          prepend-icon="mdi-arrow-left"
-          @click="goBack"
+          prependIcon="mdi-arrow-left"
           class="mr-4"
+          @click="goBack"
         >
-          Voltar
+          {{ t('common.actions.back') }}
         </v-btn>
 
         <v-btn
           variant="flat"
           color="primary"
           size="large"
-          prepend-icon="mdi-home"
+          prependIcon="mdi-home"
           @click="goHome"
         >
-          Ir para o Início
+          {{ t('common.actions.home') }}
         </v-btn>
       </div>
     </v-sheet>
@@ -51,7 +51,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   type?: '403' | '404' | '500';
@@ -59,6 +60,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const route = useRoute();
+const { t } = useI18n();
 
 const errorType = computed(() => props.type || (route.name === 'AcessoNegado' ? '403' : '404'));
 
@@ -67,27 +69,27 @@ const errorContent = computed(() => {
     case '403':
       return {
         code: '403',
-        title: 'Acesso Negado',
-        message: 'Você não tem permissão para acessar esta área. Se acredita que isso é um erro, contate o administrador.',
+        title: t('common.fallback.forbiddenTitle'),
+        message: t('common.fallback.forbiddenMessage'),
         icon: 'mdi-shield-lock-outline',
-        color: 'error'
+        color: 'error',
       };
     case '500':
       return {
         code: '500',
-        title: 'Erro Interno',
-        message: 'Algo deu errado nos nossos servidores. Tente novamente mais tarde.',
+        title: t('common.fallback.serverTitle'),
+        message: t('common.fallback.serverMessage'),
         icon: 'mdi-server-network-off',
-        color: 'warning'
+        color: 'warning',
       };
     case '404':
     default:
       return {
         code: '404',
-        title: 'Página não encontrada',
-        message: 'Não encontramos a página que você está procurando.',
+        title: t('common.fallback.notFoundTitle'),
+        message: t('common.fallback.notFoundMessage'),
         icon: 'mdi-map-marker-question-outline',
-        color: 'info'
+        color: 'info',
       };
   }
 });
@@ -107,7 +109,11 @@ function goBack() {
 }
 
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
   40% {
@@ -117,5 +123,4 @@ function goBack() {
     transform: translateY(-10px);
   }
 }
-
 </style>

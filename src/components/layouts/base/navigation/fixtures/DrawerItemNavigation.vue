@@ -9,8 +9,8 @@
         :active="itemAtivo"
       >
         <template
-          v-slot:append
           v-if="item.hotkey && mdAndUp && isPinned"
+          #append
         >
           <v-hotkey
             :keys="item.hotkey"
@@ -27,8 +27,8 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useDisplay, useHotkey } from 'vuetify';
 
 // Types e Interfaces
@@ -69,5 +69,4 @@ if (props.item.hotkey && props.item.name) {
     router.push({ name: props.item.name });
   });
 }
-
 </script>

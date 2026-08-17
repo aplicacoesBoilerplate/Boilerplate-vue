@@ -1,5 +1,5 @@
 <template>
-  <v-list style="height: 64px;">
+  <v-list style="height: 64px">
     <v-list-item>
       <template #prepend>
         <v-avatar
@@ -11,7 +11,7 @@
           v-else
           color="primary"
           class="font-weight-bold"
-          >{{ letraInicial }}
+        >{{ letraInicial }}
         </v-avatar>
       </template>
 
@@ -29,7 +29,7 @@
             color="primary"
             size="x-small"
             label
-            >{{ authStore.user?.papel }}
+          >{{ authStore.user?.papel }}
           </v-chip>
         </v-sheet>
       </template>
@@ -39,11 +39,13 @@
         #append
       >
         <v-btn
+          v-tooltip="
+            menuFixado ? t('components.drawerItemUsuario.desafixarMenu') : t('components.drawerItemUsuario.fixarMenu')
+          "
           :icon="menuFixado ? 'mdi-pin' : 'mdi-pin-off'"
           color="primary"
           variant="tonal"
           size="small"
-          v-tooltip="menuFixado ? t('components.drawerItemUsuario.desafixarMenu') : t('components.drawerItemUsuario.fixarMenu')"
           @click="alternarFixacaoMenu"
         />
       </template>
@@ -62,7 +64,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { usePreferencesStore } from '@/stores/preferences.store';
 
 // Constantes
-import { ICONE_PAPEL, type TPapelPadrao } from '@/models/model/usuario/lUsuario';
+import { ICONE_PAPEL, type TPapelPadrao } from '@/models/model/core/usuario.model';
 
 // Composables
 const { mdAndUp } = useDisplay();
@@ -85,5 +87,4 @@ const letraInicial = computed(() => (nomeCurto.value ? nomeCurto.value.charAt(0)
 const menuFixado = computed(() => preferencesStore.preferences.drawer.isDrawerPinned);
 
 const iconePapel = computed(() => ICONE_PAPEL[(authStore.user?.papel ?? 'USER') as TPapelPadrao] ?? 'mdi-account-key');
-
 </script>

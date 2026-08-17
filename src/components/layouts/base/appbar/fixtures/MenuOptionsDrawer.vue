@@ -32,23 +32,24 @@
 // Ecossistema Vue
 import { useRoute } from 'vue-router';
 
+import DialogLicence from '@/components/dialogs/DialogLicence.vue';
+
 // Componentes
 import BtnActionDrawer, { type TPropsBtnDrawer } from './BtnActionDrawer.vue';
-import DialogLicence from '@/components/dialogs/DialogLicence.vue';
 import BtnAlterLanguage from './BtnAlterLanguage.vue';
-import BtnInstalarPwa from './BtnInstalarPwa.vue';
 import BtnInfoSistema from './BtnInfoSistema.vue';
+import BtnInstalarPwa from './BtnInstalarPwa.vue';
 import BtnPaginaInicial from './BtnPaginaInicial.vue';
 import BtnToggleTheme from './BtnToggleTheme.vue';
 
 type TProps = {
   exibirDialogLicence?: boolean;
-}
+};
 withDefaults(defineProps<TProps & TPropsBtnDrawer>(), {
   exibirDialogLicence: true,
-  icon: "mdi-menu-open",
-  color: "primary",
-  width: "220px",
+  icon: 'mdi-menu-open',
+  color: 'primary',
+  width: '220px',
   top: undefined,
   right: undefined,
   left: undefined,
