@@ -3,6 +3,17 @@
     class="fill-height pb-0 overflow-hidden"
     fluid
   >
+    <DialogFormUsuario
+      v-model:exibirDialog="exibirDialogUsuario"
+      v-model:usuario="modelFormUsuario"
+      :modoEdicao="modoEdicaoUsuario"
+      @salvar="salvarUsuario"
+    >
+      <template #activator>
+        <span class="d-none" />
+      </template>
+    </DialogFormUsuario>
+
     <GridDataChart
       :hiddenChart="hiddenChart"
       @toggleChart="alternarExibicaoGrafico(alternarGraficoLocal)"
@@ -37,24 +48,15 @@
           </template>
 
           <template #activator-novo-registro="{ acionarNovoRegistro, tooltipProps }">
-            <DialogFormUsuario
-              v-model:exibirDialog="exibirDialogUsuario"
-              v-model:usuario="modelFormUsuario"
-              :modoEdicao="modoEdicaoUsuario"
-              @salvar="salvarUsuario"
-            >
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="mergeProps(props, tooltipProps)"
-                  :disabled="!podeGerenciarRegistros"
-                  color="primary"
-                  variant="tonal"
-                  size="x-small"
-                  icon="mdi-plus"
-                  @click="acionarNovoRegistro"
-                />
-              </template>
-            </DialogFormUsuario>
+            <v-btn
+              v-bind="tooltipProps"
+              :disabled="!podeGerenciarRegistros"
+              color="primary"
+              variant="tonal"
+              size="x-small"
+              icon="mdi-plus"
+              @click="acionarNovoRegistro"
+            />
           </template>
 
           <template #default="{ items }">
@@ -130,6 +132,9 @@
       <template #dataChart>
         <BaseChart
           v-model:filtroSelecionado="selectedChartFilter"
+          v-model:tipoGrafico="chartType"
+          v-model:exibirLegenda="showChartLegend"
+          v-model:exibirRotulos="showChartLabels"
           :dados="chartDataComputed"
           :opcoesFiltro="camposAgrupamento"
           :configuracaoAtiva="activeHeaderConfig"
@@ -141,7 +146,7 @@
 
 <script setup lang="ts">
 // Ecossistema vue
-import { computed, mergeProps, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '@/stores/auth.store';
@@ -157,6 +162,7 @@ import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/co
 
 // Composables
 import { useChartHelpers } from '@/composables/useChartHelpers';
+import { useChartPreferences } from '@/composables/useChartPreferences';
 import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
 import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
@@ -184,11 +190,22 @@ const CONTEXTO_LISTA_USUARIOS = 'lista-usuarios';
 const headers = CABECALHOS_TABELA_USUARIO;
 const headersExportacao = headers;
 const camposAgrupamento = computed(() => genericFilterStore.camposAgrupadoresDisponiveis);
+const {
+  visible: chartVisible,
+  grouping: selectedChartFilter,
+  type: chartType,
+  showLegend: showChartLegend,
+  showLabels: showChartLabels,
+} = useChartPreferences(CONTEXTO_LISTA_USUARIOS, camposAgrupamento);
 
 // Reativas
 const genericViewRef = ref<IGenericViewExpose | null>(null);
-const hiddenChart = ref(true);
-const selectedChartFilter = ref<string>(camposAgrupamento.value.length > 0 ? camposAgrupamento.value[0].valor : '');
+const hiddenChart = computed({
+  get: () => !chartVisible.value,
+  set: (pOculto: boolean) => {
+    chartVisible.value = !pOculto;
+  },
+});
 
 // Estados de Formulário
 const exibirDialogUsuario = ref(false);
@@ -198,7 +215,7 @@ const modelFormUsuario = ref<IUsuario>(criarUsuarioPadrao());
 // Funções
 function alternarExibicaoGrafico(pToggleChart: () => void): void {
   if (!podeVisualizarGraficos.value) {
-    notificarPermissaoNegada('Você não tem permissão para visualizar gráficos.');
+    notificarPermissaoNegada(t('common.messages.chartsDenied'));
     return;
   }
 
@@ -211,7 +228,7 @@ function alternarGraficoLocal(): void {
 
 function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: IUsuario }): void {
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
@@ -230,15 +247,16 @@ async function buscarUsuarios(pPayload: IConsultaRegistros<IUsuario>): Promise<I
   return usuarioService.consultar(pPayload);
 }
 
-async function exportarUsuarios(): Promise<IUsuario[]> {
-  const resposta = await usuarioService.consultarTodosRegistros();
+async function exportarUsuarios(pParametros?: Record<string, unknown>, pOptions?: { signal?: AbortSignal }): Promise<IUsuario[]> {
+  void pParametros;
+  const resposta = await usuarioService.consultarTodosRegistros({}, { signal: pOptions?.signal });
 
   return resposta.registros;
 }
 
 async function salvarUsuario(): Promise<void> {
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
@@ -249,7 +267,7 @@ async function salvarUsuario(): Promise<void> {
       metodo: (pUsuario: IUsuario) => usuarioService.editar(pUsuario),
       parametros: usuarioNormalizado,
       sucesso: {
-        mensagem: 'Usuário atualizado com sucesso.',
+        mensagem: t('common.messages.userUpdated'),
         tipo: 'success',
       },
     });
@@ -263,7 +281,7 @@ async function salvarUsuario(): Promise<void> {
       metodo: (pUsuario: IUsuario) => usuarioService.cadastrar(pUsuario),
       parametros: usuarioNormalizado,
       sucesso: {
-        mensagem: 'Usuário criado com sucesso.',
+        mensagem: t('common.messages.userCreated'),
         tipo: 'success',
       },
     });
@@ -278,17 +296,17 @@ async function excluirUsuario(pUsuario: IUsuario): Promise<void> {
   if (!pUsuario.id) return;
 
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
   if (pUsuario.id === 1) {
-    notificarPermissaoNegada('O usuário raiz da aplicação não pode ser removido.');
+    notificarPermissaoNegada(t('common.messages.rootUserRemoval'));
     return;
   }
 
   if (pUsuario.id === usuarioAutenticadoId.value) {
-    notificarPermissaoNegada('Você não pode remover a própria conta.');
+    notificarPermissaoNegada(t('common.messages.ownAccountRemoval'));
     return;
   }
 
@@ -296,7 +314,7 @@ async function excluirUsuario(pUsuario: IUsuario): Promise<void> {
     metodo: (pIdUsuario: number) => usuarioService.excluir(pIdUsuario),
     parametros: pUsuario.id,
     sucesso: {
-      mensagem: 'Usuário removido com sucesso.',
+      mensagem: t('common.messages.userRemoved'),
       tipo: 'success',
     },
   });

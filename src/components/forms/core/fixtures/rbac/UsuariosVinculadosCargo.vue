@@ -51,15 +51,28 @@
           </v-list-item-subtitle>
 
           <template #append>
-            <SelectRole
-              :modelValue="obterPapelUsuario(usuario)"
-              :itens="itensCargos"
-              :disabled="somenteLeitura"
-              maxWidth="180"
-              minWidth="160"
-              hideDetails
-              @update:modelValue="atualizarCargoUsuario(usuario, String($event))"
-            />
+            <div class="d-flex align-center ga-2">
+              <v-btn
+                v-if="!somenteLeitura && !usuarioPertenceAoCargoAtual(usuario)"
+                :aria-label="t('forms.usuariosVinculadosCargo.vincularAoCargo', { cargo: cargo.nome })"
+                :disabled="!cargo.papel"
+                color="primary"
+                icon="mdi-account-link-outline"
+                size="small"
+                variant="tonal"
+                @click="atualizarCargoUsuario(usuario, cargo.papel)"
+              />
+
+              <SelectRole
+                :modelValue="obterPapelUsuario(usuario)"
+                :opcoes="opcoesCargos"
+                :disabled="somenteLeitura"
+                maxWidth="180"
+                minWidth="160"
+                hideDetails
+                @update:modelValue="atualizarCargoUsuario(usuario, String($event))"
+              />
+            </div>
           </template>
         </v-list-item>
       </v-list>
@@ -73,13 +86,14 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
 // Types e Interfaces
 import type { ICargoRbac } from '@/models/model/core/rbac/rbac.model';
 import type { IUsuario, TPapel } from '@/models/model/core/usuario.model';
 
 // Componentes
 import ConsultaVinculosFormulario from '@/components/forms/core/fixtures/vinculos/ConsultaVinculosFormulario.vue';
-import SelectRole, { type IItemSelectPapel } from '@/components/forms/fixtures/SelectRole.vue';
+import SelectRole from '@/components/forms/fixtures/SelectRole.vue';
 
 type TProps = {
   /**
@@ -167,21 +181,21 @@ function filtrarUsuariosPorCargoEPesquisa(pTermoPesquisa: string): IUsuario[] {
   const termoPesquisa = normalizarTexto(pTermoPesquisa);
 
   return usuarios.value.filter((pUsuario) => {
-    const usuarioPertenceAoCargo = pUsuario.papel === props.cargo.papel;
+    const usuarioPertenceAoCargo = usuarioPertenceAoCargoAtual(pUsuario);
     const usuarioPossuiAlteracaoPendente = usuarioComAlteracaoPendente(pUsuario);
 
-    if (!usuarioPertenceAoCargo && !usuarioPossuiAlteracaoPendente) {
-      return false;
-    }
-
     if (!termoPesquisa) {
-      return true;
+      return usuarioPertenceAoCargo || usuarioPossuiAlteracaoPendente;
     }
 
     return [pUsuario.nome, pUsuario.email, pUsuario.papel].some((pValor) =>
       normalizarTexto(pValor).includes(termoPesquisa),
     );
   });
+}
+
+function usuarioPertenceAoCargoAtual(pUsuario: IUsuario): boolean {
+  return obterPapelUsuario(pUsuario) === props.cargo.papel;
 }
 
 /**
@@ -239,12 +253,12 @@ function inicializarPapeisOriginaisUsuarios(): void {
 // Computadas
 const contextoConsultaUsuarios = computed(() => `usuarios-vinculados-cargo:${props.cargo.papel}`);
 
-const itensCargos = computed<IItemSelectPapel[]>(() => {
+const opcoesCargos = computed<IOpcaoSelecao<TPapel>[]>(() => {
   return props.cargos
     .filter((pCargo) => pCargo.ativo)
     .map((pCargo) => ({
       valor: pCargo.papel,
-      label: pCargo.nome,
+      descricao: pCargo.nome,
       icone: pCargo.icone,
     }));
 });

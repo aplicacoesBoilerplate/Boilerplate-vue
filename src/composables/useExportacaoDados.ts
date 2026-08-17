@@ -1,4 +1,5 @@
 import { type Ref, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { useSnackbarStore } from '@/stores/Snackbar.store';
 
@@ -9,6 +10,8 @@ import type {
 } from '@/models/components/IExportacaoDados';
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
 
+import { CTradutor } from '@/classes/Utils/CTradutor';
+
 type TUseExportacaoDadosReturn = {
   exportando: Ref<boolean>;
   erro: Ref<unknown>;
@@ -17,8 +20,34 @@ type TUseExportacaoDadosReturn = {
   ) => Promise<void>;
 };
 
+export function assertExportWithinBudget<TItem>(
+  pRecords: TItem[],
+  pOptions: { signal?: AbortSignal; maxRecords?: number; maxEstimatedBytes?: number } = {},
+): void {
+  if (pOptions.signal?.aborted) {
+    throw new DOMException('Exportacao cancelada.', 'AbortError');
+  }
+
+  const maxRecords = pOptions.maxRecords ?? 5_000;
+  const maxEstimatedBytes = pOptions.maxEstimatedBytes ?? 10 * 1024 * 1024;
+  if (pRecords.length > maxRecords) {
+    throw new Error(`Exportacao excede o limite de ${maxRecords} registros; use o processamento no backend.`);
+  }
+
+  let estimatedBytes: number;
+  try {
+    estimatedBytes = new TextEncoder().encode(JSON.stringify(pRecords)).byteLength;
+  } catch {
+    throw new Error('Nao foi possivel estimar os bytes da exportacao com seguranca.');
+  }
+  if (estimatedBytes > maxEstimatedBytes) {
+    throw new Error(`Exportacao excede o limite estimado de bytes (${maxEstimatedBytes}).`);
+  }
+}
+
 export function useExportacaoDados(): TUseExportacaoDadosReturn {
   const snackbarStore = useSnackbarStore();
+  const { t } = useI18n();
 
   const exportando = ref(false);
   const erro = ref<unknown>(null);
@@ -31,12 +60,14 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
 
     snackbarStore.adicionar({
       tipo: 'info',
-      mensagem: 'A exportação foi iniciada e continuará em segundo plano.',
+      mensagem: t('common.messages.exportStarted'),
       timeout: 3000,
     });
 
     try {
-      const registros = await pOptions.metodo(pOptions.parametros);
+      assertExportWithinBudget([], pOptions);
+      const registros = await pOptions.metodo(pOptions.parametros, { signal: pOptions.signal });
+      assertExportWithinBudget(registros, pOptions);
       const colunas = normalizarColunas(registros, pOptions.colunas);
       const nomeArquivo = normalizarNomeArquivo(pOptions.nomeArquivo ?? pOptions.contexto);
 
@@ -49,7 +80,7 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
 
       snackbarStore.adicionar({
         tipo: 'success',
-        mensagem: `Exportação concluída com ${registros.length.toLocaleString()} registro(s).`,
+        mensagem: t('common.messages.exportCompleted', { count: registros.length.toLocaleString() }),
       });
     } catch (pErro) {
       erro.value = pErro;
@@ -129,24 +160,18 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
     pColunas: IColunaNormalizadaExportacao<TItem>[],
     pNomeArquivo: string,
   ): Promise<void> {
-    const XLSX = await import('xlsx');
-    const linhas = pRegistros.map((pRegistro) => {
-      return pColunas.reduce<Record<string, string>>((pLinha, pColuna) => {
-        pLinha[pColuna.titulo] = formatarValorExportacao(obterValorCelula(pRegistro, pColuna));
+    const { default: writeExcelFile } = await import('write-excel-file/browser');
+    const linhas = [
+      pColunas.map((pColuna) => ({ value: pColuna.titulo, fontWeight: 'bold' as const })),
+      ...pRegistros.map((pRegistro) =>
+        pColunas.map((pColuna) => formatarValorExportacao(obterValorCelula(pRegistro, pColuna))),
+      ),
+    ];
 
-        return pLinha;
-      }, {});
-    });
-    const planilha = XLSX.utils.json_to_sheet(linhas, {
-      header: pColunas.map((pColuna) => pColuna.titulo),
-    });
-    const pastaTrabalho = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(pastaTrabalho, planilha, 'Registros');
-    XLSX.writeFile(pastaTrabalho, `${pNomeArquivo}.xlsx`, {
-      bookType: 'xlsx',
-      compression: true,
-    });
+    await writeExcelFile(linhas, {
+      columns: pColunas.map((pColuna) => ({ width: Math.min(50, Math.max(12, pColuna.titulo.length + 2)) })),
+      sheet: 'Registros',
+    }).toFile(`${pNomeArquivo}.xlsx`);
   }
 
   async function gerarPdf<TItem>(
@@ -298,7 +323,7 @@ export function useExportacaoDados(): TUseExportacaoDadosReturn {
       return String((pErro as { mensagem?: unknown }).mensagem);
     }
 
-    return 'Não foi possível concluir a exportação.';
+    return CTradutor.traduzir('common.messages.exportFailed');
   }
 
   return {

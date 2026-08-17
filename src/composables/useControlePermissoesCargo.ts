@@ -12,7 +12,6 @@ import {
   RECURSO_PERMISSAO_API_RBAC,
   RECURSO_PERMISSAO_ROTAS_RBAC,
 } from '@/models/model/core/rbac/rbac.api';
-import { criarCargoRbacPadrao } from '@/models/model/core/rbac/rbac.model';
 import { ACOES_API_RBAC } from '@/models/model/core/rbac/rbac.types';
 import type {
   IMapeamentoRotaApiRbac,

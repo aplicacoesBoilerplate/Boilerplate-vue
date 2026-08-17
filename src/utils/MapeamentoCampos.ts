@@ -3,6 +3,8 @@ import type { IConfiguracaoCampo, TEntradaMapeamentoCampos } from "@/models/comp
 import type { IHeadersDataTable } from "@/models/components/lHeaderTable";
 import type { ICampoFiltro } from "@/models/filters/ICampoFiltro";
 
+import { CTradutor } from '@/classes/Utils/CTradutor';
+
 /**
  * @description Contrato estrutural mínimo de uma configuração canônica de campo.
  * Permite projetar filtros e cabeçalhos sem depender do tipo concreto do registro
@@ -13,10 +15,19 @@ import type { ICampoFiltro } from "@/models/filters/ICampoFiltro";
  * @property {object} tabela - Configuração opcional destinada à projeção de cabeçalhos.
  */
 type TConfiguracaoCampoBase = {
-  rotulo: string;
+  rotulo?: string;
+  rotuloChave?: string;
   filtro?: object;
   tabela?: object;
 };
+
+function resolverRotulo(pConfiguracao: TConfiguracaoCampoBase): string {
+  if (pConfiguracao.rotuloChave) {
+    return CTradutor.traduzir(pConfiguracao.rotuloChave, pConfiguracao.rotuloChave);
+  }
+
+  return pConfiguracao.rotulo ?? '';
+}
 
 /**
  * @description Projeta uma configuração canônica em seu respectivo campo de filtro.
@@ -52,16 +63,20 @@ export function criarCamposFiltro<
       return [];
     }
 
-    return [
-      {
-        valor: pValor,
-        descricao: pConfiguracao.rotulo,
-        ...pConfiguracao.filtro,
-      },
-    ];
+    const campo = {
+      valor: pValor,
+      ...pConfiguracao.filtro,
+    } as unknown as TCampoFiltroConfiguracao<TCampo, TConfiguracao>;
+
+    Object.defineProperty(campo, 'descricao', {
+      enumerable: true,
+      get: () => resolverRotulo(pConfiguracao),
+    });
+
+    return [campo];
   });
 
-  return lCampos as TCampoFiltroConfiguracao<TCampo, TConfiguracao>[];
+  return lCampos;
 }
 
 /**
@@ -84,12 +99,17 @@ export function criarCabecalhosTabela<
       return [];
     }
 
-    return [
-      {
-        key: pChave,
-        title: pConfiguracao.rotulo,
-        ...pConfiguracao.tabela,
-      },
-    ];
+    const cabecalho = {
+      key: pChave,
+      title: resolverRotulo(pConfiguracao),
+      ...pConfiguracao.tabela,
+    } as unknown as IHeadersDataTable;
+
+    Object.defineProperty(cabecalho, 'title', {
+      enumerable: true,
+      get: () => resolverRotulo(pConfiguracao),
+    });
+
+    return [cabecalho];
   });
 }

@@ -46,13 +46,13 @@ export interface ICargoRbac {
 export const COMPORTAMENTOS_PADRAO_PERMISSAO: IOpcaoSelecao<TComportamentoPadraoPermissao>[] = [
   {
     valor: 'bloquear',
-    descricao: 'Bloquear por padrão',
+    descricao: 'bloquear',
     icone: 'mdi-lock-outline',
     cor: 'error',
   },
   {
     valor: 'liberar',
-    descricao: 'Liberar por padrão',
+    descricao: 'liberar',
     icone: 'mdi-lock-open-outline',
     cor: 'success',
   },
@@ -90,7 +90,7 @@ type TMapeamentoRbac = TMapeamentoCampos<
 
 const MAPEAMENTO_MODEL_RBAC = {
   nome: {
-    rotulo: CTradutor.traduzir('', 'Nome'),
+    rotuloChave: 'common.fields.rbac.name',
     filtro: {
       icone: 'mdi-shield-account-outline',
       tipos: [ETipoFiltro.STRING],
@@ -101,7 +101,7 @@ const MAPEAMENTO_MODEL_RBAC = {
         atributoDescricao: 'nome',
         buscarRegistros: cargoRbacService.consultar,
         limiteInicial: 5,
-        textoVazio: 'Nenhum cargo encontrado.',
+        get textoVazio() { return CTradutor.traduzir('common.empty.roles'); },
       }
     },
     tabela: {
@@ -111,7 +111,7 @@ const MAPEAMENTO_MODEL_RBAC = {
     }
   },
   descricao: {
-    rotulo: CTradutor.traduzir('', 'Descrição'),
+    rotuloChave: 'common.fields.rbac.description',
     filtro: {
       icone: 'mdi-text-box-outline',
       tipos: [ETipoFiltro.STRING]
@@ -123,7 +123,7 @@ const MAPEAMENTO_MODEL_RBAC = {
     }
   },
   comportamentoPadrao: {
-    rotulo: CTradutor.traduzir('', 'Comportamento Padrão'),
+    rotuloChave: 'common.fields.rbac.defaultBehavior',
     filtro: {
       icone: 'mdi-lock-check-outline',
       tipos: [ETipoFiltro.SELECT],
@@ -136,7 +136,7 @@ const MAPEAMENTO_MODEL_RBAC = {
     }
   },
   ativo: {
-    rotulo: CTradutor.traduzir('', 'Ativo'),
+    rotuloChave: 'common.fields.rbac.active',
     filtro: {
       icone: 'mdi-check-circle',
       tipos: [ETipoFiltro.BOOLEAN],

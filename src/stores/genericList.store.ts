@@ -8,7 +8,7 @@ import type { TOrdem } from '@/models/consulta/IConsultaRegistros';
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
 
 // Utils
-import { ClassManagerStorage } from '@/utils/ManagerStorage';
+import { CManagerStorage } from '@/utils/ManagerStorage';
 
 // Constantes
 const STORAGE_PREFIX = 'boilerplate.generic-list.context.';
@@ -16,6 +16,8 @@ const DEFAULT_CACHE_TTL_MS = 15 * 60 * 1000;
 const DEFAULT_STORAGE: TManagerStorageLocation = 'session';
 const DEFAULT_LIMIT = 10;
 const DEFAULT_ORDER: TOrdem = 'desc';
+const MAX_RETAINED_CONTEXTS = 12;
+const MAX_INACTIVE_RECORDS = 500;
 
 type TResolvedContextOptions = Required<
   Pick<IGenericListContextOptions, 'cacheTtlMs' | 'storage' | 'limite' | 'ordem'>
@@ -75,6 +77,39 @@ export const useGenericListStore = defineStore('genericList', () => {
   const currentContextId = ref('');
   // As opções ficam em memória porque elas fazem parte do contrato de cada uso do componente.
   const contextOptions = new Map<string, TResolvedContextOptions>();
+  const contextLastAccess = new Map<string, number>();
+
+  function pruneExpiredContexts(): void {
+    const now = Date.now();
+
+    for (const [contextId, context] of Object.entries(contexts.value)) {
+      const options = contextOptions.get(contextId) ?? resolveOptions();
+      if (context.atualizadoEm + options.cacheTtlMs <= now) {
+        removeContext(contextId);
+      }
+    }
+  }
+
+  function pruneLeastRecentlyUsedContexts(pProtectedContextId: string): void {
+    while (Object.keys(contexts.value).length > MAX_RETAINED_CONTEXTS) {
+      const oldestContextId = Object.keys(contexts.value)
+        .filter((pContextId) => pContextId !== pProtectedContextId)
+        .sort((pLeft, pRight) => {
+          const leftAccess = contextLastAccess.get(pLeft) ?? contexts.value[pLeft]?.atualizadoEm ?? 0;
+          const rightAccess = contextLastAccess.get(pRight) ?? contexts.value[pRight]?.atualizadoEm ?? 0;
+          return leftAccess - rightAccess;
+        })[0];
+
+      if (!oldestContextId) return;
+      removeContext(oldestContextId);
+    }
+  }
+
+  function touchContext(pContextId: string): void {
+    contextLastAccess.set(pContextId, Date.now());
+    pruneExpiredContexts();
+    pruneLeastRecentlyUsedContexts(pContextId);
+  }
 
   /**
    * @description Inicializa um novo contexto de lista.
@@ -88,7 +123,7 @@ export const useGenericListStore = defineStore('genericList', () => {
     contextOptions.set(pContextId, resolvedOptions);
     currentContextId.value = pContextId;
 
-    const storedContext = ClassManagerStorage.get<IGenericListContext<TItem> | null>(
+    const storedContext = CManagerStorage.get<IGenericListContext<TItem> | null>(
       storageKey,
       null,
       resolvedOptions.storage,
@@ -102,6 +137,8 @@ export const useGenericListStore = defineStore('genericList', () => {
     if (!storedContext) {
       persistContext(pContextId);
     }
+
+    touchContext(pContextId);
   }
 
   /**
@@ -110,12 +147,31 @@ export const useGenericListStore = defineStore('genericList', () => {
    * @returns O contexto de lista.
    */
   function getContext<TItem extends object = object>(pContextId: string): IGenericListContext<TItem> {
+    pruneExpiredContexts();
+
     if (!contexts.value[pContextId]) {
       // Acesso defensivo para stores/componentes que consultem antes do onMounted da lista.
       initContext<TItem>(pContextId);
     }
 
+    touchContext(pContextId);
+
     return contexts.value[pContextId] as unknown as IGenericListContext<TItem>;
+  }
+
+  function getExistingContext<TItem extends object = object>(
+    pContextId: string,
+  ): IGenericListContext<TItem> | undefined {
+    pruneExpiredContexts();
+    const context = contexts.value[pContextId];
+    if (!context) return undefined;
+
+    touchContext(pContextId);
+    return context as unknown as IGenericListContext<TItem>;
+  }
+
+  function hasContextOptions(pContextId: string): boolean {
+    return contextOptions.has(pContextId);
   }
 
   /**
@@ -253,8 +309,28 @@ export const useGenericListStore = defineStore('genericList', () => {
    * @param pContextId O ID do contexto.
    */
   function removeContext(pContextId: string) {
+    const options = contextOptions.get(pContextId) ?? resolveOptions();
     delete contexts.value[pContextId];
-    ClassManagerStorage.clear(getStorageKey(pContextId), getOptions(pContextId).storage);
+    contextOptions.delete(pContextId);
+    contextLastAccess.delete(pContextId);
+    CManagerStorage.clear(getStorageKey(pContextId), options.storage);
+
+    if (currentContextId.value === pContextId) {
+      currentContextId.value = '';
+    }
+  }
+
+  function deactivateContext(pContextId: string): void {
+    const context = contexts.value[pContextId];
+    if (!context) return;
+
+    if (context.registros.length > MAX_INACTIVE_RECORDS) {
+      removeContext(pContextId);
+      return;
+    }
+
+    persistContext(pContextId);
+    touchContext(pContextId);
   }
 
   /**
@@ -262,7 +338,9 @@ export const useGenericListStore = defineStore('genericList', () => {
    */
   function clearExpiredContexts() {
     // Limpeza util para ser chamada na inicializacao de areas que usam muitas listas.
-    ClassManagerStorage.clearExpiredByPrefix(STORAGE_PREFIX, DEFAULT_STORAGE);
+    pruneExpiredContexts();
+    CManagerStorage.clearExpiredByPrefix(STORAGE_PREFIX, DEFAULT_STORAGE);
+    CManagerStorage.clearExpiredByPrefix(STORAGE_PREFIX, 'local');
   }
 
   /**
@@ -270,7 +348,11 @@ export const useGenericListStore = defineStore('genericList', () => {
    */
   function clearAllContexts() {
     contexts.value = {};
-    ClassManagerStorage.clearByPrefix(STORAGE_PREFIX, DEFAULT_STORAGE);
+    contextOptions.clear();
+    contextLastAccess.clear();
+    currentContextId.value = '';
+    CManagerStorage.clearByPrefix(STORAGE_PREFIX, DEFAULT_STORAGE);
+    CManagerStorage.clearByPrefix(STORAGE_PREFIX, 'local');
   }
 
   /**
@@ -363,7 +445,7 @@ export const useGenericListStore = defineStore('genericList', () => {
     const options = getOptions(pContextId);
 
     // O TTL renova a cada alteracao relevante do contexto para manter cache por atividade.
-    ClassManagerStorage.set(getStorageKey(pContextId), toRaw(context), {
+    CManagerStorage.set(getStorageKey(pContextId), toRaw(context), {
       storage: options.storage,
       expiresInMs: options.cacheTtlMs,
     });
@@ -371,13 +453,19 @@ export const useGenericListStore = defineStore('genericList', () => {
 
   // Computadas
   const currentContext = computed(() => contexts.value[currentContextId.value] ?? null);
+  const contextCount = computed(() => Object.keys(contexts.value).length);
+  const contextOptionsCount = computed(() => contextOptions.size);
 
   return {
     contexts,
     currentContextId,
     currentContext,
+    contextCount,
+    contextOptionsCount,
     initContext,
     getContext,
+    getExistingContext,
+    hasContextOptions,
     getItems,
     getNextEntry,
     getHasMore,
@@ -389,6 +477,7 @@ export const useGenericListStore = defineStore('genericList', () => {
     replaceItems,
     resetContext,
     removeContext,
+    deactivateContext,
     clearExpiredContexts,
     clearAllContexts,
     prependItem,

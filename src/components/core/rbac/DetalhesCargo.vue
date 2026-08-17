@@ -78,11 +78,11 @@
 
         <div class="d-flex justify-end mt-3">
           <v-btn
+            :text="t('common.actions.openDetails')"
             color="primary"
             prependIcon="mdi-eye-outline"
             size="small"
             variant="tonal"
-            text="Abrir detalhes"
             @click="abrirVisualizacao(fechar)"
           />
         </div>

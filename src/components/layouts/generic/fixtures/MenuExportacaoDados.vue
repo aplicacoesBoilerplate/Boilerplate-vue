@@ -94,6 +94,7 @@ const manterDrawerAberto = inject<((pValor: boolean) => void) | undefined>('draw
 
 const exibirMenu = ref(false);
 const formatoCarregando = ref<TFormatoExportacaoDados | null>(null);
+let exportController: AbortController | null = null;
 
 const manterAberto = computed(() => exibirMenu.value);
 const podeExportar = computed(() => possuiPermissaoGeral('exportarDados'));
@@ -122,12 +123,15 @@ const opcoesExportacao = computed<
 
 async function exportar(pFormato: TFormatoExportacaoDados): Promise<void> {
   if (!podeExportar.value) {
-    notificarPermissaoNegada('Você não tem permissão para exportar dados.');
+    notificarPermissaoNegada(t('common.messages.exportDenied'));
     exibirMenu.value = false;
     return;
   }
 
   formatoCarregando.value = pFormato;
+  exportController?.abort();
+  const currentController = new AbortController();
+  exportController = currentController;
 
   try {
     await exportarDados({
@@ -137,9 +141,12 @@ async function exportar(pFormato: TFormatoExportacaoDados): Promise<void> {
       parametros: props.parametros,
       colunas: props.colunas,
       nomeArquivo: props.nomeArquivo,
+      signal: currentController.signal,
     });
   } catch {
+    return;
   } finally {
+    if (exportController === currentController) exportController = null;
     formatoCarregando.value = null;
   }
 }
@@ -149,6 +156,8 @@ watch(manterAberto, (pManterAberto) => {
 });
 
 onBeforeUnmount(() => {
+  exportController?.abort();
+  exportController = null;
   manterDrawerAberto?.(false);
 });
 </script>

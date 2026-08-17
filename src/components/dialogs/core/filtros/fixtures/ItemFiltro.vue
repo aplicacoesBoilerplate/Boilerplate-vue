@@ -31,7 +31,7 @@
     <template #append>
       <v-row
         class="d-flex align-center flex-row"
-        dense
+        density="compact"
       >
         <v-btn
           icon="mdi-pencil"

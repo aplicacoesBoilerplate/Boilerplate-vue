@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth.store';
 
 /**
  * @description Mantém as permissões do cargo autenticado atualizadas quando a sessão volta ao foco.
+ * @returns Função que permite disparar a sincronização de permissões manualmente.
  */
 export function useSincronizacaoPermissoesRbac() {
   const authStore = useAuthStore();

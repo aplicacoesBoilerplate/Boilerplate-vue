@@ -1,8 +1,5 @@
 <template>
-  <v-row
-    density="comfortable"
-    align="center"
-    class="mt-1"
+  <v-row class="mt-1 align-center"
   >
     <v-col
       cols="12"

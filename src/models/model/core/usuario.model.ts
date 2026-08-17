@@ -22,8 +22,8 @@ export type TPapelPadrao = (typeof PAPEIS_VALIDOS)[number];
 export type TPapel = TPapelPadrao | (string & {});
 
 export const DESCRICAO_PAPEL: Record<TPapelPadrao, string> = {
-  ADMIN: 'Administrador',
-  USER: 'Usuário',
+  get ADMIN() { return CTradutor.traduzir('common.roles.admin'); },
+  get USER() { return CTradutor.traduzir('common.roles.user'); },
 };
 
 export const ICONE_PAPEL: Record<TPapelPadrao, string> = {
@@ -34,12 +34,12 @@ export const ICONE_PAPEL: Record<TPapelPadrao, string> = {
 export const MAPEAMENTO_OPCOES_PAPEIS_PADROES: Record<TPapelPadrao, IOpcaoSelecao> = {
   ADMIN: {
     valor: 'ADMIN',
-    descricao: 'Administrador',
+    get descricao() { return CTradutor.traduzir('common.roles.admin'); },
     icone: 'mdi-account-tie',
   },
   USER: {
     valor: 'USER',
-    descricao: 'Usuário',
+    get descricao() { return CTradutor.traduzir('common.roles.user'); },
     icone: 'mdi-account',
   },
 };
@@ -104,7 +104,7 @@ type TMapeamentoUsuario = TMapeamentoCampos<
 
 const MAPEAMENTO_MODEL_USUARIO = {
   id: {
-    rotulo: CTradutor.traduzir('', 'Código'),
+    rotuloChave: 'common.fields.user.id',
     filtro: {
       icone: 'mdi-pound',
       tipos: [ETipoFiltro.NUMBER, ETipoFiltro.SELECT],
@@ -113,7 +113,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
         atributoDescricao: 'nome',
         buscarRegistros: usuarioService.consultar,
         limiteInicial: 5,
-        textoVazio: 'Nenhum usuário encontrado.',
+        get textoVazio() { return CTradutor.traduzir('common.empty.users'); },
       }
     },
     tabela: {
@@ -123,7 +123,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
     }
   },
   nome: {
-    rotulo: CTradutor.traduzir('', 'Nome'),
+    rotuloChave: 'common.fields.user.name',
     filtro: {
       icone: 'mdi-account',
       tipos: [ETipoFiltro.STRING, ETipoFiltro.SELECT],
@@ -134,7 +134,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
         atributoDescricao: 'nome',
         buscarRegistros: usuarioService.consultar,
         limiteInicial: 5,
-        textoVazio: 'Nenhum usuário encontrado.',
+        get textoVazio() { return CTradutor.traduzir('common.empty.users'); },
       }
     },
     tabela: {
@@ -144,7 +144,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
     }
   },
   email: {
-    rotulo: CTradutor.traduzir('', 'E-mail'),
+    rotuloChave: 'common.fields.user.email',
     filtro: {
       icone: 'mdi-email',
       tipos: [ETipoFiltro.STRING, ETipoFiltro.SELECT],      
@@ -153,7 +153,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
         atributoDescricao: 'nome',
         buscarRegistros: usuarioService.consultar,
         limiteInicial: 5,
-        textoVazio: 'Nenhum usuário encontrado.',
+        get textoVazio() { return CTradutor.traduzir('common.empty.users'); },
       }
     },
     tabela: {
@@ -163,7 +163,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
     }
   },
   avatar: {
-    rotulo: CTradutor.traduzir('', 'Avatar'),
+    rotuloChave: 'common.fields.user.avatar',
     tabela: {
       width: 150,
       maxWidth: 200,
@@ -172,7 +172,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
     }
   },
   telefone: {
-    rotulo: CTradutor.traduzir('', 'Telefone'),
+    rotuloChave: 'common.fields.user.phone',
     filtro: {
       icone: 'mdi-card-account-phone',
       tipos: [ETipoFiltro.STRING, ETipoFiltro.SELECT],
@@ -181,7 +181,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
         atributoDescricao: 'nome',
         buscarRegistros: usuarioService.consultar,
         limiteInicial: 5,
-        textoVazio: 'Nenhum usuário encontrado.',
+        get textoVazio() { return CTradutor.traduzir('common.empty.users'); },
       }
     },
     tabela: {
@@ -191,7 +191,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
     }
   },
   notificar: {
-    rotulo: CTradutor.traduzir('', 'Notificar'),
+    rotuloChave: 'common.fields.user.notify',
     tabela: {
       width: 150,
       maxWidth: 200,
@@ -200,7 +200,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
     }
   },
   ativo: {
-    rotulo: CTradutor.traduzir('', 'Ativo'),
+    rotuloChave: 'common.fields.user.active',
     filtro: {
       icone: 'mdi-check-circle',
       tipos: [ETipoFiltro.BOOLEAN],
@@ -216,7 +216,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
     }
   },
   papel: {
-    rotulo: CTradutor.traduzir('', 'Cargo'),
+    rotuloChave: 'common.fields.user.role',
     filtro: {
       icone: 'mdi-badge-account',
       tipos: [ETipoFiltro.SELECT],
@@ -225,7 +225,7 @@ const MAPEAMENTO_MODEL_USUARIO = {
         atributoDescricao: 'nome',
         buscarRegistros: cargoRbacService.consultar,
         limiteInicial: 5,
-        textoVazio: 'Nenhum cargo encontrado.'
+        get textoVazio() { return CTradutor.traduzir('common.empty.roles'); }
       },
       disponivelAgrupamento: true,
     },

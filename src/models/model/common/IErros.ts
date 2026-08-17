@@ -51,7 +51,7 @@ type TMapeamentoErro = TMapeamentoCampos<TCamposMapeamentoErro, TConfiguracaoCam
 
 const MAPEAMENTO_MODEL_ERRO = {
   idErro: {
-    rotulo: CTradutor.traduzir('', 'Código'),
+    rotuloChave: 'common.fields.error.id',
     tabela: {
       width: 50,
       maxWidth: 100,
@@ -59,7 +59,7 @@ const MAPEAMENTO_MODEL_ERRO = {
     }
   },
   mensagem: {
-    rotulo: CTradutor.traduzir('', 'Mensagem'),
+    rotuloChave: 'common.fields.error.message',
     filtro: {
       icone: 'mdi-message-bulleted',
       tipos: [ETipoFiltro.STRING],
@@ -73,7 +73,7 @@ const MAPEAMENTO_MODEL_ERRO = {
     }
   },
   arquivo: {
-    rotulo: CTradutor.traduzir('', 'Arquivo'),
+    rotuloChave: 'common.fields.error.file',
     filtro: {
       icone: 'mdi-file-alert',
       tipos: [ETipoFiltro.STRING]
@@ -85,7 +85,7 @@ const MAPEAMENTO_MODEL_ERRO = {
     }
   },
   classe: {
-    rotulo: CTradutor.traduzir('', 'Classe'),
+    rotuloChave: 'common.fields.error.class',
     filtro: {
       icone: 'mdi-lock-check-outline',
       tipos: [ETipoFiltro.STRING]
@@ -97,7 +97,7 @@ const MAPEAMENTO_MODEL_ERRO = {
     }
   },
   metodo: {
-    rotulo: CTradutor.traduzir('', 'Método'),
+    rotuloChave: 'common.fields.error.method',
     filtro: {
       icone: 'mdi-function',
       tipos: [ETipoFiltro.STRING]
@@ -109,7 +109,7 @@ const MAPEAMENTO_MODEL_ERRO = {
     }
   },
   linha: {
-    rotulo: CTradutor.traduzir('', 'Linha'),
+    rotuloChave: 'common.fields.error.line',
     filtro: {
       icone: 'mdi-numeric',
       tipos: [ETipoFiltro.NUMBER, ETipoFiltro.SELECT],
@@ -121,7 +121,7 @@ const MAPEAMENTO_MODEL_ERRO = {
     }
   },
   httpStatusCode: {
-    rotulo: CTradutor.traduzir('', 'Status Requisição'),
+    rotuloChave: 'common.fields.error.status',
     filtro: {
       icone: 'mdi-web-sync',
       tipos: [ETipoFiltro.NUMBER, ETipoFiltro.SELECT],
@@ -133,7 +133,7 @@ const MAPEAMENTO_MODEL_ERRO = {
     }
   },
   idUsuario: {
-    rotulo: CTradutor.traduzir('', 'Código Usuário'),
+    rotuloChave: 'common.fields.error.userId',
     filtro: {
       icone: 'mdi-card-account-details',
       tipos: [ETipoFiltro.NUMBER, ETipoFiltro.SELECT],
@@ -145,7 +145,7 @@ const MAPEAMENTO_MODEL_ERRO = {
     }
   },
   usuarioReferencia: {
-    rotulo: CTradutor.traduzir('', 'Ref. Usuário'),
+    rotuloChave: 'common.fields.error.userReference',
     filtro: {
       icone: 'mdi-book-account',
       tipos: [ETipoFiltro.STRING],
@@ -154,7 +154,7 @@ const MAPEAMENTO_MODEL_ERRO = {
         atributoDescricao: 'nome',
         buscarRegistros: usuarioService.consultar,
         limiteInicial: 5,
-        textoVazio: 'Nenhum usuário encontrado.',
+        get textoVazio() { return CTradutor.traduzir('common.empty.users'); },
       }
     },
     tabela: {
@@ -164,7 +164,7 @@ const MAPEAMENTO_MODEL_ERRO = {
     }
   },
   dataHora: {
-    rotulo: CTradutor.traduzir('', 'Horário do Erro'),
+    rotuloChave: 'common.fields.error.time',
     filtro: {
       icone: 'mdi-calendar-clock',
       tipos: [ETipoFiltro.DATE]

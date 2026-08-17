@@ -6,6 +6,107 @@
     "updateDate": "Atualizado em",
     "software": "Software"
   },
+  "common": {
+    "actions": {
+      "close": "Fechar",
+      "clear": "Limpar",
+      "confirm": "Confirmar",
+      "back": "Voltar",
+      "home": "Ir para o Início",
+      "addFilter": "Adicionar filtro",
+      "resetForm": "Resetar formulário",
+      "resetPasswords": "Resetar senhas",
+      "openDetails": "Abrir detalhes"
+    },
+    "app": {
+      "checkingServer": "Verificando servidor",
+      "checkingServerDescription": "Aguarde enquanto validamos a disponibilidade da API."
+    },
+    "login": {
+      "loginTab": "Login",
+      "registerTab": "Registro",
+      "accessTitle": "Acessar sistema",
+      "requestAccessTitle": "Solicitar acesso",
+      "preparingAccess": "Preparando acesso",
+      "validatingAccess": "Validando credenciais e rota inicial.",
+      "googleNotConfigured": "Configure o VITE_GOOGLE_CLIENT_ID para habilitar o login com Google."
+    },
+    "health": {
+      "description": "Retorno atual do endpoint administrativo da API.",
+      "apiStatus": "Status da API: {status}",
+      "unavailable": "Indisponível",
+      "loading": "Consultando health-check",
+      "loadingDescription": "Aguarde enquanto buscamos o retorno atualizado do servidor."
+    },
+    "audit": {
+      "title": "Auditoria do registro",
+      "tooltip": "Visualizar auditoria",
+      "createdAt": "Criado em",
+      "createdBy": "Criado por",
+      "updatedAt": "Última edição",
+      "updatedBy": "Editado por",
+      "userReference": "Usuário #{id}",
+      "system": "Sistema"
+    },
+    "dateTime": {
+      "selectDate": "Selecione a data",
+      "selectTime": "Selecione o horário"
+    },
+    "rbacTabs": {
+      "data": "Dados",
+      "permissions": "Permissões",
+      "users": "Usuários"
+    },
+    "fallback": {
+      "forbiddenTitle": "Acesso negado",
+      "forbiddenMessage": "Você não tem permissão para acessar esta área. Se acredita que isso é um erro, contate o administrador.",
+      "serverTitle": "Erro interno",
+      "serverMessage": "Algo deu errado nos nossos servidores. Tente novamente mais tarde.",
+      "notFoundTitle": "Página não encontrada",
+      "notFoundMessage": "Não encontramos a página que você está procurando."
+    },
+    "filters": {
+      "clearCurrent": "Limpar valores do filtro atual",
+      "selectField": "Selecione um campo no menu lateral para iniciar."
+    },
+    "dataTable": {
+      "loading": "Carregando registros..."
+    },
+    "fields": {
+      "user": { "id": "Código", "name": "Nome", "email": "E-mail", "avatar": "Avatar", "phone": "Telefone", "notify": "Notificar", "active": "Ativo", "role": "Cargo" },
+      "rbac": { "name": "Nome", "description": "Descrição", "defaultBehavior": "Comportamento padrão", "active": "Ativo" },
+      "error": { "id": "Código", "message": "Mensagem", "file": "Arquivo", "class": "Classe", "method": "Método", "line": "Linha", "status": "Status da requisição", "userId": "Código do usuário", "userReference": "Referência do usuário", "time": "Horário do erro" }
+    },
+    "empty": { "users": "Nenhum usuário encontrado.", "roles": "Nenhum cargo encontrado." },
+    "roles": { "admin": "Administrador", "user": "Usuário" },
+    "messages": {
+      "manageDenied": "Você não tem permissão para gerenciar registros.",
+      "chartsDenied": "Você não tem permissão para visualizar gráficos.",
+      "exportDenied": "Você não tem permissão para exportar dados.",
+      "rootUserRemoval": "O usuário raiz da aplicação não pode ser removido.",
+      "ownAccountRemoval": "Você não pode remover a própria conta.",
+      "defaultRoleRemoval": "Os cargos padrão ADMIN e USER não podem ser removidos.",
+      "userUpdated": "Usuário atualizado com sucesso.",
+      "userCreated": "Usuário criado com sucesso.",
+      "userRemoved": "Usuário removido com sucesso.",
+      "roleRemoved": "Cargo removido com sucesso.",
+      "selectFieldCondition": "Selecione o campo e a condição!",
+      "duplicateFilterTitle": "Filtro duplicado",
+      "duplicateFilter": "Você já adicionou esta condição.",
+      "actionDenied": "Você não tem permissão para executar esta ação.",
+      "requestFailed": "Não foi possível concluir a requisição.",
+      "exportStarted": "A exportação foi iniciada e continuará em segundo plano.",
+      "exportCompleted": "Exportação concluída com {count} registro(s).",
+      "exportFailed": "Não foi possível concluir a exportação.",
+      "googleCancelled": "Login cancelado ou credencial do Google não recebida.",
+      "passwordReset": "Senha redefinida com sucesso.",
+      "accessRequested": "Solicitação de acesso registrada. Aguarde a liberação de um administrador.",
+      "recoverySent": "Código de recuperação enviado.",
+      "recoveryValidated": "Código validado com sucesso.",
+      "invalidDate": "Formato de data inválido",
+      "invalidComparisonDate": "Erro na data de comparação"
+    }
+  },
   "routes": {
     "home": {
       "title": "Página Inícial"
@@ -183,7 +284,8 @@
       "subtitulo": "Altere o cargo de um usuário diretamente por este facilitador.",
       "rotuloPesquisa": "Pesquisar usuários",
       "textoVazio": "Nenhum usuário está vinculado a este cargo.",
-      "alteracaoPendente": "Alteração pendente"
+      "alteracaoPendente": "Alteração pendente",
+      "vincularAoCargo": "Vincular ao cargo {cargo}"
     },
     "controlePermissoesCargo": {
       "rotas": {
@@ -315,11 +417,9 @@
       "textoFinalCargos": "Todos os cargos foram carregados."
     },
     "baseChart": {
-      "inputAgrupamento": {
-        "label": "Agrupar por"
-      },
       "tooltipConfiguracao": "Configurar gráfico",
       "secoes": {
+        "agrupamento": "Agrupar por",
         "visualizacao": "Visualização",
         "controles": "Controles"
       },
@@ -331,7 +431,9 @@
         "donut": "Donut",
         "pizza": "Pizza",
         "colunas": "Colunas",
-        "barras": "Barras"
+        "barras": "Barras",
+        "linha": "Linha",
+        "radial": "Radial"
       },
       "semDados": "Sem dados para exibir",
       "totalAcumulado": "Total acumulado",

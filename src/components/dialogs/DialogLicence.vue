@@ -63,9 +63,9 @@
 
     <template #actions="{ onFechar }">
       <v-btn
+        :text="t('common.actions.close')"
         color="primary"
         variant="tonal"
-        text="Fechar"
         class="ml-auto"
         @click="onFechar"
       />
@@ -94,7 +94,7 @@ const dialogLicenceOpen = defineModel<boolean>('dialogLicenceOpen', { required: 
 
 // Computadas
 const formattedVersionDate = computed(() => {
-  return CFormatters.formatarDataHora(APP_BUILD_DATE, true);
+  return CFormatters.formatarDataHora(__APP_BUILD_DATE__, true);
 });
 
 const systemVersion = computed(() => pkg.version);

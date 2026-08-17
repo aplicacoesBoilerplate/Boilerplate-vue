@@ -120,7 +120,7 @@
 
 <script setup lang="ts" generic="TInterfaceRegistro extends object">
 // Ecossistema vue
-import { computed, onMounted, provide, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // Stores
@@ -401,6 +401,10 @@ onMounted(() => {
   });
 
   limiteAtual.value = genericListStore.getLimit(props.contexto);
+});
+
+onBeforeUnmount(() => {
+  genericListStore.deactivateContext(props.contexto);
 });
 
 // Provide

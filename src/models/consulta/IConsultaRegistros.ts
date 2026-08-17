@@ -32,6 +32,14 @@ export interface IRespostaConsultaRegistros<TInterfaceRegistro extends object = 
   registros: TInterfaceRegistro[];
 }
 
+export interface IConsultaTodosRegistrosOptions {
+  signal?: AbortSignal;
+  maxPages?: number;
+  maxRecords?: number;
+  maxBytes?: number;
+  timeoutMs?: number;
+}
+
 /**
  * @description Interface genérica responsável por configurar a consulta auxiliar de registros disponível para um campo do filtro.
  * @template TInterfaceRegistro - O tipo do registro que será consultado.

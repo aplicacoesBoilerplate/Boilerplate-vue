@@ -85,7 +85,7 @@ type TProps = {
   tempoFormatado: string;
   tempoRestante: number;
 };
-const props = withDefaults(defineProps<TProps>(), {
+withDefaults(defineProps<TProps>(), {
   carregando: false,
 });
 

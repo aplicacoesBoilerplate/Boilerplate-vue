@@ -9,7 +9,7 @@
       @onSubmit="emits('alterarSenha')"
       @update:isValid="formularioValido = $event"
     >
-      <v-row dense>
+      <v-row density="compact">
         <v-col cols="12">
           <v-text-field
             v-model="senha"
@@ -62,7 +62,7 @@
       <div class="d-flex flex-wrap align-center ga-2 pt-2">
         <v-btn
           v-tooltip="tooltipResetar"
-          aria-label="Resetar senhas"
+          :aria-label="t('common.actions.resetPasswords')"
           class="flex-shrink-0"
           color="amber"
           icon="mdi-refresh"
@@ -105,7 +105,7 @@ type TProps = {
   tooltipResetar: string;
 };
 
-const props = withDefaults(defineProps<TProps>(), {
+withDefaults(defineProps<TProps>(), {
   carregando: false,
 });
 

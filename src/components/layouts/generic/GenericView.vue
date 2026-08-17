@@ -13,11 +13,14 @@
 
           <v-spacer />
 
-          <slot name="list-header-actions">
-            <template v-if="$slots['list-header-actions']" />
-          </slot>
-
-          <template v-if="$slots['activator-novo-registro'] || exibirGraficos">
+          <template
+            v-if="
+              $slots['list-header-actions'] ||
+                exibirGraficos ||
+                (exibirExportacao && serviceExportacao) ||
+                (exibirNovoRegistro && $slots['activator-novo-registro'])
+            "
+          >
             <BtnActionDrawer
               top="28px"
               right="6px"
@@ -102,6 +105,40 @@
               :usarFiltrosGlobais="usarFiltrosGlobais"
               @novoRegistro="emitirNovoRegistro({ modoEdicao: false })"
             >
+              <template #header="slotProps">
+                <slot
+                  name="list-header"
+                  v-bind="slotProps"
+                >
+                  <div class="d-flex align-center px-4 pb-2">
+                    <v-tooltip
+                      :text="
+                        slotProps.ordemAtual === 'asc'
+                          ? t('components.genericView.ordenarDecrescente')
+                          : t('components.genericView.ordenarCrescente')
+                      "
+                      location="bottom"
+                    >
+                      <template #activator="{ props: tooltipProps }">
+                        <v-btn
+                          v-bind="tooltipProps"
+                          :aria-label="
+                            slotProps.ordemAtual === 'asc'
+                              ? t('components.genericView.ordenarDecrescente')
+                              : t('components.genericView.ordenarCrescente')
+                          "
+                          :icon="slotProps.ordemAtual === 'asc' ? 'mdi-sort-ascending' : 'mdi-sort-descending'"
+                          color="primary"
+                          size="x-small"
+                          variant="tonal"
+                          @click="slotProps.alternarOrdenacao"
+                        />
+                      </template>
+                    </v-tooltip>
+                  </div>
+                </slot>
+              </template>
+
               <template #default="slotProps">
                 <slot
                   :items="slotProps.items"

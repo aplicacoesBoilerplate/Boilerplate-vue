@@ -62,7 +62,7 @@ const textoTooltip = computed(() =>
 // Funções
 
 /**
- * Lida com o evento 'beforeinstallprompt', armazenando-o caso a instalação esteja disponível.
+ * @description Lida com o evento `beforeinstallprompt`, armazenando-o quando a instalação está disponível.
  * @param pEvento - Evento que dispara a instalação do aplicativo.
  */
 function prepararInstalacaoPwa(pEvento: Event): void {
@@ -71,7 +71,7 @@ function prepararInstalacaoPwa(pEvento: Event): void {
 }
 
 /**
- * Instala o aplicativo no dispositivo do usuário, exibindo o prompt nativo de instalação.
+ * @description Instala o aplicativo no dispositivo do usuário, exibindo o prompt nativo de instalação.
  */
 async function instalarPwa(): Promise<void> {
   if (!eventoInstalacao.value) {

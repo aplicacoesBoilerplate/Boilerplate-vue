@@ -12,8 +12,19 @@ export interface IPreferencesTheme {
   currentTheme: 'light' | 'dark' | 'system';
 }
 
+import type { TChartType } from './TChartType';
+
+export interface IChartPreferences {
+  visible: boolean;
+  grouping: string;
+  type: TChartType;
+  showLegend: boolean;
+  showLabels: boolean;
+}
+
 /** @description Interface principal de preferencias. */
 export interface IPreferences {
   drawer: IPreferencesDrawer;
   theme: IPreferencesTheme;
+  charts: Record<string, IChartPreferences>;
 }

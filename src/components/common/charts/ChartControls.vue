@@ -1,39 +1,5 @@
 <template>
-  <div class="d-flex align-center ga-2 flex-wrap">
-    <v-select
-      v-model="filtroSelecionado"
-      :items="opcoesFiltro"
-      :label="t('components.baseChart.inputAgrupamento.label')"
-      itemTitle="descricao"
-      itemValue="valor"
-      maxWidth="220"
-      variant="solo-filled"
-      density="compact"
-      rounded="te-xl"
-      flat
-      hideDetails
-      singleLine
-    >
-      <template #selection="{ item }">
-        <div class="d-flex align-center ga-2 text-truncate">
-          <v-icon
-            :icon="item.raw.icone"
-            size="small"
-          />
-          <span class="text-truncate">{{ item.raw.descricao }}</span>
-        </div>
-      </template>
-
-      <template #item="{ props: itemProps, item }">
-        <v-list-item
-          v-bind="itemProps"
-          :prependIcon="item.raw.icone"
-          color="primary"
-          rounded="ts-xl be-xl"
-        />
-      </template>
-    </v-select>
-
+  <div class="d-flex align-center">
     <v-menu
       v-model="exibirMenuConfiguracao"
       :closeOnContentClick="false"
@@ -64,6 +30,31 @@
           density="compact"
           nav
         >
+          <template v-if="opcoesFiltro.length > 0">
+            <v-list-subheader>{{ t('components.baseChart.secoes.agrupamento') }}</v-list-subheader>
+
+            <v-list-item
+              v-for="opcao in opcoesFiltro"
+              :key="opcao.valor"
+              :active="filtroSelecionado === opcao.valor"
+              :prependIcon="opcao.icone"
+              :title="opcao.descricao"
+              color="primary"
+              rounded="lg"
+              @click="filtroSelecionado = opcao.valor"
+            >
+              <template #append>
+                <v-icon
+                  v-if="filtroSelecionado === opcao.valor"
+                  icon="mdi-check"
+                  size="small"
+                />
+              </template>
+            </v-list-item>
+
+            <v-divider class="my-2" />
+          </template>
+
           <v-list-subheader>{{ t('components.baseChart.secoes.visualizacao') }}</v-list-subheader>
 
           <v-list-item
@@ -118,17 +109,16 @@
 import { computed, mergeProps, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import type { TChartType } from '@/models/components/TChartType';
 import type { ICampoAgrupamento } from '@/models/filters/ICampoFiltro';
-
-type TTipoGrafico = 'donut' | 'pie' | 'bar' | 'barHorizontal' | 'line' | 'radialBar';
 
 type TProps = {
   opcoesFiltro: ICampoAgrupamento[];
-  modelValue: TTipoGrafico;
+  modelValue: TChartType;
 };
 
 type TEmits = {
-  'update:modelValue': [tipo: TTipoGrafico];
+  'update:modelValue': [tipo: TChartType];
   'update:exibirLegenda': [exibir: boolean];
   'update:exibirRotulos': [exibir: boolean];
 };

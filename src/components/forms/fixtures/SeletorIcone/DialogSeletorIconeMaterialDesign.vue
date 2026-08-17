@@ -36,11 +36,11 @@
         <template #item="{ props: itemProps, item }">
           <v-list-item
             v-bind="itemProps"
-            :subtitle="item.raw.aliases.join(', ')"
-            :title="item.raw.nome"
+            :subtitle="item.aliases.join(', ')"
+            :title="item.nome"
           >
             <template #prepend>
-              <v-icon :icon="item.raw.valor" />
+              <v-icon :icon="item.valor" />
             </template>
           </v-list-item>
         </template>

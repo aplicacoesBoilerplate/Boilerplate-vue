@@ -3,9 +3,15 @@ import axios, { AxiosError } from 'axios';
 
 // Models
 import type { IErros } from '@/models/model/common/IErros';
+import type { InternalAxiosRequestConfig } from 'axios';
 
 // Classes
 import { CTradutor } from '@/classes/Utils/CTradutor';
+import { pinia } from '@/plugins/pinia';
+
+type TPermissionRefreshConfig = InternalAxiosRequestConfig & {
+  permissionRefreshScheduled?: boolean;
+};
 
 const http = axios.create({
   baseURL: window.env?.VITE_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:8080',
@@ -37,15 +43,23 @@ http.interceptors.response.use(
     const errorResponse = pError?.response;
 
     if (errorResponse?.status === 401) {
-      sessionStorage.removeItem('token');
-      void import('@/router').then(({ default: pRouter }) => pRouter.push({ name: 'Login' }));
+      void import('@/stores/auth.store').then(({ useAuthStore: pUseAuthStore }) =>
+        pUseAuthStore(pinia).encerrarSessao(),
+      );
       return Promise.reject('Sessão expirada! faça login novamente.');
     }
 
-    if (errorResponse?.status === 403 && pError.config?.url !== '/auth/me/cargo') {
-      void import('@/stores/auth.store').then(({ useAuthStore: pUseAuthStore }) =>
-        pUseAuthStore().atualizarPermissoesUsuarioAutenticado(),
-      );
+    const requestConfig = pError.config as TPermissionRefreshConfig | undefined;
+    if (
+      errorResponse?.status === 403 &&
+      requestConfig &&
+      requestConfig?.url !== '/auth/me/cargo' &&
+      !requestConfig?.permissionRefreshScheduled
+    ) {
+      requestConfig.permissionRefreshScheduled = true;
+      void import('@/stores/auth.store')
+        .then(({ useAuthStore: pUseAuthStore }) => pUseAuthStore(pinia).atualizarPermissoesUsuarioAutenticado())
+        .catch(() => undefined);
     }
 
     const objetoError = pError.response?.data as IErros;

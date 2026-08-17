@@ -14,7 +14,7 @@ export class CHealthCheckService {
    */
   public static async verificarSimplificado(): Promise<IHealthCheckResultado> {
     try {
-      const response = await http.get<IHealthCheckResponse>('/actuator/health-check', {
+      const response = await http.get<IHealthCheckResponse>('/api/v1/actuator/health-check/public', {
         validateStatus: () => true,
       });
 

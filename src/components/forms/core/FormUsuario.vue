@@ -4,7 +4,7 @@
     @onSubmit="emit('onSubmit')"
     @update:isValid="formIsValid = $event"
   >
-    <v-row dense>
+    <v-row density="compact">
       <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
         <v-text-field
           v-model="usuario.nome"
