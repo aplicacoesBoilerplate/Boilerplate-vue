@@ -66,9 +66,7 @@
                 class="pa-1"
                 color="surface"
               >
-                <v-row
-                  v-if="versao.secoes.length"
-                  density="comfortable"
+                <v-row v-if="versao.secoes.length"
                 >
                   <v-col
                     v-for="secao in versao.secoes"
@@ -99,7 +97,7 @@
 
                       <v-list
                         class="pa-0"
-                        bg-color="transparent"
+                        bgColor="transparent"
                         density="compact"
                       >
                         <v-list-item
@@ -109,8 +107,8 @@
                         >
                           <template #prepend>
                             <v-icon
-                              icon="mdi-check-circle-outline"
                               :color="secao.cor"
+                              icon="mdi-check-circle-outline"
                               size="x-small"
                             />
                           </template>

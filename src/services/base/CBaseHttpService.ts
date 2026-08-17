@@ -1,127 +1,111 @@
-// Types e Interfaces
-import type { IConsultaRegistrosFiltroPayload } from '@/models/filters/IConsultaRegistrosFiltro';
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+// Axios
 import type { AxiosRequestConfig } from 'axios';
-
-// Classes
-import { CResolvePayloadFiltros } from '@/classes/filters/CResolvePayloadFiltros';
 
 // Services
 import http from './axios';
 
 /**
- * @description Classe base que provê métodos de requisições HTTP com tratamento automático de erros.
+ * @description Interface para centralizar os parâmetros esperados pelos métodos services para requisições.
+ * @template TBody - Definição do objeto do body da requisição.
+ *
+ * @property {string} pathUrl - Endpoint do recurso da API, o prefixo 'base/api/v1' já é tratado, só precisa do recurso.
+ * @property {TBody} body - Body da requisição, usado em requisições POST, PUT e PATCH.
+ * @property {AxiosRequestConfig} axiosConfig - Configurações adicionais do axios como headers, query params...
+ */
+export interface IBaseParamsRequest {
+  pathUrl: string;
+  axiosConfig?: AxiosRequestConfig;
+}
+
+export interface IBodyParamsRequest<TBody extends object> extends IBaseParamsRequest {
+  body: TBody;
+}
+
+/**
+ * @description Classe base que provê métodos de requisições HTTP com tratamento automático de erros feitos pelo Axios.
  */
 export abstract class CBaseHttpService {
   /**
-   * @description Centraliza a instância da classe de normalização do payload de consulta com filtros aplicados.
-   * @template T - type union com os valores dos campos validos para aplicar filtros.
-   * @param pPayload - Payload gerado pelo DialogFiltros para ser tratado.
-   * @param pCampoDefault - Campo fallback para aplicar filtro caso a validação com Set falhe.
-   * @param pCamposValidos - Conjunto de campos válidos para validação.
-   * @returns Payload esperado pelo backend para uma consulta com filtros aplicados.
+   * @description Normaliza o caminho para impedir barras duplicadas entre o prefixo da API e o recurso.
+   * @param pPathUrl - Caminho do recurso informado pelo service.
+   * @returns Caminho absoluto com o prefixo da API quando necessario.
    */
-  protected static resolverPayload<T>(
-    pPayload: IConsultaRegistrosFiltroPayload<T>,
-    pCampoDefault?: string,
-    pCamposValidos?: Set<string>,
-  ): IFiltrosConsulta[] {
-    const resolver = new CResolvePayloadFiltros(pCamposValidos);
-    return resolver.montarFiltrosPesquisa(pPayload, pCampoDefault);
+  private resolverUrl(pPathUrl: string): string {
+    const pathUrl = pPathUrl.replace(/^\/+/, '');
+    return pathUrl.startsWith('api/v1/') ? `/${pathUrl}` : `/api/v1/${pathUrl}`;
   }
 
   /**
    * @description Método que faz requisições GET.
-   * @param pPathUrl - Path do Endpoint da API, URL da requisição será tratada com '/api/v1/'.
-   * @param pConfig - Configurações da requisição.
+   * @template TResposta - Definição do objeto esperado na resposta.
+   *
+   * @param {IBaseParamsRequest} pParametros - Parâmetros base.
    * @returns A interface da resposta é transmitida no template do método.
    */
-  protected static async get<TResposta>(pPathUrl: string, pConfig?: AxiosRequestConfig): Promise<TResposta> {
-    try {
-      const lSafeUrl = pPathUrl.startsWith('/api/v1/') ? pPathUrl : `/api/v1/${pPathUrl}`;
-      const { data } = await http.get<TResposta>(lSafeUrl, pConfig);
-      return data;
-    } catch (pErro) {
-      throw pErro;
-    }
+  protected async get<TResposta = unknown>(pParametros: IBaseParamsRequest): Promise<TResposta> {
+    const lSafeUrl = this.resolverUrl(pParametros.pathUrl);
+    const { data } = await http.get<TResposta>(lSafeUrl, pParametros.axiosConfig);
+    return data;
   }
 
   /**
    * @description Método que faz requisições POST.
-   * @param pPathUrl - Path do Endpoint da API, URL da requisição será tratada com '/api/v1/'.
-   * @param pBody - Body da requisição.
-   * @param pConfig - Configurações da requisição.
+   * @template TResposta - Definição do objeto esperado na resposta.
+   * @template TBody - Definição do objeto do body da requisição.
+   *
+   * @param {IBodyParamsRequest<TBody>} pParametros - Parâmetros base.
    * @returns A interface da resposta é transmitida no template do método.
    */
-  protected static async post<TResposta, TBody = unknown>(
-    pPathUrl: string,
-    pBody?: TBody,
-    pConfig?: AxiosRequestConfig,
+  protected async post<TBody extends object = object, TResposta = unknown>(
+    pParametros: IBodyParamsRequest<TBody>,
   ): Promise<TResposta> {
-    try {
-      const lSafeUrl = pPathUrl.startsWith('/api/v1/') ? pPathUrl : `/api/v1/${pPathUrl}`;
-      const { data } = await http.post<TResposta>(lSafeUrl, pBody, pConfig);
-      return data;
-    } catch (pErro) {
-      throw pErro;
-    }
+    const lSafeUrl = this.resolverUrl(pParametros.pathUrl);
+    const { data } = await http.post<TResposta>(lSafeUrl, pParametros.body, pParametros.axiosConfig);
+    return data;
   }
 
   /**
    * @description Método que faz requisições PUT.
-   * @param pPathUrl - Path do Endpoint da API, URL da requisição será tratada com '/api/v1/'.
-   * @param pBody - Body da requisição.
-   * @param pConfig - Configurações da requisição.
+   * @template TResposta - Definição do objeto esperado na resposta.
+   * @template TBody - Definição do objeto do body da requisição.
+   *
+   * @param {IBodyParamsRequest<TBody>} pParametros - Parâmetros base.
    * @returns A interface da resposta é transmitida no template do método.
    */
-  protected static async put<TResposta, TBody = unknown>(
-    pPathUrl: string,
-    pBody?: TBody,
-    pConfig?: AxiosRequestConfig,
+  protected async put<TBody extends object = object, TResposta = unknown>(
+    pParametros: IBodyParamsRequest<TBody>,
   ): Promise<TResposta> {
-    try {
-      const lSafeUrl = pPathUrl.startsWith('/api/v1/') ? pPathUrl : `/api/v1/${pPathUrl}`;
-      const { data } = await http.put<TResposta>(lSafeUrl, pBody, pConfig);
-      return data;
-    } catch (pErro) {
-      throw pErro;
-    }
+    const lSafeUrl = this.resolverUrl(pParametros.pathUrl);
+    const { data } = await http.put<TResposta>(lSafeUrl, pParametros.body, pParametros.axiosConfig);
+    return data;
   }
 
   /**
    * @description Método que faz requisições PATCH.
-   * @param pPathUrl - Path do Endpoint da API, URL da requisição será tratada com '/api/v1/'.
-   * @param pBody - Body da requisição.
-   * @param pConfig - Configurações da requisição.
+   * @template TResposta - Definição do objeto esperado na resposta.
+   * @template TBody - Definição do objeto do body da requisição.
+   *
+   * @param {IBodyParamsRequest<TBody>} pParametros - Parâmetros base.
    * @returns A interface da resposta é transmitida no template do método.
    */
-  protected static async patch<TResposta, TBody = unknown>(
-    pPathUrl: string,
-    pBody?: TBody,
-    pConfig?: AxiosRequestConfig,
+  protected async patch<TBody extends object = object, TResposta = unknown>(
+    pParametros: IBodyParamsRequest<TBody>,
   ): Promise<TResposta> {
-    try {
-      const lSafeUrl = pPathUrl.startsWith('/api/v1/') ? pPathUrl : `/api/v1/${pPathUrl}`;
-      const { data } = await http.patch<TResposta>(lSafeUrl, pBody, pConfig);
-      return data;
-    } catch (pErro) {
-      throw pErro;
-    }
+    const lSafeUrl = this.resolverUrl(pParametros.pathUrl);
+    const { data } = await http.patch<TResposta>(lSafeUrl, pParametros.body, pParametros.axiosConfig);
+    return data;
   }
 
   /**
    * @description Método que faz requisições DELETE.
-   * @param pPathUrl - Path do Endpoint da API, URL da requisição será tratada com '/api/v1/'.
-   * @param pConfig - Configurações da requisição.
+   * @template TResposta - Definição do objeto esperado na resposta.
+   *
+   * @param {IBaseParamsRequest} pParametros - Parâmetros base.
    * @returns A interface da resposta é transmitida no template do método.
    */
-  protected static async delete<TResposta = void>(pPathUrl: string, pConfig?: AxiosRequestConfig): Promise<TResposta> {
-    try {
-      const lSafeUrl = pPathUrl.startsWith('/api/v1/') ? pPathUrl : `/api/v1/${pPathUrl}`;
-      const { data } = await http.delete<TResposta>(lSafeUrl, pConfig);
-      return data;
-    } catch (pErro) {
-      throw pErro;
-    }
+  protected async delete<TResposta = void>(pParametros: IBaseParamsRequest): Promise<TResposta> {
+    const lSafeUrl = this.resolverUrl(pParametros.pathUrl);
+    const { data } = await http.delete<TResposta>(lSafeUrl, pParametros.axiosConfig);
+    return data;
   }
 }

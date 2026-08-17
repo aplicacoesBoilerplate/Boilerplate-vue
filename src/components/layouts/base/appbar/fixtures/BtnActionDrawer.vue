@@ -21,7 +21,7 @@
         >
           <v-expand-x-transition>
             <div
-              v-if="isHovering || isForcedOpen"
+              v-show="isHovering || isForcedOpen"
               class="align-center flex-nowrap pl-2 overflow-hidden"
               style="display: flex; width: max-content"
             >
@@ -51,8 +51,8 @@ import { provide, ref } from 'vue';
 
 // Provide/Inject para manter a gaveta aberta
 const isForcedOpen = ref(false);
-provide('drawerKeepOpen', (val: boolean) => {
-  isForcedOpen.value = val;
+provide('drawerKeepOpen', (pValue: boolean) => {
+  isForcedOpen.value = pValue;
 });
 
 /**
@@ -78,5 +78,8 @@ withDefaults(defineProps<TPropsBtnDrawer>(), {
   color: 'primary',
   width: '220px',
   absolute: false,
+  top: undefined,
+  right: undefined,
+  left: undefined,
 });
 </script>

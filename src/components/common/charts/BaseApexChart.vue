@@ -20,12 +20,12 @@
       />
     </v-card-title>
 
-    <v-card-text class="pa-0 flex-grow-1 d-flex flex-column justify-center overflow-hidden">
+    <v-card-text class="chart-content pa-0 flex-grow-1 d-flex flex-column justify-center">
       <div
         v-if="possuiDados"
-        class="w-100"
+        class="chart-container w-100"
       >
-        <VueApexCharts
+        <componenteVueApexCharts
           :key="chaveRenderizacao"
           :type="tipoGraficoApex"
           :height="altura"
@@ -50,34 +50,36 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, ref } from 'vue';
+// Ecossistema Vue
+import { computed, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTheme } from 'vuetify';
 
+// Models
 import type { IValorGrafico } from '@/models/components/IValorGrafico';
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
+import type { TChartType } from '@/models/components/TChartType';
 import type { TDadoGrafico } from '@/models/components/TDadoGrafico';
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import type { ICampoAgrupamento } from '@/models/filters/ICampoFiltro';
 import type { ApexOptions } from 'apexcharts';
 
-import { gerarCores } from '@/utils/generateColors';
+// Utils
+import { gerarCores } from '@/utils/gerarCores.ts';
 
+// Componentes
 import ChartControls from './ChartControls.vue';
 
-type TTipoGrafico = 'donut' | 'pie' | 'bar' | 'barHorizontal' | 'line' | 'radialBar';
 type TTipoGraficoApex = 'donut' | 'pie' | 'bar' | 'line' | 'radialBar';
-
 type TMapeamentoCoresGrafico = Record<string, string>;
 
 type TProps = {
   dados: IValorGrafico[] | TDadoGrafico[];
-  opcoesFiltro: ICampoFiltro<unknown>[];
+  opcoesFiltro: ICampoAgrupamento[];
   configuracaoAtiva?: IHeadersDataTable;
   altura?: number;
-  tipoInicial?: TTipoGrafico;
+  tipoInicial?: TChartType;
   mapeamentoCores?: TMapeamentoCoresGrafico;
 };
-
 const props = withDefaults(defineProps<TProps>(), {
   configuracaoAtiva: undefined,
   altura: 320,
@@ -85,18 +87,58 @@ const props = withDefaults(defineProps<TProps>(), {
   mapeamentoCores: () => ({}),
 });
 
+// Composables
 const theme = useTheme();
 const { t } = useI18n();
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const VueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'));
+// Importação dinâmica do componente vue3-apexcharts
+const componenteVueApexCharts = defineAsyncComponent(() => import('vue3-apexcharts'));
 
+// Reativas - Model
 const filtroSelecionado = defineModel<string>('filtroSelecionado', { required: true });
+const tipoGraficoModel = defineModel<TChartType>('tipoGrafico');
+const exibirLegenda = defineModel<boolean>('exibirLegenda', { default: true });
+const exibirRotulos = defineModel<boolean>('exibirRotulos', { default: true });
+const tipoGrafico = computed<TChartType>({
+  get: () => tipoGraficoModel.value ?? props.tipoInicial,
+  set: (pTipo) => {
+    tipoGraficoModel.value = pTipo;
+  },
+});
 
-const tipoGrafico = ref<TTipoGrafico>(props.tipoInicial);
-const exibirLegenda = ref(true);
-const exibirRotulos = ref(true);
+// Funções
+function extrairRotulo(pItem: IValorGrafico | TDadoGrafico): string {
+  if ('titulo' in pItem) {
+    const valorOriginal = pItem.valorOriginal ?? pItem.titulo;
+    if (props.configuracaoAtiva?.chartFormatter) {
+      return props.configuracaoAtiva.chartFormatter(valorOriginal);
+    }
+    return formatarNumeroOuTexto(valorOriginal);
+  }
+  return pItem.rotulo;
+}
 
+function formatarNumero(pValor: number): string {
+  return pValor.toLocaleString();
+}
+
+function formatarNumeroOuTexto(pValor: unknown): string {
+  if (typeof pValor === 'boolean') return pValor ? t('messages.yes') : t('messages.no');
+  if (typeof pValor === 'number') return pValor.toLocaleString();
+  return String(pValor);
+}
+
+function formatarRotuloDados(pValor: number): string {
+  if (ehTipoCircular.value) return `${Number(pValor).toFixed(1)}%`;
+  return formatarNumero(pValor);
+}
+
+function calcularPorcentagem(pValor: number): string {
+  if (!totalValor.value) return '0';
+  return ((pValor / totalValor.value) * 100).toFixed(1);
+}
+
+// Computadas
 const possuiDados = computed(() => props.dados.length > 0);
 const ehBarraHorizontal = computed(() => tipoGrafico.value === 'barHorizontal');
 const ehTipoCircular = computed(() => tipoGrafico.value === 'donut' || tipoGrafico.value === 'pie');
@@ -122,7 +164,8 @@ const tituloAgrupamento = computed(() => {
 });
 
 const labelsGrafico = computed(() => props.dados.map((pItem) => extrairRotulo(pItem)));
-const coresGrafico = computed(() => props.dados.map((pItem) => resolverCor(pItem)));
+const valoresBrutos = computed(() => props.dados.map((pItem) => (pItem as IValorGrafico).valor));
+const coresGrafico = computed(() => gerarCores(props.dados.length));
 const chaveRenderizacao = computed(() => `${tipoGrafico.value}-${filtroSelecionado.value}`);
 
 const seriesGrafico = computed<number[] | { name: string; data: number[] }[]>(() => {
@@ -136,7 +179,8 @@ const seriesGrafico = computed<number[] | { name: string; data: number[] }[]>(()
   }
 
   if (ehTipoRadial.value) {
-    return props.dados.map((pItem) => (pItem as IValorGrafico).valor);
+    if (!totalValor.value) return valoresBrutos.value.map(() => 0);
+    return valoresBrutos.value.map((pValor) => (pValor / totalValor.value) * 100);
   }
 
   if (tipoGrafico.value === 'bar' || ehBarraHorizontal.value) {
@@ -161,7 +205,7 @@ const opcoesGrafico = computed<ApexOptions>(() => {
       animations: { enabled: true, speed: 300 },
     },
     colors: coresGrafico.value,
-    labels: ehTipoRadial.value ? undefined : labelsGrafico.value,
+    labels: labelsGrafico.value,
     legend: {
       show: exibirLegenda.value,
       position: 'bottom',
@@ -175,8 +219,20 @@ const opcoesGrafico = computed<ApexOptions>(() => {
       theme: theme.current.value.dark ? 'dark' : 'light',
       fillSeriesColor: false,
       marker: { show: true },
+      fixed: {
+        enabled: true,
+        position: 'topRight',
+        offsetX: -8,
+        offsetY: 8,
+      },
       y: {
-        formatter: (pValor: number) => `${formatarNumero(pValor)} (${calcularPorcentagem(pValor)}%)`,
+        formatter: (pValor: number, pContexto) => {
+          const valorBruto = ehTipoRadial.value
+            ? valoresBrutos.value[pContexto?.seriesIndex ?? 0] ?? 0
+            : pValor;
+          const porcentagem = ehTipoRadial.value ? pValor.toFixed(1) : calcularPorcentagem(pValor);
+          return `${formatarNumero(valorBruto)} (${porcentagem}%)`;
+        },
       },
     },
     noData: { text: t('components.baseChart.semDados') },
@@ -212,7 +268,11 @@ const opcoesGrafico = computed<ApexOptions>(() => {
           track: { background: theme.current.value.dark ? '#2a2a2a' : '#e0e0e0' },
           dataLabels: {
             name: { show: true, fontSize: '14px' },
-            value: { show: true, fontSize: '18px', formatter: (pValor: number) => `${pValor}%` },
+            value: {
+              show: true,
+              fontSize: '18px',
+              formatter: (pValor: number) => `${Number(pValor).toFixed(1)}%`,
+            },
             total: {
               show: true,
               label: labelCentro.value,
@@ -276,53 +336,20 @@ const opcoesGrafico = computed<ApexOptions>(() => {
     },
   };
 });
-
-function extrairRotulo(pItem: IValorGrafico | TDadoGrafico): string {
-  if ('titulo' in pItem) {
-    const valorOriginal = pItem.valorOriginal ?? pItem.titulo;
-    if (props.configuracaoAtiva?.chartFormatter) {
-      return props.configuracaoAtiva.chartFormatter(valorOriginal);
-    }
-    return formatarNumeroOuTexto(valorOriginal);
-  }
-  return pItem.rotulo;
-}
-
-function formatarNumero(pValor: number): string {
-  return pValor.toLocaleString();
-}
-
-function formatarNumeroOuTexto(pValor: unknown): string {
-  if (typeof pValor === 'boolean') return pValor ? t('messages.yes') : t('messages.no');
-  if (typeof pValor === 'number') return pValor.toLocaleString();
-  return String(pValor);
-}
-
-function formatarRotuloDados(pValor: number): string {
-  if (ehTipoCircular.value) return `${Number(pValor).toFixed(1)}%`;
-  return formatarNumero(pValor);
-}
-
-function calcularPorcentagem(pValor: number): string {
-  if (!totalValor.value) return '0';
-  return ((pValor / totalValor.value) * 100).toFixed(1);
-}
-
-function resolverCor(pItem: IValorGrafico | TDadoGrafico): string {
-  const rotulo = 'titulo' in pItem ? String(pItem.valorOriginal ?? pItem.titulo) : pItem.rotulo;
-
-  if (props.mapeamentoCores[rotulo]) {
-    return theme.current.value.colors[props.mapeamentoCores[rotulo]] ?? props.mapeamentoCores[rotulo];
-  }
-
-  if ('cor' in pItem && pItem.cor && !['#000000', '#000', 'black'].includes(pItem.cor.toLowerCase())) {
-    return temaCor(pItem.cor);
-  }
-
-  return gerarCores(rotulo);
-}
-
-function temaCor(pCor: string): string {
-  return theme.current.value.colors[pCor] ?? pCor;
-}
 </script>
+
+<style scoped>
+.chart-content,
+.chart-container {
+  overflow: visible;
+  position: relative;
+}
+
+.chart-container {
+  z-index: 1;
+}
+
+:deep(.apexcharts-tooltip) {
+  z-index: 20 !important;
+}
+</style>

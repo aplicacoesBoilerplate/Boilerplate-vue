@@ -1,5 +1,8 @@
-// Types e interfaces
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// Models
 import type { VTextField } from 'vuetify/components';
+
+import { CTradutor } from '@/classes/Utils/CTradutor';
 
 export type TVuetifyRule = NonNullable<InstanceType<typeof VTextField>['$props']['rules']>[number];
 type TRuleFactory = (...args: any[]) => TVuetifyRule;
@@ -10,7 +13,7 @@ type TRuleFactory = (...args: any[]) => TVuetifyRule;
  * @property {boolean} ignorarComparacaoHora - Define se a comparação ignora horas (Padrão: true).
  * @property {string} mensagemErro - Mensagem exibida caso a regra falhe.
  */
-interface DateRuleOptions {
+interface IDateRuleOptions {
   ignorarComparacaoHora?: boolean;
   mensagemErro?: string;
 }
@@ -25,9 +28,10 @@ export const rulesPersonalizadas = {
    *
    * @param pCompararCom String estática ou função que retorna o valor a ser comparado.
    * @param pMensagemErro Mensagem exibida caso a validação falhe.
+   * @returns Boolean ou mensagem justificando o motivo de estar inválido.
    */
   equals: (pCompararCom: string | (() => string), pMensagemErro: string = 'Os valores não coincidem') => {
-    return (v: any) => v === (typeof pCompararCom === 'function' ? pCompararCom() : pCompararCom) || pMensagemErro;
+    return (pValor: any) => pValor === (typeof pCompararCom === 'function' ? pCompararCom() : pCompararCom) || pMensagemErro;
   },
 
   /**
@@ -35,9 +39,10 @@ export const rulesPersonalizadas = {
    *
    * @param pValoresValidos Array contendo as opções válidas.
    * @param pMensagemErro Mensagem exibida caso a validação falhe.
+   * @returns Boolean ou mensagem justificando o motivo de estar inválido.
    */
   includes: (pValoresValidos: string[], pMensagemErro: string = 'Preencha o valor com uma das opções válida') => {
-    return (v: any) => pValoresValidos.includes(v) || pMensagemErro;
+    return (pValor: any) => pValoresValidos.includes(pValor) || pMensagemErro;
   },
 
   /**
@@ -45,20 +50,21 @@ export const rulesPersonalizadas = {
    *
    * @param pCompararCom Data de referência (string, objeto Date ou função que os retorne).
    * @param pOptions Configurações da validação (ignorar hora e mensagem customizada).
+   * @returns Boolean ou mensagem justificando o motivo de estar inválido.
    */
-  dateAfter: (pCompararCom: string | Date | (() => string | Date), pOptions: DateRuleOptions = {}) => {
+  dateAfter: (pCompararCom: string | Date | (() => string | Date), pOptions: IDateRuleOptions = {}) => {
     const { ignorarComparacaoHora = true, mensagemErro = 'Data não permitida' } = pOptions;
 
-    return (v: any) => {
-      if (!v) return true;
+    return (pValor: any) => {
+      if (!pValor) return true;
 
       const lComparacao = typeof pCompararCom === 'function' ? pCompararCom() : pCompararCom;
 
-      const lValorInputDate = new Date(v);
+      const lValorInputDate = new Date(pValor);
       const lValorComparacaoDate = new Date(lComparacao);
 
-      if (isNaN(lValorInputDate.getTime())) return 'Formato de data inválido';
-      if (isNaN(lValorComparacaoDate.getTime())) return 'Erro na data de comparação';
+      if (isNaN(lValorInputDate.getTime())) return CTradutor.traduzir('common.messages.invalidDate');
+      if (isNaN(lValorComparacaoDate.getTime())) return CTradutor.traduzir('common.messages.invalidComparisonDate');
 
       if (ignorarComparacaoHora) {
         lValorInputDate.setHours(0, 0, 0, 0);

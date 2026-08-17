@@ -15,8 +15,8 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 // Composables
 const route = useRoute();
@@ -24,12 +24,12 @@ const { t } = useI18n();
 
 // Computadas
 const items = computed(() => {
-  const matchedRoutes = route.matched.filter((r) => r.meta && r.meta.title);
+  const matchedRoutes = route.matched.filter((pRoute) => pRoute.meta && pRoute.meta.title);
 
-  const breadcrumbs = matchedRoutes.map((r, index) => ({
-    title: t(r.meta.title as string),
-    disabled: index === matchedRoutes.length - 1,
-    to: { name: r.name },
+  const breadcrumbs = matchedRoutes.map((pRoute, pIndex) => ({
+    title: t(pRoute.meta.title as string),
+    disabled: pIndex === matchedRoutes.length - 1,
+    to: { name: pRoute.name },
     exact: true,
   }));
 

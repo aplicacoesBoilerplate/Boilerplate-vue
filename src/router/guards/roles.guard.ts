@@ -1,12 +1,11 @@
-// Ecossistema Vue
-import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
-
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
 
 // Models
-import { permissaoEstaLiberada } from '@/models/model/core/rbac/rbac.model';
 import { RECURSO_PERMISSAO_ROTAS_RBAC } from '@/models/model/core/rbac/rbac.api';
+import { permissaoEstaLiberada } from '@/models/model/core/rbac/rbac.model';
+// Types e Interfaces
+import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
 
 const ROTAS_SEM_RBAC = new Set([
   'Login',

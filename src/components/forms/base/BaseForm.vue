@@ -1,7 +1,7 @@
 <template>
   <v-form
     ref="formRef"
-    v-model="isFormValid"
+    v-model="vuetifyFormValid"
     @submit.prevent="handleOnSubmit"
   >
     <slot></slot>
@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 
 import type { VForm } from 'vuetify/components';
 
@@ -26,14 +26,19 @@ export interface IBaseFormExpose<TModel = unknown> {
 type TEmits = {
   onSubmit: [];
   onInvalid: [errors: unknown[]];
-  'update:isValid': [isValid: boolean];
 };
 const emits = defineEmits<TEmits>();
 
 const formModel = defineModel<unknown>('formModel', { default: undefined });
+const isFormValid = defineModel<boolean>('isValid', { default: false });
+const vuetifyFormValid = computed<boolean | null>({
+  get: () => isFormValid.value,
+  set: (pValor) => {
+    isFormValid.value = pValor === true;
+  },
+});
 
 const formRef = ref<VForm | null>(null);
-const isFormValid = ref(false);
 
 async function handleOnSubmit() {
   const resultado = await formRef.value?.validate();
@@ -51,13 +56,9 @@ async function refreshForm(pCriarObjetoModel: (pData?: unknown) => unknown): Pro
   formRef.value?.resetValidation();
 }
 
-watch(isFormValid, (pNovoValor) => {
-  emits('update:isValid', pNovoValor);
-});
-
 defineExpose({
   refreshForm,
   submit: handleOnSubmit,
-  isValid: () => isFormValid.value,
+  isValid: () => isFormValid.value === true,
 } satisfies IBaseFormExpose);
 </script>

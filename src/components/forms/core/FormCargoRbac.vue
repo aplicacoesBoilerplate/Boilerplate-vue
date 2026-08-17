@@ -9,7 +9,7 @@
       class="pt-4"
     >
       <v-window-item value="dados">
-        <v-row density="comfortable">
+        <v-row>
           <v-col :cols="$vuetify.display.mdAndUp ? 6 : 12">
             <v-text-field
               :modelValue="cargo.nome"
@@ -63,18 +63,18 @@
               <template #selection="{ item }">
                 <div class="d-flex align-center ga-2">
                   <v-icon
-                    :color="item.raw.cor"
-                    :icon="item.raw.icone"
+                    :color="item.cor"
+                    :icon="item.icone"
                     size="small"
                   />
-                  <span>{{ item.raw.descricao }}</span>
+                  <span>{{ item.descricao }}</span>
                 </div>
               </template>
 
               <template #item="{ props: itemProps, item }">
                 <v-list-item
                   v-bind="itemProps"
-                  :prependIcon="item.raw.icone"
+                  :prependIcon="item.icone"
                 />
               </template>
             </v-select>
@@ -142,12 +142,11 @@ import { computed, ref, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRules } from 'vuetify/labs/rules';
 
-// Tipos de RBAC
+// Models
 import {
   COMPORTAMENTOS_PADRAO_PERMISSAO,
   criarCargoRbacPadrao,
-  type ICargoRbac,
-  normalizarPapelCargo,
+  type ICargoRbac
 } from '@/models/model/core/rbac/rbac.model';
 import type { IRedirecionamentoInicialRbac } from '@/models/model/core/rbac/rbac.types';
 import type { IUsuario } from '@/models/model/core/usuario.model';
@@ -155,12 +154,28 @@ import type { IUsuario } from '@/models/model/core/usuario.model';
 // Composables
 import { useControlePermissoesCargo } from '@/composables/useControlePermissoesCargo';
 
+// Utils
+import { deepClone } from '@/utils/deepClone';
+
 // Componentes
 import BaseForm from '@/components/forms/base/BaseForm.vue';
 import ConfiguracaoRedirecionamentoCargo from '@/components/forms/core/fixtures/rbac/ConfiguracaoRedirecionamentoCargo.vue';
 import ControlePermissoesCargo from '@/components/forms/core/fixtures/rbac/ControlePermissoesCargo.vue';
 import UsuariosVinculadosCargo from '@/components/forms/core/fixtures/rbac/UsuariosVinculadosCargo.vue';
-import SeletorIconeMaterialDesign from '@/components/forms/fixtures/SeletorIconeMaterialDesign.vue';
+import SeletorIconeMaterialDesign from '@/components/forms/fixtures/SeletorIcone/SeletorIconeMaterialDesign.vue';
+
+// Classes
+import { CNormalizadores } from '@/classes/Utils/CNormalizadores';
+
+/**
+ * @description Métodos expostos pelo formulário de cargo RBAC.
+ * @property {() => Promise<void>} refreshForm - Restaura o estado original do formulário.
+ * @property {() => void} submit - Dispara a validação e submit do formulário.
+ */
+export interface IFormCargoRbacExpose {
+  refreshForm: () => Promise<void>;
+  submit: () => void;
+}
 
 /**
  * @property {ICargoRbac[]} cargosDisponiveis - Cargos disponíveis para vínculo de usuários.
@@ -191,7 +206,7 @@ const abaAtual = defineModel<string>('abaAtual', { required: true, default: 'dad
 
 // Reativas - ref
 const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
-const cargoOriginal = ref<ICargoRbac>(structuredClone(toRaw(cargo.value)));
+const cargoOriginal = ref<ICargoRbac>(deepClone(toRaw(cargo.value)));
 
 // Computadas de permissões
 const somenteLeitura = computed(() => props.somenteLeitura);
@@ -216,9 +231,8 @@ function atualizarNomeCargo(pValor: unknown): void {
   }
 
   const nome = String(pValor ?? '');
-
   cargo.value.nome = nome;
-  cargo.value.papel = normalizarPapelCargo(nome);
+  cargo.value.papel = CNormalizadores.normalizarPapelCargo(nome);
 }
 
 /**
@@ -285,16 +299,6 @@ watch(
   sincronizarPermissoesRedirecionamentoInicial,
   { immediate: true },
 );
-
-/**
- * @description Métodos expostos pelo formulário de cargo RBAC.
- * @property {() => Promise<void>} refreshForm - Restaura o estado original do formulário.
- * @property {() => void} submit - Dispara a validação e submit do formulário.
- */
-export interface IFormCargoRbacExpose {
-  refreshForm: () => Promise<void>;
-  submit: () => void;
-}
 
 // Expose
 defineExpose({

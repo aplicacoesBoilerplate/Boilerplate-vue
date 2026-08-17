@@ -26,24 +26,24 @@
         autocomplete="off"
         hideDetails
         clearable
-        @update:model-value="atualizarRotaInicial"
+        @update:modelValue="atualizarRotaInicial"
       >
         <template #selection="{ item }">
           <div class="d-flex align-center ga-2">
             <v-icon
-              :icon="item.raw.icone"
+              :icon="item.icone"
               size="small"
             />
-            <span>{{ item.raw.titulo }}</span>
+            <span>{{ item.titulo }}</span>
           </div>
         </template>
 
         <template #item="{ props: itemProps, item }">
           <v-list-item
             v-bind="itemProps"
-            :title="item.raw.titulo"
-            :subtitle="`${item.raw.name} • ${item.raw.path}`"
-            :prependIcon="item.raw.icone"
+            :title="item.titulo"
+            :subtitle="`${item.name} • ${item.path}`"
+            :prependIcon="item.icone"
           />
         </template>
 
@@ -104,19 +104,19 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, mergeProps, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { type RouteRecordRaw, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
-// Types e Interfaces
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+// Models
+import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 import type { IRedirecionamentoInicialRbac } from '@/models/model/core/rbac/rbac.types';
 
 // Componentes
 import DialogFiltro from '@/components/dialogs/core/filtros/DialogFiltro.vue';
 
 /**
- * @property {ICampoFiltro<any>[]} camposFiltro - Campos de filtro aceitos pela rota selecionada.
+ * @property {TCampoFiltroMapeado[]} camposFiltro - União dos campos de filtro aceitos pela rota selecionada.
  * @property {string} icone - Ícone cadastrado no meta da rota.
  * @property {string} name - Nome técnico usado pelo Vue Router.
  * @property {string} path - Caminho absoluto usado no redirecionamento.
@@ -124,7 +124,7 @@ import DialogFiltro from '@/components/dialogs/core/filtros/DialogFiltro.vue';
  * @property {string} titulo - Texto amigável exibido no autocomplete.
  */
 type TRotaRedirecionamentoRbac = {
-  camposFiltro: ICampoFiltro<any>[];
+  camposFiltro: TCampoFiltroMapeado[];
   icone: string;
   name: string;
   path: string;
@@ -149,7 +149,8 @@ const redirecionamento = defineModel<IRedirecionamentoInicialRbac>('redirecionam
 // Reativas - ref
 const exibirDialogFiltros = ref(false);
 
-function atualizarFiltrosIniciais(pFiltros: IFiltrosConsulta[]): void {
+// Funções
+function atualizarFiltrosIniciais(pFiltros: TFiltroConsultaSerializado[]): void {
   redirecionamento.value = {
     ...redirecionamento.value,
     filtros: pFiltros,
@@ -176,7 +177,7 @@ function mapearRotasRedirecionamento(pRotas: readonly RouteRecordRaw[], pCaminho
       return rotasFilhas;
     }
 
-    const camposFiltro = (pRota.meta?.filterResource as ICampoFiltro<any>[] | undefined) ?? [];
+    const camposFiltro = (pRota.meta?.filterResource as TCampoFiltroMapeado[] | undefined) ?? [];
 
     return [
       {

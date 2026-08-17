@@ -46,6 +46,7 @@
         :exibirSeletorLimite="false"
         :textoFinal="t('forms.consultaRegistrosFiltro.textoFinal')"
         :textoError="t('forms.consultaRegistrosFiltro.textoErro')"
+        :usarFiltrosGlobais="false"
         storage="session"
         class="flex-grow-1"
       >
@@ -84,12 +85,12 @@ import { useI18n } from 'vue-i18n';
 // Enumns
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 // Types e Interfaces
-import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 import type {
-  IConsultaRegistrosFiltro,
-  IResultadoConsultaRegistrosFiltro,
-} from '@/models/filters/IConsultaRegistrosFiltro';
+  IConsultaAuxiliarRegistros,
+  IConsultaRegistros,
+  IRespostaConsultaRegistros,
+} from '@/models/consulta/IConsultaRegistros';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 // Componentes
 import InputDebouncer from '@/components/forms/fixtures/InputDebouncer.vue';
@@ -107,7 +108,7 @@ const CACHE_TTL_CONSULTA_MS = 60 * 1000;
  * @property {string} condicao - Condição selecionada no formulário de filtros.
  */
 type TProps = {
-  campoSelecionado: ICampoFiltro<unknown> | null;
+  campoSelecionado: TCampoFiltroMapeado | null;
   condicao?: string;
 };
 const props = defineProps<TProps>();
@@ -129,24 +130,6 @@ const termoPesquisa = ref('');
 const pesquisaRegistros = ref<string | null>('');
 
 // Funções
-
-/**
- * @description Normaliza o resultado da consulta auxiliar.
- * @param pResultado Resultado da consulta auxiliar.
- * @returns Resultado normalizado da consulta auxiliar.
- */
-function normalizarResultadoConsulta(
-  pResultado: IResultadoConsultaRegistrosFiltro<TRegistroConsulta> | TRegistroConsulta[],
-): IResultadoConsultaRegistrosFiltro<TRegistroConsulta> {
-  if (Array.isArray(pResultado)) {
-    return {
-      registros: pResultado,
-      possuiMais: false,
-    };
-  }
-
-  return pResultado;
-}
 
 /**
  * @description Resolve o valor do registro.
@@ -217,23 +200,30 @@ function pesquisarRegistros(pTermoPesquisa: string): void {
 }
 
 async function buscarRegistros(
-  pPayload: IConsultaRegistros,
-): Promise<IResultadoConsultaRegistros<TRegistroConsulta>> {
-  const resultado = await configuracaoConsulta.value.buscarRegistros({
-    campo: String(props.campoSelecionado?.valor ?? ''),
-    condicao: props.condicao,
-    limite: pPayload.limite,
-    ordenacao: pPayload.ordenacao,
-    proximaEntrada: pPayload.proximaEntrada,
-    termoPesquisa: termoPesquisa.value,
-  });
+  pPayload: IConsultaRegistros<TRegistroConsulta>,
+): Promise<IRespostaConsultaRegistros<TRegistroConsulta>> {
+  const filtros = termoPesquisa.value
+    ? [
+        {
+          campo: configuracaoConsulta.value.atributoDescricao,
+          condicao: EOperadoresFiltro.CONTEM,
+          valor: termoPesquisa.value,
+          dataInicio: null,
+          dataFinal: null,
+          valoresSelecionados: [],
+        },
+      ]
+    : [];
 
-  return normalizarResultadoConsulta(resultado);
+  return configuracaoConsulta.value.buscarRegistros({
+    ...pPayload,
+    filtros,
+  });
 }
 
 // Computadas
-const configuracaoConsulta = computed<IConsultaRegistrosFiltro<TRegistroConsulta>>(() => {
-  return props.campoSelecionado?.consultaRegistros as IConsultaRegistrosFiltro<TRegistroConsulta>;
+const configuracaoConsulta = computed<IConsultaAuxiliarRegistros<TRegistroConsulta>>(() => {
+  return props.campoSelecionado?.consultaRegistros as unknown as IConsultaAuxiliarRegistros<TRegistroConsulta>;
 });
 
 const limiteConsulta = computed(() => configuracaoConsulta.value?.limiteInicial ?? 10);

@@ -1,7 +1,7 @@
 <template>
   <v-row
     class="prevent-jump-desktop align-stretch ma-0 w-100"
-    dense
+    density="compact"
   >
     <v-col
       :md="hiddenChart ? 12 : 6"
@@ -42,6 +42,8 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue';
 
+import type { ComponentPublicInstance } from 'vue';
+
 const props = defineProps<{
   hiddenChart: boolean;
 }>();
@@ -51,19 +53,20 @@ const emit = defineEmits<{
 }>();
 
 defineSlots<{
-  dataTable(props: { toggleChart: () => void }): any;
-  dataChart(): any;
-  moreInfo(): any;
+  dataTable(pProps: { toggleChart: () => void }): unknown;
+  dataChart(): unknown;
+  moreInfo(): unknown;
 }>();
 
-const refCharts = ref<any>(null);
+const refCharts = ref<HTMLElement | ComponentPublicInstance | null>(null);
 
 watch(
   () => props.hiddenChart,
-  (isHidden) => {
-    if (!isHidden) {
+  (pIsHidden) => {
+    if (!pIsHidden) {
       nextTick(() => {
-        const el = refCharts.value?.$el || refCharts.value;
+        const chartRef = refCharts.value;
+        const el = chartRef instanceof HTMLElement ? chartRef : chartRef?.$el;
         if (el) {
           el.scrollIntoView({
             behavior: 'smooth',

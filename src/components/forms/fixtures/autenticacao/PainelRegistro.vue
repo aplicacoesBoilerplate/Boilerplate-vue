@@ -43,7 +43,7 @@ type TProps = {
   tooltipResetar: string;
 };
 
-const props = withDefaults(defineProps<TProps>(), {
+withDefaults(defineProps<TProps>(), {
   carregando: false,
 });
 

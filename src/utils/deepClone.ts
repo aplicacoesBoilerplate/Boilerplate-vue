@@ -5,7 +5,6 @@ import { toRaw } from 'vue';
  * @description Clona profundamente um valor desembrulhando proxies reativos do Vue.
  * Retorna dados puros (sem reatividade) e sem referências compartilhadas com a origem.
  * Não preserva instâncias especiais como Date, Map ou Set (modelos de dados puros).
- *
  * @param pValor Valor a ser clonado (objeto, array ou primitivo).
  * @returns Cópia profunda independente do valor informado.
  */

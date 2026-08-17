@@ -1,17 +1,24 @@
-// Enums
-import { MAPEAMENTO_CAMPOS_FILTROS_RBAC } from '@/models/model/core/rbac/rbac.model';
 // Models
-import { MAPEAMENTO_CAMPOS_FILTROS_USUARIO } from '@/models/model/core/usuario.model';
-import { MAPEAMENTO_CAMPOS_FILTRO_ERROS } from '@/models/model/errors/MapeamentoFiltrosErros';
-// Types e Interfaces
-import type { ICampoFiltro } from './ICampoFiltro';
+import { ERecursosFiltro } from '@/models/filters/enums/ERecursosFiltro';
+import { CAMPOS_FILTRO_ERRO } from '@/models/model/common/IErros';
+import { CAMPOS_FILTRO_RBAC } from '@/models/model/core/rbac/rbac.model';
+import { CAMPOS_FILTRO_USUARIO } from '@/models/model/core/usuario.model';
 
-import { ERecursosFiltro } from './enums/ERecursosFiltro';
-
-// Mapeamentos dos recursos para aplicação de filtros.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const MAPEAMENTO_FILTROS: Record<ERecursosFiltro, ICampoFiltro<any, any>[]> = {
-  [ERecursosFiltro.USUARIOS]: MAPEAMENTO_CAMPOS_FILTROS_USUARIO,
-  [ERecursosFiltro.RBAC]: MAPEAMENTO_CAMPOS_FILTROS_RBAC,
-  [ERecursosFiltro.ERROS]: MAPEAMENTO_CAMPOS_FILTRO_ERROS,
+type TMapeamentoFiltros = {
+  [ERecursosFiltro.USUARIOS]: typeof CAMPOS_FILTRO_USUARIO;
+  [ERecursosFiltro.RBAC]: typeof CAMPOS_FILTRO_RBAC;
+  [ERecursosFiltro.ERROS]: typeof CAMPOS_FILTRO_ERRO;
 };
+
+/**
+ * @description União dos campos de filtro configurados para todos os recursos da aplicação.
+ * Preserva o tipo concreto da consulta auxiliar de cada campo, permitindo que a interface
+ * compartilhe os metadados comuns sem colapsar buscas de usuários, cargos ou erros.
+ */
+export type TCampoFiltroMapeado = (typeof MAPEAMENTO_FILTROS)[ERecursosFiltro][number];
+
+export const MAPEAMENTO_FILTROS = {
+  [ERecursosFiltro.USUARIOS]: CAMPOS_FILTRO_USUARIO,
+  [ERecursosFiltro.RBAC]: CAMPOS_FILTRO_RBAC,
+  [ERecursosFiltro.ERROS]: CAMPOS_FILTRO_ERRO,
+} satisfies TMapeamentoFiltros;

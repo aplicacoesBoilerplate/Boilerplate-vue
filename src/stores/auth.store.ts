@@ -1,18 +1,20 @@
 // Ecossistema Vue
-import { computed, ref } from 'vue';
+import { computed, onScopeDispose, ref } from 'vue';
 // Pinia
 import { defineStore } from 'pinia';
 
+import { useGenericFilterStore } from '@/stores/genericFilter.store';
+import { useGenericListStore } from '@/stores/genericList.store';
 import { usePreferencesStore } from '@/stores/preferences.store';
 
 // Types e Interfaces
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta';
+import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
 import type {
-  ILogin,
-  ILoginGoogle,
-  IRedefinicaoSenhaRecuperacao,
-  ISolicitacaoRecuperacaoSenha,
-  IVerificacaoCodigoRecuperacaoSenha,
+  TEmailAuth,
+  TLogin,
+  TLoginGoogle,
+  TRecuperacaoSenha,
+  TRedefinicaoRecuperacaoSenha,
 } from '@/models/model/core/autenticacao.model';
 import type { ICargoRbac } from '@/models/model/core/rbac/rbac.model';
 import type { IUsuario } from '@/models/model/core/usuario.model';
@@ -22,18 +24,23 @@ import type { LocationQueryRaw, RouteLocationRaw } from 'vue-router';
 // Composables
 import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
+import {
+  broadcastSessionTermination,
+  clearPrivateBrowserState,
+  subscribeToSessionTermination,
+} from '@/services/base/sessionLifecycle';
 // Services
-import { CAutenticacaoService } from '@/services/core/CAutenticacaoService';
+import { autenticacaoService } from '@/services/core/CAutenticacaoService';
 
-// Stores
-import { useListaCacheStore } from './listaCache.store';
+import { CTradutor } from '@/classes/Utils/CTradutor';
 
 // Constantes
 const TOKEN_STORAGE_KEY = 'token';
 
 export const useAuthStore = defineStore('auth', () => {
   // Stores
-  const listCacheStore = useListaCacheStore();
+  const genericListStore = useGenericListStore();
+  const genericFilterStore = useGenericFilterStore();
   const preferencesStore = usePreferencesStore();
 
   // Composables
@@ -43,6 +50,8 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<IUsuario | undefined>();
   const cargoAtual = ref<ICargoRbac | undefined>();
   const token = ref(sessionStorage.getItem(TOKEN_STORAGE_KEY) || localStorage.getItem(TOKEN_STORAGE_KEY) || null);
+  let atualizacaoPermissoesEmAndamento: Promise<ICargoRbac | undefined> | null = null;
+  let encerramentoSessaoEmAndamento: Promise<void> | null = null;
 
   // Computadas
   const carregando = computed(() => requisicaoService.carregando.value);
@@ -57,7 +66,10 @@ export const useAuthStore = defineStore('auth', () => {
     cargoAtual.value = undefined;
     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
     localStorage.removeItem(TOKEN_STORAGE_KEY);
-    listCacheStore.clearAll();
+    genericListStore.clearAllContexts();
+    genericFilterStore.clearAllContexts();
+    preferencesStore.clearLocalPreferences();
+    clearPrivateBrowserState();
   }
 
   function persistirToken(pToken: string): void {
@@ -66,9 +78,52 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
   }
 
-  function logout(): void {
-    limparSessaoLocal();
+  async function redirecionarParaLogin(): Promise<void> {
+    const { default: router } = await import('@/router');
+    if (router.currentRoute.value.name !== 'Login') {
+      await router.replace({ name: 'Login' });
+    }
   }
+
+  function encerrarSessao(
+    pOptions: { remoto?: boolean; broadcast?: boolean; redirecionar?: boolean } = {},
+  ): Promise<void> {
+    if (encerramentoSessaoEmAndamento) return encerramentoSessaoEmAndamento;
+
+    const { remoto = true, broadcast = true, redirecionar = true } = pOptions;
+    const tokenEncerrado = token.value;
+    limparSessaoLocal();
+    if (broadcast) broadcastSessionTermination();
+
+    const encerramento = (async () => {
+      try {
+        if (remoto && tokenEncerrado) {
+          await autenticacaoService.logout(tokenEncerrado, AbortSignal.timeout(5_000));
+        }
+      } catch {
+        // A indisponibilidade do backend nunca impede a remocao local das credenciais.
+      } finally {
+        if (redirecionar) await redirecionarParaLogin();
+      }
+    })();
+
+    const sharedEncerramento = encerramento.finally(() => {
+      if (encerramentoSessaoEmAndamento === sharedEncerramento) {
+        encerramentoSessaoEmAndamento = null;
+      }
+    });
+    encerramentoSessaoEmAndamento = sharedEncerramento;
+    return encerramentoSessaoEmAndamento;
+  }
+
+  function logout(): Promise<void> {
+    return encerrarSessao();
+  }
+
+  const unsubscribeSessionTermination = subscribeToSessionTermination(() => {
+    void encerrarSessao({ remoto: false, broadcast: false });
+  });
+  onScopeDispose(unsubscribeSessionTermination);
 
   function resolverDestinoAposLogin(pRedirectPrioritario?: string): RouteLocationRaw {
     if (pRedirectPrioritario) {
@@ -87,7 +142,7 @@ export const useAuthStore = defineStore('auth', () => {
     };
   }
 
-  function serializarFiltrosParaQuery(pFiltros: IFiltrosConsulta[]): LocationQueryRaw {
+  function serializarFiltrosParaQuery(pFiltros: TFiltroConsultaSerializado[]): LocationQueryRaw {
     return pFiltros.reduce<LocationQueryRaw>((pQuery, pFiltro) => {
       if (!pFiltro.campo || !pFiltro.condicao) {
         return pQuery;
@@ -117,7 +172,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function carregarUsuarioAutenticado(): Promise<IUsuario> {
     const usuarioAutenticado = await requisicaoService.executar({
-      metodo: async () => CAutenticacaoService.buscarUsuarioAutenticado(),
+      metodo: async () => autenticacaoService.buscarUsuarioAutenticado(),
       parametros: undefined,
     });
 
@@ -135,15 +190,27 @@ export const useAuthStore = defineStore('auth', () => {
       return undefined;
     }
 
+    const requisicao =
+      atualizacaoPermissoesEmAndamento ??
+      autenticacaoService.buscarCargoUsuarioAutenticado().then((pCargo) => {
+        cargoAtual.value = pCargo;
+        return pCargo;
+      });
+
+    atualizacaoPermissoesEmAndamento = requisicao;
+
     try {
-      cargoAtual.value = await CAutenticacaoService.buscarCargoUsuarioAutenticado();
-      return cargoAtual.value;
+      return await requisicao;
     } catch (pErro) {
       if (pPropagarErro) {
         throw pErro;
       }
 
       return cargoAtual.value;
+    } finally {
+      if (atualizacaoPermissoesEmAndamento === requisicao) {
+        atualizacaoPermissoesEmAndamento = null;
+      }
     }
   }
 
@@ -159,9 +226,9 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function login(pLogin: ILogin): Promise<IUsuario> {
+  async function login(pLogin: TLogin): Promise<IUsuario> {
     const tokenAutenticacao = await requisicaoService.executar({
-      metodo: CAutenticacaoService.login,
+      metodo: (pLoginPayload: TLogin) => autenticacaoService.login(pLoginPayload),
       parametros: pLogin,
     });
 
@@ -171,12 +238,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function loginGoogle(pCredential: string): Promise<IUsuario> {
-    const parametros: ILoginGoogle = {
+    const parametros: TLoginGoogle = {
       credential: pCredential,
     };
 
     const tokenAutenticacao = await requisicaoService.executar({
-      metodo: CAutenticacaoService.loginGoogle,
+      metodo: (pLoginGooglePayload: TLoginGoogle) => autenticacaoService.loginGoogle(pLoginGooglePayload),
       parametros,
     });
 
@@ -185,12 +252,12 @@ export const useAuthStore = defineStore('auth', () => {
     return carregarUsuarioAutenticado();
   }
 
-  async function redefinirSenhaRecuperacao(pRedefinicao: IRedefinicaoSenhaRecuperacao): Promise<boolean> {
+  async function redefinirSenhaRecuperacao(pRedefinicao: TRedefinicaoRecuperacaoSenha): Promise<boolean> {
     return requisicaoService.executar({
-      metodo: CAutenticacaoService.redefinirSenhaRecuperacao,
+      metodo: (pRedefinicaoPayload: TRedefinicaoRecuperacaoSenha) => autenticacaoService.redefinirSenhaRecuperacao(pRedefinicaoPayload),
       parametros: pRedefinicao,
       sucesso: {
-        mensagem: 'Senha redefinida com sucesso.',
+        mensagem: CTradutor.traduzir('common.messages.passwordReset'),
         tipo: 'success',
       },
     });
@@ -198,36 +265,36 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function solicitarAcesso(pSolicitacao: IUsuarioSolicitacaoAcesso): Promise<boolean> {
     return requisicaoService.executar({
-      metodo: CAutenticacaoService.solicitarAcesso,
+      metodo: (pSolicitacaoPayload: IUsuarioSolicitacaoAcesso) => autenticacaoService.solicitarAcesso(pSolicitacaoPayload),
       parametros: pSolicitacao,
       sucesso: {
-        mensagem: 'Solicitação de acesso registrada. Aguarde a liberação de um administrador.',
+        mensagem: CTradutor.traduzir('common.messages.accessRequested'),
         tipo: 'success',
       },
     });
   }
 
   async function solicitarRecuperacaoSenha(pEmail: string): Promise<boolean> {
-    const parametros: ISolicitacaoRecuperacaoSenha = {
+    const parametros: TEmailAuth = {
       email: pEmail,
     };
 
     return requisicaoService.executar({
-      metodo: CAutenticacaoService.solicitarRecuperacaoSenha,
+      metodo: (pSolicitacaoPayload: TEmailAuth) => autenticacaoService.solicitarRecuperacaoSenha(pSolicitacaoPayload),
       parametros,
       sucesso: {
-        mensagem: 'Código de recuperação enviado.',
+        mensagem: CTradutor.traduzir('common.messages.recoverySent'),
         tipo: 'success',
       },
     });
   }
 
-  async function verificarCodigoRecuperacaoSenha(pVerificacao: IVerificacaoCodigoRecuperacaoSenha): Promise<boolean> {
+  async function verificarCodigoRecuperacaoSenha(pVerificacao: TRecuperacaoSenha): Promise<boolean> {
     return requisicaoService.executar({
-      metodo: CAutenticacaoService.verificarCodigoRecuperacaoSenha,
+      metodo: (pVerificacaoPayload: TRecuperacaoSenha) => autenticacaoService.verificarCodigoRecuperacaoSenha(pVerificacaoPayload),
       parametros: pVerificacao,
       sucesso: {
-        mensagem: 'Código validado com sucesso.',
+        mensagem: CTradutor.traduzir('common.messages.recoveryValidated'),
         tipo: 'success',
       },
     });
@@ -245,6 +312,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     loginGoogle,
     logout,
+    encerrarSessao,
     atualizarPermissoesUsuarioAutenticado,
     resolverDestinoAposLogin,
     redefinirSenhaRecuperacao,

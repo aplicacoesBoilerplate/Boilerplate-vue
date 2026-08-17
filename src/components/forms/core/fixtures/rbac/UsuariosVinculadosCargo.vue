@@ -51,15 +51,28 @@
           </v-list-item-subtitle>
 
           <template #append>
-            <SelectRole
-              :modelValue="obterPapelUsuario(usuario)"
-              :itens="itensCargos"
-              :disabled="somenteLeitura"
-              maxWidth="180"
-              minWidth="160"
-              hideDetails
-              @update:model-value="atualizarCargoUsuario(usuario, String($event))"
-            />
+            <div class="d-flex align-center ga-2">
+              <v-btn
+                v-if="!somenteLeitura && !usuarioPertenceAoCargoAtual(usuario)"
+                :aria-label="t('forms.usuariosVinculadosCargo.vincularAoCargo', { cargo: cargo.nome })"
+                :disabled="!cargo.papel"
+                color="primary"
+                icon="mdi-account-link-outline"
+                size="small"
+                variant="tonal"
+                @click="atualizarCargoUsuario(usuario, cargo.papel)"
+              />
+
+              <SelectRole
+                :modelValue="obterPapelUsuario(usuario)"
+                :opcoes="opcoesCargos"
+                :disabled="somenteLeitura"
+                maxWidth="180"
+                minWidth="160"
+                hideDetails
+                @update:modelValue="atualizarCargoUsuario(usuario, String($event))"
+              />
+            </div>
           </template>
         </v-list-item>
       </v-list>
@@ -72,14 +85,15 @@
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
 // Types e Interfaces
 import type { ICargoRbac } from '@/models/model/core/rbac/rbac.model';
 import type { IUsuario, TPapel } from '@/models/model/core/usuario.model';
 
 // Componentes
 import ConsultaVinculosFormulario from '@/components/forms/core/fixtures/vinculos/ConsultaVinculosFormulario.vue';
-import SelectRole, { type IItemSelectPapel } from '@/components/forms/fixtures/SelectRole.vue';
+import SelectRole from '@/components/forms/fixtures/SelectRole.vue';
 
 type TProps = {
   /**
@@ -111,18 +125,20 @@ const papeisOriginaisUsuarios = ref(new Map<string, TPapel>());
 
 // Funções
 /**
- * Busca usuários vinculados ao cargo atual ou com alteração pendente no formulário.
- * @param pPayload
+ * @description Busca usuários vinculados ao cargo atual ou com alteração pendente no formulário.
+ * @param pPayload - Consulta paginada acompanhada do termo de pesquisa local.
+ * @returns Resposta paginada com os usuários compatíveis com o cargo atual.
  */
 async function buscarUsuarios(
-  pPayload: IConsultaRegistros & { termoPesquisa: string },
-): Promise<IResultadoConsultaRegistros<IUsuario>> {
+  pPayload: IConsultaRegistros<IUsuario> & { termoPesquisa: string },
+): Promise<IRespostaConsultaRegistros<IUsuario>> {
   const usuariosFiltrados = filtrarUsuariosPorCargoEPesquisa(pPayload.termoPesquisa);
   const inicio = (pPayload.proximaEntrada as number) || 0;
   const limite = pPayload.limite || 10;
   const dados = usuariosFiltrados.slice(inicio, inicio + limite);
 
   return {
+    ...pPayload,
     registros: dados,
     possuiMais: inicio + dados.length < usuariosFiltrados.length,
     proximaEntrada: inicio + dados.length < usuariosFiltrados.length ? inicio + dados.length : undefined,
@@ -130,9 +146,9 @@ async function buscarUsuarios(
 }
 
 /**
- * Atualiza o cargo do usuário em memória e controla se há alteração pendente.
- * @param pUsuario
- * @param pPapelCargo
+ * @description Atualiza o cargo do usuário em memória e controla se há alteração pendente.
+ * @param pUsuario - Usuário cujo vínculo será atualizado.
+ * @param pPapelCargo - Papel selecionado para o usuário.
  */
 function atualizarCargoUsuario(pUsuario: IUsuario, pPapelCargo: string): void {
   const chaveUsuario = obterChaveUsuario(pUsuario);
@@ -157,22 +173,19 @@ function atualizarCargoUsuario(pUsuario: IUsuario, pPapelCargo: string): void {
 }
 
 /**
- * Filtra usuários pelo cargo aberto no formulário, mantendo os registros alterados até o submit.
- * @param pTermoPesquisa
+ * @description Filtra usuários pelo cargo aberto no formulário, mantendo os registros alterados até o submit.
+ * @param pTermoPesquisa - Termo aplicado sobre nome, e-mail ou papel do usuário.
+ * @returns Usuários pertencentes ao cargo ou com alterações pendentes compatíveis com a pesquisa.
  */
 function filtrarUsuariosPorCargoEPesquisa(pTermoPesquisa: string): IUsuario[] {
   const termoPesquisa = normalizarTexto(pTermoPesquisa);
 
   return usuarios.value.filter((pUsuario) => {
-    const usuarioPertenceAoCargo = pUsuario.papel === props.cargo.papel;
+    const usuarioPertenceAoCargo = usuarioPertenceAoCargoAtual(pUsuario);
     const usuarioPossuiAlteracaoPendente = usuarioComAlteracaoPendente(pUsuario);
 
-    if (!usuarioPertenceAoCargo && !usuarioPossuiAlteracaoPendente) {
-      return false;
-    }
-
     if (!termoPesquisa) {
-      return true;
+      return usuarioPertenceAoCargo || usuarioPossuiAlteracaoPendente;
     }
 
     return [pUsuario.nome, pUsuario.email, pUsuario.papel].some((pValor) =>
@@ -181,17 +194,23 @@ function filtrarUsuariosPorCargoEPesquisa(pTermoPesquisa: string): IUsuario[] {
   });
 }
 
+function usuarioPertenceAoCargoAtual(pUsuario: IUsuario): boolean {
+  return obterPapelUsuario(pUsuario) === props.cargo.papel;
+}
+
 /**
- * Indica se o usuário possui alteração de cargo ainda não salva.
- * @param pUsuario
+ * @description Indica se o usuário possui alteração de cargo ainda não salva.
+ * @param pUsuario - Usuário a ser verificado.
+ * @returns Indica se o vínculo do usuário foi alterado no formulário.
  */
 function usuarioComAlteracaoPendente(pUsuario: IUsuario): boolean {
   return chavesUsuariosAlterados.value.has(obterChaveUsuario(pUsuario));
 }
 
 /**
- * Resolve o papel atual do usuário a partir do model editável do formulário.
- * @param pUsuario
+ * @description Resolve o papel atual do usuário a partir do model editável do formulário.
+ * @param pUsuario - Usuário para o qual o papel será resolvido.
+ * @returns Papel presente no model editável ou o valor original do usuário.
  */
 function obterPapelUsuario(pUsuario: IUsuario): TPapel {
   return (
@@ -201,16 +220,18 @@ function obterPapelUsuario(pUsuario: IUsuario): TPapel {
 }
 
 /**
- * Usa o id quando disponível e o e-mail como fallback estável para usuários mockados.
- * @param pUsuario
+ * @description Usa o id quando disponível e o e-mail como fallback estável para usuários mockados.
+ * @param pUsuario - Usuário para o qual será gerada a chave estável.
+ * @returns Chave textual única do usuário no contexto do formulário.
  */
 function obterChaveUsuario(pUsuario: IUsuario): string {
   return String(pUsuario.id ?? pUsuario.email);
 }
 
 /**
- * Normaliza valores textuais para comparação simples na busca local.
- * @param pValor
+ * @description Normaliza valores textuais para comparação simples na busca local.
+ * @param pValor - Valor a ser convertido para texto normalizado.
+ * @returns Texto sem acentos e em caixa alta para comparação.
  */
 function normalizarTexto(pValor: unknown): string {
   return String(pValor ?? '')
@@ -220,7 +241,8 @@ function normalizarTexto(pValor: unknown): string {
 }
 
 /**
- * Captura o papel original dos usuários para detectar quando uma alteração foi desfeita.
+ * @description Captura o papel original dos usuários para detectar quando uma alteração foi desfeita.
+ * @returns Nenhum valor.
  */
 function inicializarPapeisOriginaisUsuarios(): void {
   papeisOriginaisUsuarios.value = new Map(
@@ -231,12 +253,12 @@ function inicializarPapeisOriginaisUsuarios(): void {
 // Computadas
 const contextoConsultaUsuarios = computed(() => `usuarios-vinculados-cargo:${props.cargo.papel}`);
 
-const itensCargos = computed<IItemSelectPapel[]>(() => {
+const opcoesCargos = computed<IOpcaoSelecao<TPapel>[]>(() => {
   return props.cargos
     .filter((pCargo) => pCargo.ativo)
     .map((pCargo) => ({
       valor: pCargo.papel,
-      label: pCargo.nome,
+      descricao: pCargo.nome,
       icone: pCargo.icone,
     }));
 });

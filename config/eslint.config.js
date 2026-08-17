@@ -19,7 +19,7 @@ import tseslint from 'typescript-eslint';
  */
 export default tseslint.config(
   {
-    ignores: ['dist', 'dev-dist', 'node_modules', '*.config.*'],
+    ignores: ['dist', 'dev-dist', 'node_modules', '*.config.*', '**/*.d.ts'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -44,9 +44,9 @@ export default tseslint.config(
             ['^\\u0000'],
             [
               '^vue$',
+              '^vue-router',
               '^vue-i18n',
               '^pinia',
-              '^vue-router',
               '^vuetify',
               '^@mdi',
               '^axios',

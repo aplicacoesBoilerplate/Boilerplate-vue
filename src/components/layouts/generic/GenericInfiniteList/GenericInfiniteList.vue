@@ -27,7 +27,7 @@
         autocomplete="off"
         style="max-width: 140px; flex: 0 0 140px"
         hideDetails
-        @update:model-value="resetarECarregar"
+        @update:modelValue="resetarECarregar"
       />
     </div>
 
@@ -118,22 +118,24 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="TInterfaceRegistro extends object">
 // Ecossistema vue
-import { computed, onMounted, provide, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { useGenericFilterStore } from '@/stores/genericFilter.store';
 // Stores
+import { useGenericFilterStore } from '@/stores/genericFilter.store';
 import { useGenericListStore } from '@/stores/genericList.store';
 
-import type { IConsultaRegistros, IResultadoConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
-import type { TOrdem } from '@/models/filters/IConsultaRegistrosFiltro';
+import type { IGenericInfiniteListExpose, TInfiniteListLoadDone } from '@/models/components/exposes/IGenericInfiniteListExpose';
+// Models
+import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { TOrdem } from '@/models/consulta/IConsultaRegistros';
 import type { TManagerStorageLocation } from '@/utils/ManagerStorage';
 import type { RouteLocationRaw } from 'vue-router';
 
-import { useRequisicaoService } from '@/composables/useRequisicaoService';
 // Composables
+import { useRequisicaoService } from '@/composables/useRequisicaoService';
 import { useRouteScrollRedirect } from '@/composables/useRouteScrollRedirect';
 
 // Utils
@@ -143,11 +145,11 @@ import { createRouteScrollItemBindings } from '@/utils/RouteScrollRestore';
 import { genericInfiniteListKey } from '@/components/layouts/generic/genericInfiniteList.context';
 
 // Types
-type TLoadDone = (status: 'ok' | 'empty' | 'error') => void;
+type TLoadDone = TInfiniteListLoadDone;
 
 /**
  * @property {string} contexto - Identificador unico do cache/contexto desta lista.
- * @property {function(payload: IConsultaRegistros): Promise<IResultadoConsultaRegistros>} serviceFetch - Função que busca a próxima página usando limite e cursor atuais.
+ * @property {(pPayload: IConsultaRegistros<TInterfaceRegistro>) => Promise<IRespostaConsultaRegistros<TInterfaceRegistro>>} serviceFetch - Função que busca a próxima página usando limite e cursor atuais.
  * @property {number} cacheTtlMs - Tempo de vida do contexto salvo no storage.
  * @property {string} textoVazio - Texto exibido quando não existem registros.
  * @property {string} textoFinal - Texto exibido quando não ha mais páginas para carregar.
@@ -162,7 +164,7 @@ type TLoadDone = (status: 'ok' | 'empty' | 'error') => void;
  */
 type TProps = {
   contexto: string;
-  serviceFetch: (payload: IConsultaRegistros) => Promise<IResultadoConsultaRegistros>;
+  serviceFetch: (pPayload: IConsultaRegistros<TInterfaceRegistro>) => Promise<IRespostaConsultaRegistros<TInterfaceRegistro>>;
   cacheTtlMs?: number;
   textoVazio?: string;
   textoFinal?: string;
@@ -233,21 +235,13 @@ function obterVinculosItem(pItem: unknown, pIndex: number, pItemKey?: string | n
   return createRouteScrollItemBindings(props.contexto, resolverChaveItem(pItem, pIndex, pItemKey));
 }
 
-function normalizarResposta(pResponse: IResultadoConsultaRegistros) {
-  return {
-    items: pResponse.registros,
-    proximaEntrada: pResponse.proximaEntrada,
-    temMaisRegistros: pResponse.possuiMais,
-  };
-}
-
 /**
  * @description Redireciona para uma rota específica com restauração de scroll.
- * @param to - Rota para a qual redirecionar.
+ * @param pTo - Rota para a qual redirecionar.
  * @param pSelector - Seletor do item para restauração de scroll.
  */
-async function redirecionarPara(to: RouteLocationRaw, pSelector?: string | null) {
-  await routeScrollRedirect.redirectTo(to, pSelector);
+async function redirecionarPara(pTo: RouteLocationRaw, pSelector?: string | null) {
+  await routeScrollRedirect.redirecionarPara(pTo, pSelector);
 }
 
 /**
@@ -260,8 +254,6 @@ async function resetarECarregar() {
     genericListStore.setLimit(props.contexto, limiteAtual.value);
     genericListStore.resetContext(props.contexto);
     versaoScroll.value += 1;
-  } catch (error) {
-    throw error;
   } finally {
     loading.value = false;
   }
@@ -272,7 +264,6 @@ async function resetarECarregar() {
  */
 async function alternarOrdenacao(): Promise<void> {
   const proximaOrdem: TOrdem = ordemAtual.value === 'asc' ? 'desc' : 'asc';
-
   genericListStore.setOrder(props.contexto, proximaOrdem);
 
   await resetarECarregar();
@@ -281,21 +272,24 @@ async function alternarOrdenacao(): Promise<void> {
 /**
  * @description Carrega mais registros para a lista.
  * @param done - Função para notificar o status do carregamento.
- * @param done.done
+ * @param done.done - Implementação.
  * @param force - Força o carregamento.
- * @param done.force
+ * @param done.force - Implementação.
  */
-async function carregarMaisRegistros({ done, force }: { done?: TLoadDone; force?: boolean } = {}) {
-  if (!temMaisRegistros.value || (loading.value && !force)) {
-    done?.('empty');
+async function carregarMaisRegistros({ done: pDone, force: pForce }: { done?: TLoadDone; force?: boolean } = {}) {
+  if (!temMaisRegistros.value || (loading.value && !pForce)) {
+    pDone?.('empty');
     return;
   }
 
   loading.value = true;
 
   try {
-    const payloadRequisicao: IConsultaRegistros = {
-      filtros: props.usarFiltrosGlobais ? genericFilterStore.filtersApplied : [],
+    const payloadRequisicao: IConsultaRegistros<TInterfaceRegistro> = {
+      // O contexto global armazena campos como string; o tipo concreto é conhecido pelo service consumidor.
+      filtros: props.usarFiltrosGlobais
+        ? (genericFilterStore.filtersApplied as unknown as IConsultaRegistros<TInterfaceRegistro>['filtros'])
+        : [],
       limite: limiteAtual.value,
       proximaEntrada: proximaEntrada.value,
       ordenacao: ordemAtual.value,
@@ -306,21 +300,20 @@ async function carregarMaisRegistros({ done, force }: { done?: TLoadDone; force?
       parametros: payloadRequisicao,
     });
 
-    const normalizedResponse = normalizarResposta(response);
-    const novoCursorEntrada = normalizedResponse.proximaEntrada;
+    const novoCursorEntrada = response.proximaEntrada;
     const novoControleTemMaisRegistros =
-      normalizedResponse.temMaisRegistros ?? normalizedResponse.items.length >= limiteAtual.value;
+      response.possuiMais ?? response.registros.length >= limiteAtual.value;
 
     genericListStore.addItems(
       props.contexto,
-      normalizedResponse.items,
+      response.registros,
       novoCursorEntrada,
       novoControleTemMaisRegistros,
     );
 
-    done?.(novoControleTemMaisRegistros ? 'ok' : 'empty');
+    pDone?.(novoControleTemMaisRegistros ? 'ok' : 'empty');
   } catch {
-    done?.('error');
+    pDone?.('error');
   } finally {
     loading.value = false;
   }
@@ -330,7 +323,7 @@ async function carregarMaisRegistros({ done, force }: { done?: TLoadDone; force?
  * @description Insere um item na lista em memória, discartando a necessidade de recarregar a lista para que o item seja exibido e, consequentemente, perdendo todo o progresso do scroll.
  * @param pItem - Item a ser inserido.
  */
-function inserirItem(pItem: unknown): void {
+function inserirItem(pItem: object): void {
   if (ordemAtual.value === 'asc') {
     genericListStore.appendItem(props.contexto, pItem);
     return;
@@ -356,6 +349,7 @@ function atualizarItem<TItem extends object>(
 /**
  * @description Remove um item da lista em memória.
  * @template {TItem} - Tipo do item que deve ser inferido a partir do pIdField.
+ * 
  * @param pIdField - Campo identificador do item.
  * @param pIdValue - Valor do campo identificador.
  */
@@ -364,10 +358,11 @@ function removerItem<TItem extends object>(pIdField: keyof TItem, pIdValue: TIte
 }
 
 // Computadas
-const items = computed(() => genericListStore.getItems(props.contexto));
+const items = computed(() => genericListStore.getItems<TInterfaceRegistro>(props.contexto));
 const temMaisRegistros = computed(() => genericListStore.getHasMore(props.contexto));
 const proximaEntrada = computed(() => genericListStore.getNextEntry(props.contexto));
 const ordemAtual = computed(() => genericListStore.getOrder(props.contexto));
+
 const textoVazioPadrao = computed(() => props.textoVazio ?? t('components.genericInfiniteList.textoVazio'));
 const textoFinalPadrao = computed(() => props.textoFinal ?? t('components.genericInfiniteList.textoFinal'));
 const textoErrorPadrao = computed(() => props.textoError ?? t('components.genericInfiniteList.textoErro'));
@@ -408,6 +403,10 @@ onMounted(() => {
   limiteAtual.value = genericListStore.getLimit(props.contexto);
 });
 
+onBeforeUnmount(() => {
+  genericListStore.deactivateContext(props.contexto);
+});
+
 // Provide
 provide(genericInfiniteListKey, {
   contexto: props.contexto,
@@ -428,7 +427,6 @@ defineExpose({
   removerItem,
   obterVinculosItem,
   getItemBindings: obterVinculosItem,
-  redirectTo: redirecionarPara,
-  redirecionarPara,
-});
+  redirecionarPara
+} satisfies IGenericInfiniteListExpose);
 </script>

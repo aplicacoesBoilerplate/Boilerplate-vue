@@ -1,3 +1,6 @@
+// Models
+import type { IAcaoRecursoRbac, IEndpointApiRbac, IMapeamentoRotaApiRbac } from './rbac.types';
+
 /**
  * @description Ações de API liberadas automaticamente para a rota inicial do cargo.
  */
@@ -41,7 +44,10 @@ export const MAPEAMENTO_ROTAS_API_RBAC: Partial<Record<string, IMapeamentoRotaAp
         { metodo: 'POST', path: '/usuarios/search' },
       ],
       gravar: [{ metodo: 'POST', path: '/usuarios' }],
-      editar: [{ metodo: 'PUT', path: '/usuarios/**' }],
+      editar: [
+        { metodo: 'PUT', path: '/usuarios' },
+        { metodo: 'PATCH', path: '/usuarios' },
+      ],
       remover: [{ metodo: 'DELETE', path: '/usuarios/**' }],
     },
   },
@@ -52,7 +58,10 @@ export const MAPEAMENTO_ROTAS_API_RBAC: Partial<Record<string, IMapeamentoRotaAp
         { metodo: 'POST', path: '/rbac/cargos/consulta' },
       ],
       gravar: [{ metodo: 'POST', path: '/rbac/cargos' }],
-      editar: [{ metodo: 'PUT', path: '/rbac/cargos/**' }],
+      editar: [
+        { metodo: 'PUT', path: '/rbac/cargos' },
+        { metodo: 'PATCH', path: '/rbac/cargos' },
+      ],
       remover: [{ metodo: 'DELETE', path: '/rbac/cargos/**' }],
     },
   },
@@ -98,5 +107,3 @@ export function montarAcaoEndpointApiRbac(pEndpoint: Pick<IEndpointApiRbac, 'met
 export function montarChavePermissaoRbac(pRecurso: string, pAcao: string): string {
   return `${pRecurso}::${pAcao}`;
 }
-
-import type { IAcaoRecursoRbac, IEndpointApiRbac, IMapeamentoRotaApiRbac } from './rbac.types';

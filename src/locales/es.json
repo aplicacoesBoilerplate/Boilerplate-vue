@@ -6,6 +6,107 @@
     "updateDate": "Actualizado el",
     "software": "Software"
   },
+  "common": {
+    "actions": {
+      "close": "Cerrar",
+      "clear": "Limpiar",
+      "confirm": "Confirmar",
+      "back": "Volver",
+      "home": "Ir al inicio",
+      "addFilter": "Añadir filtro",
+      "resetForm": "Restablecer formulario",
+      "resetPasswords": "Restablecer contraseñas",
+      "openDetails": "Abrir detalles"
+    },
+    "app": {
+      "checkingServer": "Verificando servidor",
+      "checkingServerDescription": "Espere mientras validamos la disponibilidad de la API."
+    },
+    "login": {
+      "loginTab": "Acceso",
+      "registerTab": "Registro",
+      "accessTitle": "Acceder al sistema",
+      "requestAccessTitle": "Solicitar acceso",
+      "preparingAccess": "Preparando acceso",
+      "validatingAccess": "Validando credenciales y ruta inicial.",
+      "googleNotConfigured": "Configure VITE_GOOGLE_CLIENT_ID para habilitar el acceso con Google."
+    },
+    "health": {
+      "description": "Respuesta actual del endpoint administrativo de la API.",
+      "apiStatus": "Estado de la API: {status}",
+      "unavailable": "No disponible",
+      "loading": "Consultando health-check",
+      "loadingDescription": "Espere mientras obtenemos la respuesta actualizada del servidor."
+    },
+    "audit": {
+      "title": "Auditoría del registro",
+      "tooltip": "Ver auditoría",
+      "createdAt": "Creado el",
+      "createdBy": "Creado por",
+      "updatedAt": "Última edición",
+      "updatedBy": "Editado por",
+      "userReference": "Usuario #{id}",
+      "system": "Sistema"
+    },
+    "dateTime": {
+      "selectDate": "Seleccione la fecha",
+      "selectTime": "Seleccione la hora"
+    },
+    "rbacTabs": {
+      "data": "Datos",
+      "permissions": "Permisos",
+      "users": "Usuarios"
+    },
+    "fallback": {
+      "forbiddenTitle": "Acceso denegado",
+      "forbiddenMessage": "No tiene permiso para acceder a esta área. Contacte al administrador si cree que se trata de un error.",
+      "serverTitle": "Error interno",
+      "serverMessage": "Algo salió mal en nuestros servidores. Inténtelo de nuevo más tarde.",
+      "notFoundTitle": "Página no encontrada",
+      "notFoundMessage": "No encontramos la página que está buscando."
+    },
+    "filters": {
+      "clearCurrent": "Limpiar valores del filtro actual",
+      "selectField": "Seleccione un campo del menú lateral para comenzar."
+    },
+    "dataTable": {
+      "loading": "Cargando registros..."
+    },
+    "fields": {
+      "user": { "id": "Código", "name": "Nombre", "email": "Correo electrónico", "avatar": "Avatar", "phone": "Teléfono", "notify": "Notificar", "active": "Activo", "role": "Cargo" },
+      "rbac": { "name": "Nombre", "description": "Descripción", "defaultBehavior": "Comportamiento predeterminado", "active": "Activo" },
+      "error": { "id": "Código", "message": "Mensaje", "file": "Archivo", "class": "Clase", "method": "Método", "line": "Línea", "status": "Estado de la solicitud", "userId": "Código del usuario", "userReference": "Referencia del usuario", "time": "Hora del error" }
+    },
+    "empty": { "users": "No se encontraron usuarios.", "roles": "No se encontraron cargos." },
+    "roles": { "admin": "Administrador", "user": "Usuario" },
+    "messages": {
+      "manageDenied": "No tiene permiso para administrar registros.",
+      "chartsDenied": "No tiene permiso para ver gráficos.",
+      "exportDenied": "No tiene permiso para exportar datos.",
+      "rootUserRemoval": "El usuario raíz de la aplicación no se puede eliminar.",
+      "ownAccountRemoval": "No puede eliminar su propia cuenta.",
+      "defaultRoleRemoval": "Los cargos predeterminados ADMIN y USER no se pueden eliminar.",
+      "userUpdated": "Usuario actualizado correctamente.",
+      "userCreated": "Usuario creado correctamente.",
+      "userRemoved": "Usuario eliminado correctamente.",
+      "roleRemoved": "Cargo eliminado correctamente.",
+      "selectFieldCondition": "¡Seleccione el campo y la condición!",
+      "duplicateFilterTitle": "Filtro duplicado",
+      "duplicateFilter": "Ya ha añadido esta condición.",
+      "actionDenied": "No tiene permiso para realizar esta acción.",
+      "requestFailed": "No se pudo completar la solicitud.",
+      "exportStarted": "La exportación ha comenzado y continuará en segundo plano.",
+      "exportCompleted": "Exportación completada con {count} registro(s).",
+      "exportFailed": "No se pudo completar la exportación.",
+      "googleCancelled": "El acceso fue cancelado o no se recibió la credencial de Google.",
+      "passwordReset": "Contraseña restablecida correctamente.",
+      "accessRequested": "Solicitud de acceso registrada. Espere la aprobación de un administrador.",
+      "recoverySent": "Código de recuperación enviado.",
+      "recoveryValidated": "Código validado correctamente.",
+      "invalidDate": "Formato de fecha no válido",
+      "invalidComparisonDate": "Error en la fecha de comparación"
+    }
+  },
   "routes": {
     "home": {
       "title": "Inicio"
@@ -133,8 +234,18 @@
     },
     "seletorIconeMaterialDesign": {
       "label": "Ícono",
-      "hint": "Seleccione o busque un ícono.",
+      "hint": "Haga clic para seleccionar un ícono.",
+      "previewAriaLabel": "Vista previa del ícono {icone}",
+      "selecionarAriaLabel": "Seleccionar ícono {icone}",
       "tooltipPaginaIcones": "Abrir la página con todos los íconos aceptados",
+      "dialog": {
+        "titulo": "Seleccionar ícono",
+        "buscarLabel": "Buscar por nombre o alias",
+        "carregando": "Cargando catálogo de íconos...",
+        "erroCarregamento": "No se pudo cargar el catálogo de íconos.",
+        "tentarNovamente": "Intentar nuevamente",
+        "semResultados": "No se encontraron íconos."
+      },
       "icones": {
         "escudoConta": "Escudo de cuenta",
         "escudoChave": "Escudo con llave",
@@ -173,7 +284,8 @@
       "subtitulo": "Cambie el cargo de un usuario directamente desde este facilitador.",
       "rotuloPesquisa": "Buscar usuarios",
       "textoVazio": "Ningún usuario está vinculado a este cargo.",
-      "alteracaoPendente": "Cambio pendiente"
+      "alteracaoPendente": "Cambio pendiente",
+      "vincularAoCargo": "Vincular al cargo {cargo}"
     },
     "controlePermissoesCargo": {
       "rotas": {
@@ -305,11 +417,9 @@
       "textoFinalCargos": "Todos los cargos fueron cargados."
     },
     "baseChart": {
-      "inputAgrupamento": {
-        "label": "Agrupar por"
-      },
       "tooltipConfiguracao": "Configurar gráfico",
       "secoes": {
+        "agrupamento": "Agrupar por",
         "visualizacao": "Visualización",
         "controles": "Controles"
       },
@@ -321,7 +431,9 @@
         "donut": "Donut",
         "pizza": "Circular",
         "colunas": "Columnas",
-        "barras": "Barras"
+        "barras": "Barras",
+        "linha": "Línea",
+        "radial": "Radial"
       },
       "semDados": "Sin datos para mostrar",
       "totalAcumulado": "Total acumulado",

@@ -1,98 +1,65 @@
-export interface ILogin {
-  /**
-   * E-mail usado na autenticação.
-   */
+/**
+ * @description Interface de base para as derivações de cada caso dos recursos de autenticação.
+ * @property {string} identificacaoAcesso - E-mail ou nome de usuário usado na autenticação.
+ * @property {string} email - E-mail na recuperação de senha.
+ * @property {string} senha - Senha informada pelo usuário.
+ * @property {string} confirmarSenha - Confirmação da nova senha escolhida pelo usuário.
+ * @property {string} credential - Credencial JWT retornada pelo Google Identity Services.
+ */
+export interface ILoginBaseModel {
+  identificacaoAcesso: string;
   email: string;
-
-  /**
-   * Senha informada pelo usuário.
-   */
-  password: string;
-}
-
-export interface ILoginGoogle {
-  /**
-   * Credencial JWT retornada pelo Google Identity Services.
-   */
+  senha: string;
+  confirmarSenha: string;
   credential: string;
 }
 
-export interface IRespostaLogin {
-  /**
-   * Token JWT emitido pelo backend.
-   */
-  tokenJWT: string;
-}
+export type TLogin = Pick<ILoginBaseModel, 'identificacaoAcesso' | 'senha'>;
+export type TEmailAuth = Pick<ILoginBaseModel, 'email'>;
+export type TLoginGoogle = Pick<ILoginBaseModel, 'credential'>;
+export type TAlterarSenha = Pick<ILoginBaseModel, 'senha' | 'confirmarSenha'>;
+export type TConfirmarSenha = TEmailAuth & Pick<ILoginBaseModel, 'senha'>;
 
-export interface IRespostaUsuarioAutenticado {
-  /**
-   * Identificador do usuário autenticado no backend.
-   */
-  idUsuario: number;
-}
-
-export interface ISolicitacaoRecuperacaoSenha {
-  /**
-   * E-mail que receberá o código de recuperação.
-   */
-  email: string;
-}
-
-export interface IVerificacaoCodigoRecuperacaoSenha extends ISolicitacaoRecuperacaoSenha {
-  /**
-   * Código OTP enviado para o e-mail informado.
-   */
+/**
+ * @property {string} codigo - Código OTP enviado para o e-mail informado.
+ */
+export type TRecuperacaoSenha = TEmailAuth & {
   codigo: string;
 }
 
-export interface IRedefinicaoSenhaRecuperacao extends IVerificacaoCodigoRecuperacaoSenha {
-  /**
-   * Nova senha escolhida pelo usuário.
-   */
-  senha: string;
+/**
+ * @property {string} novaSenha - Campo para a redefinição de senha, a rule de equals de confirmarSenha deve apontar para este atributo.
+ */
+export type TRedefinicaoRecuperacaoSenha = TRecuperacaoSenha & Pick<ILoginBaseModel, 'senha' | 'confirmarSenha'>;
 
-  /**
-   * Confirmação da nova senha escolhida pelo usuário.
-   */
-  confirmarSenha: string;
+export interface IRespostaUsuarioAutenticado {
+  idUsuario: number;
 }
 
-export interface IConfirmPassword extends ILogin {
-  /**
-   * Confirmação da senha atual.
-   */
-  confirmPassword: string;
+export interface ILoginGoogleSolicitacaoAcesso {
+  nome: string;
+  email: string;
 }
 
-export interface IAlterPassword {
-  /**
-   * E-mail do usuário que terá a senha alterada.
-   */
-  emailUser: string;
-
-  /**
-   * Senha atual do usuário.
-   */
-  passwordUser: string;
-
-  /**
-   * Nova senha desejada.
-   */
-  newPassword: string;
-
-  /**
-   * Confirmação da nova senha.
-   */
-  confirmNewPassword: string;
+/**
+ * @property {string} tokenJWT - Token JWT emitido pelo backend.
+ * @property {string} credential - Credencial JWT retornada pelo Google Identity Services.
+ */
+export interface IRespostaLogin {
+  tokenJWT: string;
+  credential: string;
 }
+
+export type TRespostaLoginPadrao = Pick<IRespostaLogin, 'tokenJWT'>;
+export type TRespostaLoginGoogle = Pick<IRespostaLogin, 'credential'>;
 
 /**
  * @description Cria um objeto ILogin com valores padrão.
  * @returns Objeto ILogin com valores padrão.
  */
-export function criarLoginPadrao(): ILogin {
+export function criarLoginPadrao(): TLogin {
   return {
-    email: '',
-    password: '',
+    identificacaoAcesso: '',
+    senha: '',
   };
 }

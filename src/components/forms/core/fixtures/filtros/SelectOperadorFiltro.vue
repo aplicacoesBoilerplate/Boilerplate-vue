@@ -1,12 +1,12 @@
 <template>
-  <v-row density="comfortable">
+  <v-row>
     <v-col
       :cols="larguraOperador"
       class="col-animada pb-0"
     >
-      <v-autocomplete
+      <v-select
         v-model="filterModel.condicao"
-        :label="props.label === 'Operador' ? t('selectOperadorFiltro.label', 'Condição') : props.label"
+        :label="props.label === 'Operador' ? t('components.selectOperadorFiltro.label') : props.label"
         :variant="variant"
         :density="density"
         :appendInnerIcon="iconeOperadorSelecionado"
@@ -21,14 +21,14 @@
           <v-list-item v-bind="itemProps">
             <template #append>
               <v-icon
-                :icon="item.raw.icone"
+                :icon="item.icone"
                 size="small"
                 class="text-grey-darken-1"
               />
             </template>
           </v-list-item>
         </template>
-      </v-autocomplete>
+      </v-select>
     </v-col>
 
     <v-col
@@ -62,7 +62,7 @@ import { useGenericFilterStore } from '@/stores/genericFilter.store';
 // Enums
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 // Types e Interfaces
-import type { IFiltrosConsulta } from '@/models/filters/IFiltrosConsulta.ts';
+import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
 
 // Composables
 import { useOperadoresFiltro } from '@/composables/useOperadoresFiltro';
@@ -104,7 +104,7 @@ const { mdAndDown } = useDisplay();
 const { t, te } = useI18n();
 
 // Reativas
-const filterModel = defineModel<Partial<IFiltrosConsulta>>('filterModel', { required: true });
+const filterModel = defineModel<Partial<TFiltroConsultaSerializado>>('filterModel', { required: true });
 
 // Funções
 function sincronizarOperadorDisponivel(): void {
@@ -118,22 +118,19 @@ function sincronizarOperadorDisponivel(): void {
   const operadorAtualDisponivel = operadoresAtuais.some((pOperador) => pOperador.valor === operadorAtual);
 
   if (!operadorAtualDisponivel) {
-    filterModel.value = {
-      ...filterModel.value,
-      condicao: String(operadoresAtuais[0].valor),
-      valor: undefined,
-      valoresSelecionados: [],
-    };
+    filterModel.value.condicao = String(operadoresAtuais[0].valor);
+    filterModel.value.valor = undefined;
+    filterModel.value.valoresSelecionados = [];
   }
 }
 
 // Computadas
 const operadoresTraduzidos = computed(() => {
-  return operadoresDisponiveis.value.map((operador) => {
-    const chave = `components.dialogFiltro.operadores.${operador.valor}`;
+  return operadoresDisponiveis.value.map((pOperador) => {
+    const chave = `components.dialogFiltro.operadores.${pOperador.valor}`;
     return {
-      ...operador,
-      descricao: te(chave) ? t(chave) : operador.descricao,
+      ...pOperador,
+      descricao: te(chave) ? t(chave) : pOperador.descricao,
     };
   });
 });
@@ -148,7 +145,7 @@ const controleTamanhoColunas = computed(() => {
 const larguraOperador = computed(() => (controleTamanhoColunas.value || mdAndDown.value ? 12 : 6));
 const larguraValor = computed(() => (controleTamanhoColunas.value || mdAndDown.value ? 12 : 6));
 const iconeOperadorSelecionado = computed(
-  () => operadoresDisponiveis.value.find((operador) => operador.valor === filterModel.value.condicao)?.icone,
+  () => operadoresDisponiveis.value.find((pOperador) => pOperador.valor === filterModel.value.condicao)?.icone,
 );
 
 // Observadores

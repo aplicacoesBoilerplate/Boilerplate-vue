@@ -1,6 +1,5 @@
 import '@/services/base/axios';
 
-import { createPinia } from 'pinia';
 import { createRulesPlugin } from 'vuetify/labs/rules';
 
 import type { App } from 'vue';
@@ -11,14 +10,17 @@ import { registerSW } from 'virtual:pwa-register';
 import router from '@/router';
 
 import { i18n } from './i18n';
+import { pinia } from './pinia';
 import vuetify from './vuetify';
 
-export function registerPlugins(app: App) {
-  app.use(createPinia());
-  app.use(router);
-  app.use(i18n);
-  app.use(vuetify);
-  app.use(createRulesPlugin({}, vuetify.locale));
+export { pinia } from './pinia';
+
+export function registerPlugins(pApp: App) {
+  pApp.use(pinia);
+  pApp.use(router);
+  pApp.use(i18n);
+  pApp.use(vuetify);
+  pApp.use(createRulesPlugin({}, vuetify.locale));
 
   // Tenta registrar o SW assim que os plugins iniciam
   registerSW({ immediate: true });

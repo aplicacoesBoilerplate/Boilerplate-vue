@@ -2,7 +2,8 @@
 import { computed, type ComputedRef, type Ref } from 'vue';
 
 // Types e Interfaces
-import type { ICampoFiltro, IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 type TRegistroFiltro = object;
 
@@ -12,7 +13,7 @@ type TOpcaoSelecaoVuetify = {
 };
 
 type TUseOpcoesSelecaoFiltroParams = {
-  campoSelecionado: ComputedRef<ICampoFiltro<unknown> | null> | Ref<ICampoFiltro<unknown> | null>;
+  campoSelecionado: ComputedRef<TCampoFiltroMapeado | null> | Ref<TCampoFiltroMapeado | null>;
   registros: ComputedRef<TRegistroFiltro[]> | Ref<TRegistroFiltro[]>;
 };
 
@@ -40,8 +41,9 @@ function compararOpcoes(pPrimeiraOpcao: TOpcaoSelecaoVuetify, pSegundaOpcao: TOp
 }
 
 /**
- * Centraliza a montagem das opções usadas por operadores de seleção.
- * @param pParams
+ * @description Centraliza a montagem das opções usadas por operadores de seleção.
+ * @param pParams Campo selecionado e registros usados para derivar as opções.
+ * @returns Opções de seleção calculadas para o campo atual.
  */
 export function useOpcoesSelecaoFiltro(pParams: TUseOpcoesSelecaoFiltroParams): {
   opcoesSelecaoValoresDoCampo: ComputedRef<TOpcaoSelecaoVuetify[]>;

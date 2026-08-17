@@ -63,9 +63,9 @@
 
     <template #actions="{ onFechar }">
       <v-btn
+        :text="t('common.actions.close')"
         color="primary"
         variant="tonal"
-        text="Fechar"
         class="ml-auto"
         @click="onFechar"
       />
@@ -86,17 +86,16 @@ import pkg from '../../../package.json';
 // Componentes
 import BaseDialog from './base/BaseDialog.vue';
 
-// Constantes
-const systemVersion = pkg.version;
-
 // Composables
-const { t, locale } = useI18n();
+const { t } = useI18n();
 
 // Reativas
 const dialogLicenceOpen = defineModel<boolean>('dialogLicenceOpen', { required: true });
 
 // Computadas
 const formattedVersionDate = computed(() => {
-  return CFormatters.formatarDataHora(__APP_BUILD_DATE__, locale.value, true);
+  return CFormatters.formatarDataHora(__APP_BUILD_DATE__, true);
 });
+
+const systemVersion = computed(() => pkg.version);
 </script>

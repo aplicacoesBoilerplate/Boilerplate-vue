@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * @description Interface que define a estrutura de uma coluna de tabela. Os atributos foram nomeados como o esperado pelo componente.
  * @property {string} title O título de exibição visual que será renderizado no cabeçalho da coluna.
@@ -10,7 +12,7 @@
  * @property {boolean} [sortable] Determina se a coluna suporta a ordenação dos dados através da interação com o cabeçalho.
  * @property {'sum' | 'count'} [chartAggregator] Define a operação de agregação (soma ou contagem) quando os dados da tabela servem de base para um gráfico.
  * @property {(value?: any) => string} [chartFormatter] Função de formatação para tratar os valores antes de serem renderizados nas representações gráficas.
- * @property {(item: any) => any} [value] Função opcional que processa o item inteiro para gerar um valor customizado a ser exibido e ordenado (frequentemente usado em vez do valor bruto lido via `key`).
+ * @property {(item: any) => string} [value] Função opcional que processa o item inteiro para gerar um valor customizado a ser exibido e ordenado (frequentemente usado em vez do valor bruto lido via `key`).
  */
 export interface IHeadersDataTable {
   title: string;
@@ -23,5 +25,5 @@ export interface IHeadersDataTable {
   sortable?: boolean;
   chartAggregator?: 'sum' | 'count';
   chartFormatter?: (value?: any) => string;
-  value?: (item: any) => any;
+  value?: (item: any) => string;
 }

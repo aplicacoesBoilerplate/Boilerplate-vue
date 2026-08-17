@@ -22,4 +22,4 @@ export interface IPropsSnackbarQueue {
 }
 
 /** @description Tipo para usar com o v-snackbar-queue na store. */
-export type TSnackbarQueueItem = Exclude<SnackbarQueueMessage, string> & { urlRedirecionamento?: string; id?: string };
+export type TSnackbarQueueItem = Exclude<SnackbarQueueMessage, string> & { actionUrl?: string; id?: string };

@@ -97,8 +97,8 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed, mergeProps, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
 // Stores
@@ -149,16 +149,18 @@ function itemEstaAtivo(pItem: IRouteMeta): boolean {
 }
 
 /**
- * Resolve o título traduzido do item antes de renderizar ou exibir tooltip.
- * @param pItem
+ * @description Resolve o título traduzido do item antes de renderizar ou exibir o tooltip.
+ * @param pItem Item de navegação cujo título será traduzido.
+ * @returns Título traduzido do item.
  */
 function obterTituloItem(pItem: IRouteMeta): string {
   return t(pItem.title || '');
 }
 
 /**
- * Exibe tooltip quando o drawer está compacto ou quando o texto tende a truncar.
- * @param pItem
+ * @description Indica se o tooltip deve aparecer quando o drawer está compacto ou o texto tende a truncar.
+ * @param pItem Item de navegação avaliado.
+ * @returns `true` quando o item precisa de tooltip.
  */
 function deveExibirTooltipItem(pItem: IRouteMeta): boolean {
   return drawerCompacto.value || obterTituloItem(pItem).length > LIMITE_CARACTERES_TOOLTIP;

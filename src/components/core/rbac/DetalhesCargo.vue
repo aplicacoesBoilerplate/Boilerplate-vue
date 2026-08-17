@@ -28,7 +28,9 @@
     </template>
 
     <template #avatar-prepend-card>
-      <v-avatar :color="cargo.ativo ? 'primary' : 'grey'" class="text-white">
+      <v-avatar
+        :color="cargo.ativo ? 'primary' : 'grey'"
+        class="text-white">
         <v-icon :icon="cargo.icone" />
       </v-avatar>
     </template>
@@ -43,9 +45,11 @@
               size="small"
               variant="tonal"
             >
-              {{ cargo.comportamentoPadrao === 'liberar'
-                ? t('forms.controlePermissoesCargo.comportamentoPadrao.liberar')
-                : t('forms.controlePermissoesCargo.comportamentoPadrao.bloquear') }}
+              {{
+                cargo.comportamentoPadrao === 'liberar'
+                  ? t('forms.controlePermissoesCargo.comportamentoPadrao.liberar')
+                  : t('forms.controlePermissoesCargo.comportamentoPadrao.bloquear')
+              }}
             </v-chip>
 
             <v-chip
@@ -74,11 +78,11 @@
 
         <div class="d-flex justify-end mt-3">
           <v-btn
+            :text="t('common.actions.openDetails')"
             color="primary"
             prependIcon="mdi-eye-outline"
             size="small"
             variant="tonal"
-            text="Abrir detalhes"
             @click="abrirVisualizacao(fechar)"
           />
         </div>
@@ -92,26 +96,21 @@
 import { mergeProps } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-// Types e Interfaces
-import type { ICargoRbac } from '@/models/model/rbac/ICargoRbac.ts';
+// Models
+import type { ICargoRbac } from '@/models/model/core/rbac/rbac.model.ts';
 
 // Componentes
 import BaseDetalhesCargo from './BaseDetalhesCargo.vue';
 
+/**
+ * @description Propriedades do componente de Detalhes do Cargo RBAC.
+ * @property {ICargoRbac} cargo - Cargo exibido no item da lista.
+ * @property {number} quantidadePermissoesLiberadas - Quantidade de permissões liberadas para o cargo.
+ * @property {number} quantidadeUsuariosVinculados - Quantidade de usuários vinculados ao cargo.
+ */
 type TProps = {
-  /**
-   * Cargo exibido no item da lista.
-   */
   cargo: ICargoRbac;
-
-  /**
-   * Quantidade de permissões liberadas para o cargo.
-   */
   quantidadePermissoesLiberadas: number;
-
-  /**
-   * Quantidade de usuários vinculados ao cargo.
-   */
   quantidadeUsuariosVinculados: number;
 };
 const props = defineProps<TProps>();

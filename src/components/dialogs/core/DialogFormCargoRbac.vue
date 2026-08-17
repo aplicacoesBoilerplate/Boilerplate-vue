@@ -9,13 +9,13 @@
     @cancelar="concluirSalvo"
     @salvar="submeterFormCargo"
   >
-    <template #activator="{ props }">
+    <template #activator="{ props: dialogProps }">
       <slot
-        :props="props"
+        :props="dialogProps"
         name="activator"
       >
         <v-btn
-          v-bind="props"
+          v-bind="dialogProps"
           color="primary"
           icon="mdi-plus"
           size="x-small"
@@ -81,27 +81,25 @@
 </template>
 
 <script setup lang="ts">
+// Ecossistema Vue
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+// Model
 import { criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/core/rbac/rbac.model';
+import type { IDialogFormExposeBase } from '@/models/components/exposes/IDialogFormExposeBase';
 import type { IUsuario } from '@/models/model/core/usuario.model';
 
+// Componentes
 import BaseDialog from '@/components/dialogs/base/BaseDialog.vue';
 import TabsExtensionToolbar, { type TAbas } from '@/components/forms/core/fixtures/rbac/TabsExtensionToolbar.vue';
 import FormCargoRbac from '@/components/forms/core/FormCargoRbac.vue';
-
-export interface IDialogFormCargoRbacExpose {
-  exibicaoDialog: (pItem?: ICargoRbac) => void;
-  concluirSalvo: () => void;
-}
 
 type TProps = {
   modoEdicao: boolean;
   modoVisualizacao?: boolean;
   cargosDisponiveis: ICargoRbac[];
 };
-
 const props = withDefaults(defineProps<TProps>(), {
   modoVisualizacao: false,
 });
@@ -110,28 +108,38 @@ type TEmits = {
   salvar: [];
   editar: [];
 };
-
 const emits = defineEmits<TEmits>();
 
+// Composables
 const { t } = useI18n();
 
+// Reativas - Model
 const exibirDialog = defineModel<boolean>('exibirDialog', { required: true });
 const cargo = defineModel<ICargoRbac>('cargo', { required: false, default: {} });
 const usuarios = defineModel<IUsuario[]>('usuarios', { required: true });
 
+// Reativas - ref
 const refFormCargo = ref<InstanceType<typeof FormCargoRbac> | null>(null);
 const formValido = ref(false);
 const salvando = ref(false);
 const aba = ref<TAbas>('dados');
 
+// Funções
 function resetarFormCargo(): void {
   refFormCargo.value?.refreshForm();
 }
 
+/**
+ * @description O método de submeterFormCargo é acionado pelo botão de salvar do BaseDialog implementado,
+ * ele apenas faz o submit do form, quem realmente realiza as regras de validação do objeto e dispara o emit 'salvar'.
+ */
 function submeterFormCargo(): void {
   refFormCargo.value?.submit();
 }
 
+/**
+ * @description O método de salvarCargo é sempre quem dispara o emit 'salvar', é ele quem manipula o objeto.
+ */
 function salvarCargo(): void {
   salvando.value = true;
   emits('salvar');
@@ -158,13 +166,7 @@ function habilitarEdicao(): void {
   emits('editar');
 }
 
-watch(exibirDialog, (pExibindo) => {
-  if (!pExibindo) {
-    cargo.value = criarCargoRbacPadrao();
-    formValido.value = false;
-  }
-});
-
+// Computadas
 const titulo = computed(() =>
   props.modoVisualizacao
     ? `Visualizar ${cargo.value.nome}`
@@ -178,8 +180,16 @@ const icone = computed(() => {
   return props.modoEdicao ? 'mdi-shield-edit-outline' : 'mdi-shield-plus-outline';
 });
 
+// Observadores
+watch(exibirDialog, (pExibindo) => {
+  if (!pExibindo) {
+    cargo.value = criarCargoRbacPadrao();
+    formValido.value = false;
+  }
+});
+
 defineExpose({
   exibicaoDialog,
   concluirSalvo,
-} satisfies IDialogFormCargoRbacExpose);
+} satisfies IDialogFormExposeBase<ICargoRbac>);
 </script>

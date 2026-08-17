@@ -1,13 +1,13 @@
 <template>
-  <v-number-input
+  <v-text-field
     v-if="htmlType === 'number'"
     v-model="valorNumerico"
     :rules="rulesList"
     :type="htmlType"
     :label="label"
-    controlVariant="stacked"
     variant="outlined"
     density="compact"
+    inputmode="decimal"
     autocomplete="off"
     hideDetails
     clearable
@@ -38,7 +38,7 @@ type TProps = {
   campo?: string | null;
 };
 
-const props = defineProps<TProps>();
+defineProps<TProps>();
 
 type TEmits = {
   onEnter: [];
@@ -52,10 +52,7 @@ const valor = defineModel<unknown>('valor', { required: true });
 
 const label = computed(() => t('messages.value'));
 
-const rulesList = computed(() => {
-  if (props.campo === 'RECURSO') return [];
-  return [];
-});
+const rulesList: readonly never[] = [];
 
 const valorNumerico = computed<number | null | undefined>({
   get: () => {

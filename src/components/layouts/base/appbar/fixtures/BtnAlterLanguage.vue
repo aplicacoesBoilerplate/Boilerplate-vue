@@ -44,7 +44,7 @@ import { inject, mergeProps, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // Utils
-import { ClassManagerStorage } from '@/utils/ManagerStorage';
+import { CManagerStorage } from '@/utils/ManagerStorage';
 
 // Constantes
 import { availableLocales } from '@/locales/AvailableLocales';
@@ -59,13 +59,13 @@ const { t, locale } = useI18n();
 const isMenuOpen = ref(false);
 
 // Observadores
-watch(isMenuOpen, (val) => {
-  if (setKeepOpen) setKeepOpen(val);
+watch(isMenuOpen, (pValue) => {
+  if (setKeepOpen) setKeepOpen(pValue);
 });
 
 // Funções
-function changeLocale(lang: string) {
-  locale.value = lang;
-  ClassManagerStorage.set('user_locale', lang, 'local');
+function changeLocale(pLang: string) {
+  locale.value = pLang;
+  CManagerStorage.set('user_locale', pLang, 'local');
 }
 </script>

@@ -27,8 +27,8 @@
 <script setup lang="ts">
 // Ecossistema Vue
 import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useDisplay, useHotkey } from 'vuetify';
 
 // Types e Interfaces

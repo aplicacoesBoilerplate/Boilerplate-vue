@@ -12,8 +12,8 @@ export class CPreferenciaUsuarioService extends CBaseHttpService {
    * @description Busca todas as preferências do usuário autenticado.
    * @returns Preferências persistidas no backend.
    */
-  public static async buscarPreferenciasUsuarioAutenticado(): Promise<IPreferenciasUsuario> {
-    return CPreferenciaUsuarioService.get<IPreferenciasUsuario>('/preferencias/me');
+  public async buscarPreferenciasUsuarioAutenticado(): Promise<IPreferenciasUsuario> {
+    return this.get<IPreferenciasUsuario>({ pathUrl: '/preferencias/me' });
   }
 
   /**
@@ -21,13 +21,10 @@ export class CPreferenciaUsuarioService extends CBaseHttpService {
    * @param pPreferencias Preferências que serão persistidas.
    * @returns Preferências atualizadas.
    */
-  public static async salvarPreferenciasUsuarioAutenticado(
+  public async salvarPreferenciasUsuarioAutenticado(
     pPreferencias: IPreferenciasUsuario,
   ): Promise<IPreferenciasUsuario> {
-    return CPreferenciaUsuarioService.put<IPreferenciasUsuario, IPreferenciasUsuario>(
-      '/preferencias/me',
-      pPreferencias,
-    );
+    return this.put<IPreferenciasUsuario, IPreferenciasUsuario>({ pathUrl: '/preferencias/me', body: pPreferencias });
   }
 
   /**
@@ -35,12 +32,11 @@ export class CPreferenciaUsuarioService extends CBaseHttpService {
    * @param pPreferencia Preferência que será persistida.
    * @returns Preferência atualizada.
    */
-  public static async salvarPreferenciaUsuarioAutenticado(
+  public async salvarPreferenciaUsuarioAutenticado(
     pPreferencia: IPreferenciaUsuario,
   ): Promise<IPreferenciaUsuario> {
-    return CPreferenciaUsuarioService.put<IPreferenciaUsuario, IPreferenciaUsuario>(
-      '/preferencias/me/item',
-      pPreferencia,
-    );
+    return this.put<IPreferenciaUsuario, IPreferenciaUsuario>({ pathUrl: '/preferencias/me/item', body: pPreferencia });
   }
 }
+
+export const preferenciaUsuarioService = new CPreferenciaUsuarioService();

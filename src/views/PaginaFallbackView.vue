@@ -32,7 +32,7 @@
           class="mr-4"
           @click="goBack"
         >
-          Voltar
+          {{ t('common.actions.back') }}
         </v-btn>
 
         <v-btn
@@ -42,7 +42,7 @@
           prependIcon="mdi-home"
           @click="goHome"
         >
-          Ir para o Início
+          {{ t('common.actions.home') }}
         </v-btn>
       </div>
     </v-sheet>
@@ -52,6 +52,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   type?: '403' | '404' | '500';
@@ -59,6 +60,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const route = useRoute();
+const { t } = useI18n();
 
 const errorType = computed(() => props.type || (route.name === 'AcessoNegado' ? '403' : '404'));
 
@@ -67,17 +69,16 @@ const errorContent = computed(() => {
     case '403':
       return {
         code: '403',
-        title: 'Acesso Negado',
-        message:
-          'Você não tem permissão para acessar esta área. Se acredita que isso é um erro, contate o administrador.',
+        title: t('common.fallback.forbiddenTitle'),
+        message: t('common.fallback.forbiddenMessage'),
         icon: 'mdi-shield-lock-outline',
         color: 'error',
       };
     case '500':
       return {
         code: '500',
-        title: 'Erro Interno',
-        message: 'Algo deu errado nos nossos servidores. Tente novamente mais tarde.',
+        title: t('common.fallback.serverTitle'),
+        message: t('common.fallback.serverMessage'),
         icon: 'mdi-server-network-off',
         color: 'warning',
       };
@@ -85,8 +86,8 @@ const errorContent = computed(() => {
     default:
       return {
         code: '404',
-        title: 'Página não encontrada',
-        message: 'Não encontramos a página que você está procurando.',
+        title: t('common.fallback.notFoundTitle'),
+        message: t('common.fallback.notFoundMessage'),
         icon: 'mdi-map-marker-question-outline',
         color: 'info',
       };

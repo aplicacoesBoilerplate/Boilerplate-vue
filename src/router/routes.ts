@@ -1,17 +1,9 @@
-// Ecossistema Vue
-import type { RouteRecordRaw } from 'vue-router';
-
 // Enums
 import { ERecursosFiltro } from '@/models/filters/enums/ERecursosFiltro';
-
-// Types e Interfaces
-import type { TCamposFiltroRbac } from '@/models/model/core/rbac/rbac.model';
-import type { TCamposFiltroUsuario } from '@/models/model/core/usuario.model';
-import type { TCamposFiltroErros } from '@/models/model/errors/MapeamentoFiltrosErros';
+import type { RouteRecordRaw } from 'vue-router';
 
 // Classes
 import { CMapeamentosFiltro } from '@/classes/filters/CMapeamentosFiltro';
-
 // Views
 import HomeView from '@/views/HomeView.vue';
 import PaginaFallbackView from '@/views/PaginaFallbackView.vue';
@@ -87,7 +79,7 @@ export const routes: Array<RouteRecordRaw> = [
           icon: 'mdi-account-group',
           hotkey: 'cmd+shift+u',
           filterContext: ERecursosFiltro.USUARIOS,
-          filterResource: CMapeamentosFiltro.getMapeamento<TCamposFiltroUsuario>(ERecursosFiltro.USUARIOS),
+          filterResource: CMapeamentosFiltro.getMapeamento(ERecursosFiltro.USUARIOS),
         },
       },
       {
@@ -97,9 +89,9 @@ export const routes: Array<RouteRecordRaw> = [
         meta: {
           title: 'routes.adm.children.rbac.title',
           icon: 'mdi-shield-key',
-          hotkey: 'cmd+shift+r',
+          hotkey: 'cmd+alt+r',
           filterContext: ERecursosFiltro.RBAC,
-          filterResource: CMapeamentosFiltro.getMapeamento<TCamposFiltroRbac>(ERecursosFiltro.RBAC),
+          filterResource: CMapeamentosFiltro.getMapeamento(ERecursosFiltro.RBAC),
         },
       },
       {
@@ -111,7 +103,7 @@ export const routes: Array<RouteRecordRaw> = [
           icon: 'mdi-sync-alert',
           hotkey: 'cmd+shift+e',
           filterContext: ERecursosFiltro.ERROS,
-          filterResource: CMapeamentosFiltro.getMapeamento<TCamposFiltroErros>(ERecursosFiltro.ERROS),
+          filterResource: CMapeamentosFiltro.getMapeamento(ERecursosFiltro.ERROS),
         },
       },
       {

@@ -1,5 +1,5 @@
 <template>
-  <v-row density="comfortable">
+  <v-row>
     <ResumoVersoes
       :totalAlteracoes="totalAlteracoes"
       :versaoAtual="versaoAtual"
@@ -19,11 +19,11 @@
 import type { TPropsResumoVersoes } from '@/models/components/IVersaoChangelog'
 import type { TPropsListaRealizadosVersoes } from '@/models/components/IVersaoChangelog'
 
+import ListaRealizadosVersoes from './ListaRealizadosVersoes.vue';
 // Componentes
 import ResumoVersoes from './ResumoVersoes.vue';
-import ListaRealizadosVersoes from './ListaRealizadosVersoes.vue';
 
 type TProps = TPropsResumoVersoes & TPropsListaRealizadosVersoes
-const props = defineProps<TProps>();
+defineProps<TProps>();
 
 </script>

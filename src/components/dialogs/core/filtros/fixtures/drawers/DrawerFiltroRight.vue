@@ -34,13 +34,13 @@ import { useDisplay } from 'vuetify';
 import { useGenericFilterStore } from '@/stores/genericFilter.store';
 
 // Types e Interfaces
-import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 // Componentes
 import ItemFiltro from '../ItemFiltro.vue';
 
 type TProps = {
-  camposDisponiveis: ICampoFiltro<any>[];
+  camposDisponiveis: TCampoFiltroMapeado[];
 };
 defineProps<TProps>();
 

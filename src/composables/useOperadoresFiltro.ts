@@ -4,7 +4,8 @@ import { computed, type ComputedRef, type Ref } from 'vue';
 import { EOperadoresFiltro, MAPEAMENTO_OPERADORES } from '@/models/filters/enums/EOperadoresFiltro';
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 // Types e Interfaces
-import type { ICampoFiltro, IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
 // Constantes
 const OPERADORES_BOOLEANOS = [EOperadoresFiltro.VERDADEIRO, EOperadoresFiltro.FALSO];
@@ -31,11 +32,11 @@ const OPERADORES_TEXTO = [
 ];
 
 type TUseOperadoresFiltroParams = {
-  campoSelecionado: ComputedRef<ICampoFiltro<unknown> | null> | Ref<ICampoFiltro<unknown> | null>;
+  campoSelecionado: ComputedRef<TCampoFiltroMapeado | null> | Ref<TCampoFiltroMapeado | null>;
 };
 
 /**
- * Filtra os operadores disponíveis baseado nos operadores permitidos.
+ * @description Filtra os operadores disponíveis com base nos operadores permitidos.
  * @param pOperadoresPermitidos Array de operadores permitidos.
  * @returns Array de operadores disponíveis.
  */
@@ -46,7 +47,7 @@ function filtrarOperadores(pOperadoresPermitidos: EOperadoresFiltro[]): IOpcaoSe
 }
 
 /**
- * Adiciona operadores ao Set de operadores atuais.
+ * @description Adiciona operadores ao conjunto de operadores atuais.
  * @param pOperadoresAtuais Set de operadores atuais.
  * @param pOperadoresPermitidos Array de operadores a serem adicionados.
  */
@@ -58,8 +59,9 @@ function adicionarOperadores(
 }
 
 /**
- * Responsável por montar a lista de operadores válidos baseado no tipo do campo selecionado.
- * @param pParams
+ * @description Monta a lista de operadores válidos com base no tipo do campo selecionado.
+ * @param pParams Campo selecionado usado para determinar os operadores.
+ * @returns Operadores disponíveis e tipos do campo atual.
  */
 export function useOperadoresFiltro(pParams: TUseOperadoresFiltroParams) {
   const tiposCampoAtual = computed<ETipoFiltro[]>(() => pParams.campoSelecionado.value?.tipos ?? []);
