@@ -1,37 +1,43 @@
 // Ecossistema Vue
-import { computed } from 'vue';
-import { useRoute, useRouter, type RouteRecordRaw } from 'vue-router';
-
-// Types e Interfaces
-import type { IRouteMeta } from '@/models/model/IRouteMeta';
+import { computed, type ComputedRef } from 'vue';
+import { type RouteRecordRaw, useRoute, useRouter } from 'vue-router';
 
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
 
 // Models
-import {
-  permissaoEstaLiberada,
-  RECURSO_PERMISSAO_ROTAS_RBAC,
-} from '@/models/model/rbac/ICargoRbac';
+import { RECURSO_PERMISSAO_ROTAS_RBAC } from '@/models/model/core/rbac/rbac.api';
+import { permissaoEstaLiberada } from '@/models/model/core/rbac/rbac.model';
+import type { IRouteMeta } from '@/models/model/IRouteMeta';
 
 /**
- * Composable responsável por gerenciar o comportamento do componente de Navigation.
+ * @property {ComputedRef<IRouteMeta[]>} menuItems - Mapeamentos das rotas que serão renderizadas no NavigationDrawer.
+ * @property {(pItem: IRouteMeta) => boolean} rotaAtualCorrespondeItem - Método de sincronização entre rota atual e item ativo no NavigationDrawer.
  */
-export function useNavigation() {
+type TUseNavigationReturn = {
+  menuItems: ComputedRef<IRouteMeta[]>,
+  rotaAtualCorrespondeItem: (pItem: IRouteMeta) => boolean
+}
+
+/**
+ * @description Composable responsável por gerenciar o comportamento do componente de Navigation.
+ * @returns {TUseNavigationReturn} Métodos para o NavigationDrawer estruturar corretamente as rotas.
+ */
+export function useNavigation(): TUseNavigationReturn {
   // Composables
   const router = useRouter();
   const route = useRoute();
   const authStore = useAuthStore();
 
   /**
-   * Verifica se o usuário pode acessar a rota.
-   * @param route Rota a ser verificada.
+   * @description Verifica se o usuário pode acessar a rota.
+   * @param pRoute Rota a ser verificada.
    * @returns Se o usuário pode acessar a rota.
    */
-  const canAccess = (route: RouteRecordRaw): boolean => {
-    if (route.meta?.hidden) return false;
+  const canAccess = (pRoute: RouteRecordRaw): boolean => {
+    if (pRoute.meta?.hidden) return false;
 
-    const nomeRota = String(route.name ?? '');
+    const nomeRota = String(pRoute.name ?? '');
     if (!nomeRota) return true;
 
     if (!authStore.isAuthenticated) return true;
@@ -41,30 +47,30 @@ export function useNavigation() {
   };
 
   /**
-   * Mapeia uma rota para um item de menu.
-   * @param route Rota a ser mapeada.
+   * @description Mapeia uma rota para um item de menu.
+   * @param pRoute Rota a ser mapeada.
    * @returns Item de menu mapeado.
    */
-  const mapRouteToMenuItem = (route: RouteRecordRaw): IRouteMeta => {
+  const mapRouteToMenuItem = (pRoute: RouteRecordRaw): IRouteMeta => {
     return {
-      name: route.name as string | undefined,
-      path: route.path,
-      title: route.meta?.title as string | undefined,
-      icon: route.meta?.icon as string | undefined,
-      hotkey: route.meta?.hotkey as string | undefined,
-      hidden: route.meta?.hidden as boolean | undefined,
-      requiresAuth: route.meta?.requiresAuth as boolean | undefined,
-      children: route.children ? route.children.map(mapRouteToMenuItem) : undefined,
+      name: pRoute.name as string | undefined,
+      path: pRoute.path,
+      title: pRoute.meta?.title as string | undefined,
+      icon: pRoute.meta?.icon as string | undefined,
+      hotkey: pRoute.meta?.hotkey as string | undefined,
+      hidden: pRoute.meta?.hidden as boolean | undefined,
+      requiresAuth: pRoute.meta?.requiresAuth as boolean | undefined,
+      children: pRoute.children ? pRoute.children.map(mapRouteToMenuItem) : undefined,
     };
   };
 
   /**
-   * Itens computados para montar o menu.
+   * @description Itens computados para montar o menu. Realização de filtro canAccess e mapeamentos.
    */
   const menuItems = computed<IRouteMeta[]>(() => {
     const allRoutes = router.options.routes;
-    const filterRoutes = (routes: readonly RouteRecordRaw[]): RouteRecordRaw[] => {
-      return routes.reduce<RouteRecordRaw[]>((pRotasFiltradas, pRota) => {
+    const filterRoutes = (pRoutes: readonly RouteRecordRaw[]): RouteRecordRaw[] => {
+      return pRoutes.reduce<RouteRecordRaw[]>((pRotasFiltradas, pRota) => {
         const filhosFiltrados = pRota.children ? filterRoutes(pRota.children) : undefined;
         const rotaAcessivel = canAccess(pRota);
 
@@ -81,7 +87,6 @@ export function useNavigation() {
       }, []);
     };
 
-    // Realização do filtro e mapeamento dos itens do menu.
     return filterRoutes(allRoutes).map(mapRouteToMenuItem);
   });
 

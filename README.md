@@ -13,6 +13,7 @@ Este projeto utiliza conceitos de **CSR e SPA** aplicados com o framework **VueJ
 Foram aplicados utilização do **cliclo de vida** do componente, **método de renderização pelo cliente**, **composition API**, **comunicação entre componentes usando defineModel**. <br>
 Além disso também temos os **services** capazes de se comunicar com o [backend](https://gitlab.com/controle.saida/backend) **via axios**, classes de **diretivas customizadas** para tratamento do formato de dados em inputs, storages com o **Pinia**, <br>
 roteamento com o **Vue router**, classes utilitárias com diversas funcionalidades como:
+
 - Tratamento de formatação de data;
 - gerenciamento de inatividade do usuário;
 - Remover atributos indefinidos;
@@ -29,16 +30,21 @@ Enquanto os componentes no diretório <em>src/components</em> são os componente
 ### 🧩 Demais Funções Implementadas
 
 #### ● Redirecionamento inteligente
+
 ▶Com base no nível de permissão do usuário eu posso redirecionar ele para uma rota mais relevante as atividades geralmente relacionadas a alguém com a permissão definida.
 
 #### ● Gerador de relatório
+
 ▶O backend alimenta um componente complexo com um método que identifica as informações do modelo de relatório selecionado pelo cliente, com base nisso temos as tabelas que podemos emitir filtros, quais os campos, as condições aceitas por cada campo e a lógica de controle dos filtros aplicados para a emissão do relatório.
 
 #### ● Salvar relatório em PDF
+
 ▶Existe uma classe utilitária que salva o conteúdo da div de resposta da emissão de relatório e o salva em um arquivo .pdf.
 
 #### ● Integração com uma API não oficial do WhatsApp
-▶WppConnect é usado pelo backend para envio de mensagens, mas também temos a possibilidade de: 
+
+▶WppConnect é usado pelo backend para envio de mensagens, mas também temos a possibilidade de:
+
 - Consulta de status da sessão de conexão com o WhatsApp pelo dashboard (disponível apenas para administradores);
 - Abrir Sessão automaticamente se o retorno do statos for "CLOSED";
 - Conexão via qrcode.
@@ -50,21 +56,44 @@ Enquanto os componentes no diretório <em>src/components</em> são os componente
 
 ## 🛠 Localmente
 
-O **compose** deste projeto descrito no [backend](https://gitlab.com/controle.saida/backend) já cria uma **orquestração** de 5 containers, entre eles o frontend já está envolvido, mas ainda podemos executar localmente, contanto que a aplicação backend também esteja rodando
+O Compose integrado está no repositório irmão `../../backends/Boilerplate-java`. Ele inicia frontend, backend e MySQL, expondo a aplicação em `http://localhost:8080`. O phpMyAdmin é opt-in pelo perfil `tools` e fica restrito ao loopback.
 
-#### Crie na raiz do projeo, um arquivo .env:
+No diretório do backend, configure o ambiente e inicie os serviços:
 
-```dotenv
-VITE_API_URL="endereço da API"
-VITE_DOMAIN_EMAIL="@GMAIL.COM"
+```powershell
+$secretsDir = Join-Path $env:USERPROFILE '.boilerplate-secrets'
+New-Item -ItemType Directory -Force -Path $secretsDir | Out-Null
+$envFile = Join-Path $secretsDir 'backend.env'
+Copy-Item .env.example $envFile
+docker compose --env-file $envFile up --build --wait
+```
+
+O frontend usa o Nginx como proxy reverso, portanto suas chamadas para `/api`, `/auth`, `/actuator` e `/doc` permanecem na mesma origem e não exigem configuração adicional de CORS.
+
+Para executar somente este projeto sem Docker, a API deve estar disponível localmente:
+
+#### Defina as variáveis no processo, sem criar um arquivo de segredo no repositório:
+
+```powershell
+$env:VITE_API_URL='http://localhost:8080'
+$env:VITE_DOMAIN_EMAIL='@GMAIL.COM'
 ```
 
 #### Depois basta rodar os comandos no prompt:
 
-```cmd
+```powershell
 npm install
 npm run dev
 ```
+
+### Verificação integral
+
+```powershell
+npm run verify
+npm run test:memory
+```
+
+O primeiro comando executa lint, análise de tipos, testes unitários, build de produção, orçamento de bundle e E2E. O segundo mede retenção de heap/DOM/listeners após ciclos repetidos de navegação. O cache de listas é limitado por TTL/LRU e é apagado integralmente em logout ou `401`; exportações também possuem limites de páginas, registros, bytes, tempo e cancelamento.
 
 ---
 

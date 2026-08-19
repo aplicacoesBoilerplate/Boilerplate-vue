@@ -24,11 +24,12 @@
 import { nextTick, ref } from 'vue';
 
 // Types e Interfaces
-import type { IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
+import type { IUsuarioSolicitacaoAcesso } from '@/models/model/core/usuario.solicitacao.model';
+
+import FormRegistro from '@/components/forms/FormRegistro.vue';
 
 // Componentes
 import AcoesFormularioAutenticacao from './AcoesFormularioAutenticacao.vue';
-import FormRegistro from '@/components/forms/FormRegistro.vue';
 
 type TProps = {
   /**
@@ -42,7 +43,7 @@ type TProps = {
   tooltipResetar: string;
 };
 
-const props = withDefaults(defineProps<TProps>(), {
+withDefaults(defineProps<TProps>(), {
   carregando: false,
 });
 
@@ -69,7 +70,7 @@ const formRegistroRef = ref<InstanceType<typeof FormRegistro> | null>(null);
 // Funções
 async function reset(): Promise<void> {
   await nextTick();
-  formRegistroRef.value?.reset();
+  formRegistroRef.value?.refreshForm();
 }
 
 async function submit(): Promise<void> {

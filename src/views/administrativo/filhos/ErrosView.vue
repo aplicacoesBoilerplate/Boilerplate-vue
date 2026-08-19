@@ -6,10 +6,11 @@
     <GenericView
       :contexto="CONTEXTO_LISTA_ERROS"
       :serviceFetch="buscarErros"
-      :colunasExportacao="MAPEAMENTO_TABELA_ERROS"
+      :serviceExportacao="exportarErros"
+      :colunasExportacao="CABECALHOS_TABELA_ERRO"
       :exibirNovoRegistro="false"
       nomeArquivoExportacao="erros-sistema"
-      itemKey="idError"
+      itemKey="idErro"
       textoVazio="Nenhum erro registrado."
       textoFinal="Todos os erros foram carregados."
     >
@@ -17,9 +18,9 @@
         <v-expansion-panels class="pa-1">
           <GenericInfiniteListItem
             v-for="erro in items as IErros[]"
-            :key="erro.idError"
+            :key="erro.idErro"
             :item="erro"
-            itemKey="idError"
+            itemKey="idErro"
             class="w-100 mb-2"
           >
             <v-expansion-panel class="border rounded">
@@ -31,9 +32,12 @@
                     size="24"
                     class="mr-3"
                   />
-                  
-                  <span class="font-weight-bold text-primary text-truncate text-body-2" style="max-width: calc(100% - 100px);">
-                    #{{ erro.idError }} - {{ formatarTituloMensagem(erro.mensagem) }}
+
+                  <span
+                    class="font-weight-bold text-primary text-truncate text-body-2"
+                    style="max-width: calc(100% - 100px)"
+                  >
+                    #{{ erro.idErro }} - {{ formatarTituloMensagem(erro.mensagem) }}
                   </span>
 
                   <v-chip
@@ -59,32 +63,44 @@
 </template>
 
 <script setup lang="ts">
-// Types e Interfaces
-import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
-import type { IErros } from '@/models/model/errors/IErros';
+// Models
+import { CABECALHOS_TABELA_ERRO } from '@/models/model/common/IErros';
+import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { IErros } from '@/models/model/common/IErros';
 
 // Services
-import { CErroService } from '@/services/CErroService';
+import { errosService } from '@/services/CErrosService';
 
-// Mapeamentos
-import { MAPEAMENTO_TABELA_ERROS } from '@/models/model/errors/MapeamentoTabelaErros';
-
-// Componentes
-import GenericView from '@/components/layout/generic/GenericView.vue';
-import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
 import DetalhesLogErro from '@/components/errors/DetalhesLogErro.vue';
+import GenericInfiniteListItem from '@/components/layouts/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
+// Componentes
+import GenericView from '@/components/layouts/generic/GenericView.vue';
 
 // Constantes
 const CONTEXTO_LISTA_ERROS = 'lista-erros';
 
 // Funções
 /**
- * @description Consulta a listagem paginada de erros de sistema através do serviço de falhas.
- * @param pPayload Parâmetros contendo o limite, cursor e ordem para paginação.
- * @returns Retorna a resposta contendo a lista de erros e status da paginação.
+ * @param pParametros - Parâmetros opcionais recebidos pelo contrato genérico de exportação.
+ * @param pOptions - Opções de cancelamento da exportação.
+ * @param pOptions.signal - Sinal que cancela a paginação em andamento.
+ * @description Consulta todos os erros e retorna somente os registros para exportação.
+ * @returns Lista de erros disponível para o exportador.
  */
-async function buscarErros(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse<IErros>> {
-  return CErroService.consultar(pPayload);
+async function exportarErros(pParametros?: Record<string, unknown>, pOptions?: { signal?: AbortSignal }): Promise<IErros[]> {
+  void pParametros;
+  const resposta = await errosService.consultarTodosRegistros({}, { signal: pOptions?.signal });
+
+  return resposta.registros;
+}
+
+/**
+ * @description Consulta uma página de erros com a instância vinculada do service.
+ * @param pPayload - Parâmetros da consulta paginada.
+ * @returns Resposta paginada de erros.
+ */
+async function buscarErros(pPayload: IConsultaRegistros<IErros>): Promise<IRespostaConsultaRegistros<IErros>> {
+  return errosService.consultar(pPayload);
 }
 
 /**

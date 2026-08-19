@@ -40,20 +40,17 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { mergeProps, ref, watch, inject } from "vue";
-import { useI18n } from "vue-i18n";
-
-// Constantes
-import { availableLocales } from "@/locales/AvailableLocales";
+import { inject, mergeProps, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Utils
-import { ClassManagerStorage } from "@/utils/ManagerStorage";
+import { CManagerStorage } from '@/utils/ManagerStorage';
+
+// Constantes
+import { availableLocales } from '@/locales/AvailableLocales';
 
 // Setup de estado do Drawer
-const setKeepOpen = inject<((val: boolean) => void) | undefined>(
-  "drawerKeepOpen",
-  undefined,
-);
+const setKeepOpen = inject<((val: boolean) => void) | undefined>('drawerKeepOpen', undefined);
 
 // Composables
 const { t, locale } = useI18n();
@@ -62,14 +59,13 @@ const { t, locale } = useI18n();
 const isMenuOpen = ref(false);
 
 // Observadores
-watch(isMenuOpen, (val) => {
-  if (setKeepOpen) setKeepOpen(val);
+watch(isMenuOpen, (pValue) => {
+  if (setKeepOpen) setKeepOpen(pValue);
 });
 
 // Funções
-function changeLocale(lang: string) {
-  locale.value = lang;
-  ClassManagerStorage.set("user_locale", lang, "local");
+function changeLocale(pLang: string) {
+  locale.value = pLang;
+  CManagerStorage.set('user_locale', pLang, 'local');
 }
-
 </script>

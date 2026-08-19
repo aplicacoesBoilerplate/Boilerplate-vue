@@ -26,7 +26,7 @@
 
     <template
       v-if="smAndDown"
-      v-slot:extension
+      #extension
     >
       <div class="px-4 pb-2 w-100">
         <AppBarSearchForm
@@ -36,7 +36,7 @@
       </div>
     </template>
 
-    <template v-slot:append>
+    <template #append>
       <MenuOptionsDrawer v-model:dialogLicenceOpen="dialogLicenceOpen" />
     </template>
   </v-app-bar>
@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { ref } from 'vue';
+import { onBeforeUnmount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
@@ -56,6 +56,7 @@ import type { TParametrosBusca } from '@/models/filters/TParametrosBusca.ts';
 
 // Componentes
 import AppBarSearchForm from '@/components/forms/AppBarSearchForm.vue';
+
 import MenuOptionsDrawer from './fixtures/MenuOptionsDrawer.vue';
 
 // Stores
@@ -68,6 +69,7 @@ const { t } = useI18n();
 // Reativas
 const loading = ref(false);
 const dialogLicenceOpen = ref(false);
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 // Funções
 function toggleDrawer() {
@@ -75,7 +77,17 @@ function toggleDrawer() {
 }
 
 function handleSearch(pParams: TParametrosBusca) {
+  void pParams;
+  if (searchTimer) clearTimeout(searchTimer);
   loading.value = true;
-  setTimeout(() => (loading.value = false), 2000);
+  searchTimer = setTimeout(() => {
+    loading.value = false;
+    searchTimer = null;
+  }, 2000);
 }
+
+onBeforeUnmount(() => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = null;
+});
 </script>

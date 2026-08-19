@@ -1,29 +1,27 @@
 // Ecossistema Vue
-import type { RouteRecordRaw } from 'vue-router';
-
 // Types e Interfaces
 import type { INavigationItem } from '@/models/components/INavigationItem';
+import type { RouteRecordRaw } from 'vue-router';
 
 // Class com a responsabilidade de montar os itens do componente NavigationDrawer.
-export class ClassNavigationRouteBuilder {
+export class CNavigationRouteBuilder {
   /**
-   * Método que constrói os itens de navegação a partir dos registros de rotas.
-   *
-   * @param routeRecords Registros de rotas.
-   * @param parentPath Caminho pai.
+   * @description Constrói os itens de navegação a partir dos registros de rotas.
+   * @param pRouteRecords Registros de rotas.
+   * @param pParentPath Caminho pai.
    * @returns Array de itens de navegação.
    */
-  static build(routeRecords: RouteRecordRaw[], parentPath = ''): INavigationItem[] {
+  static build(pRouteRecords: RouteRecordRaw[], pParentPath = ''): INavigationItem[] {
     // flatMap para transformar e achatar coleções aninhadas.
-    return routeRecords.flatMap((route) => {
-      const childPathBase = this.resolvePath(parentPath, route.path);
-      const children = route.children?.length ? this.build(route.children, childPathBase) : [];
+    return pRouteRecords.flatMap((pRoute) => {
+      const childPathBase = this.resolvePath(pParentPath, pRoute.path);
+      const children = pRoute.children?.length ? this.build(pRoute.children, childPathBase) : [];
 
-      if (route.meta?.hidden || route.meta?.excludeNav) {
+      if (pRoute.meta?.hidden || pRoute.meta?.excludeNav) {
         return [];
       }
 
-      const title = route.meta?.title ? String(route.meta.title) : undefined;
+      const title = pRoute.meta?.title ? String(pRoute.meta.title) : undefined;
 
       if (!title && children.length) {
         return children;
@@ -35,15 +33,15 @@ export class ClassNavigationRouteBuilder {
 
       const item: INavigationItem = {
         title,
-        icon: route.meta?.icon ? String(route.meta.icon) : undefined,
-        hotkey: route.meta?.hotkey ? String(route.meta.hotkey) : undefined,
+        icon: pRoute.meta?.icon ? String(pRoute.meta.icon) : undefined,
+        hotkey: pRoute.meta?.hotkey ? String(pRoute.meta.hotkey) : undefined,
       };
 
       if (children.length) {
         item.children = children;
       } else {
         item.to = childPathBase || '/';
-        item.name = route.name as string;
+        item.name = pRoute.name as string;
       }
 
       return [item];
@@ -51,19 +49,18 @@ export class ClassNavigationRouteBuilder {
   }
 
   /**
-   * Método que resolve o caminho.
-   *
-   * @param parentPath Caminho pai.
-   * @param path Caminho.
+   * @description Resolve o caminho absoluto de um registro de rota.
+   * @param pParentPath Caminho pai.
+   * @param pPath Caminho do registro atual.
    * @returns Caminho resolvido.
    */
-  private static resolvePath(parentPath: string, path: string) {
-    if (path.startsWith('/')) {
-      return path;
+  private static resolvePath(pParentPath: string, pPath: string) {
+    if (pPath.startsWith('/')) {
+      return pPath;
     }
 
-    const normalizedParent = parentPath === '/' ? '' : parentPath;
-    const normalizedPath = path ? `/${path}` : '';
+    const normalizedParent = pParentPath === '/' ? '' : pParentPath;
+    const normalizedPath = pPath ? `/${pPath}` : '';
     const resolvedPath = `${normalizedParent}${normalizedPath}`;
 
     return resolvedPath || '/';

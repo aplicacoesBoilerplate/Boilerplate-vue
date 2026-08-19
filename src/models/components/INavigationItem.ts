@@ -1,17 +1,17 @@
+/**
+ * @description Item de navegação usado no menu lateral e barra superior.
+ * @property {string} title - Título exibido no item do menu.
+ * @property {string} icon - Ícone opcional exibido à esquerda do item.
+ * @property {string} hotkey - Tecla de atalho para acessar a rota (ex: 'ctrl + m').
+ * @property {string} to - Caminho (path) da rota.
+ * @property {string} name - Nome registrado da rota no Vue Router.
+ * @property {INavigationItem[]} children - Filhos aninhados (submenus), processados recursivamente.
+ */
 export interface INavigationItem {
-  /** Titulo exibido no item do menu. */
   title: string;
-  /** Icone opcional exibido a esquerda do item. */
   icon?: string;
-  /** Tecla de atalho para acessar a rota, ex: 'ctrl + m'. */
   hotkey?: string;
-  /** Caminho (path) da rota. */
   to?: string;
-  /** Nome registrado da rota no Vue Router. */
   name?: string;
-  /**
-   * Filhos aninhados (submenus).
-   * Componente lida com esse atributo de forma recursiva.
-   * */
   children?: INavigationItem[];
 }

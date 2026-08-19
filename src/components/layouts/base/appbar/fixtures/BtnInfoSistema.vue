@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 // Composables
 const router = useRouter();
@@ -27,7 +27,6 @@ const { t } = useI18n();
 
 // Funções
 function redirectToInfoSystem() {
-  router.push({ name: "InformacoesSistema" });
+  router.push({ name: 'InformacoesSistema' });
 }
-
 </script>

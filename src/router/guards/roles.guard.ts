@@ -1,20 +1,25 @@
-import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
-
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
 
 // Models
-import {
-  permissaoEstaLiberada,
-  RECURSO_PERMISSAO_ROTAS_RBAC,
-} from '@/models/model/rbac/ICargoRbac';
+import { RECURSO_PERMISSAO_ROTAS_RBAC } from '@/models/model/core/rbac/rbac.api';
+import { permissaoEstaLiberada } from '@/models/model/core/rbac/rbac.model';
+// Types e Interfaces
+import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
 
-const ROTAS_SEM_RBAC = new Set(['Login', 'RecuperacaoSenha', 'InformacoesSistema', 'ServerError', 'NotFound', 'forbidden']);
+const ROTAS_SEM_RBAC = new Set([
+  'Login',
+  'RecuperacaoSenha',
+  'InformacoesSistema',
+  'ServerError',
+  'NotFound',
+  'forbidden',
+]);
 
 export const rbacGuard = async (
   pTo: RouteLocationNormalized,
   pFrom: RouteLocationNormalized,
-  pNext: NavigationGuardNext
+  pNext: NavigationGuardNext,
 ) => {
   void pFrom;
 

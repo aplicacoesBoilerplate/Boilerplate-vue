@@ -1,0 +1,25 @@
+@use './vuetify-md2-typography' as legacy;
+
+@forward 'vuetify/settings' with (
+  $grid-breakpoints: (
+    'xs': 0,
+    'sm': 600px,
+    'md': 960px,
+    'lg': 1280px,
+    'xl': 1920px,
+    'xxl': 2560px,
+  ),
+  $container-max-widths: (
+    'md': 900px,
+    'lg': 1200px,
+    'xl': 1800px,
+    'xxl': 2400px,
+  ),
+  $typography: legacy.$component-typography,
+  $utilities: (
+    'typography': (
+      property: (font-size, font-weight, line-height, letter-spacing, font-family, text-transform),
+      values: legacy.$flat-legacy-typography,
+    ),
+  )
+);

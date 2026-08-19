@@ -24,7 +24,7 @@
       <div class="d-flex flex-wrap align-center ga-2 pt-2">
         <v-btn
           v-tooltip="tooltipResetar"
-          aria-label="Resetar formulário"
+          :aria-label="t('common.actions.resetForm')"
           class="flex-shrink-0"
           color="amber"
           icon="mdi-refresh"
@@ -68,7 +68,7 @@ type TProps = {
   tooltipResetar: string;
 };
 
-const props = withDefaults(defineProps<TProps>(), {
+withDefaults(defineProps<TProps>(), {
   carregando: false,
 });
 
@@ -98,8 +98,8 @@ const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
 
 // Funções
 async function reset(): Promise<void> {
-  await nextTick();
-  baseFormRef.value?.resetValidation();
+  if (!baseFormRef.value) return;
+  await baseFormRef.value.refreshForm(() => ({}));
 }
 
 async function submit(): Promise<void> {

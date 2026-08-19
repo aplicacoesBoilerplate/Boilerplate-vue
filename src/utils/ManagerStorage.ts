@@ -1,9 +1,7 @@
 export type TManagerStorageLocation = 'local' | 'session';
 
 // TValue é semelhante ao T do Generics
-type TStoredValue<TValue> =
-  | TValue
-  | TManagedStorageValue<TValue>;
+type TStoredValue<TValue> = TValue | TManagedStorageValue<TValue>;
 
 type TManagedStorageValue<TValue> = {
   __managerStorage: true;
@@ -23,13 +21,13 @@ export interface IManagerStorageOptions {
 export type TManagerStorageOptions = TManagerStorageLocation | IManagerStorageOptions;
 
 // Classe central para persistencia no navegador, com suporte a local/session storage e expiracao.
-export class ClassManagerStorage {
-  static get<TValue>(key: string, fallback: TValue, options?: TManagerStorageOptions): TValue {
-    const storage = this.resolveStorage(options);
-    const value = this.safeGetItem(storage, key);
+export class CManagerStorage {
+  static get<TValue>(pKey: string, pFallback: TValue, pOptions?: TManagerStorageOptions): TValue {
+    const storage = this.resolveStorage(pOptions);
+    const value = this.safeGetItem(storage, pKey);
 
     if (!value) {
-      return fallback;
+      return pFallback;
     }
 
     try {
@@ -42,87 +40,89 @@ export class ClassManagerStorage {
 
       // Leitura tambem invalida cache expirado, evitando limpezas globais obrigatorias.
       if (this.isExpired(parsedValue.expiresAt)) {
-        this.clear(key, options);
-        return fallback;
+        this.clear(pKey, pOptions);
+        return pFallback;
       }
 
       return parsedValue.value;
     } catch {
-      this.clear(key, options);
-      return fallback;
+      this.clear(pKey, pOptions);
+      return pFallback;
     }
   }
 
-  static set<TValue>(key: string, value: TValue, options?: TManagerStorageOptions) {
-    const storage = this.resolveStorage(options);
-    const expiresAt = this.resolveExpiresAt(options);
+  static set<TValue>(pKey: string, pValue: TValue, pOptions?: TManagerStorageOptions) {
+    const storage = this.resolveStorage(pOptions);
+    const expiresAt = this.resolveExpiresAt(pOptions);
 
     // So envelopa o valor quando ha regra de expiracao; caso contrario mantem JSON simples.
-    const storageValue: TStoredValue<TValue> = expiresAt !== null
-      ? {
-        __managerStorage: true,
-        expiresAt,
-        value,
-      }
-      : value;
+    const storageValue: TStoredValue<TValue> =
+      expiresAt !== null
+        ? {
+            __managerStorage: true,
+            expiresAt,
+            value: pValue,
+          }
+        : pValue;
 
-    this.safeSetItem(storage, key, JSON.stringify(storageValue));
+    this.safeSetItem(storage, pKey, JSON.stringify(storageValue));
   }
 
-  static clear(key: string, options?: TManagerStorageOptions) {
-    this.safeRemoveItem(this.resolveStorage(options), key);
+  static clear(pKey: string, pOptions?: TManagerStorageOptions) {
+    this.safeRemoveItem(this.resolveStorage(pOptions), pKey);
   }
 
-  static has(key: string, options?: TManagerStorageOptions) {
-    return this.safeGetItem(this.resolveStorage(options), key) !== null;
+  static has(pKey: string, pOptions?: TManagerStorageOptions) {
+    return this.safeGetItem(this.resolveStorage(pOptions), pKey) !== null;
   }
 
-  static clearExpired(key: string, options?: TManagerStorageOptions) {
-    this.get(key, null, options);
+  static clearExpired(pKey: string, pOptions?: TManagerStorageOptions) {
+    this.get(pKey, null, pOptions);
   }
 
-  static keys(options?: TManagerStorageOptions) {
-    const storage = this.resolveStorage(options);
+  static keys(pOptions?: TManagerStorageOptions) {
+    const storage = this.resolveStorage(pOptions);
 
     try {
-      return Array.from({ length: storage.length }, (_, index) => storage.key(index))
-        .filter((key): key is string => typeof key === 'string');
+      return Array.from(Array.from({ length: storage.length }).keys(), (pIndex) => storage.key(pIndex)).filter(
+        (pKey): pKey is string => typeof pKey === 'string',
+      );
     } catch {
       return [];
     }
   }
 
-  static clearByPrefix(prefix: string, options?: TManagerStorageOptions) {
-    const storage = this.resolveStorage(options);
+  static clearByPrefix(pPrefix: string, pOptions?: TManagerStorageOptions) {
+    const storage = this.resolveStorage(pOptions);
 
-    this.keys(options)
-      .filter((key) => key.startsWith(prefix))
-      .forEach((key) => this.safeRemoveItem(storage, key));
+    this.keys(pOptions)
+      .filter((pKey) => pKey.startsWith(pPrefix))
+      .forEach((pKey) => this.safeRemoveItem(storage, pKey));
   }
 
-  static clearExpiredByPrefix(prefix: string, options?: TManagerStorageOptions) {
+  static clearExpiredByPrefix(pPrefix: string, pOptions?: TManagerStorageOptions) {
     // Forca leitura das chaves para reaproveitar a mesma regra de expiracao do get.
-    this.keys(options)
-      .filter((key) => key.startsWith(prefix))
-      .forEach((key) => this.clearExpired(key, options));
+    this.keys(pOptions)
+      .filter((pKey) => pKey.startsWith(pPrefix))
+      .forEach((pKey) => this.clearExpired(pKey, pOptions));
   }
 
-  private static normalizeOptions(options?: TManagerStorageOptions): IManagerStorageOptions {
+  private static normalizeOptions(pOptions?: TManagerStorageOptions): IManagerStorageOptions {
     // Aceita forma curta ('session') para chamadas frequentes em caches temporarios.
-    if (typeof options === 'string') {
-      return { storage: options };
+    if (typeof pOptions === 'string') {
+      return { storage: pOptions };
     }
 
-    return options ?? {};
+    return pOptions ?? {};
   }
 
-  private static resolveStorage(options?: TManagerStorageOptions) {
-    const normalizedOptions = this.normalizeOptions(options);
+  private static resolveStorage(pOptions?: TManagerStorageOptions) {
+    const normalizedOptions = this.normalizeOptions(pOptions);
     return normalizedOptions.storage === 'session' ? window.sessionStorage : window.localStorage;
   }
 
-  private static resolveExpiresAt(options?: TManagerStorageOptions) {
-    const normalizedOptions = this.normalizeOptions(options);
+  private static resolveExpiresAt(pOptions?: TManagerStorageOptions) {
+    const normalizedOptions = this.normalizeOptions(pOptions);
 
     if (typeof normalizedOptions.expiresAt === 'number') {
       return normalizedOptions.expiresAt;
@@ -135,39 +135,39 @@ export class ClassManagerStorage {
     return null;
   }
 
-  private static isManagedValue<TValue>(value: TStoredValue<TValue>): value is TManagedStorageValue<TValue> {
+  private static isManagedValue<TValue>(pValue: TStoredValue<TValue>): pValue is TManagedStorageValue<TValue> {
     return (
-      typeof value === 'object' &&
-      value !== null &&
-      '__managerStorage' in value &&
-      value.__managerStorage === true
+      typeof pValue === 'object' &&
+      pValue !== null &&
+      '__managerStorage' in pValue &&
+      pValue.__managerStorage === true
     );
   }
 
-  private static isExpired(expiresAt: number | null) {
-    return typeof expiresAt === 'number' && Date.now() >= expiresAt;
+  private static isExpired(pExpiresAt: number | null) {
+    return typeof pExpiresAt === 'number' && Date.now() >= pExpiresAt;
   }
 
-  private static safeGetItem(storage: Storage, key: string) {
+  private static safeGetItem(pStorage: Storage, pKey: string) {
     try {
-      return storage.getItem(key);
+      return pStorage.getItem(pKey);
     } catch {
       return null;
     }
   }
 
-  private static safeSetItem(storage: Storage, key: string, value: string) {
+  private static safeSetItem(pStorage: Storage, pKey: string, pValue: string) {
     try {
-      storage.setItem(key, value);
+      pStorage.setItem(pKey, pValue);
     } catch {
       // Quota/privacidade podem falhar; remover a chave evita manter dado parcial ou antigo.
-      this.safeRemoveItem(storage, key);
+      this.safeRemoveItem(pStorage, pKey);
     }
   }
 
-  private static safeRemoveItem(storage: Storage, key: string) {
+  private static safeRemoveItem(pStorage: Storage, pKey: string) {
     try {
-      storage.removeItem(key);
+      pStorage.removeItem(pKey);
     } catch {
       throw new Error('Storage indisponivel ou bloqueado');
     }

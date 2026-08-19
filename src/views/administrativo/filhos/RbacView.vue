@@ -4,6 +4,22 @@
     class="pb-0 overflow-hidden"
     fluid
   >
+    <DialogFormCargoRbac
+      ref="refDialogFormCargo"
+      v-model:exibirDialog="exibirDialogCargo"
+      v-model:cargo="modelFormCargo"
+      v-model:usuarios="usuarios"
+      :modoEdicao="modoEdicaoCargo"
+      :modoVisualizacao="modoVisualizacaoCargo"
+      :cargosDisponiveis="cargos"
+      @salvar="salvarCargo"
+      @editar="habilitarEdicaoCargo"
+    >
+      <template #activator>
+        <span class="d-none" />
+      </template>
+    </DialogFormCargoRbac>
+
     <GenericView
       ref="genericViewRef"
       :contexto="CONTEXTO_LISTA_CARGOS"
@@ -14,29 +30,15 @@
       @novoRegistro="gerenciarRegistro"
     >
       <template #activator-novo-registro="{ acionarNovoRegistro, tooltipProps }">
-        <DialogFormCargoRbac
-          v-model:exibirDialog="exibirDialogCargo"
-          v-model:cargo="modelFormCargo"
-          v-model:usuarios="usuarios"
-          :modoEdicao="modoEdicaoCargo"
-          :modoVisualizacao="modoVisualizacaoCargo"
-          :cargosDisponiveis="cargos"
-          @salvar="salvarCargo"
-          @editar="habilitarEdicaoCargo"
-        >
-          <template #activator="{ props: DialogProps }">
-            <v-btn
-              v-bind="mergeProps(tooltipProps, DialogProps)"
-              color="primary"
-              icon="mdi-plus"
-              size="x-small"
-              variant="tonal"
-              :disabled="!podeGerenciarRegistros"
-              @click="acionarNovoRegistro"
-            />
-          </template>
-        </DialogFormCargoRbac>
-
+        <v-btn
+          v-bind="tooltipProps"
+          :disabled="!podeGerenciarRegistros"
+          color="primary"
+          icon="mdi-plus"
+          size="x-small"
+          variant="tonal"
+          @click="acionarNovoRegistro"
+        />
       </template>
 
       <template #default="{ items }">
@@ -67,20 +69,20 @@
                 />
 
                 <v-btn
+                  :disabled="!podeGerenciarRegistros"
                   icon="mdi-pencil"
                   variant="text"
                   color="info"
                   size="small"
                   class="mr-2"
-                  :disabled="!podeGerenciarRegistros"
                   @click.stop="gerenciarRegistro({ modoEdicao: true, item: cargo })"
                 />
                 <v-btn
+                  :disabled="!podeRemoverCargo(cargo)"
                   icon="mdi-delete"
                   variant="text"
                   color="error"
                   size="small"
-                  :disabled="!podeRemoverCargo(cargo)"
                   @click.stop="excluirCargo(cargo)"
                 />
               </div>
@@ -94,48 +96,49 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed, mergeProps, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
 
-// Types e Interfaces
-import {
-  criarCargoRbacPadrao,
-  type ICargoRbac,
-} from '@/models/model/rbac/ICargoRbac';
-import type { IUsuario, TPapel } from '@/models/model/usuario/lUsuario';
-import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
+// Models
+import { criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/core/rbac/rbac.model';
+import type { IGenericViewExpose } from '@/models/components/exposes/IGenericViewExpose';
+import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
+import type { IUsuario, TPapel } from '@/models/model/core/usuario.model';
 
 // Composables
-import { useRequisicaoService } from '@/composables/useRequisicaoService';
 import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
+import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
 // Services
-import { CRbacService } from '@/services/CRbacService';
-import { CUsuarioService } from '@/services/CUsuarioService';
+import { cargoRbacService } from '@/services/core/CCargoRbacService';
+import { usuarioService } from '@/services/core/CUsuarioService';
 
 // Componentes
-import GenericView from '@/components/layout/generic/GenericView.vue';
-import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
-import DialogFormCargoRbac from '@/components/dialogs/DialogFormCargoRbac.vue';
-import DetalhesCargo from '@/components/rbac/DetalhesCargo.vue';
+import DetalhesCargo from '@/components/core/rbac/DetalhesCargo.vue';
+import DialogFormCargoRbac from '@/components/dialogs/core/DialogFormCargoRbac.vue';
 import DialogAuditoriaRegistro from '@/components/dialogs/DialogAuditoriaRegistro.vue';
+import GenericInfiniteListItem from '@/components/layouts/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
+import GenericView from '@/components/layouts/generic/GenericView.vue';
 
 // Constantes
 const CONTEXTO_LISTA_CARGOS = 'lista-cargos-rbac';
 
+// Stores
+const authStore = useAuthStore();
+
 // Composables
 const { mdAndDown } = useDisplay();
 const requisicaoService = useRequisicaoService();
-const authStore = useAuthStore();
 const { possuiPermissaoGeral, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
 
 // Reativas
-const genericViewRef = ref<InstanceType<typeof GenericView> | null>(null);
+const genericViewRef = ref<IGenericViewExpose | null>(null);
+const refDialogFormCargo = ref<InstanceType<typeof DialogFormCargoRbac> | null>(null);
 const cargos = ref<ICargoRbac[]>([]);
 const usuarios = ref<IUsuario[]>([]);
 const exibirDialogCargo = ref(false);
@@ -146,20 +149,17 @@ const papelCargoAntesEdicao = ref<TPapel | null>(null);
 const papeisOriginaisUsuarios = ref(new Map<number, TPapel>());
 
 // Funções
-async function buscarCargos(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse<ICargoRbac>> {
-  return CRbacService.consultar(pPayload);
+async function buscarCargos(pPayload: IConsultaRegistros<ICargoRbac>): Promise<IRespostaConsultaRegistros<ICargoRbac>> {
+  return cargoRbacService.consultar(pPayload);
 }
 
 async function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoRbac }): Promise<void> {
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
-  await Promise.all([
-    carregarCargos(),
-    carregarUsuariosParaVinculo(),
-  ]);
+  await Promise.all([carregarCargos(), carregarUsuariosParaVinculo()]);
 
   modoEdicaoCargo.value = pPayload.modoEdicao;
   modoVisualizacaoCargo.value = false;
@@ -179,10 +179,7 @@ async function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoR
 }
 
 async function visualizarCargo(pCargo: ICargoRbac): Promise<void> {
-  await Promise.all([
-    carregarCargos(),
-    carregarUsuariosParaVinculo(),
-  ]);
+  await Promise.all([carregarCargos(), carregarUsuariosParaVinculo()]);
 
   modoEdicaoCargo.value = false;
   modoVisualizacaoCargo.value = true;
@@ -196,7 +193,7 @@ async function visualizarCargo(pCargo: ICargoRbac): Promise<void> {
 
 function habilitarEdicaoCargo(): void {
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
@@ -206,13 +203,15 @@ function habilitarEdicaoCargo(): void {
 
 async function salvarCargo(): Promise<void> {
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
   const cargoNormalizado = criarCargoRbacPadrao(modelFormCargo.value);
   const cargoSalvo = await requisicaoService.executar({
-    metodo: modoEdicaoCargo.value && cargoNormalizado.id ? CRbacService.atualizar : CRbacService.salvar,
+    metodo: modoEdicaoCargo.value && cargoNormalizado.id
+      ? (pCargo: ICargoRbac) => cargoRbacService.editar(pCargo)
+      : (pCargo: ICargoRbac) => cargoRbacService.cadastrar(pCargo),
     parametros: cargoNormalizado,
     sucesso: {
       mensagem: modoEdicaoCargo.value ? 'Cargo atualizado com sucesso.' : 'Cargo criado com sucesso.',
@@ -221,10 +220,7 @@ async function salvarCargo(): Promise<void> {
   });
 
   await salvarUsuariosComCargoAlterado(cargoSalvo);
-  await Promise.all([
-    carregarCargos(),
-    carregarUsuariosParaVinculo(),
-  ]);
+  await Promise.all([carregarCargos(), carregarUsuariosParaVinculo()]);
 
   if (modoEdicaoCargo.value && cargoSalvo.id) {
     genericViewRef.value?.atualizarItem<ICargoRbac>('id', cargoSalvo.id, cargoSalvo);
@@ -233,6 +229,7 @@ async function salvarCargo(): Promise<void> {
   }
 
   await authStore.fetchUser();
+  refDialogFormCargo.value?.concluirSalvo();
   modoVisualizacaoCargo.value = false;
   papelCargoAntesEdicao.value = null;
 }
@@ -243,12 +240,12 @@ async function excluirCargo(pCargo: ICargoRbac): Promise<void> {
   }
 
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
   if (cargoEhPadrao(pCargo)) {
-    notificarPermissaoNegada('Os cargos padrão ADMIN e USER não podem ser removidos.');
+    notificarPermissaoNegada(t('common.messages.defaultRoleRemoval'));
     return;
   }
 
@@ -256,19 +253,16 @@ async function excluirCargo(pCargo: ICargoRbac): Promise<void> {
   await reatribuirUsuariosDoCargoParaUsuarioPadrao(pCargo.papel);
 
   await requisicaoService.executar({
-    metodo: CRbacService.excluir,
+    metodo: (pIdCargo: number) => cargoRbacService.excluir(pIdCargo),
     parametros: pCargo.id,
     sucesso: {
-      mensagem: 'Cargo removido com sucesso.',
+      mensagem: t('common.messages.roleRemoved'),
       tipo: 'success',
     },
   });
 
   genericViewRef.value?.removerItem<ICargoRbac>('id', pCargo.id);
-  await Promise.all([
-    carregarCargos(),
-    carregarUsuariosParaVinculo(),
-  ]);
+  await Promise.all([carregarCargos(), carregarUsuariosParaVinculo()]);
   await authStore.fetchUser();
 }
 
@@ -289,32 +283,17 @@ function podeRemoverCargo(pCargo: ICargoRbac): boolean {
 }
 
 async function carregarCargos(): Promise<void> {
-  cargos.value = await CRbacService.listarTodos();
+  const resposta = await cargoRbacService.consultarTodosRegistros();
+  cargos.value = resposta.registros;
 }
 
 async function carregarUsuariosParaVinculo(): Promise<void> {
-  const registros: IUsuario[] = [];
-  let proximaEntrada: unknown = undefined;
-  let temMaisRegistros = true;
-
-  while (temMaisRegistros) {
-    const pagina = await CUsuarioService.buscarTodos({
-      limite: 100,
-      ordem: 'asc',
-      proximaEntrada,
-      filtros: [],
-    });
-
-    registros.push(...pagina.items);
-    proximaEntrada = pagina.proximaEntrada;
-    temMaisRegistros = pagina.temMaisRegistros && pagina.items.length > 0;
-  }
+  const resposta = await usuarioService.consultarTodosRegistros({ ordenacao: 'asc' });
+  const registros = resposta.registros;
 
   usuarios.value = registros;
   papeisOriginaisUsuarios.value = new Map(
-    registros
-      .filter((pUsuario) => pUsuario.id)
-      .map((pUsuario) => [pUsuario.id as number, pUsuario.papel]),
+    registros.filter((pUsuario) => pUsuario.id).map((pUsuario) => [pUsuario.id as number, pUsuario.papel]),
   );
 }
 
@@ -335,7 +314,7 @@ async function salvarUsuariosComCargoAlterado(pCargoSalvo: ICargoRbac): Promise<
     })
     .filter((pAtualizacao) => pAtualizacao.papelOriginal && pAtualizacao.usuario.papel !== pAtualizacao.papelOriginal);
 
-  await Promise.all(atualizacoes.map((pAtualizacao) => CUsuarioService.atualizar(pAtualizacao.usuario)));
+  await Promise.all(atualizacoes.map((pAtualizacao) => usuarioService.editar(pAtualizacao.usuario)));
 }
 
 function resolverPapelUsuarioAposSalvarCargo(
@@ -355,7 +334,7 @@ async function reatribuirUsuariosDoCargoParaUsuarioPadrao(pPapelCargo: TPapel): 
 
   await Promise.all(
     usuariosDoCargo.map((pUsuario) =>
-      CUsuarioService.atualizar({
+      usuarioService.editar({
         ...pUsuario,
         papel: 'USER',
       }),
@@ -368,9 +347,6 @@ const podeGerenciarRegistros = computed(() => possuiPermissaoGeral('gerenciarReg
 
 // Lifecycle Hooks
 onMounted(() => {
-  void Promise.all([
-    carregarCargos(),
-    carregarUsuariosParaVinculo(),
-  ]);
+  void Promise.all([carregarCargos(), carregarUsuariosParaVinculo()]);
 });
 </script>

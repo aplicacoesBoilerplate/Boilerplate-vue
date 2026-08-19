@@ -3,6 +3,17 @@
     class="fill-height pb-0 overflow-hidden"
     fluid
   >
+    <DialogFormUsuario
+      v-model:exibirDialog="exibirDialogUsuario"
+      v-model:usuario="modelFormUsuario"
+      :modoEdicao="modoEdicaoUsuario"
+      @salvar="salvarUsuario"
+    >
+      <template #activator>
+        <span class="d-none" />
+      </template>
+    </DialogFormUsuario>
+
     <GridDataChart
       :hiddenChart="hiddenChart"
       @toggleChart="alternarExibicaoGrafico(alternarGraficoLocal)"
@@ -12,6 +23,7 @@
           ref="genericViewRef"
           :contexto="CONTEXTO_LISTA_USUARIOS"
           :serviceFetch="buscarUsuarios"
+          :serviceExportacao="exportarUsuarios"
           :colunasExportacao="headersExportacao"
           nomeArquivoExportacao="usuarios"
           @novoRegistro="gerenciarRegistro"
@@ -25,10 +37,10 @@
                 <v-btn
                   v-bind="props"
                   :icon="hiddenChart ? 'mdi-chart-pie' : 'mdi-table'"
+                  :disabled="!podeVisualizarGraficos"
                   color="info"
                   variant="tonal"
                   size="x-small"
-                  :disabled="!podeVisualizarGraficos"
                   @click="alternarExibicaoGrafico(toggleChart)"
                 />
               </template>
@@ -36,24 +48,15 @@
           </template>
 
           <template #activator-novo-registro="{ acionarNovoRegistro, tooltipProps }">
-            <DialogFormUsuario
-              v-model:exibirDialog="exibirDialogUsuario"
-              v-model:usuario="modelFormUsuario"
-              :modoEdicao="modoEdicaoUsuario"
-              @salvar="salvarUsuario"
-            >
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="mergeProps(props, tooltipProps)"
-                  color="primary"
-                  variant="tonal"
-                  size="x-small"
-                  icon="mdi-plus"
-                  :disabled="!podeGerenciarRegistros"
-                  @click="acionarNovoRegistro"
-                />
-              </template>
-            </DialogFormUsuario>
+            <v-btn
+              v-bind="tooltipProps"
+              :disabled="!podeGerenciarRegistros"
+              color="primary"
+              variant="tonal"
+              size="x-small"
+              icon="mdi-plus"
+              @click="acionarNovoRegistro"
+            />
           </template>
 
           <template #default="{ items }">
@@ -97,25 +100,25 @@
                     />
 
                     <v-btn
+                      :disabled="!podeGerenciarRegistros"
                       icon="mdi-pencil"
                       variant="text"
                       color="info"
                       size="small"
                       class="mr-2"
-                      :disabled="!podeGerenciarRegistros"
                       @click.stop="
-                          gerenciarRegistro({
+                        gerenciarRegistro({
                           modoEdicao: true,
                           item: usuario,
                         })
                       "
                     />
                     <v-btn
+                      :disabled="!podeRemoverUsuario(usuario)"
                       icon="mdi-delete"
                       variant="text"
                       color="error"
                       size="small"
-                      :disabled="!podeRemoverUsuario(usuario)"
                       @click.stop="excluirUsuario(usuario)"
                     />
                   </div>
@@ -129,10 +132,12 @@
       <template #dataChart>
         <BaseChart
           v-model:filtroSelecionado="selectedChartFilter"
+          v-model:tipoGrafico="chartType"
+          v-model:exibirLegenda="showChartLegend"
+          v-model:exibirRotulos="showChartLabels"
           :dados="chartDataComputed"
           :opcoesFiltro="camposAgrupamento"
           :configuracaoAtiva="activeHeaderConfig"
-          :mapeamentoCores="mapeamentoCoresAgrupamento"
         />
       </template>
     </GridDataChart>
@@ -141,36 +146,36 @@
 
 <script setup lang="ts">
 // Ecossistema vue
-import { computed, mergeProps, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { useAuthStore } from '@/stores/auth.store';
+import { useGenericFilterStore } from '@/stores/genericFilter.store';
 // Stores
 import { useGenericListStore } from '@/stores/genericList.store';
-import { useGenericFilterStore } from '@/stores/genericFilter.store';
-import { useAuthStore } from '@/stores/auth.store';
 
 // Types e Interfaces
-import { criarUsuarioPadrao, type IUsuario } from '@/models/model/usuario/lUsuario';
-import type { IGenericListFetchPayload, TGenericListFetchResponse } from '@/models/components/IGenericListContext';
+import { CABECALHOS_TABELA_USUARIO, criarUsuarioPadrao, type IUsuario } from '@/models/model/core/usuario.model';
+import type { IGenericViewExpose } from '@/models/components/exposes/IGenericViewExpose';
+// Mapeamentos
+import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 
 // Composables
 import { useChartHelpers } from '@/composables/useChartHelpers';
-import { useRequisicaoService } from '@/composables/useRequisicaoService';
+import { useChartPreferences } from '@/composables/useChartPreferences';
 import { usePermissoesRbac } from '@/composables/usePermissoesRbac';
+import { useRequisicaoService } from '@/composables/useRequisicaoService';
 
 // Services
-import { CUsuarioService } from '@/services/CUsuarioService';
+import { usuarioService } from '@/services/core/CUsuarioService';
 
-// Mapeamentos
-import { MAPEAMENTO_TABELA_USUARIO, MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO } from '@/models/model/usuario/MapeamentoTabelaUsuario';
-
+import BaseChart from '@/components/common/charts/BaseApexChart.vue';
+import DialogFormUsuario from '@/components/dialogs/core/DialogFormUsuario.vue';
+import DialogAuditoriaRegistro from '@/components/dialogs/DialogAuditoriaRegistro.vue';
+import GenericInfiniteListItem from '@/components/layouts/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
+import GenericView from '@/components/layouts/generic/GenericView.vue';
 // Componentes
 import GridDataChart from '@/components/layouts/GridDataChart.vue';
-import BaseChart from '@/components/charts/BaseChart.vue';
-import GenericView from '@/components/layout/generic/GenericView.vue';
-import GenericInfiniteListItem from '@/components/layout/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
-import DialogFormUsuario from '@/components/dialogs/DialogFormUsuario.vue';
-import DialogAuditoriaRegistro from '@/components/dialogs/DialogAuditoriaRegistro.vue';
 
 // Composables
 const listStore = useGenericListStore();
@@ -182,14 +187,25 @@ const { t } = useI18n();
 
 // Constantes e Dados Base
 const CONTEXTO_LISTA_USUARIOS = 'lista-usuarios';
-const headers = MAPEAMENTO_TABELA_USUARIO;
-const headersExportacao = headers.filter((pHeader) => pHeader.key !== 'actions');
+const headers = CABECALHOS_TABELA_USUARIO;
+const headersExportacao = headers;
 const camposAgrupamento = computed(() => genericFilterStore.camposAgrupadoresDisponiveis);
+const {
+  visible: chartVisible,
+  grouping: selectedChartFilter,
+  type: chartType,
+  showLegend: showChartLegend,
+  showLabels: showChartLabels,
+} = useChartPreferences(CONTEXTO_LISTA_USUARIOS, camposAgrupamento);
 
 // Reativas
-const genericViewRef = ref<InstanceType<typeof GenericView> | null>(null);
-const hiddenChart = ref(true);
-const selectedChartFilter = ref<string>(camposAgrupamento.value.length > 0 ? camposAgrupamento.value[0].valor : '');
+const genericViewRef = ref<IGenericViewExpose | null>(null);
+const hiddenChart = computed({
+  get: () => !chartVisible.value,
+  set: (pOculto: boolean) => {
+    chartVisible.value = !pOculto;
+  },
+});
 
 // Estados de Formulário
 const exibirDialogUsuario = ref(false);
@@ -199,7 +215,7 @@ const modelFormUsuario = ref<IUsuario>(criarUsuarioPadrao());
 // Funções
 function alternarExibicaoGrafico(pToggleChart: () => void): void {
   if (!podeVisualizarGraficos.value) {
-    notificarPermissaoNegada('Você não tem permissão para visualizar gráficos.');
+    notificarPermissaoNegada(t('common.messages.chartsDenied'));
     return;
   }
 
@@ -212,7 +228,7 @@ function alternarGraficoLocal(): void {
 
 function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: IUsuario }): void {
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
@@ -227,13 +243,20 @@ function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: IUsuario }): 
   exibirDialogUsuario.value = true;
 }
 
-async function buscarUsuarios(pPayload: IGenericListFetchPayload): Promise<TGenericListFetchResponse<IUsuario>> {
-  return CUsuarioService.buscarTodos(pPayload);
+async function buscarUsuarios(pPayload: IConsultaRegistros<IUsuario>): Promise<IRespostaConsultaRegistros<IUsuario>> {
+  return usuarioService.consultar(pPayload);
+}
+
+async function exportarUsuarios(pParametros?: Record<string, unknown>, pOptions?: { signal?: AbortSignal }): Promise<IUsuario[]> {
+  void pParametros;
+  const resposta = await usuarioService.consultarTodosRegistros({}, { signal: pOptions?.signal });
+
+  return resposta.registros;
 }
 
 async function salvarUsuario(): Promise<void> {
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
@@ -241,10 +264,10 @@ async function salvarUsuario(): Promise<void> {
 
   if (modoEdicaoUsuario.value && usuarioNormalizado.id) {
     const usuarioAtualizado = await requisicaoService.executar({
-      metodo: CUsuarioService.atualizar,
+      metodo: (pUsuario: IUsuario) => usuarioService.editar(pUsuario),
       parametros: usuarioNormalizado,
       sucesso: {
-        mensagem: 'Usuário atualizado com sucesso.',
+        mensagem: t('common.messages.userUpdated'),
         tipo: 'success',
       },
     });
@@ -255,10 +278,10 @@ async function salvarUsuario(): Promise<void> {
     }
   } else {
     const usuarioCriado = await requisicaoService.executar({
-      metodo: CUsuarioService.criar,
+      metodo: (pUsuario: IUsuario) => usuarioService.cadastrar(pUsuario),
       parametros: usuarioNormalizado,
       sucesso: {
-        mensagem: 'Usuário criado com sucesso.',
+        mensagem: t('common.messages.userCreated'),
         tipo: 'success',
       },
     });
@@ -273,25 +296,25 @@ async function excluirUsuario(pUsuario: IUsuario): Promise<void> {
   if (!pUsuario.id) return;
 
   if (!podeGerenciarRegistros.value) {
-    notificarPermissaoNegada('Você não tem permissão para gerenciar registros.');
+    notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
 
   if (pUsuario.id === 1) {
-    notificarPermissaoNegada('O usuário raiz da aplicação não pode ser removido.');
+    notificarPermissaoNegada(t('common.messages.rootUserRemoval'));
     return;
   }
 
   if (pUsuario.id === usuarioAutenticadoId.value) {
-    notificarPermissaoNegada('Você não pode remover a própria conta.');
+    notificarPermissaoNegada(t('common.messages.ownAccountRemoval'));
     return;
   }
 
   await requisicaoService.executar({
-    metodo: CUsuarioService.excluir,
+    metodo: (pIdUsuario: number) => usuarioService.excluir(pIdUsuario),
     parametros: pUsuario.id,
     sucesso: {
-      mensagem: 'Usuário removido com sucesso.',
+      mensagem: t('common.messages.userRemoved'),
       tipo: 'success',
     },
   });
@@ -301,10 +324,7 @@ async function excluirUsuario(pUsuario: IUsuario): Promise<void> {
 
 function podeRemoverUsuario(pUsuario: IUsuario): boolean {
   return Boolean(
-    podeGerenciarRegistros.value &&
-    pUsuario.id &&
-    pUsuario.id !== 1 &&
-    pUsuario.id !== usuarioAutenticadoId.value,
+    podeGerenciarRegistros.value && pUsuario.id && pUsuario.id !== 1 && pUsuario.id !== usuarioAutenticadoId.value,
   );
 }
 
@@ -313,18 +333,13 @@ const podeGerenciarRegistros = computed(() => possuiPermissaoGeral('gerenciarReg
 const podeVisualizarGraficos = computed(() => possuiPermissaoGeral('visualizarGraficos'));
 const usuarioAutenticadoId = computed(() => authStore.user?.id);
 const activeHeaderConfig = computed(() => {
-  return headers.find((h) => h.key === selectedChartFilter.value);
-});
-
-const mapeamentoCoresAgrupamento = computed(() => {
-  return MAPEAMENTO_CORES_AGRUPAMENTO_USUARIO[selectedChartFilter.value as keyof IUsuario] ?? {};
+  return headers.find((pHeader) => pHeader.key === selectedChartFilter.value);
 });
 
 const chartDataComputed = computed(() => {
-  const items = (listStore.contexts[CONTEXTO_LISTA_USUARIOS]?.items as IUsuario[]) || [];
+  const items = (listStore.contexts[CONTEXTO_LISTA_USUARIOS]?.registros as IUsuario[]) || [];
   const key = selectedChartFilter.value;
   const strategy = activeHeaderConfig.value?.chartAggregator || 'count';
   return useChartHelpers(items, key, strategy);
 });
-
 </script>

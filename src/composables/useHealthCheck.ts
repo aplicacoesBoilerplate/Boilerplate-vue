@@ -1,5 +1,5 @@
 // Ecossistema Vue
-import { ref, type Ref } from 'vue';
+import { type Ref, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 // Types e Interfaces
@@ -28,6 +28,7 @@ export type TUseHealthCheckReturn = {
 
 /**
  * @description Centraliza a execução do health-check e o redirecionamento de indisponibilidade da API.
+ * @returns Estado e função para executar o health-check.
  */
 export function useHealthCheck(): TUseHealthCheckReturn {
   const router = useRouter();
@@ -35,9 +36,7 @@ export function useHealthCheck(): TUseHealthCheckReturn {
   const carregando = ref(false);
   const resultado = ref<IHealthCheckResultado | null>(null);
 
-  async function verificarHealthCheck(
-    pOptions: TVerificarHealthCheckOptions = {},
-  ): Promise<IHealthCheckResultado> {
+  async function verificarHealthCheck(pOptions: TVerificarHealthCheckOptions = {}): Promise<IHealthCheckResultado> {
     carregando.value = true;
 
     try {

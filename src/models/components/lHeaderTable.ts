@@ -1,35 +1,29 @@
-// Interface que define a estrutura de uma coluna de tabela
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * @description Interface que define a estrutura de uma coluna de tabela. Os atributos foram nomeados como o esperado pelo componente.
+ * @property {string} title O título de exibição visual que será renderizado no cabeçalho da coluna.
+ * @property {string} key A chave associada ao objeto de dados iterado, atua como identificador único da coluna.
+ * @property {'start' | 'end' | 'center'} [align] Controla o alinhamento horizontal do cabeçalho e do conteúdo das células desta coluna.
+ * @property {string | number} [height] Determina a altura fixa aplicável ao cabeçalho desta coluna.
+ * @property {string | number} [maxHeigth] Define a restrição de altura máxima para o cabeçalho desta coluna.
+ * @property {string | number} [width] Define a largura base da coluna, afetando seu dimensionamento horizontal no componente.
+ * @property {string | number} [maxWidth] Impõe um limite máximo de largura, muito útil para evitar expansões indesejadas com textos extensos.
+ * @property {boolean} [sortable] Determina se a coluna suporta a ordenação dos dados através da interação com o cabeçalho.
+ * @property {'sum' | 'count'} [chartAggregator] Define a operação de agregação (soma ou contagem) quando os dados da tabela servem de base para um gráfico.
+ * @property {(value?: any) => string} [chartFormatter] Função de formatação para tratar os valores antes de serem renderizados nas representações gráficas.
+ * @property {(item: any) => string} [value] Função opcional que processa o item inteiro para gerar um valor customizado a ser exibido e ordenado (frequentemente usado em vez do valor bruto lido via `key`).
+ */
 export interface IHeadersDataTable {
-  // O título de exibição visual que será renderizado no cabeçalho da coluna
-  title: string
-
-  // A chave associada ao objeto de dados iterado, atua como identificador único da coluna
-  key: string
-
-  // Controla o alinhamento horizontal do cabeçalho e do conteúdo das células desta coluna
-  align?: 'start' | 'end' | 'center'
-
-  // Determina a altura fixa aplicável ao cabeçalho desta coluna
-  height?: string | number
-
-  // Define a restrição de altura máxima para o cabeçalho desta coluna
-  maxHeigth?: string | number
-
-  // Define a largura base da coluna, afetando seu dimensionamento horizontal no componente
-  width?: string | number
-
-  // Impõe um limite máximo de largura, muito útil para evitar expansões indesejadas com textos extensos
-  maxWidth?: string | number
-
-  // Determina se a coluna suporta a ordenação dos dados através da interação com o cabeçalho
-  sortable?: boolean
-
-  // Define a operação de agregação (soma ou contagem) quando os dados da tabela servem de base para um gráfico
-  chartAggregator?: 'sum' | 'count'
-
-  // Função de formatação para tratar os valores antes de serem renderizados nas representações gráficas
-  chartFormatter?: (value?: any) => string
-
-  // Função opcional que processa o item inteiro para gerar um valor customizado a ser exibido e ordenado (frequentemente usado em vez do valor bruto lido via `key`)
-  value?: (item: any) => any
+  title: string;
+  key: string;
+  align?: 'start' | 'end' | 'center';
+  height?: string | number;
+  maxHeigth?: string | number;
+  width?: string | number;
+  maxWidth?: string | number;
+  sortable?: boolean;
+  chartAggregator?: 'sum' | 'count';
+  chartFormatter?: (value?: any) => string;
+  value?: (item: any) => string;
 }

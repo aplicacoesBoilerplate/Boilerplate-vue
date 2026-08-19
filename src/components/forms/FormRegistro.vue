@@ -4,7 +4,7 @@
     @onSubmit="emits('onSubmit')"
     @update:isValid="formIsValid = $event"
   >
-    <v-row dense>
+    <v-row density="compact">
       <v-col
         cols="12"
         md="6"
@@ -12,8 +12,8 @@
         <v-text-field
           v-model="registro.nome"
           :rules="[rules.required(), rules.maxLength(100)]"
-          counter="100"
           :label="t('forms.formRegistro.inputNome.label')"
+          counter="100"
           variant="outlined"
           density="compact"
           autocomplete="off"
@@ -28,8 +28,8 @@
         <v-text-field
           v-model="registro.email"
           :rules="[rules.required(), rules.email(), rules.maxLength(100)]"
-          counter="100"
           :label="t('forms.formRegistro.inputEmail.label')"
+          counter="100"
           variant="outlined"
           density="compact"
           autocomplete="off"
@@ -45,8 +45,8 @@
           v-model="registro.senha"
           :rules="[rules.required(), rules.minLength(8), rules.maxLength(100)]"
           :type="mostrarSenha ? 'text' : 'password'"
-          counter="100"
           :label="t('forms.formRegistro.inputSenha.label')"
+          counter="100"
           variant="outlined"
           density="compact"
           autocomplete="off"
@@ -100,7 +100,7 @@ import { useI18n } from 'vue-i18n';
 import { useRules } from 'vuetify/labs/rules';
 
 // Types e Interfaces
-import type { IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
+import { criarRegistroPadrao, type IUsuarioSolicitacaoAcesso } from '@/models/model/core/usuario.solicitacao.model';
 
 // Utils
 import { rulesPersonalizadas } from '@/utils/rules';
@@ -125,11 +125,24 @@ const formIsValid = defineModel<boolean>('valid', { default: false });
 const baseFormRef = ref<InstanceType<typeof BaseForm> | null>(null);
 const mostrarSenha = ref(false);
 
+/**
+ * @description Métodos expostos pelo formulário de registro.
+ * @property {() => Promise<void>} refreshForm - Restaura o estado original do formulário.
+ * @property {() => void} submit - Dispara a validação e submit do formulário.
+ */
+export interface IFormRegistroExpose {
+  refreshForm: () => Promise<void>;
+  submit: () => void;
+}
+
+async function refreshForm(): Promise<void> {
+  if (!baseFormRef.value) return;
+  await baseFormRef.value.refreshForm(() => criarRegistroPadrao());
+}
+
 // Expose
 defineExpose({
-  resetar: () => baseFormRef.value?.resetValidation(),
-  submeter: () => baseFormRef.value?.submit(),
-  reset: () => baseFormRef.value?.resetValidation(),
+  refreshForm,
   submit: () => baseFormRef.value?.submit(),
-});
+} satisfies IFormRegistroExpose);
 </script>

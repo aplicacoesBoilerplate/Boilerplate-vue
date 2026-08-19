@@ -1,18 +1,18 @@
 // Ecossistema vue
 import { ref, watch } from 'vue';
-
 // Pinia
 import { defineStore } from 'pinia';
 
 // Types e Interfaces
-import type { IPreferences, IPreferencesTheme } from '@/models/components/IPreferences';
+import type { IChartPreferences, IPreferences, IPreferencesTheme } from '@/models/components/IPreferences';
 import type { IPreferenciaUsuario } from '@/models/services/IPreferenciaUsuario';
 
-// Services
-import { CPreferenciaUsuarioService } from '@/services/CPreferenciaUsuarioService';
-
+import { deepClone } from '@/utils/deepClone';
 // Utilitários
-import { ClassManagerStorage } from '@/utils/ManagerStorage';
+import { CManagerStorage } from '@/utils/ManagerStorage';
+
+// Services
+import { preferenciaUsuarioService } from '@/services/CPreferenciaUsuarioService';
 
 // Constantes
 const STORAGE_KEY = 'boilerplate.preferences';
@@ -30,21 +30,25 @@ const defaultPreferences: IPreferences = {
   theme: {
     currentTheme: 'dark',
   },
+  charts: {},
 };
 
-/**
- * Store de preferências.
- */
 export const usePreferencesStore = defineStore('preferences', () => {
+  let suspendLocalPersistence = false;
   // Reativas
-  const preferences = ref<IPreferences>(ClassManagerStorage.get(STORAGE_KEY, defaultPreferences, STORAGE_OPTIONS));
+  const preferences = ref<IPreferences>(CManagerStorage.get(STORAGE_KEY, defaultPreferences, STORAGE_OPTIONS));
   const carregandoRemoto = ref(false);
   const erroRemoto = ref<unknown>(null);
 
   // Observadores
-  watch(preferences, (value) => {
-    ClassManagerStorage.set(STORAGE_KEY, value, STORAGE_OPTIONS);
-  }, { deep: true });
+  watch(
+    preferences,
+    (pValue) => {
+      if (suspendLocalPersistence) return;
+      CManagerStorage.set(STORAGE_KEY, pValue, STORAGE_OPTIONS);
+    },
+    { deep: true },
+  );
 
   // Funções
   function setDesktopDrawerVisible(pValue: boolean) {
@@ -62,10 +66,41 @@ export const usePreferencesStore = defineStore('preferences', () => {
     void salvarPreferenciasBackend();
   }
 
-  function clearPreferences(): void {
-    preferences.value = structuredClone(defaultPreferences);
-    ClassManagerStorage.clear(STORAGE_KEY, STORAGE_OPTIONS);
+  function getChartPreferences(pContexto: string, pPadrao: IChartPreferences): IChartPreferences {
+    return {
+      ...pPadrao,
+      ...(preferences.value.charts?.[pContexto] ?? {}),
+    };
+  }
+
+  function updateChartPreferences(
+    pContexto: string,
+    pAlteracoes: Partial<IChartPreferences>,
+    pPadrao: IChartPreferences,
+  ): void {
+    preferences.value.charts ??= {};
+    preferences.value.charts[pContexto] = {
+      ...pPadrao,
+      ...(preferences.value.charts[pContexto] ?? {}),
+      ...pAlteracoes,
+    };
     void salvarPreferenciasBackend();
+  }
+
+  function clearPreferences(): void {
+    preferences.value = deepClone(defaultPreferences);
+    CManagerStorage.clear(STORAGE_KEY, STORAGE_OPTIONS);
+    void salvarPreferenciasBackend();
+  }
+
+  function clearLocalPreferences(): void {
+    suspendLocalPersistence = true;
+    preferences.value = deepClone(defaultPreferences);
+    erroRemoto.value = null;
+    CManagerStorage.clear(STORAGE_KEY, STORAGE_OPTIONS);
+    queueMicrotask(() => {
+      suspendLocalPersistence = false;
+    });
   }
 
   function usuarioPossuiToken(): boolean {
@@ -83,8 +118,9 @@ export const usePreferencesStore = defineStore('preferences', () => {
   function aplicarPreferenciaBackend(pPreferencia: IPreferenciaUsuario): void {
     try {
       preferences.value = {
-        ...structuredClone(defaultPreferences),
+        ...deepClone(defaultPreferences),
         ...JSON.parse(pPreferencia.valorJson),
+        charts: JSON.parse(pPreferencia.valorJson).charts ?? {},
       };
     } catch (pErro) {
       erroRemoto.value = pErro;
@@ -100,10 +136,9 @@ export const usePreferencesStore = defineStore('preferences', () => {
     erroRemoto.value = null;
 
     try {
-      const resposta = await CPreferenciaUsuarioService.buscarPreferenciasUsuarioAutenticado();
+      const resposta = await preferenciaUsuarioService.buscarPreferenciasUsuarioAutenticado();
       const preferencia = resposta.preferencias.find(
-        (pPreferencia) => pPreferencia.contexto === CONTEXTO_PREFERENCIAS
-          && pPreferencia.chave === CHAVE_PREFERENCIAS,
+        (pPreferencia) => pPreferencia.contexto === CONTEXTO_PREFERENCIAS && pPreferencia.chave === CHAVE_PREFERENCIAS,
       );
 
       if (preferencia) {
@@ -125,7 +160,7 @@ export const usePreferencesStore = defineStore('preferences', () => {
     }
 
     try {
-      await CPreferenciaUsuarioService.salvarPreferenciaUsuarioAutenticado(montarPreferenciaBackend());
+      await preferenciaUsuarioService.salvarPreferenciaUsuarioAutenticado(montarPreferenciaBackend());
     } catch (pErro) {
       erroRemoto.value = pErro;
     }
@@ -138,7 +173,10 @@ export const usePreferencesStore = defineStore('preferences', () => {
     setDesktopDrawerVisible,
     setDrawerPinned,
     setTheme,
+    getChartPreferences,
+    updateChartPreferences,
     clearPreferences,
+    clearLocalPreferences,
     carregarPreferenciasBackend,
     salvarPreferenciasBackend,
   };

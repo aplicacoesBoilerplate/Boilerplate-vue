@@ -1,0 +1,57 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* Oculta scrollbars globalmente */
+::-webkit-scrollbar {
+  display: none; /* Chrome, Safari e Opera */
+}
+
+* {
+  -ms-overflow-style: none; /* IE e Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/*
+Estilização alternativa para scroll bars compactas - depende de style/_scrollbar.scss
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+}
+*/
+
+/* Estilização global do Tooltip para alto destaque no tema escuro */
+.v-overlay-container .v-tooltip .v-overlay__content {
+  background-color: #242736 !important;
+  color: #f8fafc !important;
+  border: 1px solid #3b3e54 !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  opacity: 1 !important;
+}

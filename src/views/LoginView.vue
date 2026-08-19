@@ -1,8 +1,8 @@
 <template>
   <v-container
     class="d-flex align-center justify-center py-8"
-    fluid
     style="min-height: 90vh"
+    fluid
   >
     <v-card
       class="w-100"
@@ -30,23 +30,19 @@
               icon="mdi-login-variant"
               start
             />
-            Login
+            {{ t('common.login.loginTab') }}
           </v-tab>
 
-          <v-tab value="registro">
-            <v-icon
-              icon="mdi-account-plus-outline"
-              start
-            />
-            Registro
-          </v-tab>
         </v-tabs>
 
-        <v-window
-          v-model="abaAtual"
-          class="pt-5"
-        >
-          <v-window-item value="login">
+        <div class="login-view__panels pt-5">
+          <div
+            :class="[
+              'v-window-item login-view__panel',
+              abaAtual === 'login' ? 'v-window-item--active' : 'login-view__panel--inactive',
+            ]"
+            :aria-hidden="abaAtual !== 'login'"
+          >
             <PainelLogin
               ref="painelLoginRef"
               v-model:login="login"
@@ -60,32 +56,17 @@
               @recuperarSenha="irParaRecuperacaoSenha"
               @resetar="resetarFormularioLogin"
             />
-          </v-window-item>
+          </div>
 
-          <v-window-item value="registro">
-            <PainelRegistro
-              ref="painelRegistroRef"
-              v-model:registro="registro"
-              v-model:valid="registroValido"
-              :carregando="carregandoRegistro"
-              :tooltipResetar="t('tooltips.forms.reset')"
-              @resetar="resetarFormularioRegistro"
-              @solicitarAcesso="solicitarAcesso"
-            />
-          </v-window-item>
-        </v-window>
+        </div>
       </v-card-text>
     </v-card>
 
     <OverlayFullscream v-model:exibirOverlay="exibirOverlayAutenticacao">
       <template #mensagem>
-        <div class="text-subtitle-1 font-weight-bold">
-          Preparando acesso
-        </div>
+        <div class="text-subtitle-1 font-weight-bold">{{ t('common.login.preparingAccess') }}</div>
 
-        <div class="text-body-2 text-medium-emphasis text-center">
-          Validando credenciais e rota inicial.
-        </div>
+        <div class="text-body-2 text-high-emphasis text-center">{{ t('common.login.validatingAccess') }}</div>
       </template>
     </OverlayFullscream>
   </v-container>
@@ -94,25 +75,22 @@
 <script lang="ts" setup>
 // Ecossistema Vue
 import { computed, nextTick, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
 
 // Types e Interfaces
-import { criarRegistroPadrao, type IUsuarioSolicitacaoAcesso } from '@/models/model/usuario/IUsuarioSolicitacaoAcesso';
-
 // Composables
 import { useFormularioLogin } from '@/composables/useFormularioLogin';
 import { useSnackbar } from '@/composables/useSnackbar';
 
 // Componentes
 import PainelLogin from '@/components/forms/fixtures/autenticacao/PainelLogin.vue';
-import PainelRegistro from '@/components/forms/fixtures/autenticacao/PainelRegistro.vue';
-import OverlayFullscream from '@/components/layout/OverlayFullscream.vue';
+import OverlayFullscream from '@/components/layouts/OverlayFullscream.vue';
 
-type TAbaAutenticacao = 'login' | 'registro';
+type TAbaAutenticacao = 'login';
 
 // Composables
 const router = useRouter();
@@ -125,15 +103,11 @@ const authStore = useAuthStore();
 
 // Reativas
 const painelLoginRef = ref<InstanceType<typeof PainelLogin> | null>(null);
-const painelRegistroRef = ref<InstanceType<typeof PainelRegistro> | null>(null);
 const abaAtual = ref<TAbaAutenticacao>('login');
 const loginValido = ref(false);
-const registroValido = ref(false);
 const carregandoLogin = ref(false);
 const carregandoGoogle = ref(false);
-const carregandoRegistro = ref(false);
 const processandoRedirecionamento = ref(false);
-const registro = ref<IUsuarioSolicitacaoAcesso>(criarRegistroPadrao());
 
 // Funções
 function handleErroLoginGoogle(pMensagem: string): void {
@@ -146,7 +120,7 @@ function irParaRecuperacaoSenha(): void {
 
 async function autenticarGoogle(pCredential?: string): Promise<void> {
   if (!pCredential) {
-    notify('Configure o VITE_GOOGLE_CLIENT_ID para habilitar o login com Google.', 'warning');
+    notify(t('common.login.googleNotConfigured'), 'warning');
     return;
   }
 
@@ -156,6 +130,8 @@ async function autenticarGoogle(pCredential?: string): Promise<void> {
     const usuarioAutenticado = await authStore.loginGoogle(pCredential);
     notify(`${t('messages.welcome')}, ${usuarioAutenticado.nome}!`, 'success');
     await redirecionarAposAutenticacao();
+  } catch {
+    return;
   } finally {
     carregandoGoogle.value = false;
   }
@@ -169,6 +145,8 @@ async function entrar(): Promise<void> {
     const usuarioAutenticado = await authStore.login(login);
     notify(`${t('messages.welcome')}, ${usuarioAutenticado.nome}!`, 'success');
     await redirecionarAposAutenticacao();
+  } catch {
+    return;
   } finally {
     carregandoLogin.value = false;
   }
@@ -180,33 +158,14 @@ async function resetarFormularioLogin(): Promise<void> {
   await painelLoginRef.value?.reset();
 }
 
-async function resetarFormularioRegistro(): Promise<void> {
-  registro.value = criarRegistroPadrao();
-  await nextTick();
-  await painelRegistroRef.value?.reset();
-}
-
-async function solicitarAcesso(): Promise<void> {
-  carregandoRegistro.value = true;
-
-  try {
-    await authStore.solicitarAcesso(registro.value);
-    registro.value = criarRegistroPadrao();
-    await nextTick();
-    await painelRegistroRef.value?.reset();
-    abaAtual.value = 'login';
-  } finally {
-    carregandoRegistro.value = false;
-  }
-}
-
 async function redirecionarAposAutenticacao(): Promise<void> {
   processandoRedirecionamento.value = true;
 
   try {
-    const redirectPrioritario = typeof router.currentRoute.value.query.redirect === 'string'
-      ? router.currentRoute.value.query.redirect
-      : undefined;
+    const redirectPrioritario =
+      typeof router.currentRoute.value.query.redirect === 'string'
+        ? router.currentRoute.value.query.redirect
+        : undefined;
     const destino = authStore.resolverDestinoAposLogin(redirectPrioritario);
 
     await router.push(destino);
@@ -216,8 +175,27 @@ async function redirecionarAposAutenticacao(): Promise<void> {
 }
 
 // Computadas
-const tituloAtual = computed(() => (abaAtual.value === 'login' ? 'Acessar sistema' : 'Solicitar acesso'));
+const tituloAtual = computed(() => t('common.login.accessTitle'));
 const exibirOverlayAutenticacao = computed(() => {
   return carregandoLogin.value || carregandoGoogle.value || processandoRedirecionamento.value;
 });
 </script>
+
+<style scoped>
+.login-view__panels {
+  position: relative;
+}
+
+.login-view__panel {
+  opacity: 1;
+  transition: opacity 180ms ease;
+  width: 100%;
+}
+
+.login-view__panel--inactive {
+  inset: 20px 0 auto;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+</style>

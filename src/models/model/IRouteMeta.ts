@@ -1,24 +1,28 @@
 // Types e Interfaces
-import type { ICampoFiltro } from '../filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '../filters/MapeamentoFiltros';
 
+/**
+ * @description Metadados associados a cada rota do sistema, usados para navegação, filtros e controle de exibição.
+ * @property {string} path - Caminho da rota.
+ * @property {string} name - Nome registrado da rota no Vue Router.
+ * @property {string} title - Título exibido na interface para a rota.
+ * @property {string} icon - Ícone associado à rota.
+ * @property {string} hotkey - Tecla de atalho para navegação (ex: 'ctrl + m').
+ * @property {boolean} hidden - Se verdadeiro, a rota não aparece na navegação e usa layout Default.
+ * @property {boolean} requiresAuth - Se a rota requer autenticação.
+ * @property {IRouteMeta[]} children - Rotas filhas para agrupamento na navegação.
+ * @property {TCampoFiltroMapeado[]} filterResource - Campos disponíveis para filtro nesta rota.
+ * @property {string} filterContext - Contexto usado para isolar filtros aplicados por recurso.
+ */
 export interface IRouteMeta {
-  /** O caminho da rota. */
   path: string;
-
   name?: string;
   title?: string;
   icon?: string;
-
-  /** A tecla de atalho da rota. */
   hotkey?: string;
-  /** Se a rota deve ser oculta na navegação (também determina que ela usará o layout Default). */
   hidden?: boolean;
-  /** Se a rota requer autenticação. */
   requiresAuth?: boolean;
-  /** As rotas filhas. */
   children?: IRouteMeta[];
-  /** Os campos disponíveis para filtro nesta rota. */
-  filterResource?: ICampoFiltro<any>[];
-  /** Contexto usado para isolar filtros aplicados por recurso. */
+  filterResource?: TCampoFiltroMapeado[];
   filterContext?: string;
 }
