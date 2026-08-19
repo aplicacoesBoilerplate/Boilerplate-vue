@@ -9,7 +9,7 @@
     <template #activator="{ props: dialogProps }">
       <slot
         name="activator"
-        v-bind="dialogProps"
+        :props="dialogProps"
       >
         <v-tooltip
           :text="t('tooltips.appBar.filter')"
