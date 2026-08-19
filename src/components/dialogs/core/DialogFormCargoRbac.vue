@@ -176,7 +176,7 @@ const titulo = computed(() =>
 );
 
 const icone = computed(() => {
-  if (props.modoVisualizacao) return 'mdi-shield-eye-outline';
+  if (props.modoVisualizacao) return 'mdi-shield-search';
   return props.modoEdicao ? 'mdi-shield-edit-outline' : 'mdi-shield-plus-outline';
 });
 
