@@ -6,9 +6,116 @@
     "updateDate": "Actualizado el",
     "software": "Software"
   },
+  "common": {
+    "actions": {
+      "close": "Cerrar",
+      "clear": "Limpiar",
+      "confirm": "Confirmar",
+      "back": "Volver",
+      "home": "Ir al inicio",
+      "addFilter": "Añadir filtro",
+      "resetForm": "Restablecer formulario",
+      "resetPasswords": "Restablecer contraseñas",
+      "openDetails": "Abrir detalles"
+    },
+    "app": {
+      "checkingServer": "Verificando servidor",
+      "checkingServerDescription": "Espere mientras validamos la disponibilidad de la API."
+    },
+    "login": {
+      "loginTab": "Acceso",
+      "registerTab": "Registro",
+      "accessTitle": "Acceder al sistema",
+      "requestAccessTitle": "Solicitar acceso",
+      "preparingAccess": "Preparando acceso",
+      "validatingAccess": "Validando credenciales y ruta inicial.",
+      "googleNotConfigured": "Configure VITE_GOOGLE_CLIENT_ID para habilitar el acceso con Google."
+    },
+    "health": {
+      "description": "Respuesta actual del endpoint administrativo de la API.",
+      "apiStatus": "Estado de la API: {status}",
+      "unavailable": "No disponible",
+      "loading": "Consultando health-check",
+      "loadingDescription": "Espere mientras obtenemos la respuesta actualizada del servidor."
+    },
+    "audit": {
+      "title": "Auditoría del registro",
+      "tooltip": "Ver auditoría",
+      "createdAt": "Creado el",
+      "createdBy": "Creado por",
+      "updatedAt": "Última edición",
+      "updatedBy": "Editado por",
+      "userReference": "Usuario #{id}",
+      "system": "Sistema"
+    },
+    "dateTime": {
+      "selectDate": "Seleccione la fecha",
+      "selectTime": "Seleccione la hora"
+    },
+    "rbacTabs": {
+      "data": "Datos",
+      "permissions": "Permisos",
+      "users": "Usuarios"
+    },
+    "fallback": {
+      "forbiddenTitle": "Acceso denegado",
+      "forbiddenMessage": "No tiene permiso para acceder a esta área. Contacte al administrador si cree que se trata de un error.",
+      "serverTitle": "Error interno",
+      "serverMessage": "Algo salió mal en nuestros servidores. Inténtelo de nuevo más tarde.",
+      "notFoundTitle": "Página no encontrada",
+      "notFoundMessage": "No encontramos la página que está buscando."
+    },
+    "filters": {
+      "clearCurrent": "Limpiar valores del filtro actual",
+      "selectField": "Seleccione un campo del menú lateral para comenzar."
+    },
+    "dataTable": {
+      "loading": "Cargando registros..."
+    },
+    "fields": {
+      "user": { "id": "Código", "name": "Nombre", "email": "Correo electrónico", "avatar": "Avatar", "phone": "Teléfono", "notify": "Notificar", "active": "Activo", "role": "Cargo" },
+      "rbac": { "name": "Nombre", "description": "Descripción", "defaultBehavior": "Comportamiento predeterminado", "active": "Activo" },
+      "error": { "id": "Código", "message": "Mensaje", "file": "Archivo", "class": "Clase", "method": "Método", "line": "Línea", "status": "Estado de la solicitud", "userId": "Código del usuario", "userReference": "Referencia del usuario", "time": "Hora del error" }
+    },
+    "empty": { "users": "No se encontraron usuarios.", "roles": "No se encontraron cargos." },
+    "roles": { "admin": "Administrador", "user": "Usuario" },
+    "messages": {
+      "manageDenied": "No tiene permiso para administrar registros.",
+      "chartsDenied": "No tiene permiso para ver gráficos.",
+      "exportDenied": "No tiene permiso para exportar datos.",
+      "rootUserRemoval": "El usuario raíz de la aplicación no se puede eliminar.",
+      "ownAccountRemoval": "No puede eliminar su propia cuenta.",
+      "defaultRoleRemoval": "Los cargos predeterminados ADMIN y USER no se pueden eliminar.",
+      "userUpdated": "Usuario actualizado correctamente.",
+      "userCreated": "Usuario creado correctamente.",
+      "userRemoved": "Usuario eliminado correctamente.",
+      "roleRemoved": "Cargo eliminado correctamente.",
+      "selectFieldCondition": "¡Seleccione el campo y la condición!",
+      "duplicateFilterTitle": "Filtro duplicado",
+      "duplicateFilter": "Ya ha añadido esta condición.",
+      "actionDenied": "No tiene permiso para realizar esta acción.",
+      "requestFailed": "No se pudo completar la solicitud.",
+      "exportStarted": "La exportación ha comenzado y continuará en segundo plano.",
+      "exportCompleted": "Exportación completada con {count} registro(s).",
+      "exportFailed": "No se pudo completar la exportación.",
+      "googleCancelled": "El acceso fue cancelado o no se recibió la credencial de Google.",
+      "passwordReset": "Contraseña restablecida correctamente.",
+      "accessRequested": "Solicitud de acceso registrada. Espere la aprobación de un administrador.",
+      "recoverySent": "Código de recuperación enviado.",
+      "recoveryValidated": "Código validado correctamente.",
+      "invalidDate": "Formato de fecha no válido",
+      "invalidComparisonDate": "Error en la fecha de comparación"
+    }
+  },
   "routes": {
     "home": {
       "title": "Inicio"
+    },
+    "dashboard": {
+      "title": "Panel"
+    },
+    "systemInfo": {
+      "title": "Información del sistema"
     },
     "login": {
       "title": "Acceder"
@@ -19,20 +126,20 @@
     "forgotPassword": {
       "title": "Recuperar contraseña"
     },
-    "dashboard": {
-      "title": "Panel"
-    },
-    "users": {
-      "title": "Usuarios"
-    },
     "adm": {
       "title": "Administrador",
       "children": {
         "users": {
           "title": "Gestión de usuarios"
         },
-        "settings": {
-          "title": "Configuraciones"
+        "rbac": {
+          "title": "Control de acceso"
+        },
+        "errors": {
+          "title": "Errores"
+        },
+        "healthCheck": {
+          "title": "Verificación de integridad"
         }
       }
     },
@@ -88,6 +195,140 @@
       "inputPassword": {
         "label": "Contraseña"
       }
+    },
+    "formRegistro": {
+      "inputNome": {
+        "label": "Nombre"
+      },
+      "inputEmail": {
+        "label": "Correo electrónico"
+      },
+      "inputSenha": {
+        "label": "Contraseña"
+      },
+      "inputConfirmarSenha": {
+        "label": "Confirmar contraseña"
+      }
+    },
+    "formCargoRbac": {
+      "inputNome": {
+        "label": "Nombre del cargo"
+      },
+      "inputPapel": {
+        "label": "Código del cargo",
+        "hint": "Usado en el vínculo con usuarios y políticas"
+      },
+      "inputComportamentoPadrao": {
+        "label": "Cuando no exista permiso específico"
+      },
+      "inputDescricao": {
+        "label": "Descripción"
+      },
+      "inputAtivo": {
+        "label": "Cargo activo"
+      },
+      "comportamentosPadrao": {
+        "bloquear": "Bloquear por defecto",
+        "liberar": "Permitir por defecto"
+      }
+    },
+    "seletorIconeMaterialDesign": {
+      "label": "Ícono",
+      "hint": "Haga clic para seleccionar un ícono.",
+      "previewAriaLabel": "Vista previa del ícono {icone}",
+      "selecionarAriaLabel": "Seleccionar ícono {icone}",
+      "tooltipPaginaIcones": "Abrir la página con todos los íconos aceptados",
+      "dialog": {
+        "titulo": "Seleccionar ícono",
+        "buscarLabel": "Buscar por nombre o alias",
+        "carregando": "Cargando catálogo de íconos...",
+        "erroCarregamento": "No se pudo cargar el catálogo de íconos.",
+        "tentarNovamente": "Intentar nuevamente",
+        "semResultados": "No se encontraron íconos."
+      },
+      "icones": {
+        "escudoConta": "Escudo de cuenta",
+        "escudoChave": "Escudo con llave",
+        "escudoAdministrativo": "Escudo administrativo",
+        "conta": "Cuenta",
+        "contaExecutiva": "Cuenta ejecutiva",
+        "contaChave": "Cuenta con llave",
+        "contaConfiguracoes": "Cuenta con configuraciones",
+        "grupoContas": "Grupo de cuentas",
+        "supervisor": "Supervisor",
+        "crachaConta": "Credencial de cuenta",
+        "detalhesConta": "Detalles de cuenta",
+        "contaProfissional": "Cuenta profesional",
+        "bloqueio": "Bloqueo",
+        "bloqueioAberto": "Bloqueo abierto",
+        "chave": "Llave",
+        "configuracao": "Configuración",
+        "painel": "Panel",
+        "bancoDados": "Base de datos",
+        "grafico": "Gráfico",
+        "documento": "Documento",
+        "pacote": "Paquete",
+        "carrinho": "Carrito",
+        "financeiro": "Finanzas",
+        "email": "Correo electrónico",
+        "telefone": "Teléfono"
+      }
+    },
+    "consultaVinculosFormulario": {
+      "rotuloPesquisa": "Buscar registros",
+      "textoVazio": "No se encontraron registros.",
+      "textoFinal": "Todos los registros fueron cargados."
+    },
+    "usuariosVinculadosCargo": {
+      "titulo": "Usuarios vinculados",
+      "subtitulo": "Cambie el cargo de un usuario directamente desde este facilitador.",
+      "rotuloPesquisa": "Buscar usuarios",
+      "textoVazio": "Ningún usuario está vinculado a este cargo.",
+      "alteracaoPendente": "Cambio pendiente",
+      "vincularAoCargo": "Vincular al cargo {cargo}"
+    },
+    "controlePermissoesCargo": {
+      "rotas": {
+        "titulo": "Rutas permitidas",
+        "subtitulo": "Las rutas hijas mantienen la ruta padre permitida para preservar la navegación.",
+        "colunaAcoes": "Acciones permitidas",
+        "semAcoes": "-",
+        "acoes": {
+          "consultar": "Consultar",
+          "gravar": "Guardar",
+          "editar": "Editar",
+          "remover": "Eliminar"
+        }
+      },
+      "comportamentoPadrao": {
+        "bloquear": "Bloquea por defecto",
+        "liberar": "Permite por defecto"
+      },
+      "permissoesGerais": {
+        "titulo": "Permisos generales",
+        "subtitulo": "Acciones transversales que pueden ser usadas por varios recursos.",
+        "itens": {
+          "exportarDados": "Exportar datos",
+          "visualizarGraficos": "Ver gráficos",
+          "gerenciarRegistros": "Gestionar registros"
+        }
+      }
+    },
+    "configuracaoRedirecionamentoCargo": {
+      "titulo": "Redirección inicial",
+      "inputRota": {
+        "label": "Ruta inicial después del login"
+      },
+      "tooltipFiltros": "Configurar filtros iniciales",
+      "rotaSemFiltros": "Esta ruta no tiene filtros configurables."
+    },
+    "consultaRegistrosFiltro": {
+      "registros": "registros",
+      "rotuloPesquisa": "Buscar {campo}",
+      "tooltipFechar": "Cerrar consulta auxiliar",
+      "textoVazio": "No se encontraron registros.",
+      "textoFinal": "Todos los registros fueron cargados.",
+      "textoErro": "No fue posible consultar los registros."
     }
   },
   "tooltips": {
@@ -109,6 +350,7 @@
       "create": "Nuevo registro",
       "edit": "Editar",
       "delete": "Eliminar",
+      "cancel": "Cancelar",
       "submit": "Confirmar",
       "forgotPassword": "Olvidé mi contraseña"
     },
@@ -131,6 +373,8 @@
     "value": "Valor",
     "from": "De",
     "until": "Hasta",
+    "active": "Activo",
+    "inactive": "Inactivo",
     "welcome": "Bien-vindo(a)",
     "errors": {
       "reqGenerics": "¡Se produjo un error en la solicitud!"
@@ -138,7 +382,8 @@
     "forms": {
       "formUsers": {
         "createUser": "Crear usuario",
-        "editingUser": "Editar usuario"
+        "editingUser": "Editar usuario",
+        "editingUserId": "Editar usuario #{id}"
       }
     },
     "components": {
@@ -150,6 +395,206 @@
         "title": "Filtrar recursos por:",
         "alertDuplicate": "¡Este filtro ya ha sido añadido!"
       }
+    }
+  },
+  "components": {
+    "genericView": {
+      "ordenarCrescente": "Ordenar ascendente",
+      "ordenarDecrescente": "Ordenar descendente"
+    },
+    "genericInfiniteList": {
+      "limite": "Límite",
+      "textoVazio": "No se encontraron registros.",
+      "textoFinal": "Todos los registros fueron cargados.",
+      "textoErro": "No fue posible cargar los registros."
+    },
+    "usersView": {
+      "verGraficos": "Ver gráficos",
+      "esconderGraficos": "Ocultar gráficos"
+    },
+    "rbacView": {
+      "textoVazioCargos": "No se encontraron cargos.",
+      "textoFinalCargos": "Todos los cargos fueron cargados."
+    },
+    "baseChart": {
+      "tooltipConfiguracao": "Configurar gráfico",
+      "secoes": {
+        "agrupamento": "Agrupar por",
+        "visualizacao": "Visualización",
+        "controles": "Controles"
+      },
+      "controles": {
+        "legenda": "Leyenda",
+        "rotulos": "Etiquetas"
+      },
+      "tipos": {
+        "donut": "Donut",
+        "pizza": "Circular",
+        "colunas": "Columnas",
+        "barras": "Barras",
+        "linha": "Línea",
+        "radial": "Radial"
+      },
+      "semDados": "Sin datos para mostrar",
+      "totalAcumulado": "Total acumulado",
+      "registrosTotais": "Registros totales",
+      "categoria": "categoría",
+      "tituloAgrupamento": "Agrupamiento por {campo}"
+    },
+    "dialogFiltro": {
+      "titulo": "Filtros",
+      "consultaRegistrosAriaLabel": "Consulta auxiliar de registros",
+      "limparFiltros": "Limpar filtros",
+      "aplicar": "Aplicar",
+      "operadores": {
+        "igual": "Igual",
+        "diferente": "Diferente",
+        "comecaCom": "Comienza con",
+        "contem": "Contiene",
+        "naoContem": "No contiene",
+        "terminaCom": "Termina con",
+        "entre": "Entre",
+        "maiorQue": "Mayor que",
+        "maiorIgual": "Mayor o igual",
+        "menorQue": "Menor que",
+        "menorIgual": "Menor o igual",
+        "selecao": "Selección",
+        "excecao": "Excepción",
+        "verdadeiro": "Verdadero",
+        "falso": "Falso"
+      },
+      "campos": {
+        "id": "Código",
+        "nome": "Nombre",
+        "email": "Correo electrónico",
+        "papel": "Rol",
+        "telefone": "Teléfono",
+        "ativo": "Activo",
+        "idError": "Código de Error",
+        "classe": "Clase",
+        "metodo": "Método",
+        "linha": "Línea",
+        "arquivo": "Archivo",
+        "usuarioReferencia": "Usuario",
+        "dataHora": "Fecha y Hora",
+        "httpStatusCode": "Estado HTTP",
+        "mensagem": "Mensaje",
+        "descricao": "Descripción",
+        "comportamentoPadrao": "Comportamiento Predeterminado",
+        "idUsuario": "ID del Usuario"
+      }
+    },
+    "selectOperadorFiltro": {
+      "label": "Condición"
+    },
+    "baseDialog": {
+      "tituloPadrao": "Diálogo",
+      "fecharAriaLabel": "Cerrar {titulo}"
+    },
+    "menuExportacaoDados": {
+      "tooltip": "Exportar datos",
+      "titulo": "Exportar",
+      "formatos": {
+        "txt": {
+          "titulo": "TXT",
+          "descricao": "Texto tabulado"
+        },
+        "pdf": {
+          "titulo": "PDF",
+          "descricao": "Documento para lectura"
+        },
+        "excel": {
+          "titulo": "Excel",
+          "descricao": "Hoja de cálculo .xlsx"
+        }
+      }
+    },
+    "detalhesCargo": {
+      "tooltip": "Detalles",
+      "liberacoes": "{quantidade} permisos",
+      "usuarios": "{quantidade} usuario(s)",
+      "semDescricao": "Sin descripción registrada."
+    },
+    "drawerFiltroRight": {
+      "filtrosAplicados": "Filtros aplicados"
+    },
+    "campoSelecionado": {
+      "nenhumCampoSelecionado": "Ningún campo seleccionado",
+      "tipoDado": "Tipo de dato",
+      "ocultarConsultaAuxiliar": "Ocultar consulta auxiliar",
+      "consultarRegistros": "Consultar registros",
+      "tiposDados": {
+        "texto": "Texto",
+        "numerico": "Numérico",
+        "logico": "Lógico (Sí/No)",
+        "dataHora": "Fecha/Hora",
+        "selecao": "Selección"
+      }
+    },
+    "inputValorFiltro": {
+      "valorNaoNecessario": "No se requiere ningún valor para esta condición.",
+      "selecioneValores": "Seleccione los valores",
+      "selecioneAoMenosUmValor": "Seleccione al menos un valor"
+    },
+    "drawerItemUsuario": {
+      "fixarMenu": "Fijar menú",
+      "desafixarMenu": "Desfijar menú"
+    },
+    "btnInstalarPwa": {
+      "instalarAplicativo": "Instalar aplicación",
+      "instalacaoIndisponivel": "Instalación no disponible en este navegador",
+      "instalacaoIniciada": "Instalación de la aplicación iniciada."
+    },
+    "systemInfoView": {
+      "titulo": "Información del sistema",
+      "abas": {
+        "geral": "General",
+        "versoes": "Versiones"
+      },
+      "secoesChangelog": {
+        "mudancasIncompativeis": "Cambios incompatibles",
+        "funcionalidades": "Funcionalidades",
+        "correcoes": "Correcciones"
+      }
+    },
+    "infoGeral": {
+      "cards": {
+        "frontend": {
+          "titulo": "Frontend",
+          "descricao": "Vue {vue}, Vuetify {vuetify} y TypeScript {typescript}."
+        },
+        "pwa": {
+          "titulo": "PWA",
+          "descricao": "Aplicación preparada para instalación, service worker y experiencia responsiva en dispositivos móviles."
+        },
+        "boilerplate": {
+          "titulo": "Boilerplate",
+          "descricao": "Base con autenticación visual, filtros globales, RBAC, listas genéricas, exportación y componentes reutilizables."
+        }
+      }
+    },
+    "resumoVersoes": {
+      "titulo": "Resumen",
+      "alteracoes": "{quantidade} cambios",
+      "pacote": "Paquete",
+      "changelog": "Changelog",
+      "versoes": "Versiones",
+      "tooltipPacote": "Paquete: v{versao}",
+      "tooltipChangelog": "Changelog: v{versao} - {data}",
+      "tooltipVersoes": "Versiones: {quantidade} registradas",
+      "versoesRegistradas": "{quantidade} registrada(s)"
+    },
+    "listaRealizadosVersoes": {
+      "atual": "Actual",
+      "registrada": "Registrada",
+      "itens": "{quantidade} elemento(s)",
+      "nenhumItemDetalhado": "No se encontró ningún elemento detallado para esta versión."
+    }
+  },
+  "dialogs": {
+    "cargoRbac": {
+      "criar": "Crear nuevo cargo",
+      "editar": "Editar cargo {nome}"
     }
   },
   "dataTable": {
@@ -193,7 +638,7 @@
     "stepEmail": {
       "instruction": "Ingrese su correo electrónico para recibir el código de verificación.",
       "labelEmail": "Correo electrónico",
-      "placeholderEmail": "ejemplo@email.com",
+      "placeholderEmail": "ejemplo{'@'}email.com",
       "btnSend": "Enviar Código"
     },
     "stepVerify": {

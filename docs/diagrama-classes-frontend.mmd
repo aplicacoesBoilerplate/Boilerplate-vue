@@ -1,0 +1,51 @@
+%% Fonte: implementacao atual em src/services e src/models.
+%% Classes abstratas representam a hierarquia efetivamente encontrada no frontend.
+classDiagram
+    class CBaseHttpService {
+        <<abstract>>
+        #get() Promise~T~
+        #post() Promise~T~
+        #put() Promise~T~
+        #patch() Promise~T~
+        #delete() Promise~T~
+    }
+
+    class CBaseConsultaApiService~T~ {
+        <<abstract>>
+        +consultar() Promise~IRespostaConsultaRegistros~
+        +buscarPorId() Promise~T~
+        +consultarTodosRegistros() Promise~IRespostaConsultaRegistros~
+    }
+
+    class CBaseCrudApiService~T~ {
+        <<abstract>>
+        +cadastrar(T) Promise~T~
+        +editar(T) Promise~T~
+        +modificar(T) Promise~T~
+        +excluir(number) Promise~void~
+    }
+
+    class CUsuarioService
+    class CCargoRbacService
+    class CAutenticacaoService
+    class CPreferenciaUsuarioService
+    class IUsuario
+    class ICargoRbac
+    class IPermissaoCargoRbac
+    class IRedirecionamentoInicialRbac
+    class IPreferenciaUsuario
+
+    CBaseHttpService <|-- CBaseConsultaApiService
+    CBaseConsultaApiService <|-- CBaseCrudApiService
+    CBaseCrudApiService <|-- CUsuarioService
+    CBaseCrudApiService <|-- CCargoRbacService
+    CBaseHttpService <|-- CAutenticacaoService
+    CBaseHttpService <|-- CPreferenciaUsuarioService
+
+    CUsuarioService ..> IUsuario : manipula
+    CCargoRbacService ..> ICargoRbac : manipula
+    CAutenticacaoService ..> IUsuario : consulta
+    CAutenticacaoService ..> ICargoRbac : consulta
+    CPreferenciaUsuarioService ..> IPreferenciaUsuario : persiste
+    ICargoRbac "1" *-- "0..*" IPermissaoCargoRbac : permissoes
+    ICargoRbac "1" *-- "1" IRedirecionamentoInicialRbac : redirecionamentoInicial

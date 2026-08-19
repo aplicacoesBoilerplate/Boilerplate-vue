@@ -1,0 +1,71 @@
+<template>
+  <v-menu
+    v-model="isMenuOpen"
+    location="bottom end"
+  >
+    <template #activator="{ props: menuProps }">
+      <v-tooltip
+        :text="t('tooltips.appBar.language')"
+        location="bottom"
+      >
+        <template #activator="{ props: tooltipProps }">
+          <v-btn
+            v-bind="mergeProps(menuProps, tooltipProps)"
+            class="mx-1"
+            variant="text"
+            icon="mdi-translate"
+            size="small"
+          />
+        </template>
+      </v-tooltip>
+    </template>
+
+    <v-list
+      density="compact"
+      nav
+    >
+      <v-list-item
+        v-for="item in availableLocales"
+        :key="item.value"
+        :value="item.value"
+        :active="locale === item.value"
+        color="primary"
+        @click="changeLocale(item.value)"
+      >
+        <v-list-item-title>{{ item.title }}</v-list-item-title>
+      </v-list-item>
+    </v-list>
+  </v-menu>
+</template>
+
+<script setup lang="ts">
+// Ecossistema Vue
+import { inject, mergeProps, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+// Utils
+import { CManagerStorage } from '@/utils/ManagerStorage';
+
+// Constantes
+import { availableLocales } from '@/locales/AvailableLocales';
+
+// Setup de estado do Drawer
+const setKeepOpen = inject<((val: boolean) => void) | undefined>('drawerKeepOpen', undefined);
+
+// Composables
+const { t, locale } = useI18n();
+
+// Reativas
+const isMenuOpen = ref(false);
+
+// Observadores
+watch(isMenuOpen, (pValue) => {
+  if (setKeepOpen) setKeepOpen(pValue);
+});
+
+// Funções
+function changeLocale(pLang: string) {
+  locale.value = pLang;
+  CManagerStorage.set('user_locale', pLang, 'local');
+}
+</script>

@@ -1,0 +1,109 @@
+// Ecossistema Vue
+import { computed, type ComputedRef, type Ref } from 'vue';
+
+import { EOperadoresFiltro, MAPEAMENTO_OPERADORES } from '@/models/filters/enums/EOperadoresFiltro';
+import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
+// Types e Interfaces
+import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
+
+// Constantes
+const OPERADORES_BOOLEANOS = [EOperadoresFiltro.VERDADEIRO, EOperadoresFiltro.FALSO];
+
+const OPERADORES_SELECAO = [EOperadoresFiltro.SELECAO, EOperadoresFiltro.EXCECAO];
+
+const OPERADORES_NUMERICOS_E_DATA = [
+  EOperadoresFiltro.IGUAL,
+  EOperadoresFiltro.DIFERENTE,
+  EOperadoresFiltro.ENTRE,
+  EOperadoresFiltro.MAIOR_QUE,
+  EOperadoresFiltro.MAIOR_IGUAL,
+  EOperadoresFiltro.MENOR_QUE,
+  EOperadoresFiltro.MENOR_IGUAL,
+];
+
+const OPERADORES_TEXTO = [
+  EOperadoresFiltro.IGUAL,
+  EOperadoresFiltro.DIFERENTE,
+  EOperadoresFiltro.COMECA_COM,
+  EOperadoresFiltro.CONTEM,
+  EOperadoresFiltro.NAO_CONTEM,
+  EOperadoresFiltro.TERMINA_COM,
+];
+
+type TUseOperadoresFiltroParams = {
+  campoSelecionado: ComputedRef<TCampoFiltroMapeado | null> | Ref<TCampoFiltroMapeado | null>;
+};
+
+/**
+ * @description Filtra os operadores disponíveis com base nos operadores permitidos.
+ * @param pOperadoresPermitidos Array de operadores permitidos.
+ * @returns Array de operadores disponíveis.
+ */
+function filtrarOperadores(pOperadoresPermitidos: EOperadoresFiltro[]): IOpcaoSelecao[] {
+  const operadoresPermitidos = new Set(pOperadoresPermitidos);
+
+  return MAPEAMENTO_OPERADORES.filter((pOperador) => operadoresPermitidos.has(pOperador.valor as EOperadoresFiltro));
+}
+
+/**
+ * @description Adiciona operadores ao conjunto de operadores atuais.
+ * @param pOperadoresAtuais Set de operadores atuais.
+ * @param pOperadoresPermitidos Array de operadores a serem adicionados.
+ */
+function adicionarOperadores(
+  pOperadoresAtuais: Set<EOperadoresFiltro>,
+  pOperadoresPermitidos: EOperadoresFiltro[],
+): void {
+  pOperadoresPermitidos.forEach((pOperador) => pOperadoresAtuais.add(pOperador));
+}
+
+/**
+ * @description Monta a lista de operadores válidos com base no tipo do campo selecionado.
+ * @param pParams Campo selecionado usado para determinar os operadores.
+ * @returns Operadores disponíveis e tipos do campo atual.
+ */
+export function useOperadoresFiltro(pParams: TUseOperadoresFiltroParams) {
+  const tiposCampoAtual = computed<ETipoFiltro[]>(() => pParams.campoSelecionado.value?.tipos ?? []);
+
+  const operadoresDisponiveis = computed<IOpcaoSelecao[]>(() => {
+    const campoSelecionado = pParams.campoSelecionado.value;
+
+    // Usa Set para evitar duplicidade
+    const operadores = new Set<EOperadoresFiltro>();
+
+    if (!campoSelecionado) {
+      return [];
+    }
+
+    if (campoSelecionado.operadores && campoSelecionado.operadores.length > 0) {
+      return filtrarOperadores(campoSelecionado.operadores);
+    }
+
+    const tipos = tiposCampoAtual.value;
+
+    if (tipos.includes(ETipoFiltro.BOOLEAN)) {
+      return filtrarOperadores(OPERADORES_BOOLEANOS);
+    }
+
+    if (tipos.includes(ETipoFiltro.SELECT)) {
+      adicionarOperadores(operadores, OPERADORES_SELECAO);
+    }
+
+    if (tipos.includes(ETipoFiltro.NUMBER) || tipos.includes(ETipoFiltro.DATE)) {
+      adicionarOperadores(operadores, OPERADORES_NUMERICOS_E_DATA);
+    }
+
+    if (tipos.includes(ETipoFiltro.STRING)) {
+      adicionarOperadores(operadores, OPERADORES_TEXTO);
+    }
+
+    // Filtra a lista de operadores baseada nos operadores permitidos
+    return filtrarOperadores([...operadores]);
+  });
+
+  return {
+    operadoresDisponiveis,
+    tiposCampoAtual,
+  };
+}

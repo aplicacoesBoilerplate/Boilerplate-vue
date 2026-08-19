@@ -1,0 +1,31 @@
+@mixin scrollbar-thin($thumb-color: rgba(255, 255, 255, 0.12), $track-color: transparent, $size: 6px) {
+  scrollbar-width: thin;
+  scrollbar-color: $thumb-color $track-color;
+
+  &::-webkit-scrollbar {
+    width: $size;
+    height: $size;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $thumb-color;
+    border-radius: calc($size / 2);
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+}
+
+@mixin scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

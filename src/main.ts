@@ -1,19 +1,17 @@
-import './assets/main.css'
+import './styles/vuetify-layers.scss';
+import './assets/global.scss';
+import '@fontsource/roboto/latin-300.css';
+import '@fontsource/roboto/latin-400.css';
+import '@fontsource/roboto/latin-500.css';
+import '@fontsource/roboto/latin-700.css';
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import App from './App.vue'
-import router from './router'
-import vuetify from './plugins/vuetify'
-import { createRulesPlugin } from 'vuetify/labs/rules'
-import './services/axios'
-import { i18n } from './plugins/i18n'
+import { createApp } from 'vue';
 
-const app = createApp(App)
+import { registerPlugins } from '@/plugins';
 
-app.use(createPinia())
-app.use(router)
-app.use(i18n)
-app.use(vuetify)
-app.use(createRulesPlugin({}, vuetify.locale))
-app.mount('#app')
+import App from './App.vue';
+
+const app = createApp(App);
+registerPlugins(app);
+
+app.mount('#app');

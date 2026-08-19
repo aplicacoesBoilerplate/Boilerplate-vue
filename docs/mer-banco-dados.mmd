@@ -1,0 +1,84 @@
+%% Fonte: contratos consumidos pelo frontend em src/models/model.
+%% Status: modelo logico proposto; validar nomes, tipos e restricoes no backend Java.
+erDiagram
+    USUARIO {
+        bigint id PK
+        varchar nome
+        varchar email UK
+        varchar avatar
+        varchar telefone
+        boolean notificar
+        boolean ativo
+        varchar papel FK
+        timestamp criado_em
+        bigint criado_por FK
+        timestamp atualizado_em
+        bigint atualizado_por FK
+    }
+
+    CARGO_RBAC {
+        bigint id PK
+        varchar papel UK
+        varchar nome
+        varchar icone
+        varchar descricao
+        varchar comportamento_padrao
+        boolean ativo
+        timestamp criado_em
+        bigint criado_por FK
+        timestamp atualizado_em
+        bigint atualizado_por FK
+    }
+
+    PERMISSAO_CARGO_RBAC {
+        bigint id PK
+        bigint cargo_rbac_id FK
+        varchar recurso
+        varchar acao
+        boolean liberado
+    }
+
+    REDIRECIONAMENTO_INICIAL_RBAC {
+        bigint id PK
+        bigint cargo_rbac_id FK
+        varchar path
+        varchar nome_rota
+    }
+
+    FILTRO_REDIRECIONAMENTO_RBAC {
+        bigint id PK
+        bigint redirecionamento_inicial_rbac_id FK
+        varchar campo
+        varchar condicao
+        text valor
+        int ordem
+    }
+
+    PREFERENCIA_USUARIO {
+        bigint id PK
+        bigint usuario_id FK
+        varchar contexto
+        varchar chave
+        text valor_json
+    }
+
+    ERRO_SISTEMA {
+        bigint id_erro PK
+        text mensagem
+        varchar arquivo
+        varchar classe
+        varchar metodo
+        int linha
+        int http_status_code
+        bigint usuario_id FK
+        varchar usuario_referencia
+        timestamp data_hora
+    }
+
+    CARGO_RBAC ||--o{ USUARIO : "atribui por papel"
+    CARGO_RBAC ||--o{ PERMISSAO_CARGO_RBAC : possui
+    CARGO_RBAC ||--o| REDIRECIONAMENTO_INICIAL_RBAC : define
+    REDIRECIONAMENTO_INICIAL_RBAC ||--o{ FILTRO_REDIRECIONAMENTO_RBAC : aplica
+    USUARIO ||--o{ PREFERENCIA_USUARIO : possui
+    USUARIO o|--o{ ERRO_SISTEMA : origina
+    USUARIO o|--o{ USUARIO : audita

@@ -1,101 +1,201 @@
 <template>
-  <div class="d-flex justify-center mb-5" v-if="loading">
-    <v-progress-circular color="primary" indeterminate />
-  </div>
-
-  <LoginForm
-    ref="refFormLogin"
-    v-model:login="classLogin.model"
-    v-model:valid="isFormValid"
+  <v-container
+    class="d-flex align-center justify-center py-8"
+    style="min-height: 90vh"
+    fluid
   >
-    <template v-slot:actions>
-      <div class="d-flex flex-row">
-        <v-icon-btn
-          icon="mdi-refresh"
-          v-tooltip="t('tooltips.forms.reset')"
-          variant="text"
-          color="amber"
-          class="ma-3"
-          @click="handleReset"
-        />
-
-        <v-spacer />
-
-        <v-icon-btn
-          icon="mdi-lock-reset"
-          v-tooltip="t('tooltips.forms.forgotPassword')"
-          variant="text"
+    <v-card
+      class="w-100"
+      maxWidth="720"
+      elevation="8"
+      rounded="lg"
+    >
+      <v-card-title class="d-flex align-center justify-center ga-2 pt-6">
+        <v-icon
+          icon="mdi-shield-key-outline"
           color="primary"
-          class="ma-3"
-          @click="forgotPassword"
         />
+        <span>{{ tituloAtual }}</span>
+      </v-card-title>
 
-        <v-spacer />
+      <v-card-text>
+        <v-tabs
+          v-model="abaAtual"
+          color="primary"
+          density="compact"
+          grow
+        >
+          <v-tab value="login">
+            <v-icon
+              icon="mdi-login-variant"
+              start
+            />
+            {{ t('common.login.loginTab') }}
+          </v-tab>
 
-        <v-icon-btn
-          icon="mdi-login-variant"
-          v-tooltip="t('tooltips.forms.submit')"
-          variant="text"
-          color="success"
-          class="ma-3"
-          @click="onSubmit"
-        />
-      </div>
-    </template>
-  </LoginForm>
+        </v-tabs>
+
+        <div class="login-view__panels pt-5">
+          <div
+            :class="[
+              'v-window-item login-view__panel',
+              abaAtual === 'login' ? 'v-window-item--active' : 'login-view__panel--inactive',
+            ]"
+            :aria-hidden="abaAtual !== 'login'"
+          >
+            <PainelLogin
+              ref="painelLoginRef"
+              v-model:login="login"
+              v-model:valid="loginValido"
+              :carregando="carregandoLogin"
+              :carregandoGoogle="carregandoGoogle"
+              :tooltipResetar="t('tooltips.forms.reset')"
+              @autenticarGoogle="autenticarGoogle"
+              @entrar="entrar"
+              @erroGoogle="handleErroLoginGoogle"
+              @recuperarSenha="irParaRecuperacaoSenha"
+              @resetar="resetarFormularioLogin"
+            />
+          </div>
+
+        </div>
+      </v-card-text>
+    </v-card>
+
+    <OverlayFullscream v-model:exibirOverlay="exibirOverlayAutenticacao">
+      <template #mensagem>
+        <div class="text-subtitle-1 font-weight-bold">{{ t('common.login.preparingAccess') }}</div>
+
+        <div class="text-body-2 text-high-emphasis text-center">{{ t('common.login.validatingAccess') }}</div>
+      </template>
+    </OverlayFullscream>
+  </v-container>
 </template>
 
 <script lang="ts" setup>
-import LoginForm from '@/components/forms/LoginForm.vue';
-import { useSnackbar } from '@/composables/useSnackbar';
-import { ClassLogin } from '@/classes/ClassLogin';
-import { authServices } from '@/services/authService'
+// Ecossistema Vue
+import { computed, nextTick, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { nextTick, ref } from 'vue';
 
-const classLogin = new ClassLogin();
-const refFormLogin = ref<InstanceType<typeof LoginForm> | null>(null);
-const isFormValid = ref(false);
+// Stores
+import { useAuthStore } from '@/stores/auth.store';
 
+// Types e Interfaces
+// Composables
+import { useFormularioLogin } from '@/composables/useFormularioLogin';
+import { useSnackbar } from '@/composables/useSnackbar';
+
+// Componentes
+import PainelLogin from '@/components/forms/fixtures/autenticacao/PainelLogin.vue';
+import OverlayFullscream from '@/components/layouts/OverlayFullscream.vue';
+
+type TAbaAutenticacao = 'login';
+
+// Composables
 const router = useRouter();
 const { t } = useI18n();
 const { notify } = useSnackbar();
-const loading = ref(false)
-const authService = authServices;
+const { login, resetarLogin, salvarPreferenciaEmail } = useFormularioLogin();
 
-async function authLogin() {
-  const isValid = await refFormLogin.value?.validate()
-  if (isValid) {
-    try {
-      loading.value = true
-      await authService.login(classLogin.model)
-      const usuarioLogado = await authServices.getByToken()
+// Stores
+const authStore = useAuthStore();
 
-      notify(`${t('messages.welcome')}, ${usuarioLogado.username}!`, 'success')
-    } catch (err) {
-      notify(err as string || 'messages.errors.reqGenerics', 'error')
-      throw err
-    } finally {
-      loading.value = false
-    }
+// Reativas
+const painelLoginRef = ref<InstanceType<typeof PainelLogin> | null>(null);
+const abaAtual = ref<TAbaAutenticacao>('login');
+const loginValido = ref(false);
+const carregandoLogin = ref(false);
+const carregandoGoogle = ref(false);
+const processandoRedirecionamento = ref(false);
+
+// Funções
+function handleErroLoginGoogle(pMensagem: string): void {
+  notify(pMensagem, 'warning');
+}
+
+function irParaRecuperacaoSenha(): void {
+  router.push({ name: 'RecuperacaoSenha' });
+}
+
+async function autenticarGoogle(pCredential?: string): Promise<void> {
+  if (!pCredential) {
+    notify(t('common.login.googleNotConfigured'), 'warning');
+    return;
+  }
+
+  carregandoGoogle.value = true;
+
+  try {
+    const usuarioAutenticado = await authStore.loginGoogle(pCredential);
+    notify(`${t('messages.welcome')}, ${usuarioAutenticado.nome}!`, 'success');
+    await redirecionarAposAutenticacao();
+  } catch {
+    return;
+  } finally {
+    carregandoGoogle.value = false;
   }
 }
 
-async function handleReset() {
-  classLogin.reset();
+async function entrar(): Promise<void> {
+  salvarPreferenciaEmail();
+  carregandoLogin.value = true;
+
+  try {
+    const usuarioAutenticado = await authStore.login(login);
+    notify(`${t('messages.welcome')}, ${usuarioAutenticado.nome}!`, 'success');
+    await redirecionarAposAutenticacao();
+  } catch {
+    return;
+  } finally {
+    carregandoLogin.value = false;
+  }
+}
+
+async function resetarFormularioLogin(): Promise<void> {
+  resetarLogin();
   await nextTick();
-  refFormLogin.value?.reset();
+  await painelLoginRef.value?.reset();
 }
 
-function forgotPassword() {
-  router.push({ name: 'ForgotPassword' });
+async function redirecionarAposAutenticacao(): Promise<void> {
+  processandoRedirecionamento.value = true;
+
+  try {
+    const redirectPrioritario =
+      typeof router.currentRoute.value.query.redirect === 'string'
+        ? router.currentRoute.value.query.redirect
+        : undefined;
+    const destino = authStore.resolverDestinoAposLogin(redirectPrioritario);
+
+    await router.push(destino);
+  } finally {
+    processandoRedirecionamento.value = false;
+  }
 }
 
-async function onSubmit() {
-  classLogin.saveEmailPreference()
-  await nextTick();
-  await authLogin();
-}
-
+// Computadas
+const tituloAtual = computed(() => t('common.login.accessTitle'));
+const exibirOverlayAutenticacao = computed(() => {
+  return carregandoLogin.value || carregandoGoogle.value || processandoRedirecionamento.value;
+});
 </script>
+
+<style scoped>
+.login-view__panels {
+  position: relative;
+}
+
+.login-view__panel {
+  opacity: 1;
+  transition: opacity 180ms ease;
+  width: 100%;
+}
+
+.login-view__panel--inactive {
+  inset: 20px 0 auto;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+</style>

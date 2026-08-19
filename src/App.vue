@@ -1,71 +1,56 @@
 <template>
   <v-app>
-    <Snackbar />
+    <component
+      :is="layoutComponent"
+      v-if="!carregandoHealthCheck"
+    />
 
-    <Navigation v-if="isLayoutVisible" v-model="drawerOpen" />
-    <AppBar v-if="isLayoutVisible" @toggle-drawer="toggleDrawer" />
+    <SnackbarQueue />
 
-    <v-main class="main-scroll">
-      <Breadcrumbs v-if="isLayoutVisible" />
+    <OverlayFullscream v-model:exibirOverlay="carregandoHealthCheck">
+      <template #mensagem>
+        <div class="text-subtitle-1 font-weight-bold">{{ t('common.app.checkingServer') }}</div>
 
-      <v-container fluid class="pt-2">
-        <BtnFabOtherTemplate v-if="!isLayoutVisible" />
-        <RouterView />
-      </v-container>
-    </v-main>
-
+        <div class="text-body-2 text-high-emphasis text-center">
+          {{ t('common.app.checkingServerDescription') }}
+        </div>
+      </template>
+    </OverlayFullscream>
   </v-app>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref } from 'vue';
+// Ecossistema Vue
+import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import Snackbar from '@/components/Snackbar.vue';
-import AppBar from './components/layouts/base/AppBar.vue';
-import Navigation from './components/layouts/base/Navigation.vue';
-import Breadcrumbs from './components/layouts/base/Breadcrumbs.vue';
 import { useI18n } from 'vue-i18n';
-import BtnFabOtherTemplate from './components/layouts/BtnFabOtherTemplate.vue';
 
-const { t, locale } = useI18n();
+// Composables
+import { useHealthCheck } from '@/composables/useHealthCheck';
+import { useSincronizacaoPermissoesRbac } from '@/composables/useSincronizacaoPermissoesRbac';
+import { useThemePreferenceSync } from '@/composables/useThemeSwitch';
 
+// Componentes
+import AppLayout from '@/components/layouts/AppLayout.vue';
+import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
+import OverlayFullscream from '@/components/layouts/OverlayFullscream.vue';
+
+import SnackbarQueue from './components/common/SnackbarQueue.vue';
+
+// Composables
 const route = useRoute();
+const { t } = useI18n();
+const { carregando: carregandoHealthCheck, verificarHealthCheck } = useHealthCheck();
+useSincronizacaoPermissoesRbac();
+useThemePreferenceSync();
 
-watch(
-  [() => route.meta.title, locale],
-  () => {
-    const defaultTitle = t('app.title');
-    const routeTitle = route.meta.title as string;
-
-    if (routeTitle) {
-      document.title = `${t(routeTitle)} - ${defaultTitle}`;
-    } else {
-      document.title = defaultTitle;
-    }
-  },
-  { immediate: true }
-);
-
-const isLayoutVisible = computed(() => {
-  return route.meta.hidden !== true;
+// Computadas
+const layoutComponent = computed(() => {
+  return route.meta.hidden === true ? DefaultLayout : AppLayout;
 });
 
-const drawerOpen = ref<boolean | null>(null)
-
-function toggleDrawer() {
-  drawerOpen.value = !drawerOpen.value
-}
+// Lifecycle Hooks
+onMounted(() => {
+  void verificarHealthCheck();
+});
 </script>
-
-<style global>
-html,
-v-main {
-  margin: 0;
-  padding: 0;
-}
-
-.main-scroll {
-  height: calc(100vh - var(--v-layout-top));
-  overflow-y: auto;
-}
-</style>

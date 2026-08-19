@@ -1,40 +1,45 @@
 <template>
-  <v-form @submit.prevent="onSubmit" class="search-form w-100">
+  <v-form
+    class="w-100"
+    @submit.prevent="onSubmit"
+  >
     <v-text-field
       ref="inputRef"
-      v-model="classFormQuery.stagingModel.value"
+      v-model="searchQuery"
+      :placeholder="t('forms.formSearch.inputSearch.placeholder')"
+      :loading="loading"
       class="rounded-search"
-      hide-details
-      single-line
-      clearable
-      rounded="pill"
       density="compact"
       variant="solo"
-      loader-height="2"
-      :loading="loading"
-      :placeholder="t('forms.formSearch.inputSearch.placeholder')"
-      :rules="[rules.required()]"
+      rounded="pill"
+      loaderHeight="2"
+      autocomplete="off"
+      hideDetails
+      singleLine
+      clearable
     >
-      <template #prepend-inner v-if="$vuetify.display.mdAndUp">
-        <div class="d-flex flex-row" v-if="hasFilters">
-          <BtnOpenDialog
-            icon="mdi-filter-cog"
-            v-tooltip="t('tooltips.appBar.filter')"
-            :rotate="false"
-            @click="toggleDialogQueryFilter"
+      <template #prepend-inner>
+        <div
+          v-if="possuiFiltros"
+          class="d-flex flex-row"
+        >
+          <DialogFiltro
+            v-model:exibirFiltros="exibirFiltros"
+            :camposDisponiveis="genericFilterStore.camposDisponiveis"
           />
 
           <v-divider
-            vertical
+            :thickness="2"
             class="mx-1 me-2 my-auto"
             style="height: 24px"
-            :thickness="2"
+            vertical
           />
         </div>
 
         <v-hotkey
+          v-if="$vuetify.display.mdAndUp"
           keys="ctrl+k"
-          display-mode="icon"
+          displayMode="icon"
           variant="contained"
           platform="auto"
           class="mr-2"
@@ -42,233 +47,96 @@
       </template>
 
       <template #append-inner>
-        <v-icon-btn
-          icon="mdi-magnify"
+        <v-btn
           v-tooltip="t('tooltips.appBar.search')"
+          icon="mdi-magnify"
           variant="plain"
           @click="onSubmit"
         />
       </template>
     </v-text-field>
   </v-form>
-
-  <BaseDialog v-model:attributes="classDialogQueryFilter.model">
-    <template v-slot:title>
-      {{ t('messages.components.queryFilter.title') }} {{ titleDialogFilter }}
-    </template>
-
-    <template v-slot:default>
-      <v-tabs color="primary" v-model="tab">
-        <v-tab value="form">{{ t('tabs.dialogQueryFilter.form') }}</v-tab>
-        <v-tab value="list">{{ t('tabs.dialogQueryFilter.list') }}</v-tab>
-      </v-tabs>
-
-        <v-tabs-window v-model="tab">
-          <v-tabs-window-item value="form">
-            <div class="mt-3">
-              <QueryFilterForm
-              ref="refFormQuery"
-              v-model:filter="classFormQuery.stagingModel"
-              v-model:valid="isFormValid"
-              :filter-manager="classFormQuery"
-              />
-            </div>
-          </v-tabs-window-item>
-
-          <v-tabs-window-item value="list">
-            <v-virtual-scroll
-              v-if="classFormQuery.model.length > 0"
-              :items="classFormQuery.model"
-              height="300"
-            >
-              <template v-slot:default="{ index, item }">
-                <v-list
-                  lines="two"
-                  rounded
-                  variant="elevated"
-                >
-                  <v-list-item
-                    :title="formatTitle(item)"
-                    :subtitle="formatSubtitle(item)"
-                    class="mb-2"
-                  >
-                    <template #prepend>
-                      <v-avatar
-                        color="primary"
-                        variant="tonal"
-                        size="small"
-                      >
-                        {{ index + 1 }}
-                      </v-avatar>
-                    </template>
-                    <template #append>
-                      <v-btn
-                        icon="mdi-delete"
-                        color="error"
-                        variant="text"
-                        size="small"
-                        @click="classFormQuery.removeFilter(index)"
-                      />
-                    </template>
-                  </v-list-item>
-                </v-list>
-              </template>
-            </v-virtual-scroll>
-
-            <div v-else class="text-center text-medium-emphasis mt-10">
-              <v-icon size="40" icon="mdi-filter-off-outline" class="mb-2"/>
-              <div>{{ t('filterColumn.none') }}</div>
-            </div>
-          </v-tabs-window-item>
-        </v-tabs-window>
-    </template>
-
-    <template v-slot:actions>
-      <v-icon-btn
-        icon="mdi-refresh"
-        v-tooltip="t('tooltips.forms.reset')"
-        variant="text"
-        color="amber"
-        @click="handleReset"
-      />
-
-      <v-spacer />
-
-      <v-icon-btn
-        icon="mdi-filter-plus"
-        v-tooltip="t('tooltips.forms.add')"
-        variant="text"
-        color="info"
-        :disabled="!isFormValid"
-        @click="handleAddFilter"
-      />
-
-      <v-spacer />
-
-      <v-icon-btn
-        v-if="tab === 'list'"
-        icon="mdi-magnify"
-        v-tooltip="t('tooltips.appBar.search')"
-        variant="text"
-        color="success"
-        @click="onSubmit"
-      />
-    </template>
-  </BaseDialog>
 </template>
 
 <script setup lang="ts">
-import BaseDialog from '../dialog/BaseDialog.vue'
-import BtnOpenDialog from '../dialog/BtnOpenDialog.vue'
-import QueryFilterForm from './QueryFilterForm.vue'
-import type { IQueryFilter } from '@/classes/models/modelComponents/ModelQueryFilter'
-import { ClassBaseDialog } from '@/classes/ClassBaseDialog'
-import { ClassQueryFilter } from '@/classes/ClassQueryFilter'
-import { useSnackbarStore } from '@/stores/SnackbarStore'
-import { useHotkey } from 'vuetify'
-import { useRules } from 'vuetify/labs/rules'
-import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { computed, nextTick, ref } from 'vue'
+// Ecossistema vue
+import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useHotkey } from 'vuetify';
 
+// Stores
+import { useGenericFilterStore } from '@/stores/genericFilter.store';
+
+import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
+// Types e Interfaces
+import type { TParametrosBusca } from '@/models/filters/TParametrosBusca';
+import type { VInput } from 'vuetify/components';
+
+// Componentes
+import DialogFiltro from '@/components/dialogs/core/filtros/DialogFiltro.vue';
+
+type TProps = { loading: boolean };
+defineProps<TProps>();
+
+type TEmits = { search: [consulta: TParametrosBusca] };
+const emits = defineEmits<TEmits>();
+
+// Composables
 const route = useRoute();
-const rules = useRules();
 const { t } = useI18n();
-const snackbar = useSnackbarStore();
-
-const titleDialogFilter = computed(() => {
-  const titleKey = route.meta?.title as string | undefined
-
-  if (titleKey) {
-    return t(titleKey)
-  }
-
-  return ''
-})
-
-const hasFilters = computed(() => { return !!route.meta?.hasFilters; });
-const tab = ref('form')
-const props = defineProps<{ loading: boolean }>()
-const emits = defineEmits(['search'])
-
-const classDialogQueryFilter = new ClassBaseDialog({
-  view: false,
-  maxHeight: 500,
-  maxWidth: 600,
-})
-
-function toggleDialogQueryFilter() {
-  classFormQuery.updateStaging({
-    field: classFormQuery.filters[1]?.key,
-    condition: 'contains'
-  });
-  classDialogQueryFilter.toggleDialog()
-}
-
-const classFormQuery = new ClassQueryFilter()
-const refFormQuery = ref<InstanceType<typeof QueryFilterForm> | null>(null);
-const isFormValid = ref(false);
-const inputRef = ref<any>(null)
 
 useHotkey('ctrl+k', () => {
-  inputRef.value?.focus()
-})
+  inputRef.value?.focus();
+});
 
-function formatTitle(item: IQueryFilter) {
-  const col = classFormQuery.getColumnType(item.field);
-  const label = col ? t(col.label) : item.field;
+// Stores
+const genericFilterStore = useGenericFilterStore();
 
-  let conditionLabel = '';
-  if (item.condition) {
-    conditionLabel = t(`filterColumn.operators.${item.condition}`);
-  }
+// Reativas - ref
+const inputRef = ref<typeof VInput | null>(null);
+const searchQuery = ref('');
+const exibirFiltros = ref<boolean>(false);
 
-  return `${label} (${conditionLabel})`;
-}
-
-function formatSubtitle(item: IQueryFilter) {
-  if (item.condition === 'between') return `${item.startDate} - ${item.endDate}`;
-  return item.value;
-}
-
-async function handleAddFilter() {
-  const validFilter = classFormQuery.addFilter();
-  if (validFilter) {
-    await nextTick();
-    refFormQuery.value?.reset();
-  }
-  else {
-    const errorMessage = t('messages.components.queryFilter.alertDuplicate');
-    snackbar.showSnackbar(errorMessage, 'warning');
-  }
-}
-
-async function handleReset() {
-  if (tab.value === 'form') {
-    classFormQuery.resetStaging();
-    await nextTick();
-    refFormQuery.value?.reset();
-  } else {
-    classFormQuery.reset();
-  }
-}
-
+// Funções
 function onSubmit() {
-  const filtrosParaEnviar = [...classFormQuery.model];
-  const staging = classFormQuery.stagingModel;
+  if (searchQuery.value) {
+    const lCampoPadrao = genericFilterStore.camposDisponiveis.find((pCampo) => pCampo.pesquisaPadrao);
 
-  if (filtrosParaEnviar.length === 0 && staging.value) {
-    filtrosParaEnviar.push(staging);
+    if (lCampoPadrao) {
+      const lCondicaoFiltro = lCampoPadrao.operadorPesquisaPadrao || EOperadoresFiltro.CONTEM;
+      const lIndexFiltroExistente = genericFilterStore.filtersApplied.findIndex(
+        (pFiltro) => pFiltro.campo === lCampoPadrao.valor && pFiltro.condicao === lCondicaoFiltro,
+      );
+
+      if (lIndexFiltroExistente !== -1) {
+        genericFilterStore.filtersApplied[lIndexFiltroExistente].valor = searchQuery.value;
+      } else {
+        genericFilterStore.filtersApplied.push({
+          campo: lCampoPadrao.valor as string,
+          condicao: lCondicaoFiltro,
+          valor: searchQuery.value,
+          dataInicio: '',
+          dataFinal: '',
+          valoresSelecionados: [],
+        });
+      }
+      genericFilterStore.confirmarAplicacaoFiltros();
+    } else {
+      emits('search', { queryBasica: searchQuery.value });
+    }
+
+    searchQuery.value = '';
   }
-
-  emits('search', filtrosParaEnviar);
 }
+
+// Computadas
+const possuiFiltros = computed(() => {
+  return !!route.meta?.filterResource;
+});
 </script>
 
 <style scoped>
-.search-form {
-  max-width: 480px;
-}
 .rounded-search :deep(.v-field) {
   overflow: hidden;
 }

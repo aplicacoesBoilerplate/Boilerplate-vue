@@ -1,23 +1,53 @@
+// Stores
+import { useAuthStore } from '@/stores/auth.store';
+
+// Types e Interfaces
 import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import { useSnackbar } from '@/composables/useSnackbar';
+
+const ROTAS_PUBLICAS = new Set([
+  'Login',
+  'RecuperacaoSenha',
+  'InformacoesSistema',
+  'ServerError',
+  'NotFound',
+  'forbidden',
+]);
+
+function rotaExigeAutenticacao(pTo: RouteLocationNormalized): boolean {
+  if (pTo.meta.requiresAuth !== undefined) {
+    return Boolean(pTo.meta.requiresAuth);
+  }
+
+  return !pTo.meta.hidden;
+}
 
 export const authGuard = async (
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext
+  pTo: RouteLocationNormalized,
+  pFrom: RouteLocationNormalized,
+  pNext: NavigationGuardNext,
 ) => {
-  const authStore = useAuthStore();
-  const { notify } = useSnackbar();
+  void pFrom;
 
-  if (authStore.token && !authStore.user) {
+  const authStore = useAuthStore();
+
+  if (authStore.isAuthenticated && !authStore.user) {
     await authStore.fetchUser();
   }
 
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    notify('Você precisa estar autenticado para acessar. Faça login!', 'error');
-    next({ name: 'Login', query: { redirect: to.fullPath } });
-  } else {
-    next();
+  if (!rotaExigeAutenticacao(pTo) || ROTAS_PUBLICAS.has(String(pTo.name))) {
+    pNext();
+    return;
   }
+
+  if (!authStore.isAuthenticated) {
+    pNext({
+      name: 'Login',
+      query: {
+        redirect: pTo.fullPath,
+      },
+    });
+    return;
+  }
+
+  pNext();
 };

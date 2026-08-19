@@ -1,7 +1,10 @@
-import type { IRouteMeta } from '@/classes/models/ModelRouteMeta'
-import 'vue-router'
+// Ecossistema Vue
+import 'vue-router';
 
-export {}
+// Types e Interfaces
+import type { IRouteMeta } from '@/models/model/IRouteMeta';
+
+export {};
 
 declare module 'vue-router' {
   interface IModuleRouteMeta extends IRouteMeta {}

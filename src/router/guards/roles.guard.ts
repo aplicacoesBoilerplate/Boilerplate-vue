@@ -1,35 +1,55 @@
+// Stores
+import { useAuthStore } from '@/stores/auth.store';
+
+// Models
+import { RECURSO_PERMISSAO_ROTAS_RBAC } from '@/models/model/core/rbac/rbac.api';
+import { permissaoEstaLiberada } from '@/models/model/core/rbac/rbac.model';
+// Types e Interfaces
 import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import { useSnackbar } from '@/composables/useSnackbar';
+
+const ROTAS_SEM_RBAC = new Set([
+  'Login',
+  'RecuperacaoSenha',
+  'InformacoesSistema',
+  'ServerError',
+  'NotFound',
+  'forbidden',
+]);
 
 export const rbacGuard = async (
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext
+  pTo: RouteLocationNormalized,
+  pFrom: RouteLocationNormalized,
+  pNext: NavigationGuardNext,
 ) => {
-  const authStore = useAuthStore();
-  const { notify } = useSnackbar();
+  void pFrom;
 
-  if (authStore.token && !authStore.user) {
-    await authStore.fetchUser();
+  if (ROTAS_SEM_RBAC.has(String(pTo.name)) || pTo.meta.hidden) {
+    pNext();
+    return;
   }
 
-  const authorizedRoles = to.meta.authorize as string[] | undefined;
+  const authStore = useAuthStore();
 
-  if (!authorizedRoles || authorizedRoles.length === 0) {
-    return next();
+  if (!authStore.isAuthenticated) {
+    pNext();
+    return;
   }
 
   if (!authStore.user) {
-    return next({ name: 'Login', query: { redirect: to.fullPath } });
+    await authStore.fetchUser();
   }
 
-  const userRole = authStore.user.role;
+  const nomeRota = String(pTo.name ?? '');
 
-  if (authorizedRoles.includes(userRole)) {
-    next();
-  } else {
-    notify('Você não tem permissão para acessar esta página.', 'error');
-    next({ name: 'AcessoNegado' });
+  if (!nomeRota || !authStore.cargoAtual) {
+    pNext({ name: 'forbidden' });
+    return;
   }
+
+  if (!permissaoEstaLiberada(authStore.cargoAtual, RECURSO_PERMISSAO_ROTAS_RBAC, nomeRota)) {
+    pNext({ name: 'forbidden' });
+    return;
+  }
+
+  pNext();
 };
