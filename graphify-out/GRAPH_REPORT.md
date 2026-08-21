@@ -1,13 +1,18 @@
-# Graph Report - Boilerplate-vue  (2026-08-19)
+# Graph Report - Boilerplate-vue  (2026-08-20)
 
 ## Corpus Check
-- 238 files · ~96,570 words
+- 235 files · ~96,836 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1785 nodes · 1969 edges · 208 communities (133 shown, 75 thin omitted)
+- 1774 nodes · 1962 edges · 204 communities (130 shown, 74 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 80 edges (avg confidence: 0.57)
 - Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `e2103007`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - DialogFiltro.vue
@@ -21,7 +26,7 @@
 - src/views/administrativo/filhos/RbacView.vue
 - ConsultaRegistrosFiltro.vue
 - DialogSeletorIconeMaterialDesign.vue
-- useControlePermissoesCargo()
+- useControlePermissoesCargo
 - SelectOperadorFiltro.vue
 - workbox-7e5eb42b.js
 - GenericInfiniteList.vue
@@ -36,9 +41,9 @@
 - memory-retention.spec.ts
 - DialogFormCargoRbac.vue
 - src/views/LoginView.vue
-- routes.ts
+- router/index.ts
 - compilerOptions
-- useExportacaoDados()
+- useExportacaoDados
 - CAutenticacaoService
 - DialogFormUsuario.vue
 - UsuariosVinculadosCargo.vue
@@ -79,7 +84,7 @@
 - useOperadoresFiltro.ts
 - sessionLifecycle.ts
 - PaginaFallbackView.vue
-- .waitUntil()
+- .waitUntil
 - InputTextUpperCase.vue
 - InputUpperCase.vue
 - GenericInfiniteListItem.vue
@@ -88,7 +93,7 @@
 - BaseDataTable.vue
 - GridDataChart.vue
 - useCatalogoIconesMaterialDesign.ts
-- usePermissoesRbac()
+- usePermissoesRbac
 - useRequisicaoService.ts
 - IMapeamentoCampos.ts
 - IPreferences.ts
@@ -106,15 +111,15 @@
 - CLoginGoogleSolicitacaoAcessoError.ts
 - DrawerItemHeader.vue
 - OverlayFullscream.vue
-- useFormularioLogin()
+- useFormularioLogin
 - useHealthCheck.ts
 - IGenericInfiniteListExpose.ts
 - rules.ts
 - PrecacheInstallReportPlugin
 - TabsExtensionToolbar.vue
 - Breadcrumbs.vue
-- useRouteScrollRedirect()
-- useSincronizacaoPermissoesRbac()
+- useRouteScrollRedirect
+- useSincronizacaoPermissoesRbac
 - useThemeSwitch.ts
 - IPropsSnackbarQueue.ts
 - CHealthCheckService
@@ -130,7 +135,7 @@
 - DetalhesLogErro.vue
 - BaseTabs.vue
 - genericInfiniteList.context.ts
-- useChartPreferences()
+- useChartPreferences
 - useNavigation.ts
 - IGenericListContext.ts
 - IIconeMaterialDesign.ts
@@ -143,10 +148,10 @@
 - tsconfig.json
 - @commitlint/cli
 - Documentação de arquitetura
-- Plano do drawer de
-- Plano da lista de
-- Plano de compatibilidade da
-- eslint
+- Plano do drawer de ações da GenericView
+- Plano da lista de agrupamento de gráficos
+- Plano de compatibilidade da migração Vuetify
+- post-commit
 - eslint-config-prettier
 - @eslint/js
 - eslint-plugin-jsdoc
@@ -155,7 +160,7 @@
 - globals
 - happy-dom
 - husky
-- Ponto de montagem da
+- Ponto de montagem da aplicação
 - jiti
 - npm-run-all2
 - prettier
@@ -184,20 +189,21 @@
 - ERecursosFiltro.ts
 - TParametrosBusca.ts
 - IAuditoriaRegistro.ts
-- Histórico de mudanças do
+- post-checkout
 - Plano ESLint Zero Problems
+- @commitlint/config-conventional
 
 ## God Nodes (most connected - your core abstractions)
 1. `useControlePermissoesCargo()` - 27 edges
 2. `scripts` - 19 edges
 3. `CManagerStorage` - 17 edges
-4. `StrategyHandler` - 14 edges
-5. `useExportacaoDados()` - 14 edges
-6. `CBaseConsultaApiService` - 14 edges
+4. `CBaseConsultaApiService` - 14 edges
+5. `StrategyHandler` - 14 edges
+6. `useExportacaoDados()` - 14 edges
 7. `PrecacheController` - 13 edges
 8. `CAutenticacaoService` - 12 edges
-9. `Router` - 11 edges
-10. `CBaseCrudApiService` - 11 edges
+9. `CBaseCrudApiService` - 11 edges
+10. `Router` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Ícone PWA Vue 512px` --semantically_similar_to--> `Logotipo Vue`  [INFERRED] [semantically similar]
@@ -214,7 +220,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (208 total, 75 thin omitted)
+## Communities (204 total, 74 thin omitted)
 
 ### Community 0 - "DialogFiltro.vue"
 Cohesion: 0.05
@@ -260,7 +266,7 @@ Nodes (27): configuracaoConsulta, contextoConsulta, emits, limiteConsulta, permi
 Cohesion: 0.07
 Nodes (27): { carregando, erro, carregarCatalogo, filtrarIcones }, emits, exibirDialog, icone, iconeBusca, iconesFiltrados, selecionarIcone(), selecionarIconeBusca() (+19 more)
 
-### Community 11 - "useControlePermissoesCargo()"
+### Community 11 - "useControlePermissoesCargo"
 Cohesion: 0.12
 Nodes (25): IItemPermissaoRota, TNoRota, TUseControlePermissoesCargoReturn, useControlePermissoesCargo(), acaoApiDisponivel(), acaoApiLiberada(), aplicarMapaPermissoes(), atualizarPermissaoAcaoRota() (+17 more)
 
@@ -309,7 +315,7 @@ Cohesion: 0.17
 Nodes (6): CManagerStorage, IManagerStorageOptions, TManagedStorageValue, TManagerStorageLocation, TManagerStorageOptions, TStoredValue
 
 ### Community 23 - "memory-retention.spec.ts"
-Cohesion: 0.10
+Cohesion: 0.11
 Nodes (10): runNavigationCycle(), collectMemorySample(), IMemorySample, cargo, mockAuthenticatedApi(), usuario, usuarioDisponivel, CTestService (+2 more)
 
 ### Community 24 - "DialogFormCargoRbac.vue"
@@ -320,20 +326,20 @@ Nodes (16): aba, cargo, emits, exibirDialog, formValido, habilitarEdicao(), icon
 Cohesion: 0.10
 Nodes (17): abaAtual, autenticarGoogle(), authStore, carregandoGoogle, carregandoLogin, entrar(), exibirOverlayAutenticacao, { login, resetarLogin, salvarPreferenciaEmail } (+9 more)
 
-### Community 26 - "routes.ts"
-Cohesion: 0.12
+### Community 26 - "router/index.ts"
+Cohesion: 0.25
 Nodes (7): authGuard(), rotaExigeAutenticacao(), ROTAS_PUBLICAS, rbacGuard(), ROTAS_SEM_RBAC, router, routes
 
 ### Community 27 - "compilerOptions"
 Cohesion: 0.11
 Nodes (17): cypress.config.*, eslint.config.*, nightwatch.conf.*, node, playwright.config.*, @tsconfig/node22/tsconfig.json, vite.config.*, vitest.config.* (+9 more)
 
-### Community 28 - "useExportacaoDados()"
-Cohesion: 0.22
+### Community 28 - "useExportacaoDados"
+Cohesion: 0.24
 Nodes (16): assertExportWithinBudget(), TUseExportacaoDadosReturn, useExportacaoDados(), baixarArquivo(), exportarDados(), formatarValorExportacao(), gerarArquivoExportacao(), gerarExcel() (+8 more)
 
 ### Community 29 - "CAutenticacaoService"
-Cohesion: 0.15
+Cohesion: 0.17
 Nodes (3): autenticacaoService, CAutenticacaoService, useAuthStore
 
 ### Community 30 - "DialogFormUsuario.vue"
@@ -467,7 +473,7 @@ Nodes (6): buildRouteScrollSelector(), createRouteScrollItemBindings(), escapeAt
 
 ### Community 62 - "devDependencies"
 Cohesion: 0.22
-Nodes (9): @commitlint/config-conventional, devDependencies, @commitlint/config-conventional, @playwright/test, sass, @vue/eslint-config-typescript, @playwright/test, sass (+1 more)
+Nodes (9): eslint, devDependencies, eslint, @playwright/test, sass, @vue/eslint-config-typescript, @playwright/test, sass (+1 more)
 
 ### Community 63 - "ListaRealizadosVersoes.vue"
 Cohesion: 0.22
@@ -493,7 +499,7 @@ Nodes (7): clearPrivateBrowserState(), isTerminationMessage(), PRIVATE_STORAGE_K
 Cohesion: 0.22
 Nodes (6): errorContent, errorType, props, route, router, { t }
 
-### Community 69 - ".waitUntil()"
+### Community 69 - ".waitUntil"
 Cohesion: 0.25
 Nodes (5): cleanupOutdatedCaches(), _nestedGroup(), printCleanupDetails(), printInstallDetails(), waitUntil()
 
@@ -529,7 +535,7 @@ Nodes (3): emit, props, refCharts
 Cohesion: 0.29
 Nodes (4): carregando, erro, icones, useCatalogoIconesMaterialDesign()
 
-### Community 78 - "usePermissoesRbac()"
+### Community 78 - "usePermissoesRbac"
 Cohesion: 0.38
 Nodes (6): TAcaoPermissaoGeralRbac, TUsePermissoesRbacReturn, usePermissoesRbac(), executarComPermissaoGeral(), notificarPermissaoNegada(), possuiPermissaoGeral()
 
@@ -613,11 +619,11 @@ Nodes (3): abaAtual, { t }, TAbas
 Cohesion: 0.50
 Nodes (3): items, route, { t }
 
-### Community 104 - "useRouteScrollRedirect()"
+### Community 104 - "useRouteScrollRedirect"
 Cohesion: 0.67
 Nodes (3): useRouteScrollRedirect(), redirecionarPara(), setScrollTarget()
 
-### Community 105 - "useSincronizacaoPermissoesRbac()"
+### Community 105 - "useSincronizacaoPermissoesRbac"
 Cohesion: 0.67
 Nodes (3): useSincronizacaoPermissoesRbac(), sincronizarPermissoes(), sincronizarQuandoVisivel()
 
@@ -633,25 +639,33 @@ Nodes (3): defaultPreferences, STORAGE_OPTIONS, usePreferencesStore
 Cohesion: 0.67
 Nodes (3): Ícone PWA Vue 192px, Ícone PWA Vue 512px, Logotipo Vue
 
+### Community 138 - "post-commit"
+Cohesion: 0.40
+Nodes (4): post-commit script, GRAPHIFY_CHANGED, GRAPHIFY_REBUILD_LOG, PYTHONHASHSEED
+
+### Community 179 - "post-checkout"
+Cohesion: 0.50
+Nodes (3): post-checkout script, GRAPHIFY_REBUILD_LOG, PYTHONHASHSEED
+
 ## Knowledge Gaps
-- **899 isolated node(s):** `entrypoint.sh script`, `Window`, `ImportMetaEnv`, `name`, `version` (+894 more)
+- **898 isolated node(s):** `TEmits`, `TProps`, `TProps`, `TProps`, `TEmits` (+893 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **75 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **74 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `devDependencies` connect `devDependencies` to `scripts`, `@commitlint/cli`, `eslint`, `eslint-config-prettier`, `@eslint/js`, `eslint-plugin-jsdoc`, `eslint-plugin-prettier`, `eslint-plugin-vue`, `globals`, `happy-dom`, `husky`, `jiti`, `npm-run-all2`, `prettier`, `standard-version`, `@tsconfig/node22`, `@types/node`, `typescript`, `typescript-eslint`, `vite`, `vite-plugin-pwa`, `vite-plugin-vue-devtools`, `@vite-pwa/assets-generator`, `@vitejs/plugin-vue`, `vitest`, `@vue/eslint-config-prettier`, `@vue/test-utils`, `vue-tsc`, `@vue/tsconfig`?**
-  _High betweenness centrality (0.009) - this node is a cross-community bridge._
+- **Why does `devDependencies` connect `devDependencies` to `scripts`, `@commitlint/cli`, `eslint-config-prettier`, `@eslint/js`, `eslint-plugin-jsdoc`, `eslint-plugin-prettier`, `eslint-plugin-vue`, `globals`, `happy-dom`, `husky`, `jiti`, `npm-run-all2`, `prettier`, `standard-version`, `@tsconfig/node22`, `@types/node`, `typescript`, `typescript-eslint`, `vite`, `vite-plugin-pwa`, `vite-plugin-vue-devtools`, `@vite-pwa/assets-generator`, `@vitejs/plugin-vue`, `vitest`, `@vue/eslint-config-prettier`, `@vue/test-utils`, `vue-tsc`, `@vue/tsconfig`, `@commitlint/config-conventional`?**
+  _High betweenness centrality (0.003) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `dependencies` to `scripts`?**
-  _High betweenness centrality (0.005) - this node is a cross-community bridge._
+  _High betweenness centrality (0.003) - this node is a cross-community bridge._
 - **Are the 12 inferred relationships involving `useControlePermissoesCargo()` (e.g. with `acaoApiDisponivel()` and `acaoApiLiberada()`) actually correct?**
   _`useControlePermissoesCargo()` has 12 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `entrypoint.sh script`, `Window`, `ImportMetaEnv` to the rest of the system?**
-  _899 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `TEmits`, `TProps`, `TProps` to the rest of the system?**
+  _898 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `DialogFiltro.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.045328399629972246 - nodes in this community are weakly interconnected._
 - **Should `InputValorFiltro.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.05708245243128964 - nodes in this community are weakly interconnected._
 - **Should `CBaseConsultaApiService` be split into smaller, more focused modules?**
-  _Cohesion score 0.07198228128460686 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0743321718931475 - nodes in this community are weakly interconnected._
