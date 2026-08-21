@@ -34,3 +34,4 @@ coverage
 graphify-out/cache/
 graphify-out/*.sig
 graphify-out/20*/
+.envrc
