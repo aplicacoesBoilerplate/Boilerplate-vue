@@ -140,6 +140,7 @@ const icon = computed(() => (props.modoEdicao ? 'mdi-account-edit' : 'mdi-accoun
 // Observadores
 watch(exibirDialog, (pExibindo) => {
   if (!pExibindo) {
+    salvando.value = false;
     usuario.value = criarUsuarioPadrao();
     isFormValid.value = false;
   }
