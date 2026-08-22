@@ -71,7 +71,7 @@ export const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: '/usuarios',
+        path: 'usuarios',
         name: 'Usuarios',
         component: () => import('@/views/administrativo/filhos/UsuariosView.vue'),
         meta: {
@@ -83,7 +83,7 @@ export const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: '/rbac',
+        path: 'rbac',
         name: 'Rbac',
         component: () => import('@/views/administrativo/filhos/RbacView.vue'),
         meta: {
@@ -95,7 +95,7 @@ export const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: '/erros',
+        path: 'erros',
         name: 'Erros',
         component: () => import('@/views/administrativo/filhos/ErrosView.vue'),
         meta: {

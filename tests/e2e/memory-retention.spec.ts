@@ -18,12 +18,12 @@ test('nao retem heap, documentos ou listeners apos navegacao repetida', async ({
   await mockAuthenticatedApi(page);
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-  const usersLink = page.locator('a[href="/usuarios"]').first();
+  const usersLink = page.locator('a[href="/admin/usuarios"]').first();
   const homeLink = page.locator('a[href="/"]').first();
 
   async function runNavigationCycle(): Promise<void> {
     await usersLink.dispatchEvent('click');
-    await expect(page).toHaveURL(/\/usuarios$/);
+    await expect(page).toHaveURL(/\/admin\/usuarios$/);
     await expect(page.getByText('Usuário E2E')).toBeVisible();
     await homeLink.dispatchEvent('click');
     await expect(page).toHaveURL(/\/$/);
