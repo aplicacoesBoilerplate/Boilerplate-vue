@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('carrega a lista de usuários com a API isolada', async ({ page }) => {
-  await page.goto('/usuarios', { waitUntil: 'domcontentloaded' });
+  await page.goto('/admin/usuarios', { waitUntil: 'domcontentloaded' });
 
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 });
@@ -34,7 +34,7 @@ test('mantém a ação de gráficos exclusivamente dentro do drawer', async ({ p
   });
   page.on('pageerror', (pError) => consoleErrors.push(pError.message));
 
-  await page.goto('/usuarios', { waitUntil: 'domcontentloaded' });
+  await page.goto('/admin/usuarios', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const main = page.locator('.v-main');
@@ -63,7 +63,7 @@ test('mantém filtro, gráficos e exportação interativos após a migração', 
   });
   page.on('pageerror', (pError) => consoleErrors.push(pError.message));
 
-  await page.goto('/usuarios');
+  await page.goto('/admin/usuarios');
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const main = page.locator('.v-main');
@@ -101,7 +101,7 @@ test('seleciona o agrupador pela lista dos controles do gráfico', async ({ page
   });
   page.on('pageerror', (pError) => consoleErrors.push(pError.message));
 
-  await page.goto('/usuarios', { waitUntil: 'domcontentloaded' });
+  await page.goto('/admin/usuarios', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const main = page.locator('.v-main');
@@ -149,7 +149,7 @@ test('alterna a ordenação e refaz a consulta com a nova direção', async ({ p
     if (payload.ordenacao) ordensConsultadas.push(payload.ordenacao);
   });
 
-  await page.goto('/usuarios');
+  await page.goto('/admin/usuarios');
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const main = page.locator('.v-main');
@@ -179,7 +179,7 @@ test('abre o formulário de usuário pelo drawer e mantém o campo interativo', 
   });
   page.on('pageerror', (pError) => consoleErrors.push(pError.message));
 
-  await page.goto('/usuarios');
+  await page.goto('/admin/usuarios');
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const main = page.locator('.v-main');
@@ -198,7 +198,7 @@ test('abre o formulário de usuário pelo drawer e mantém o campo interativo', 
 });
 
 test('mantém o formulário de usuário montado para editar um registro da lista', async ({ page }) => {
-  await page.goto('/usuarios');
+  await page.goto('/admin/usuarios');
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const linhaUsuario = page.locator('.v-list-item').filter({ hasText: 'Usuário E2E' }).first();
@@ -216,7 +216,7 @@ test('abre o formulário de cargo pelo drawer e mantém o campo interativo', asy
   });
   page.on('pageerror', (pError) => consoleErrors.push(pError.message));
 
-  await page.goto('/rbac');
+  await page.goto('/admin/rbac');
   await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
 
   const main = page.locator('.v-main');
@@ -234,7 +234,7 @@ test('abre o formulário de cargo pelo drawer e mantém o campo interativo', asy
 });
 
 test('fecha o formulário de cargo e encerra o loading após salvar', async ({ page }) => {
-  await page.goto('/rbac');
+  await page.goto('/admin/rbac');
   await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
 
   const main = page.locator('.v-main');
@@ -255,7 +255,7 @@ test('fecha o formulário de cargo e encerra o loading após salvar', async ({ p
 });
 
 test('mantém o tema escolhido após recarregar sem depender da abertura do drawer', async ({ page }) => {
-  await page.goto('/usuarios');
+  await page.goto('/admin/usuarios');
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const app = page.locator('.v-application');
@@ -272,7 +272,7 @@ test('mantém o tema escolhido após recarregar sem depender da abertura do draw
 });
 
 test('mantém contraste AA nos títulos primários do tema escuro', async ({ page }) => {
-  await page.goto('/rbac');
+  await page.goto('/admin/rbac');
   await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
 
   const taxaContraste = await page.locator('.v-list-item-title.text-primary').first().evaluate((pElemento) => {
@@ -347,7 +347,7 @@ test('mantém navegação, idiomas e abas de informações interativos', async (
   });
   page.on('pageerror', (pError) => consoleErrors.push(pError.message));
 
-  await page.goto('/usuarios');
+  await page.goto('/admin/usuarios');
   await expect(page.getByText('Usuário E2E')).toBeVisible();
   const navigationDrawer = page.locator('.v-navigation-drawer');
   const navigationTrigger = page.locator('header .v-app-bar-nav-icon');
@@ -380,7 +380,7 @@ test('mantém navegação, idiomas e abas de informações interativos', async (
 test('mantém o diálogo de licença montado ao sair do drawer de ações', async ({ page }) => {
   const problemasConsole = monitorarProblemasConsole(page);
 
-  await page.goto('/usuarios', { waitUntil: 'domcontentloaded' });
+  await page.goto('/admin/usuarios', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const drawerOpcoes = page.locator('header button:has(.mdi-menu-open)').first();
@@ -402,7 +402,7 @@ test('mantém o diálogo de licença montado ao sair do drawer de ações', asyn
 test('edita um filtro numérico sem atualizações recursivas ou avisos de renderização', async ({ page }) => {
   const problemasConsole = monitorarProblemasConsole(page);
 
-  await page.goto('/usuarios', { waitUntil: 'domcontentloaded' });
+  await page.goto('/admin/usuarios', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   await page.locator('header button:has(.mdi-filter-cog)').click();
@@ -423,7 +423,7 @@ test('edita um filtro numérico sem atualizações recursivas ou avisos de rende
 });
 
 test('usa scrim translúcido claro no overlay do tema light', async ({ page }) => {
-  await page.goto('/usuarios');
+  await page.goto('/admin/usuarios');
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const drawerOpcoes = page.locator('header button:has(.mdi-menu-open)').first();
@@ -457,7 +457,7 @@ test('usa scrim translúcido claro no overlay do tema light', async ({ page }) =
 test('renderiza radial e restaura preferências do gráfico por usuário e recurso', async ({ page }) => {
   const problemasConsole = monitorarProblemasConsole(page);
 
-  await page.goto('/usuarios', { waitUntil: 'domcontentloaded' });
+  await page.goto('/admin/usuarios', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const main = page.locator('.v-main');
@@ -510,7 +510,7 @@ test('renderiza radial e restaura preferências do gráfico por usuário e recur
 test('pesquisa usuário não vinculado e o vincula rapidamente ao cargo aberto', async ({ page }) => {
   const problemasConsole = monitorarProblemasConsole(page);
 
-  await page.goto('/rbac', { waitUntil: 'domcontentloaded' });
+  await page.goto('/admin/rbac', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
 
   const linhaCargo = page.locator('.v-list-item').filter({ hasText: 'Administrador' }).first();
@@ -531,7 +531,7 @@ test('pesquisa usuário não vinculado e o vincula rapidamente ao cargo aberto',
 });
 
 test('centraliza ícone grande e mantém o título no rodapé do cartão', async ({ page }) => {
-  await page.goto('/rbac', { waitUntil: 'domcontentloaded' });
+  await page.goto('/admin/rbac', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
 
   const main = page.locator('.v-main');
@@ -567,7 +567,7 @@ test('centraliza ícone grande e mantém o título no rodapé do cartão', async
 test('traduz integralmente os fluxos de licença, filtros e abas RBAC para inglês', async ({ page }) => {
   const problemasConsole = monitorarProblemasConsole(page);
 
-  await page.goto('/usuarios', { waitUntil: 'domcontentloaded' });
+  await page.goto('/admin/usuarios', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const drawerOpcoes = page.locator('header button:has(.mdi-menu-open)').first();
@@ -589,7 +589,7 @@ test('traduz integralmente os fluxos de licença, filtros e abas RBAC para ingl�
   await expect(dialogoFiltro).not.toContainText(/Limpar|Selecione um campo|ADICIONAR FILTRO/);
   await dialogoFiltro.locator('button:has(.mdi-close)').click();
 
-  await page.goto('/rbac');
+  await page.goto('/admin/rbac');
   const linhaCargo = page.locator('.v-list-item').filter({ hasText: 'Administrador' }).first();
   await linhaCargo.locator('button:has(.mdi-pencil)').click();
   const dialogoCargo = page.getByRole('dialog');
@@ -600,7 +600,7 @@ test('traduz integralmente os fluxos de licença, filtros e abas RBAC para ingl�
 });
 
 test('mantém contraste AA no texto do botão salvar em tema escuro', async ({ page }) => {
-  await page.goto('/rbac', { waitUntil: 'domcontentloaded' });
+  await page.goto('/admin/rbac', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('.v-application')).toHaveClass(/v-theme--dark/);
 
   const main = page.locator('.v-main');
@@ -632,7 +632,7 @@ test('mantém contraste AA no texto do botão salvar em tema escuro', async ({ p
 test('mantém tooltip do gráfico visível acima das camadas e dentro da viewport', async ({ page }) => {
   const problemasConsole = monitorarProblemasConsole(page);
 
-  await page.goto('/usuarios', { waitUntil: 'domcontentloaded' });
+  await page.goto('/admin/usuarios', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText('Usuário E2E')).toBeVisible();
 
   const main = page.locator('.v-main');

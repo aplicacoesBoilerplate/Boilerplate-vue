@@ -377,7 +377,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_iitempermissaorota",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "iitempermissaorota"
     },
     {
@@ -390,7 +390,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_tnorota",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "tnorota"
     },
     {
@@ -403,7 +403,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_tusecontrolepermissoescargoreturn",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "tusecontrolepermissoescargoreturn"
     },
     {
@@ -1625,7 +1625,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_tuseexportacaodadosreturn",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "tuseexportacaodadosreturn"
     },
     {
@@ -2964,7 +2964,7 @@
       "_origin": "ast",
       "id": "src_composables_usepermissoesrbac_tacaopermissaogeralrbac",
       "community": 78,
-      "community_name": "usePermissoesRbac",
+      "community_name": "usePermissoesRbac()",
       "norm_label": "tacaopermissaogeralrbac"
     },
     {
@@ -2977,7 +2977,7 @@
       "_origin": "ast",
       "id": "src_composables_usepermissoesrbac_tusepermissoesrbacreturn",
       "community": 78,
-      "community_name": "usePermissoesRbac",
+      "community_name": "usePermissoesRbac()",
       "norm_label": "tusepermissoesrbacreturn"
     },
     {
@@ -3953,7 +3953,7 @@
       "_origin": "ast",
       "id": "src_composables_useroutescrollredirect_useroutescrollredirect",
       "community": 104,
-      "community_name": "useRouteScrollRedirect",
+      "community_name": "useRouteScrollRedirect()",
       "norm_label": "useroutescrollredirect()"
     },
     {
@@ -3965,7 +3965,7 @@
       "_origin": "ast",
       "id": "src_composables_useroutescrollredirect_useroutescrollredirect_redirecionarpara",
       "community": 104,
-      "community_name": "useRouteScrollRedirect",
+      "community_name": "useRouteScrollRedirect()",
       "norm_label": "redirecionarpara()"
     },
     {
@@ -3977,7 +3977,7 @@
       "_origin": "ast",
       "id": "src_composables_useroutescrollredirect_useroutescrollredirect_setscrolltarget",
       "community": 104,
-      "community_name": "useRouteScrollRedirect",
+      "community_name": "useRouteScrollRedirect()",
       "norm_label": "setscrolltarget()"
     },
     {
@@ -3989,7 +3989,7 @@
       "_origin": "ast",
       "id": "src_composables_usesincronizacaopermissoesrbac_usesincronizacaopermissoesrbac",
       "community": 105,
-      "community_name": "useSincronizacaoPermissoesRbac",
+      "community_name": "useSincronizacaoPermissoesRbac()",
       "norm_label": "usesincronizacaopermissoesrbac()"
     },
     {
@@ -4001,7 +4001,7 @@
       "_origin": "ast",
       "id": "src_composables_usesincronizacaopermissoesrbac_usesincronizacaopermissoesrbac_sincronizarpermissoes",
       "community": 105,
-      "community_name": "useSincronizacaoPermissoesRbac",
+      "community_name": "useSincronizacaoPermissoesRbac()",
       "norm_label": "sincronizarpermissoes()"
     },
     {
@@ -4013,7 +4013,7 @@
       "_origin": "ast",
       "id": "src_composables_usesincronizacaopermissoesrbac_usesincronizacaopermissoesrbac_sincronizarquandovisivel",
       "community": 105,
-      "community_name": "useSincronizacaoPermissoesRbac",
+      "community_name": "useSincronizacaoPermissoesRbac()",
       "norm_label": "sincronizarquandovisivel()"
     },
     {
@@ -4109,7 +4109,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "usecontrolepermissoescargo()"
     },
     {
@@ -4121,7 +4121,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_acaoapidisponivel",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "acaoapidisponivel()"
     },
     {
@@ -4133,7 +4133,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_acaoapiliberada",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "acaoapiliberada()"
     },
     {
@@ -4145,7 +4145,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_achatarnosrotas",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "achatarnosrotas()"
     },
     {
@@ -4157,7 +4157,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_aplicarmapapermissoes",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "aplicarmapapermissoes()"
     },
     {
@@ -4169,7 +4169,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_atualizarpermissaoacaorota",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "atualizarpermissaoacaorota()"
     },
     {
@@ -4181,7 +4181,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_atualizarpermissaorota",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "atualizarpermissaorota()"
     },
     {
@@ -4193,7 +4193,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_atualizarpermissoesapidarotanomapa",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "atualizarpermissoesapidarotanomapa()"
     },
     {
@@ -4205,7 +4205,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_criarmapapermissoes",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "criarmapapermissoes()"
     },
     {
@@ -4217,7 +4217,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_definirpermissao",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "definirpermissao()"
     },
     {
@@ -4229,7 +4229,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_definirpermissaoacaoapinomapa",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "definirpermissaoacaoapinomapa()"
     },
     {
@@ -4241,7 +4241,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_definirpermissaoliberadanomaparedirecionamento",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "definirpermissaoliberadanomaparedirecionamento()"
     },
     {
@@ -4253,7 +4253,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_definirpermissaonomapa",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "definirpermissaonomapa()"
     },
     {
@@ -4265,7 +4265,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_isacaoapidesabilitada",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "isacaoapidesabilitada()"
     },
     {
@@ -4277,7 +4277,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_montarnosrotas",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "montarnosrotas()"
     },
     {
@@ -4289,7 +4289,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_obterchavepermissao",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "obterchavepermissao()"
     },
     {
@@ -4301,7 +4301,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_obterchaverota",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "obterchaverota()"
     },
     {
@@ -4313,7 +4313,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_obterdescricaoacaoapi",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "obterdescricaoacaoapi()"
     },
     {
@@ -4325,7 +4325,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_obterdescricaopermissaogeral",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "obterdescricaopermissaogeral()"
     },
     {
@@ -4337,7 +4337,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_obterpermissoescomredirecionamentoinicialliberado",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "obterpermissoescomredirecionamentoinicialliberado()"
     },
     {
@@ -4349,7 +4349,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_obterrotapermissaocargo",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "obterrotapermissaocargo()"
     },
     {
@@ -4361,7 +4361,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_obtersiglaacaoapi",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "obtersiglaacaoapi()"
     },
     {
@@ -4373,7 +4373,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_obtertitulorota",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "obtertitulorota()"
     },
     {
@@ -4385,7 +4385,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_permissaoliberada",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "permissaoliberada()"
     },
     {
@@ -4397,7 +4397,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_permissaoliberadanomapa",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "permissaoliberadanomapa()"
     },
     {
@@ -4409,7 +4409,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_permissaorotaliberada",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "permissaorotaliberada()"
     },
     {
@@ -4421,7 +4421,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo_usecontrolepermissoescargo_sincronizarpaispeloestadodosfilhos",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "sincronizarpaispeloestadodosfilhos()"
     },
     {
@@ -4553,7 +4553,7 @@
       "_origin": "ast",
       "id": "src_composables_usechartpreferences_usechartpreferences",
       "community": 121,
-      "community_name": "useChartPreferences",
+      "community_name": "useChartPreferences()",
       "norm_label": "usechartpreferences()"
     },
     {
@@ -4565,7 +4565,7 @@
       "_origin": "ast",
       "id": "src_composables_usechartpreferences_usechartpreferences_criarmodelo",
       "community": 121,
-      "community_name": "useChartPreferences",
+      "community_name": "useChartPreferences()",
       "norm_label": "criarmodelo()"
     },
     {
@@ -6389,7 +6389,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_assertexportwithinbudget",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "assertexportwithinbudget()"
     },
     {
@@ -6401,7 +6401,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "useexportacaodados()"
     },
     {
@@ -6413,7 +6413,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_baixararquivo",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "baixararquivo()"
     },
     {
@@ -6425,7 +6425,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_exportardados",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "exportardados()"
     },
     {
@@ -6437,7 +6437,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_formatarvalorexportacao",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "formatarvalorexportacao()"
     },
     {
@@ -6449,7 +6449,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_gerararquivoexportacao",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "gerararquivoexportacao()"
     },
     {
@@ -6461,7 +6461,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_gerarexcel",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "gerarexcel()"
     },
     {
@@ -6473,7 +6473,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_gerarpdf",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "gerarpdf()"
     },
     {
@@ -6485,7 +6485,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_gerartxt",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "gerartxt()"
     },
     {
@@ -6497,7 +6497,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_normalizarcolunas",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "normalizarcolunas()"
     },
     {
@@ -6509,7 +6509,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_normalizarmensagemerro",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "normalizarmensagemerro()"
     },
     {
@@ -6521,7 +6521,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_normalizarnomearquivo",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "normalizarnomearquivo()"
     },
     {
@@ -6533,7 +6533,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_normalizartextoplano",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "normalizartextoplano()"
     },
     {
@@ -6545,7 +6545,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_obtervalorcelula",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "obtervalorcelula()"
     },
     {
@@ -6557,7 +6557,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados_useexportacaodados_renderizarcabecalhopdf",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "renderizarcabecalhopdf()"
     },
     {
@@ -8405,7 +8405,7 @@
       "_origin": "ast",
       "id": "dev_dist_workbox_7e5eb42b_cleanupoutdatedcaches",
       "community": 69,
-      "community_name": ".waitUntil",
+      "community_name": ".waitUntil()",
       "norm_label": "cleanupoutdatedcaches()"
     },
     {
@@ -8417,7 +8417,7 @@
       "_origin": "ast",
       "id": "dev_dist_workbox_7e5eb42b_nestedgroup",
       "community": 69,
-      "community_name": ".waitUntil",
+      "community_name": ".waitUntil()",
       "norm_label": "_nestedgroup()"
     },
     {
@@ -8429,7 +8429,7 @@
       "_origin": "ast",
       "id": "dev_dist_workbox_7e5eb42b_precachecontroller_activate",
       "community": 69,
-      "community_name": ".waitUntil",
+      "community_name": ".waitUntil()",
       "norm_label": ".activate()"
     },
     {
@@ -8441,7 +8441,7 @@
       "_origin": "ast",
       "id": "dev_dist_workbox_7e5eb42b_precachecontroller_install",
       "community": 69,
-      "community_name": ".waitUntil",
+      "community_name": ".waitUntil()",
       "norm_label": ".install()"
     },
     {
@@ -8453,7 +8453,7 @@
       "_origin": "ast",
       "id": "dev_dist_workbox_7e5eb42b_printcleanupdetails",
       "community": 69,
-      "community_name": ".waitUntil",
+      "community_name": ".waitUntil()",
       "norm_label": "printcleanupdetails()"
     },
     {
@@ -8465,7 +8465,7 @@
       "_origin": "ast",
       "id": "dev_dist_workbox_7e5eb42b_printinstalldetails",
       "community": 69,
-      "community_name": ".waitUntil",
+      "community_name": ".waitUntil()",
       "norm_label": "printinstalldetails()"
     },
     {
@@ -8477,7 +8477,7 @@
       "_origin": "ast",
       "id": "dev_dist_workbox_7e5eb42b_strategyhandler_waituntil",
       "community": 69,
-      "community_name": ".waitUntil",
+      "community_name": ".waitUntil()",
       "norm_label": ".waituntil()"
     },
     {
@@ -8489,7 +8489,7 @@
       "_origin": "ast",
       "id": "dev_dist_workbox_7e5eb42b_waituntil",
       "community": 69,
-      "community_name": ".waitUntil",
+      "community_name": ".waitUntil()",
       "norm_label": "waituntil()"
     },
     {
@@ -8825,7 +8825,7 @@
       "_origin": "ast",
       "id": "src_composables_usepermissoesrbac_usepermissoesrbac",
       "community": 78,
-      "community_name": "usePermissoesRbac",
+      "community_name": "usePermissoesRbac()",
       "norm_label": "usepermissoesrbac()"
     },
     {
@@ -8837,7 +8837,7 @@
       "_origin": "ast",
       "id": "src_composables_usepermissoesrbac_usepermissoesrbac_executarcompermissaogeral",
       "community": 78,
-      "community_name": "usePermissoesRbac",
+      "community_name": "usePermissoesRbac()",
       "norm_label": "executarcompermissaogeral()"
     },
     {
@@ -8849,7 +8849,7 @@
       "_origin": "ast",
       "id": "src_composables_usepermissoesrbac_usepermissoesrbac_notificarpermissaonegada",
       "community": 78,
-      "community_name": "usePermissoesRbac",
+      "community_name": "usePermissoesRbac()",
       "norm_label": "notificarpermissaonegada()"
     },
     {
@@ -8861,7 +8861,7 @@
       "_origin": "ast",
       "id": "src_composables_usepermissoesrbac_usepermissoesrbac_possuipermissaogeral",
       "community": 78,
-      "community_name": "usePermissoesRbac",
+      "community_name": "usePermissoesRbac()",
       "norm_label": "possuipermissaogeral()"
     },
     {
@@ -9377,7 +9377,7 @@
       "_origin": "ast",
       "id": "src_composables_useformulariologin_useformulariologin",
       "community": 96,
-      "community_name": "useFormularioLogin",
+      "community_name": "useFormularioLogin()",
       "norm_label": "useformulariologin()"
     },
     {
@@ -9389,7 +9389,7 @@
       "_origin": "ast",
       "id": "src_composables_useformulariologin_useformulariologin_criarloginpadrao",
       "community": 96,
-      "community_name": "useFormularioLogin",
+      "community_name": "useFormularioLogin()",
       "norm_label": "criarloginpadrao()"
     },
     {
@@ -9401,7 +9401,7 @@
       "_origin": "ast",
       "id": "src_composables_useformulariologin_useformulariologin_resetarlogin",
       "community": 96,
-      "community_name": "useFormularioLogin",
+      "community_name": "useFormularioLogin()",
       "norm_label": "resetarlogin()"
     },
     {
@@ -9413,7 +9413,7 @@
       "_origin": "ast",
       "id": "src_composables_useformulariologin_useformulariologin_salvarpreferenciaemail",
       "community": 96,
-      "community_name": "useFormularioLogin",
+      "community_name": "useFormularioLogin()",
       "norm_label": "salvarpreferenciaemail()"
     },
     {
@@ -10460,7 +10460,7 @@
       "_origin": "ast",
       "id": "src_composables_useroutescrollredirect",
       "community": 104,
-      "community_name": "useRouteScrollRedirect",
+      "community_name": "useRouteScrollRedirect()",
       "norm_label": "useroutescrollredirect.ts"
     },
     {
@@ -10471,7 +10471,7 @@
       "_origin": "ast",
       "id": "src_composables_usesincronizacaopermissoesrbac",
       "community": 105,
-      "community_name": "useSincronizacaoPermissoesRbac",
+      "community_name": "useSincronizacaoPermissoesRbac()",
       "norm_label": "usesincronizacaopermissoesrbac.ts"
     },
     {
@@ -10526,7 +10526,7 @@
       "_origin": "ast",
       "id": "src_composables_usecontrolepermissoescargo",
       "community": 11,
-      "community_name": "useControlePermissoesCargo",
+      "community_name": "useControlePermissoesCargo()",
       "norm_label": "usecontrolepermissoescargo.ts"
     },
     {
@@ -10967,7 +10967,7 @@
       "_origin": "ast",
       "id": "src_composables_usechartpreferences",
       "community": 121,
-      "community_name": "useChartPreferences",
+      "community_name": "useChartPreferences()",
       "norm_label": "usechartpreferences.ts"
     },
     {
@@ -11191,79 +11191,26 @@
       "norm_label": "@commitlint/cli"
     },
     {
-      "label": "post-commit",
+      "label": "eslint",
       "file_type": "code",
-      "source_file": ".husky/post-commit",
-      "source_location": "L1",
-      "metadata": {
-        "language": "bash",
-        "kind": "file"
-      },
+      "source_file": "package.json",
+      "source_location": "L59",
       "_origin": "ast",
-      "id": "husky_post_commit",
+      "id": "package_devdependencies_eslint",
       "community": 138,
-      "community_name": "post-commit",
-      "norm_label": "post-commit"
+      "community_name": "eslint",
+      "norm_label": "eslint"
     },
     {
-      "label": "post-commit script",
-      "file_type": "code",
-      "source_file": ".husky/post-commit",
-      "source_location": "L1",
-      "metadata": {
-        "language": "bash",
-        "kind": "bash_entrypoint"
-      },
+      "label": "eslint",
+      "file_type": "concept",
+      "source_file": "package.json",
+      "source_location": "L59",
       "_origin": "ast",
-      "id": "husky_post_commit__entry",
+      "id": "eslint",
       "community": 138,
-      "community_name": "post-commit",
-      "norm_label": "post-commit script"
-    },
-    {
-      "label": "GRAPHIFY_CHANGED",
-      "file_type": "code",
-      "source_file": ".husky/post-commit",
-      "source_location": "L127",
-      "metadata": {
-        "language": "bash",
-        "kind": "code"
-      },
-      "_origin": "ast",
-      "id": "husky_post_commit_graphify_changed",
-      "community": 138,
-      "community_name": "post-commit",
-      "norm_label": "graphify_changed"
-    },
-    {
-      "label": "GRAPHIFY_REBUILD_LOG",
-      "file_type": "code",
-      "source_file": ".husky/post-commit",
-      "source_location": "L135",
-      "metadata": {
-        "language": "bash",
-        "kind": "code"
-      },
-      "_origin": "ast",
-      "id": "husky_post_commit_graphify_rebuild_log",
-      "community": 138,
-      "community_name": "post-commit",
-      "norm_label": "graphify_rebuild_log"
-    },
-    {
-      "label": "PYTHONHASHSEED",
-      "file_type": "code",
-      "source_file": ".husky/post-commit",
-      "source_location": "L9",
-      "metadata": {
-        "language": "bash",
-        "kind": "code"
-      },
-      "_origin": "ast",
-      "id": "husky_post_commit_pythonhashseed",
-      "community": 138,
-      "community_name": "post-commit",
-      "norm_label": "pythonhashseed"
+      "community_name": "eslint",
+      "norm_label": "eslint"
     },
     {
       "label": "eslint-config-prettier",
@@ -12674,66 +12621,6 @@
       "norm_label": "gerarcores.ts"
     },
     {
-      "label": "post-checkout",
-      "file_type": "code",
-      "source_file": ".husky/post-checkout",
-      "source_location": "L1",
-      "metadata": {
-        "language": "bash",
-        "kind": "file"
-      },
-      "_origin": "ast",
-      "id": "husky_post_checkout",
-      "community": 179,
-      "community_name": "post-checkout",
-      "norm_label": "post-checkout"
-    },
-    {
-      "label": "post-checkout script",
-      "file_type": "code",
-      "source_file": ".husky/post-checkout",
-      "source_location": "L1",
-      "metadata": {
-        "language": "bash",
-        "kind": "bash_entrypoint"
-      },
-      "_origin": "ast",
-      "id": "husky_post_checkout__entry",
-      "community": 179,
-      "community_name": "post-checkout",
-      "norm_label": "post-checkout script"
-    },
-    {
-      "label": "GRAPHIFY_REBUILD_LOG",
-      "file_type": "code",
-      "source_file": ".husky/post-checkout",
-      "source_location": "L137",
-      "metadata": {
-        "language": "bash",
-        "kind": "code"
-      },
-      "_origin": "ast",
-      "id": "husky_post_checkout_graphify_rebuild_log",
-      "community": 179,
-      "community_name": "post-checkout",
-      "norm_label": "graphify_rebuild_log"
-    },
-    {
-      "label": "PYTHONHASHSEED",
-      "file_type": "code",
-      "source_file": ".husky/post-checkout",
-      "source_location": "L9",
-      "metadata": {
-        "language": "bash",
-        "kind": "code"
-      },
-      "_origin": "ast",
-      "id": "husky_post_checkout_pythonhashseed",
-      "community": 179,
-      "community_name": "post-checkout",
-      "norm_label": "pythonhashseed"
-    },
-    {
       "label": "DrawerItemUsuario.vue",
       "file_type": "code",
       "source_file": "src/components/layouts/base/navigation/fixtures/DrawerItemUsuario.vue",
@@ -13042,26 +12929,15 @@
       "norm_label": "sw.js"
     },
     {
-      "label": "@commitlint/config-conventional",
+      "label": "jspdf",
       "file_type": "code",
-      "source_file": "package.json",
-      "source_location": "L48",
+      "source_file": "jspdf",
+      "confidence": "EXTRACTED",
       "_origin": "ast",
-      "id": "package_devdependencies_commitlint_config_conventional",
+      "id": "jspdf_jspdf",
       "community": 188,
-      "community_name": "@commitlint/config-conventional",
-      "norm_label": "@commitlint/config-conventional"
-    },
-    {
-      "label": "@commitlint/config-conventional",
-      "file_type": "concept",
-      "source_file": "package.json",
-      "source_location": "L48",
-      "_origin": "ast",
-      "id": "commitlint_config_conventional",
-      "community": 188,
-      "community_name": "@commitlint/config-conventional",
-      "norm_label": "@commitlint/config-conventional"
+      "community_name": "jspdf",
+      "norm_label": "jspdf"
     },
     {
       "label": "playwright.config.ts",
@@ -13548,180 +13424,13 @@
       "norm_label": "vite.config.ts"
     },
     {
-      "label": "CHANGELOG.md",
-      "file_type": "document",
-      "node_kind": "page",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "changelog",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "changelog.md"
-    },
-    {
-      "label": "[0.0.6](https://github.com/gersonfribeiro/Boilerplate-vue/compare/v2.1.0...v0.0.6) (2026-08-17)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L80",
-      "_origin": "ast",
-      "id": "changelog_0_0_6_https_github_com_gersonfribeiro_boilerplate_vue_compare_v2_1_0_v0_0_6_2026_08_17",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "[0.0.6](https://github.com/gersonfribeiro/boilerplate-vue/compare/v2.1.0...v0.0.6) (2026-08-17)"
-    },
-    {
-      "label": "[0.0.7](https://github.com/gersonfribeiro/Boilerplate-vue/compare/v2.1.0...v0.0.7) (2026-08-17)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "changelog_0_0_7_https_github_com_gersonfribeiro_boilerplate_vue_compare_v2_1_0_v0_0_7_2026_08_17",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "[0.0.7](https://github.com/gersonfribeiro/boilerplate-vue/compare/v2.1.0...v0.0.7) (2026-08-17)"
-    },
-    {
-      "label": "[0.1.0](https://github.com/gersonfribeiro/Boilerplate-vue/compare/v0.0.2...v0.1.0) (2026-01-19)",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L155",
-      "_origin": "ast",
-      "id": "changelog_0_1_0_https_github_com_gersonfribeiro_boilerplate_vue_compare_v0_0_2_v0_1_0_2026_01_19",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "[0.1.0](https://github.com/gersonfribeiro/boilerplate-vue/compare/v0.0.2...v0.1.0) (2026-01-19)"
-    },
-    {
-      "label": "\u26a0 BREAKING CHANGES",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L157",
-      "_origin": "ast",
-      "id": "changelog_breaking_changes",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "\u26a0 breaking changes"
-    },
-    {
-      "label": "Bug Fixes",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L38",
-      "_origin": "ast",
-      "id": "changelog_bug_fixes",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "bug fixes"
-    },
-    {
-      "label": "Bug Fixes",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L113",
-      "_origin": "ast",
-      "id": "changelog_bug_fixes_113",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "bug fixes"
-    },
-    {
-      "label": "Bug Fixes",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L175",
-      "_origin": "ast",
-      "id": "changelog_bug_fixes_175",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "bug fixes"
-    },
-    {
-      "label": "Changelog",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "changelog_changelog",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "changelog"
-    },
-    {
-      "label": "Changelog",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L194",
-      "_origin": "ast",
-      "id": "changelog_changelog_194",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "changelog"
-    },
-    {
-      "label": "Features",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L8",
-      "_origin": "ast",
-      "id": "changelog_features",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "features"
-    },
-    {
-      "label": "Features",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L161",
-      "_origin": "ast",
-      "id": "changelog_features_161",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "features"
-    },
-    {
-      "label": "Features",
-      "file_type": "document",
-      "node_kind": "heading",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L83",
-      "_origin": "ast",
-      "id": "changelog_features_83",
-      "community": 203,
-      "community_name": "Changelog",
-      "norm_label": "features"
-    },
-    {
-      "label": "jspdf",
-      "file_type": "code",
-      "source_file": "jspdf",
-      "confidence": "EXTRACTED",
-      "_origin": "ast",
-      "id": "jspdf_jspdf",
-      "community": 204,
-      "community_name": "jspdf",
-      "norm_label": "jspdf"
-    },
-    {
       "label": "vue3-apexcharts",
       "file_type": "code",
       "source_file": "vue3-apexcharts",
       "confidence": "EXTRACTED",
       "_origin": "ast",
       "id": "vue3_apexcharts_vue3_apexcharts",
-      "community": 205,
+      "community": 203,
       "community_name": "vue3-apexcharts",
       "norm_label": "vue3-apexcharts"
     },
@@ -13732,7 +13441,7 @@
       "confidence": "EXTRACTED",
       "_origin": "ast",
       "id": "vue_i18n_vue_i18n",
-      "community": 206,
+      "community": 204,
       "community_name": "vue-i18n",
       "norm_label": "vue-i18n"
     },
@@ -13743,7 +13452,7 @@
       "confidence": "EXTRACTED",
       "_origin": "ast",
       "id": "vue_router_vue_router",
-      "community": 207,
+      "community": 205,
       "community_name": "vue-router",
       "norm_label": "vue-router"
     },
@@ -13754,7 +13463,7 @@
       "confidence": "EXTRACTED",
       "_origin": "ast",
       "id": "vue_vue",
-      "community": 208,
+      "community": 206,
       "community_name": "vue",
       "norm_label": "vue"
     },
@@ -13765,7 +13474,7 @@
       "confidence": "EXTRACTED",
       "_origin": "ast",
       "id": "vuetify_vuetify",
-      "community": 209,
+      "community": 207,
       "community_name": "vuetify",
       "norm_label": "vuetify"
     },
@@ -13955,17 +13664,6 @@
       "community": 21,
       "community_name": "FormCargoRbac.vue",
       "norm_label": "usuarios"
-    },
-    {
-      "label": "DialogFormUsuario.spec.ts",
-      "file_type": "code",
-      "source_file": "tests/unit/components/DialogFormUsuario.spec.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "tests_unit_components_dialogformusuario_spec",
-      "community": 210,
-      "community_name": "DialogFormUsuario.spec.ts",
-      "norm_label": "dialogformusuario.spec.ts"
     },
     {
       "label": "ManagerStorage.ts",
@@ -14778,7 +14476,7 @@
       "_origin": "ast",
       "id": "browser",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "write-excel-file/browser"
     },
     {
@@ -14789,7 +14487,7 @@
       "_origin": "ast",
       "id": "src_composables_useexportacaodados",
       "community": 28,
-      "community_name": "useExportacaoDados",
+      "community_name": "useExportacaoDados()",
       "norm_label": "useexportacaodados.ts"
     },
     {
@@ -18786,15 +18484,15 @@
       "norm_label": "devdependencies"
     },
     {
-      "label": "eslint",
+      "label": "@commitlint/config-conventional",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L59",
+      "source_location": "L48",
       "_origin": "ast",
-      "id": "package_devdependencies_eslint",
+      "id": "package_devdependencies_commitlint_config_conventional",
       "community": 62,
       "community_name": "devDependencies",
-      "norm_label": "eslint"
+      "norm_label": "@commitlint/config-conventional"
     },
     {
       "label": "@playwright/test",
@@ -18830,15 +18528,15 @@
       "norm_label": "@vue/eslint-config-typescript"
     },
     {
-      "label": "eslint",
+      "label": "@commitlint/config-conventional",
       "file_type": "concept",
       "source_file": "package.json",
-      "source_location": "L59",
+      "source_location": "L48",
       "_origin": "ast",
-      "id": "eslint",
+      "id": "commitlint_config_conventional",
       "community": 62,
       "community_name": "devDependencies",
-      "norm_label": "eslint"
+      "norm_label": "@commitlint/config-conventional"
     },
     {
       "label": "@playwright/test",
@@ -19871,7 +19569,7 @@
       "_origin": "ast",
       "id": "src_composables_usepermissoesrbac",
       "community": 78,
-      "community_name": "usePermissoesRbac",
+      "community_name": "usePermissoesRbac()",
       "norm_label": "usepermissoesrbac.ts"
     },
     {
@@ -20773,7 +20471,7 @@
       "_origin": "ast",
       "id": "src_composables_useformulariologin",
       "community": 96,
-      "community_name": "useFormularioLogin",
+      "community_name": "useFormularioLogin()",
       "norm_label": "useformulariologin.ts"
     },
     {
@@ -20841,11 +20539,10 @@
       "author": null,
       "contributor": null,
       "rationale": "Representa visualmente a identidade Vue em um \u00edcone compacto para instala\u00e7\u00e3o PWA.",
+      "id": "public_pwa_192x192",
       "community": 116,
       "community_name": "\u00cdcone PWA Vue 512px",
-      "norm_label": "icone pwa vue 192px",
-      "_origin": "semantic",
-      "id": "public_pwa_192x192"
+      "norm_label": "icone pwa vue 192px"
     },
     {
       "label": "\u00cdcone PWA Vue 512px",
@@ -20857,11 +20554,10 @@
       "author": null,
       "contributor": null,
       "rationale": "Representa visualmente a identidade Vue em alta resolu\u00e7\u00e3o para instala\u00e7\u00e3o PWA.",
+      "id": "public_pwa_512x512",
       "community": 116,
       "community_name": "\u00cdcone PWA Vue 512px",
-      "norm_label": "icone pwa vue 512px",
-      "_origin": "semantic",
-      "id": "public_pwa_512x512"
+      "norm_label": "icone pwa vue 512px"
     },
     {
       "label": "Logotipo Vue",
@@ -20873,11 +20569,10 @@
       "author": null,
       "contributor": null,
       "rationale": "Marca vetorial Vue formada por dois V sobrepostos em verde e azul-escuro.",
+      "id": "src_assets_logo",
       "community": 116,
       "community_name": "\u00cdcone PWA Vue 512px",
-      "norm_label": "logotipo vue",
-      "_origin": "semantic",
-      "id": "src_assets_logo"
+      "norm_label": "logotipo vue"
     },
     {
       "label": "Documenta\u00e7\u00e3o de arquitetura",
@@ -20889,11 +20584,10 @@
       "author": null,
       "contributor": null,
       "rationale": "Indexa diagramas de arquitetura e define os gates de qualidade e os limites dos artefatos locais.",
+      "id": "docs_readme",
       "community": 134,
       "community_name": "Documenta\u00e7\u00e3o de arquitetura",
-      "norm_label": "documentacao de arquitetura",
-      "_origin": "semantic",
-      "id": "docs_readme"
+      "norm_label": "documentacao de arquitetura"
     },
     {
       "label": "Pol\u00edtica de versionamento Java",
@@ -20905,11 +20599,10 @@
       "author": null,
       "contributor": null,
       "rationale": "Especifica SemVer, Conventional Commits, releases e compatibilidade de API para o backend Java externo.",
+      "id": "docs_versionamento_aplicacao_java",
       "community": 134,
       "community_name": "Documenta\u00e7\u00e3o de arquitetura",
-      "norm_label": "politica de versionamento java",
-      "_origin": "semantic",
-      "id": "docs_versionamento_aplicacao_java"
+      "norm_label": "politica de versionamento java"
     },
     {
       "label": "Plano do drawer de a\u00e7\u00f5es da GenericView",
@@ -20921,11 +20614,10 @@
       "author": null,
       "contributor": null,
       "rationale": "Planeja remover o outlet duplicado e validar o comportamento do BtnActionDrawer com Playwright.",
+      "id": "docs_superpowers_plans_2026_08_10_generic_view_action_drawer",
       "community": 135,
-      "community_name": "Plano do drawer de a\u00e7\u00f5es da GenericView",
-      "norm_label": "plano do drawer de acoes da genericview",
-      "_origin": "semantic",
-      "id": "docs_superpowers_plans_2026_08_10_generic_view_action_drawer"
+      "community_name": "Plano do drawer de",
+      "norm_label": "plano do drawer de acoes da genericview"
     },
     {
       "label": "Desenho do drawer de a\u00e7\u00f5es da GenericView",
@@ -20937,11 +20629,10 @@
       "author": null,
       "contributor": null,
       "rationale": "A duplica\u00e7\u00e3o do slot list-header-actions mant\u00e9m uma a\u00e7\u00e3o fora do estado visual do drawer; um \u00fanico outlet deve permanecer no drawer.",
+      "id": "docs_superpowers_specs_2026_08_10_generic_view_action_drawer_design",
       "community": 135,
-      "community_name": "Plano do drawer de a\u00e7\u00f5es da GenericView",
-      "norm_label": "desenho do drawer de acoes da genericview",
-      "_origin": "semantic",
-      "id": "docs_superpowers_specs_2026_08_10_generic_view_action_drawer_design"
+      "community_name": "Plano do drawer de",
+      "norm_label": "desenho do drawer de acoes da genericview"
     },
     {
       "label": "Plano da lista de agrupamento de gr\u00e1ficos",
@@ -20953,11 +20644,10 @@
       "author": null,
       "contributor": null,
       "rationale": "Planeja transferir o agrupamento do gr\u00e1fico de v-select para itens do menu de configura\u00e7\u00e3o.",
+      "id": "docs_superpowers_plans_2026_08_11_chart_grouping_list",
       "community": 136,
-      "community_name": "Plano da lista de agrupamento de gr\u00e1ficos",
-      "norm_label": "plano da lista de agrupamento de graficos",
-      "_origin": "semantic",
-      "id": "docs_superpowers_plans_2026_08_11_chart_grouping_list"
+      "community_name": "Plano da lista de",
+      "norm_label": "plano da lista de agrupamento de graficos"
     },
     {
       "label": "Desenho da lista de agrupamento de gr\u00e1ficos",
@@ -20969,11 +20659,10 @@
       "author": null,
       "contributor": null,
       "rationale": "ChartControls permanece dono da intera\u00e7\u00e3o e preserva o contrato opcoesFiltro e v-model:filtroSelecionado.",
+      "id": "docs_superpowers_specs_2026_08_11_chart_grouping_list_design",
       "community": 136,
-      "community_name": "Plano da lista de agrupamento de gr\u00e1ficos",
-      "norm_label": "desenho da lista de agrupamento de graficos",
-      "_origin": "semantic",
-      "id": "docs_superpowers_specs_2026_08_11_chart_grouping_list_design"
+      "community_name": "Plano da lista de",
+      "norm_label": "desenho da lista de agrupamento de graficos"
     },
     {
       "label": "Plano de compatibilidade da migra\u00e7\u00e3o Vuetify",
@@ -20985,11 +20674,10 @@
       "author": null,
       "contributor": null,
       "rationale": "Organiza a estabiliza\u00e7\u00e3o da migra\u00e7\u00e3o Vuetify em runtime, gr\u00e1ficos, RBAC e i18n.",
+      "id": "docs_superpowers_plans_2026_08_11_vuetify_migration_compatibility",
       "community": 137,
-      "community_name": "Plano de compatibilidade da migra\u00e7\u00e3o Vuetify",
-      "norm_label": "plano de compatibilidade da migracao vuetify",
-      "_origin": "semantic",
-      "id": "docs_superpowers_plans_2026_08_11_vuetify_migration_compatibility"
+      "community_name": "Plano de compatibilidade da",
+      "norm_label": "plano de compatibilidade da migracao vuetify"
     },
     {
       "label": "Desenho de compatibilidade da migra\u00e7\u00e3o Vuetify",
@@ -21001,11 +20689,10 @@
       "author": null,
       "contributor": null,
       "rationale": "Define contratos para estabilidade de overlays, prefer\u00eancias de gr\u00e1fico por recurso, RBAC e i18n reativo.",
+      "id": "docs_superpowers_specs_2026_08_11_vuetify_migration_compatibility_design",
       "community": 137,
-      "community_name": "Plano de compatibilidade da migra\u00e7\u00e3o Vuetify",
-      "norm_label": "desenho de compatibilidade da migracao vuetify",
-      "_origin": "semantic",
-      "id": "docs_superpowers_specs_2026_08_11_vuetify_migration_compatibility_design"
+      "community_name": "Plano de compatibilidade da",
+      "norm_label": "desenho de compatibilidade da migracao vuetify"
     },
     {
       "label": "Ponto de montagem da aplica\u00e7\u00e3o",
@@ -21017,11 +20704,10 @@
       "author": null,
       "contributor": null,
       "rationale": "Monta a aplica\u00e7\u00e3o no elemento app e carrega src/main.ts como m\u00f3dulo.",
+      "id": "index",
       "community": 147,
-      "community_name": "Ponto de montagem da aplica\u00e7\u00e3o",
-      "norm_label": "ponto de montagem da aplicacao",
-      "_origin": "semantic",
-      "id": "index"
+      "community_name": "Ponto de montagem da",
+      "norm_label": "ponto de montagem da aplicacao"
     },
     {
       "label": "Frontend de controle de sa\u00eddas",
@@ -21033,11 +20719,25 @@
       "author": null,
       "contributor": null,
       "rationale": "Define a aplica\u00e7\u00e3o Vue 3 como SPA/CSR, suas camadas e a execu\u00e7\u00e3o local e integrada.",
+      "id": "readme",
       "community": 147,
-      "community_name": "Ponto de montagem da aplica\u00e7\u00e3o",
-      "norm_label": "frontend de controle de saidas",
-      "_origin": "semantic",
-      "id": "readme"
+      "community_name": "Ponto de montagem da",
+      "norm_label": "frontend de controle de saidas"
+    },
+    {
+      "label": "Hist\u00f3rico de mudan\u00e7as do Boilerplate Vue",
+      "file_type": "document",
+      "source_file": "CHANGELOG.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Registra funcionalidades e corre\u00e7\u00f5es, incluindo RBAC, i18n, PWA, exporta\u00e7\u00e3o e listagens gen\u00e9ricas.",
+      "id": "changelog",
+      "community": 179,
+      "community_name": "Hist\u00f3rico de mudan\u00e7as do",
+      "norm_label": "historico de mudancas do boilerplate vue"
     },
     {
       "label": "Plano ESLint Zero Problems",
@@ -21049,11 +20749,10 @@
       "author": null,
       "contributor": null,
       "rationale": "Planeja eliminar erros e avisos de lint sem alterar contratos ou comportamento.",
+      "id": "docs_superpowers_plans_2026_08_10_eslint_zero_problems",
       "community": 187,
       "community_name": "Plano ESLint Zero Problems",
-      "norm_label": "plano eslint zero problems",
-      "_origin": "semantic",
-      "id": "docs_superpowers_plans_2026_08_10_eslint_zero_problems"
+      "norm_label": "plano eslint zero problems"
     }
   ],
   "links": [
@@ -26688,138 +26387,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog",
-      "target": "changelog_changelog",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L194",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog",
-      "target": "changelog_changelog_194",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L157",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog_0_1_0_https_github_com_gersonfribeiro_boilerplate_vue_compare_v0_0_2_v0_1_0_2026_01_19",
-      "target": "changelog_breaking_changes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L161",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog_0_1_0_https_github_com_gersonfribeiro_boilerplate_vue_compare_v0_0_2_v0_1_0_2026_01_19",
-      "target": "changelog_features_161",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L175",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog_0_1_0_https_github_com_gersonfribeiro_boilerplate_vue_compare_v0_0_2_v0_1_0_2026_01_19",
-      "target": "changelog_bug_fixes_175",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L113",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog_changelog",
-      "target": "changelog_bug_fixes_113",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L155",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog_changelog",
-      "target": "changelog_0_1_0_https_github_com_gersonfribeiro_boilerplate_vue_compare_v0_0_2_v0_1_0_2026_01_19",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L38",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog_changelog",
-      "target": "changelog_bug_fixes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L5",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog_changelog",
-      "target": "changelog_0_0_7_https_github_com_gersonfribeiro_boilerplate_vue_compare_v2_1_0_v0_0_7_2026_08_17",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L8",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog_changelog",
-      "target": "changelog_features",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L80",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog_changelog",
-      "target": "changelog_0_0_6_https_github_com_gersonfribeiro_boilerplate_vue_compare_v2_1_0_v0_0_6_2026_08_17",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG.md",
-      "source_location": "L83",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "changelog_changelog",
-      "target": "changelog_features_83",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "config/entrypoint.sh",
       "source_location": "L1",
       "weight": 1.0,
@@ -27233,28 +26800,6 @@
       "_origin": "ast",
       "source": "env_d",
       "target": "env_d_window",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".husky/post-checkout",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "husky_post_checkout",
-      "target": "husky_post_checkout__entry",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".husky/post-commit",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "husky_post_commit",
-      "target": "husky_post_commit__entry",
       "confidence_score": 1.0
     },
     {
@@ -40667,61 +40212,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "source_file": ".husky/post-checkout",
-      "source_location": "L137",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "husky_post_checkout",
-      "target": "husky_post_checkout_graphify_rebuild_log",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "source_file": ".husky/post-checkout",
-      "source_location": "L9",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "husky_post_checkout",
-      "target": "husky_post_checkout_pythonhashseed",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "source_file": ".husky/post-commit",
-      "source_location": "L127",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "husky_post_commit",
-      "target": "husky_post_commit_graphify_changed",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "source_file": ".husky/post-commit",
-      "source_location": "L135",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "husky_post_commit",
-      "target": "husky_post_commit_graphify_rebuild_log",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "source_file": ".husky/post-commit",
-      "source_location": "L9",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "husky_post_commit",
-      "target": "husky_post_commit_pythonhashseed",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "dynamic_import",
       "confidence": "EXTRACTED",
       "source_file": "src/composables/useExportacaoDados.ts",
@@ -42609,7 +42099,7 @@
       "relation": "indirect_call",
       "confidence": "INFERRED",
       "source_file": "src/components/dialogs/core/DialogFormUsuario.vue",
-      "source_location": "L151",
+      "source_location": "L150",
       "weight": 1.0,
       "_origin": "ast",
       "context": "collection",
@@ -42621,7 +42111,7 @@
       "relation": "indirect_call",
       "confidence": "INFERRED",
       "source_file": "src/components/dialogs/core/DialogFormUsuario.vue",
-      "source_location": "L152",
+      "source_location": "L151",
       "weight": 1.0,
       "_origin": "ast",
       "context": "collection",
@@ -43368,7 +42858,6 @@
       "source_file": "docs/README.md",
       "source_location": null,
       "weight": 1.0,
-      "_origin": "semantic",
       "source": "docs_readme",
       "target": "docs_versionamento_aplicacao_java"
     },
@@ -43379,7 +42868,6 @@
       "source_file": "README.md",
       "source_location": null,
       "weight": 1.0,
-      "_origin": "semantic",
       "source": "readme",
       "target": "index"
     },
@@ -43390,7 +42878,6 @@
       "source_file": "docs/superpowers/plans/2026-08-10-generic-view-action-drawer.md",
       "source_location": null,
       "weight": 1.0,
-      "_origin": "semantic",
       "source": "docs_superpowers_plans_2026_08_10_generic_view_action_drawer",
       "target": "docs_superpowers_specs_2026_08_10_generic_view_action_drawer_design"
     },
@@ -43401,7 +42888,6 @@
       "source_file": "docs/superpowers/plans/2026-08-11-chart-grouping-list.md",
       "source_location": null,
       "weight": 1.0,
-      "_origin": "semantic",
       "source": "docs_superpowers_plans_2026_08_11_chart_grouping_list",
       "target": "docs_superpowers_specs_2026_08_11_chart_grouping_list_design"
     },
@@ -43412,7 +42898,6 @@
       "source_file": "docs/superpowers/plans/2026-08-11-vuetify-migration-compatibility.md",
       "source_location": null,
       "weight": 1.0,
-      "_origin": "semantic",
       "source": "docs_superpowers_plans_2026_08_11_vuetify_migration_compatibility",
       "target": "docs_superpowers_specs_2026_08_11_vuetify_migration_compatibility_design"
     },
@@ -43423,7 +42908,6 @@
       "source_file": "public/pwa-192x192.png",
       "source_location": null,
       "weight": 1.0,
-      "_origin": "semantic",
       "source": "public_pwa_192x192",
       "target": "public_pwa_512x512"
     },
@@ -43434,11 +42918,10 @@
       "source_file": "public/pwa-512x512.png",
       "source_location": null,
       "weight": 1.0,
-      "_origin": "semantic",
       "source": "public_pwa_512x512",
       "target": "src_assets_logo"
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "af861527bf5d77fdb587a801a066067b7ceb8f63"
+  "built_at_commit": "81db700aa61e1abef1720afbb2c7e953f96b0ce6"
 }

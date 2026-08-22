@@ -29,9 +29,10 @@ coverage
 
 *.tsbuildinfo
 .env
+.envrc
 
 # Artefatos transitórios gerados pelos hooks do Graphify.
 graphify-out/cache/
 graphify-out/*.sig
 graphify-out/20*/
-.envrc
+graphify-out/cache/
