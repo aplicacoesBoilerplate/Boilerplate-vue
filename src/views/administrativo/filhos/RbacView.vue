@@ -221,12 +221,7 @@ async function salvarCargo(): Promise<void> {
 
   await salvarUsuariosComCargoAlterado(cargoSalvo);
   await Promise.all([carregarCargos(), carregarUsuariosParaVinculo()]);
-
-  if (modoEdicaoCargo.value && cargoSalvo.id) {
-    genericViewRef.value?.atualizarItem<ICargoRbac>('id', cargoSalvo.id, cargoSalvo);
-  } else {
-    genericViewRef.value?.inserirItem(cargoSalvo);
-  }
+  await genericViewRef.value?.resetarECarregar();
 
   await authStore.fetchUser();
   refDialogFormCargo.value?.concluirSalvo();
