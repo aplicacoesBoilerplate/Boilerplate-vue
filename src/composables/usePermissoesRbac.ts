@@ -1,17 +1,19 @@
-// Stores
 import { useI18n } from 'vue-i18n';
 
+// Stores
 import { useAuthStore } from '@/stores/auth.store';
 import { useSnackbarStore } from '@/stores/Snackbar.store';
 
-// Models
 import { RECURSO_PERMISSAO_GERAL_RBAC } from '@/models/model/core/rbac/rbac.api';
 import { permissaoEstaLiberada } from '@/models/model/core/rbac/rbac.model';
+// Models
+import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 
 export type TAcaoPermissaoGeralRbac = 'exportarDados' | 'visualizarGraficos' | 'gerenciarRegistros';
 
 export type TUsePermissoesRbacReturn = {
   possuiPermissaoGeral: (pAcao: TAcaoPermissaoGeralRbac) => boolean;
+  podeGerenciarRegistro: (pRegistro: { auditoria?: Pick<IAuditoriaRegistro, 'criadoPor'> }) => boolean;
   notificarPermissaoNegada: (pMensagem?: string) => void;
   executarComPermissaoGeral: <TRetorno>(
     pAcao: TAcaoPermissaoGeralRbac,
@@ -38,6 +40,14 @@ export function usePermissoesRbac(): TUsePermissoesRbacReturn {
     return permissaoEstaLiberada(authStore.cargoAtual, RECURSO_PERMISSAO_GERAL_RBAC, pAcao);
   }
 
+  function podeGerenciarRegistro(pRegistro: { auditoria?: Pick<IAuditoriaRegistro, 'criadoPor'> }): boolean {
+    if (possuiPermissaoGeral('gerenciarRegistros')) {
+      return true;
+    }
+
+    return Boolean(authStore.user?.id && pRegistro.auditoria?.criadoPor === authStore.user.id);
+  }
+
   function notificarPermissaoNegada(pMensagem = t('common.messages.actionDenied')): void {
     snackbarStore.adicionar({
       tipo: 'warning',
@@ -60,6 +70,7 @@ export function usePermissoesRbac(): TUsePermissoesRbacReturn {
 
   return {
     possuiPermissaoGeral,
+    podeGerenciarRegistro,
     notificarPermissaoNegada,
     executarComPermissaoGeral,
   };

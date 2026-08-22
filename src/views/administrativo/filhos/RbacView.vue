@@ -32,7 +32,6 @@
       <template #activator-novo-registro="{ acionarNovoRegistro, tooltipProps }">
         <v-btn
           v-bind="tooltipProps"
-          :disabled="!podeGerenciarRegistros"
           color="primary"
           icon="mdi-plus"
           size="x-small"
@@ -69,7 +68,7 @@
                 />
 
                 <v-btn
-                  :disabled="!podeGerenciarRegistros"
+                  :disabled="!podeGerenciarRegistro(cargo)"
                   icon="mdi-pencil"
                   variant="text"
                   color="info"
@@ -96,7 +95,7 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
@@ -133,7 +132,7 @@ const authStore = useAuthStore();
 // Composables
 const { mdAndDown } = useDisplay();
 const requisicaoService = useRequisicaoService();
-const { possuiPermissaoGeral, notificarPermissaoNegada } = usePermissoesRbac();
+const { podeGerenciarRegistro, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
 
 // Reativas
@@ -154,7 +153,7 @@ async function buscarCargos(pPayload: IConsultaRegistros<ICargoRbac>): Promise<I
 }
 
 async function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoRbac }): Promise<void> {
-  if (!podeGerenciarRegistros.value) {
+  if (pPayload.item && !podeGerenciarRegistro(pPayload.item)) {
     notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
@@ -192,7 +191,7 @@ async function visualizarCargo(pCargo: ICargoRbac): Promise<void> {
 }
 
 function habilitarEdicaoCargo(): void {
-  if (!podeGerenciarRegistros.value) {
+  if (!podeGerenciarRegistro(modelFormCargo.value)) {
     notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
@@ -202,7 +201,7 @@ function habilitarEdicaoCargo(): void {
 }
 
 async function salvarCargo(): Promise<void> {
-  if (!podeGerenciarRegistros.value) {
+  if (modoEdicaoCargo.value && !podeGerenciarRegistro(modelFormCargo.value)) {
     notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
@@ -239,7 +238,7 @@ async function excluirCargo(pCargo: ICargoRbac): Promise<void> {
     return;
   }
 
-  if (!podeGerenciarRegistros.value) {
+  if (!podeGerenciarRegistro(pCargo)) {
     notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
@@ -279,7 +278,7 @@ function cargoEhPadrao(pCargo: Pick<ICargoRbac, 'papel'>): boolean {
 }
 
 function podeRemoverCargo(pCargo: ICargoRbac): boolean {
-  return Boolean(podeGerenciarRegistros.value && pCargo.id && !cargoEhPadrao(pCargo));
+  return Boolean(podeGerenciarRegistro(pCargo) && pCargo.id && !cargoEhPadrao(pCargo));
 }
 
 async function carregarCargos(): Promise<void> {
@@ -341,9 +340,6 @@ async function reatribuirUsuariosDoCargoParaUsuarioPadrao(pPapelCargo: TPapel): 
     ),
   );
 }
-
-// Computadas
-const podeGerenciarRegistros = computed(() => possuiPermissaoGeral('gerenciarRegistros'));
 
 // Lifecycle Hooks
 onMounted(() => {

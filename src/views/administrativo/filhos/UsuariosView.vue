@@ -50,7 +50,6 @@
           <template #activator-novo-registro="{ acionarNovoRegistro, tooltipProps }">
             <v-btn
               v-bind="tooltipProps"
-              :disabled="!podeGerenciarRegistros"
               color="primary"
               variant="tonal"
               size="x-small"
@@ -100,7 +99,7 @@
                     />
 
                     <v-btn
-                      :disabled="!podeGerenciarRegistros"
+                      :disabled="!podeGerenciarRegistro(usuario)"
                       icon="mdi-pencil"
                       variant="text"
                       color="info"
@@ -182,7 +181,7 @@ const listStore = useGenericListStore();
 const genericFilterStore = useGenericFilterStore();
 const authStore = useAuthStore();
 const requisicaoService = useRequisicaoService();
-const { possuiPermissaoGeral, notificarPermissaoNegada } = usePermissoesRbac();
+const { possuiPermissaoGeral, podeGerenciarRegistro, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
 
 // Constantes e Dados Base
@@ -227,7 +226,7 @@ function alternarGraficoLocal(): void {
 }
 
 function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: IUsuario }): void {
-  if (!podeGerenciarRegistros.value) {
+  if (pPayload.item && !podeGerenciarRegistro(pPayload.item)) {
     notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
@@ -255,7 +254,7 @@ async function exportarUsuarios(pParametros?: Record<string, unknown>, pOptions?
 }
 
 async function salvarUsuario(): Promise<void> {
-  if (!podeGerenciarRegistros.value) {
+  if (modoEdicaoUsuario.value && !podeGerenciarRegistro(modelFormUsuario.value)) {
     notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
@@ -295,7 +294,7 @@ async function salvarUsuario(): Promise<void> {
 async function excluirUsuario(pUsuario: IUsuario): Promise<void> {
   if (!pUsuario.id) return;
 
-  if (!podeGerenciarRegistros.value) {
+  if (!podeGerenciarRegistro(pUsuario)) {
     notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
@@ -324,12 +323,11 @@ async function excluirUsuario(pUsuario: IUsuario): Promise<void> {
 
 function podeRemoverUsuario(pUsuario: IUsuario): boolean {
   return Boolean(
-    podeGerenciarRegistros.value && pUsuario.id && pUsuario.id !== 1 && pUsuario.id !== usuarioAutenticadoId.value,
+    podeGerenciarRegistro(pUsuario) && pUsuario.id && pUsuario.id !== 1 && pUsuario.id !== usuarioAutenticadoId.value,
   );
 }
 
 // Computadas
-const podeGerenciarRegistros = computed(() => possuiPermissaoGeral('gerenciarRegistros'));
 const podeVisualizarGraficos = computed(() => possuiPermissaoGeral('visualizarGraficos'));
 const usuarioAutenticadoId = computed(() => authStore.user?.id);
 const activeHeaderConfig = computed(() => {
