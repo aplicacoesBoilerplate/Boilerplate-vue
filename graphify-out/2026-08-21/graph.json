@@ -13957,6 +13957,17 @@
       "norm_label": "usuarios"
     },
     {
+      "label": "DialogFormUsuario.spec.ts",
+      "file_type": "code",
+      "source_file": "tests/unit/components/DialogFormUsuario.spec.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "tests_unit_components_dialogformusuario_spec",
+      "community": 210,
+      "community_name": "DialogFormUsuario.spec.ts",
+      "norm_label": "dialogformusuario.spec.ts"
+    },
+    {
       "label": "ManagerStorage.ts",
       "file_type": "code",
       "source_file": "src/utils/ManagerStorage.ts",
@@ -42598,7 +42609,7 @@
       "relation": "indirect_call",
       "confidence": "INFERRED",
       "source_file": "src/components/dialogs/core/DialogFormUsuario.vue",
-      "source_location": "L150",
+      "source_location": "L151",
       "weight": 1.0,
       "_origin": "ast",
       "context": "collection",
@@ -42610,7 +42621,7 @@
       "relation": "indirect_call",
       "confidence": "INFERRED",
       "source_file": "src/components/dialogs/core/DialogFormUsuario.vue",
-      "source_location": "L151",
+      "source_location": "L152",
       "weight": 1.0,
       "_origin": "ast",
       "context": "collection",
@@ -43429,5 +43440,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f711b28a372df48aa2a96fb4c61a017e16ea0c8e"
+  "built_at_commit": "af861527bf5d77fdb587a801a066067b7ceb8f63"
 }

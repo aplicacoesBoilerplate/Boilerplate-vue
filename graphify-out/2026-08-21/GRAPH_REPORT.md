@@ -1,16 +1,16 @@
 # Graph Report - Boilerplate-vue  (2026-08-21)
 
 ## Corpus Check
-- 236 files · ~98,840 words
+- 237 files · ~98,957 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1806 nodes · 1988 edges · 210 communities (136 shown, 74 thin omitted)
+- 1807 nodes · 1988 edges · 211 communities (137 shown, 74 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 80 edges (avg confidence: 0.57)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f711b28a`
+- Built from commit: `af861527`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -221,7 +221,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (210 total, 74 thin omitted)
+## Communities (211 total, 74 thin omitted)
 
 ### Community 0 - "DialogFiltro.vue"
 Cohesion: 0.05

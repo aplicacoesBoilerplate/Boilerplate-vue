@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1807 nodes · 1988 edges · 211 communities (137 shown, 74 thin omitted)
+- 1798 nodes · 1984 edges · 206 communities (132 shown, 74 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 80 edges (avg confidence: 0.57)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `af861527`
+- Built from commit: `fb77b720`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -198,13 +198,13 @@
 1. `useControlePermissoesCargo()` - 27 edges
 2. `scripts` - 19 edges
 3. `CManagerStorage` - 17 edges
-4. `StrategyHandler` - 14 edges
-5. `useExportacaoDados()` - 14 edges
-6. `CBaseConsultaApiService` - 14 edges
+4. `CBaseConsultaApiService` - 14 edges
+5. `StrategyHandler` - 14 edges
+6. `useExportacaoDados()` - 14 edges
 7. `PrecacheController` - 13 edges
 8. `CAutenticacaoService` - 12 edges
-9. `Router` - 11 edges
-10. `CBaseCrudApiService` - 11 edges
+9. `CBaseCrudApiService` - 11 edges
+10. `Router` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Ícone PWA Vue 512px` --semantically_similar_to--> `Logotipo Vue`  [INFERRED] [semantically similar]
@@ -221,7 +221,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (211 total, 74 thin omitted)
+## Communities (206 total, 74 thin omitted)
 
 ### Community 0 - "DialogFiltro.vue"
 Cohesion: 0.05
@@ -336,11 +336,11 @@ Cohesion: 0.11
 Nodes (17): cypress.config.*, eslint.config.*, nightwatch.conf.*, node, playwright.config.*, @tsconfig/node22/tsconfig.json, vite.config.*, vitest.config.* (+9 more)
 
 ### Community 28 - "useExportacaoDados"
-Cohesion: 0.22
+Cohesion: 0.24
 Nodes (16): assertExportWithinBudget(), TUseExportacaoDadosReturn, useExportacaoDados(), baixarArquivo(), exportarDados(), formatarValorExportacao(), gerarArquivoExportacao(), gerarExcel() (+8 more)
 
 ### Community 29 - "CAutenticacaoService"
-Cohesion: 0.15
+Cohesion: 0.17
 Nodes (3): autenticacaoService, CAutenticacaoService, useAuthStore
 
 ### Community 30 - "DialogFormUsuario.vue"
@@ -653,7 +653,7 @@ Cohesion: 0.15
 Nodes (12): [0.0.6](https://github.com/gersonfribeiro/Boilerplate-vue/compare/v2.1.0...v0.0.6) (2026-08-17), [0.0.7](https://github.com/gersonfribeiro/Boilerplate-vue/compare/v2.1.0...v0.0.7) (2026-08-17), [0.1.0](https://github.com/gersonfribeiro/Boilerplate-vue/compare/v0.0.2...v0.1.0) (2026-01-19), ⚠ BREAKING CHANGES, Bug Fixes, Bug Fixes, Bug Fixes, Changelog (+4 more)
 
 ## Knowledge Gaps
-- **908 isolated node(s):** `entrypoint.sh script`, `Window`, `ImportMetaEnv`, `name`, `version` (+903 more)
+- **908 isolated node(s):** `TProps`, `props`, `TEmits`, `genericFilterStore`, `{ smAndDown }` (+903 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **74 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -661,16 +661,16 @@ Nodes (12): [0.0.6](https://github.com/gersonfribeiro/Boilerplate-vue/compare/v2
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `devDependencies` connect `devDependencies` to `scripts`, `@commitlint/cli`, `eslint-config-prettier`, `@eslint/js`, `eslint-plugin-jsdoc`, `eslint-plugin-prettier`, `eslint-plugin-vue`, `globals`, `happy-dom`, `husky`, `jiti`, `npm-run-all2`, `prettier`, `standard-version`, `@tsconfig/node22`, `@types/node`, `typescript`, `typescript-eslint`, `vite`, `vite-plugin-pwa`, `vite-plugin-vue-devtools`, `@vite-pwa/assets-generator`, `@vitejs/plugin-vue`, `vitest`, `@vue/eslint-config-prettier`, `@vue/test-utils`, `vue-tsc`, `@vue/tsconfig`, `@commitlint/config-conventional`?**
-  _High betweenness centrality (0.008) - this node is a cross-community bridge._
+  _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `dependencies` to `scripts`?**
   _High betweenness centrality (0.004) - this node is a cross-community bridge._
+- **Why does `@vue/tsconfig` connect `@vue/tsconfig` to `devDependencies`?**
+  _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **Are the 12 inferred relationships involving `useControlePermissoesCargo()` (e.g. with `acaoApiDisponivel()` and `acaoApiLiberada()`) actually correct?**
   _`useControlePermissoesCargo()` has 12 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `entrypoint.sh script`, `Window`, `ImportMetaEnv` to the rest of the system?**
+- **What connects `TProps`, `props`, `TEmits` to the rest of the system?**
   _908 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `DialogFiltro.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.045328399629972246 - nodes in this community are weakly interconnected._
 - **Should `InputValorFiltro.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.05708245243128964 - nodes in this community are weakly interconnected._
-- **Should `CBaseConsultaApiService` be split into smaller, more focused modules?**
-  _Cohesion score 0.07198228128460686 - nodes in this community are weakly interconnected._

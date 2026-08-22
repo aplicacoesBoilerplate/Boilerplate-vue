@@ -203,11 +203,6 @@
   "201": "vuetify-configuration.spec.ts",
   "202": "vite.config.ts",
   "203": "Changelog",
-  "204": "jspdf",
-  "205": "vue3-apexcharts",
-  "206": "vue-i18n",
-  "207": "vue-router",
-  "208": "vue",
-  "209": "vuetify",
+  "204": "session-lifecycle.spec.ts",
   "210": "DialogFormUsuario.spec.ts"
 }
