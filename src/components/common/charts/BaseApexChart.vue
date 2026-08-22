@@ -165,7 +165,7 @@ const tituloAgrupamento = computed(() => {
 
 const labelsGrafico = computed(() => props.dados.map((pItem) => extrairRotulo(pItem)));
 const valoresBrutos = computed(() => props.dados.map((pItem) => (pItem as IValorGrafico).valor));
-const coresGrafico = computed(() => gerarCores(props.dados.length));
+const coresGrafico = computed(() => gerarCores(props.dados, props.mapeamentoCores));
 const chaveRenderizacao = computed(() => `${tipoGrafico.value}-${filtroSelecionado.value}`);
 
 const seriesGrafico = computed<number[] | { name: string; data: number[] }[]>(() => {

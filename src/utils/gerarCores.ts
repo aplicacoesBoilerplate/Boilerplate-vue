@@ -1,13 +1,30 @@
+type TDadoComCor = {
+  cor?: string;
+  valorOriginal?: unknown;
+};
+
+const CORES_BOOLEANAS: Record<string, string> = {
+  false: '#C62828',
+  true: '#2E7D32',
+};
+
 /**
- * @description Divide o Espectro de 360 graus pelo número de fatias (series).
- * @param {number} pSeries - Quantidade de cores que devem ser geradas baseado nos dados renderizados no gráfico.
- * @returns Hexadecimais de cores para serem renderizadas em gráficos, sem repetição.
+ * @description Gera cores para dados de gráficos, priorizando cores configuradas e valores booleanos semânticos.
+ * @param {readonly TDadoComCor[]} pDados Dados renderizados no gráfico.
+ * @param {Record<string, string>} pMapeamentoCores Cores opcionais indexadas pelo valor original do dado.
+ * @returns Cores a serem aplicadas aos dados na mesma ordem recebida.
  */
-export function gerarCores(pSeries: number) {
-  const cores = [];
-  for(let i = 0; i < pSeries; i++) {
-    const hue = Math.floor((360 / pSeries) * i);
-    cores.push(`hsl(${hue}, 70%, 50%)`);
-  }
-  return cores;
+export function gerarCores(pDados: readonly object[], pMapeamentoCores: Record<string, string> = {}): string[] {
+  return pDados.map((pDado, pIndex) => {
+    const dado = pDado as TDadoComCor;
+    const valorOriginal = dado.valorOriginal;
+    const corMapeada = pMapeamentoCores[String(valorOriginal)];
+
+    if (corMapeada) return corMapeada;
+    if (dado.cor) return dado.cor;
+    if (typeof valorOriginal === 'boolean') return CORES_BOOLEANAS[String(valorOriginal)];
+
+    const hue = Math.floor((360 / pDados.length) * pIndex);
+    return `hsl(${hue}, 70%, 50%)`;
+  });
 }
