@@ -219,12 +219,6 @@ const opcoesGrafico = computed<ApexOptions>(() => {
       theme: theme.current.value.dark ? 'dark' : 'light',
       fillSeriesColor: false,
       marker: { show: true },
-      fixed: {
-        enabled: true,
-        position: 'topRight',
-        offsetX: -8,
-        offsetY: 8,
-      },
       y: {
         formatter: (pValor: number, pContexto) => {
           const valorBruto = ehTipoRadial.value
