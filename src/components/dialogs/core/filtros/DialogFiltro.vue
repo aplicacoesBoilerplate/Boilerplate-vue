@@ -89,6 +89,22 @@
 
         <v-main :class="['dialog-filtro-main ma-2', { 'dialog-filtro-main--consulta-aberta': deveExibirConsultaRegistros }]"
         >
+          <v-chip-group
+            v-if="filtrosPreDefinidos.length"
+            class="pa-2"
+          >
+            <v-chip
+              v-for="filtro in filtrosPreDefinidos"
+              :key="filtro.chave"
+              :prependIcon="filtro.icone"
+              color="primary"
+              variant="tonal"
+              @click="aplicarFiltroPreDefinido(filtro)"
+            >
+              {{ filtro.rotulo }}
+            </v-chip>
+          </v-chip-group>
+
           <div class="dialog-filtro-main__formulario">
             <FormFiltros
               v-model:exibirConsultaRegistros="exibirConsultaRegistros"
@@ -163,6 +179,7 @@ import { useDisplay } from 'vuetify';
 import { useGenericFilterStore } from '@/stores/genericFilter.store';
 
 // Types e Interfaces
+import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
 import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
@@ -199,6 +216,16 @@ type TEmits = {
   onAplicarFiltros: [filtros: TFiltroConsultaSerializado[]];
 };
 const emits = defineEmits<TEmits>();
+
+type TFiltroPreDefinido = {
+  chave: string;
+  campo: string;
+  condicao: EOperadoresFiltro;
+  icone: string;
+  modo: 'aplicar' | 'preparar';
+  rotulo: string;
+  valor?: unknown;
+};
 
 // Stores
 const genericFilterStore = useGenericFilterStore();
@@ -238,6 +265,27 @@ function aplicarFiltros(): void {
   exibirFiltros.value = false;
 }
 
+function aplicarFiltroPreDefinido(pFiltro: TFiltroPreDefinido): void {
+  const filtro: TFiltroConsultaSerializado = {
+    campo: pFiltro.campo,
+    condicao: pFiltro.condicao,
+    valor: pFiltro.valor,
+    valoresSelecionados: [],
+  };
+
+  if (pFiltro.modo === 'preparar') {
+    genericFilterStore.filterModel = filtro;
+    exibirConsultaRegistros.value = true;
+    return;
+  }
+
+  genericFilterStore.filtersApplied = [
+    ...genericFilterStore.filtersApplied.filter((pAplicado) => pAplicado.campo !== filtro.campo),
+    filtro,
+  ];
+  aplicarFiltros();
+}
+
 // Computadas
 const campoSelecionadoAtual = computed(() => genericFilterStore.campoSelecionado);
 
@@ -248,6 +296,34 @@ const deveExibirConsultaRegistros = computed(() => {
 const alturaBotaoAcao = computed(() => (smAndDown.value ? 32 : undefined));
 const larguraMinimaBotaoAcao = computed(() => (smAndDown.value ? 0 : undefined));
 const tamanhoBotaoAcao = computed(() => (smAndDown.value ? 'small' : 'default'));
+const filtrosPreDefinidos = computed<TFiltroPreDefinido[]>(() => {
+  const campos = new Set(props.camposDisponiveis.map((pCampo) => pCampo.valor));
+  const filtros: TFiltroPreDefinido[] = [];
+
+  if (campos.has('ativo')) {
+    filtros.push({
+      chave: 'ativos',
+      campo: 'ativo',
+      condicao: EOperadoresFiltro.VERDADEIRO,
+      icone: 'mdi-check-circle-outline',
+      modo: 'aplicar',
+      rotulo: t('components.dialogFiltro.filtrosPreDefinidos.ativos'),
+    });
+  }
+
+  if (campos.has('papel')) {
+    filtros.push({
+      chave: 'por-cargo',
+      campo: 'papel',
+      condicao: EOperadoresFiltro.SELECAO,
+      icone: 'mdi-account-tag-outline',
+      modo: 'preparar',
+      rotulo: t('components.dialogFiltro.filtrosPreDefinidos.porCargo'),
+    });
+  }
+
+  return filtros;
+});
 
 // Observadores
 watch(
