@@ -15,36 +15,17 @@
     </template>
 
     <template #content>
-      <v-autocomplete
-        v-model="iconeBusca"
-        v-model:search="termoBusca"
-        :items="iconesFiltrados"
+      <v-text-field
+        v-model="termoBusca"
         :label="t('forms.seletorIconeMaterialDesign.dialog.buscarLabel')"
         :loading="carregando"
-        :noDataText="t('forms.seletorIconeMaterialDesign.dialog.semResultados')"
         class="mb-4 flex-shrink-0"
-        itemTitle="nome"
-        itemValue="valor"
         density="comfortable"
         variant="outlined"
         autocomplete="off"
-        noFilter
         clearable
         hideDetails
-        @update:modelValue="selecionarIconeBusca"
-      >
-        <template #item="{ props: itemProps, item }">
-          <v-list-item
-            v-bind="itemProps"
-            :subtitle="item.aliases.join(', ')"
-            :title="item.nome"
-          >
-            <template #prepend>
-              <v-icon :icon="item.valor" />
-            </template>
-          </v-list-item>
-        </template>
-      </v-autocomplete>
+      />
 
       <div
         class="d-flex flex-column flex-grow-1"
@@ -132,7 +113,6 @@ const exibirDialog = defineModel<boolean>('exibirDialog', { default: false });
 
 // Reativas - Ref
 const termoBusca = ref('');
-const iconeBusca = ref<string | null>(null);
 
 // Computadas
 const iconesFiltrados = filtrarIcones(termoBusca);
@@ -154,21 +134,10 @@ function selecionarIcone(pValorIcone: string): void {
   exibirDialog.value = false;
 }
 
-/**
- * @description Trata a seleção realizada diretamente pela busca autocomplete.
- * @param pValorIcone - Valor escolhido na lista de sugestões.
- */
-function selecionarIconeBusca(pValorIcone: string | null): void {
-  if (pValorIcone) {
-    selecionarIcone(pValorIcone);
-  }
-}
-
 // Observadores
 watch(exibirDialog, (pExibirDialog) => {
   if (!pExibirDialog) {
     termoBusca.value = '';
-    iconeBusca.value = null;
     return;
   }
 
