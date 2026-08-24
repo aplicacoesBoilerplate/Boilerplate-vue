@@ -89,6 +89,8 @@
 
         <v-main :class="['dialog-filtro-main ma-2', { 'dialog-filtro-main--consulta-aberta': deveExibirConsultaRegistros }]"
         >
+          <TemplatesFiltro :recurso="genericFilterStore.contextoFiltroAtual" />
+
           <div class="dialog-filtro-main__formulario">
             <FormFiltros
               v-model:exibirConsultaRegistros="exibirConsultaRegistros"
@@ -173,6 +175,7 @@ import FormFiltros from '@/components/forms/core/FormFiltros.vue';
 import ConsultaRegistrosFiltro from './fixtures/consulta/ConsultaRegistrosFiltro.vue';
 import DrawerFiltroLeft from './fixtures/drawers/DrawerFiltroLeft.vue';
 import DrawerFiltroRight from './fixtures/drawers/DrawerFiltroRight.vue';
+import TemplatesFiltro from './fixtures/TemplatesFiltro.vue';
 
 /**
  * @property {object[]} registros - Registros para consulta auxiliar.
