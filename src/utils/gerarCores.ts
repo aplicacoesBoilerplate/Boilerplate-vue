@@ -16,13 +16,13 @@ const CORES_BOOLEANAS: Record<string, string> = {
  */
 export function gerarCores(pDados: readonly object[], pMapeamentoCores: Record<string, string> = {}): string[] {
   return pDados.map((pDado, pIndex) => {
-    const dado = pDado as TDadoComCor;
-    const valorOriginal = dado.valorOriginal;
-    const corMapeada = pMapeamentoCores[String(valorOriginal)];
+    const lDado = pDado as TDadoComCor;
+    const lValorOriginal = lDado.valorOriginal;
+    const lCorMapeada = pMapeamentoCores[String(lValorOriginal)];
 
-    if (corMapeada) return corMapeada;
-    if (dado.cor) return dado.cor;
-    if (typeof valorOriginal === 'boolean') return CORES_BOOLEANAS[String(valorOriginal)];
+    if (lCorMapeada) return lCorMapeada;
+    if (lDado.cor) return lDado.cor;
+    if (typeof lValorOriginal === 'boolean') return CORES_BOOLEANAS[String(lValorOriginal)];
 
     const hue = Math.floor((360 / pDados.length) * pIndex);
     return `hsl(${hue}, 70%, 50%)`;

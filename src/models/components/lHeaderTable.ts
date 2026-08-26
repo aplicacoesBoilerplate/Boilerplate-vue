@@ -10,8 +10,6 @@
  * @property {string | number} [width] Define a largura base da coluna, afetando seu dimensionamento horizontal no componente.
  * @property {string | number} [maxWidth] Impõe um limite máximo de largura, muito útil para evitar expansões indesejadas com textos extensos.
  * @property {boolean} [sortable] Determina se a coluna suporta a ordenação dos dados através da interação com o cabeçalho.
- * @property {'sum' | 'count'} [chartAggregator] Define a operação de agregação (soma ou contagem) quando os dados da tabela servem de base para um gráfico.
- * @property {(value?: any) => string} [chartFormatter] Função de formatação para tratar os valores antes de serem renderizados nas representações gráficas.
  * @property {(item: any) => string} [value] Função opcional que processa o item inteiro para gerar um valor customizado a ser exibido e ordenado (frequentemente usado em vez do valor bruto lido via `key`).
  */
 export interface IHeadersDataTable {
@@ -23,7 +21,5 @@ export interface IHeadersDataTable {
   width?: string | number;
   maxWidth?: string | number;
   sortable?: boolean;
-  chartAggregator?: 'sum' | 'count';
-  chartFormatter?: (value?: any) => string;
   value?: (item: any) => string;
 }

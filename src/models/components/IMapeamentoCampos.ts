@@ -1,20 +1,23 @@
+import type { IConfiguracaoGrafico } from './IConfiguracaoGrafico';
 import type { IHeadersDataTable } from './lHeaderTable';
 import type { ICampoFiltro } from '@/models/filters/ICampoFiltro';
 
 /**
- * @description Configuração canônica de um campo que pode alimentar filtros e colunas de tabela.
+ * @description Configuração canônica de um campo que pode alimentar filtros, colunas de tabela e gráficos.
  * @template TCampo - União das chaves configuráveis.
  * @template TRegistro - Registro consultado pela configuração auxiliar de filtros.
  * 
  * @property {string} rotulo - É a descrição amigável extraído por ICampoFiltro e IHeadersDataTable possuem atributos diferentes com a mesma finalidade.
  * @property {Omit<ICampoFiltro<TCampo, TRegistro>, 'valor' | 'descricao'>} filtro - Mapeamento para os atributos de filtros de um Model.
  * @property {Omit<IHeadersDataTable, 'key' | 'title'>} tabela - Mapeamentos para os atributos de tabela de um Model.
+ * @property {Omit<IConfiguracaoGrafico, 'chave' | 'titulo'>} grafico - Mapeamentos para os atributos de gráfico de um Model.
  */
 export interface IConfiguracaoCampo<TCampo extends string, TRegistro extends object> {
   rotulo?: string;
   rotuloChave?: string;
   filtro?: Omit<ICampoFiltro<TCampo, TRegistro>, 'valor' | 'descricao'>;
   tabela?: Omit<IHeadersDataTable, 'key' | 'title'>;
+  grafico?: Omit<IConfiguracaoGrafico, 'chave' | 'titulo'>;
 }
 
 /**

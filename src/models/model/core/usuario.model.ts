@@ -7,7 +7,7 @@ import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 
 // Utils
-import { criarCabecalhosTabela, criarCamposFiltro } from '@/utils/MapeamentoCampos';
+import { criarCabecalhosTabela, criarCamposFiltro, criarConfiguracoesGrafico } from '@/utils/MapeamentoCampos';
 
 // Services
 import { cargoRbacService } from '@/services/core/CCargoRbacService';
@@ -212,7 +212,11 @@ const MAPEAMENTO_MODEL_USUARIO = {
       maxWidth: 100,
       sortable: true,
       value: (pItem: IUsuario) => CFormatters.formatarBooleano(pItem.ativo),
-      chartFormatter: CFormatters.formatarBooleano,
+    },
+    grafico: {
+      formatador: (pValor?: unknown) => CFormatters.formatarBooleano(
+        typeof pValor === 'boolean' ? pValor : undefined,
+      ),
     }
   },
   papel: {
@@ -233,6 +237,12 @@ const MAPEAMENTO_MODEL_USUARIO = {
       width: 150,
       maxWidth: 200,
       sortable: true
+    },
+    grafico: {
+      cores: {
+        ADMIN: '#1565C0',
+        USER: '#6A1B9A',
+      },
     }
   }
 } satisfies TMapeamentoUsuario;
@@ -244,3 +254,4 @@ const ENTRADAS_MAPEAMENTO_USUARIO = obterEntradasMapeamentoCampos<
 
 export const CAMPOS_FILTRO_USUARIO = criarCamposFiltro(ENTRADAS_MAPEAMENTO_USUARIO);
 export const CABECALHOS_TABELA_USUARIO = criarCabecalhosTabela(ENTRADAS_MAPEAMENTO_USUARIO);
+export const CONFIGURACOES_GRAFICO_USUARIO = criarConfiguracoesGrafico(ENTRADAS_MAPEAMENTO_USUARIO);
