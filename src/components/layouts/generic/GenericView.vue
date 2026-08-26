@@ -177,6 +177,7 @@ import { useI18n } from 'vue-i18n';
 // Models
 import type { IGenericInfiniteListExpose } from '@/models/components/exposes/IGenericInfiniteListExpose';
 import type { IGenericViewExpose } from '@/models/components/exposes/IGenericViewExpose';
+import type { IConfiguracaoGrafico } from '@/models/components/IConfiguracaoGrafico';
 import type { TMetodoExportacaoDados } from '@/models/components/IExportacaoDados';
 import type { IValorGrafico } from '@/models/components/IValorGrafico';
 import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
@@ -198,7 +199,7 @@ type TProps = {
   cacheTtlMs?: number;
   dadosGrafico?: IValorGrafico[] | TDadoGrafico[];
   alturaGrafico?: number;
-  configuracaoGraficoAtiva?: IHeadersDataTable;
+  configuracaoGraficoAtiva?: IConfiguracaoGrafico;
   contexto: string;
   textoVazio?: string;
   textoFinal?: string;

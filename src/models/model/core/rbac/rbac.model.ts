@@ -7,7 +7,7 @@ import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 import type { TPapel } from '@/models/model/core/usuario.model';
 
-import { criarCabecalhosTabela, criarCamposFiltro } from '@/utils/MapeamentoCampos';
+import { criarCabecalhosTabela, criarCamposFiltro, criarConfiguracoesGrafico } from '@/utils/MapeamentoCampos';
 
 // Services
 import { cargoRbacService } from '@/services/core/CCargoRbacService';
@@ -148,7 +148,11 @@ const MAPEAMENTO_MODEL_RBAC = {
       maxWidth: 100,
       sortable: true,
       value: (pItem: ICargoRbac) => CFormatters.formatarBooleano(pItem.ativo),
-      chartFormatter: CFormatters.formatarBooleano,
+    },
+    grafico: {
+      formatador: (pValor?: unknown) => CFormatters.formatarBooleano(
+        typeof pValor === 'boolean' ? pValor : undefined,
+      ),
     }
   },
 } satisfies TMapeamentoRbac;
@@ -160,6 +164,7 @@ const ENTRADAS_MAPEAMENTO_RBAC = obterEntradasMapeamentoCampos<
 
 export const CAMPOS_FILTRO_RBAC = criarCamposFiltro(ENTRADAS_MAPEAMENTO_RBAC);
 export const CABECALHOS_TABELA_RBAC = criarCabecalhosTabela(ENTRADAS_MAPEAMENTO_RBAC);
+export const CONFIGURACOES_GRAFICO_RBAC = criarConfiguracoesGrafico(ENTRADAS_MAPEAMENTO_RBAC);
 
 /**
  * @description Verifica se uma permissão específica está liberada para um cargo.

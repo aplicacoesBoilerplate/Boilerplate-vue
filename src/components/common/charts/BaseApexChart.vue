@@ -56,8 +56,8 @@ import { useI18n } from 'vue-i18n';
 import { useTheme } from 'vuetify';
 
 // Models
+import type { IConfiguracaoGrafico } from '@/models/components/IConfiguracaoGrafico';
 import type { IValorGrafico } from '@/models/components/IValorGrafico';
-import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
 import type { TChartType } from '@/models/components/TChartType';
 import type { TDadoGrafico } from '@/models/components/TDadoGrafico';
 import type { ICampoAgrupamento } from '@/models/filters/ICampoFiltro';
@@ -75,7 +75,7 @@ type TMapeamentoCoresGrafico = Record<string, string>;
 type TProps = {
   dados: IValorGrafico[] | TDadoGrafico[];
   opcoesFiltro: ICampoAgrupamento[];
-  configuracaoAtiva?: IHeadersDataTable;
+  configuracaoAtiva?: IConfiguracaoGrafico;
   altura?: number;
   tipoInicial?: TChartType;
   mapeamentoCores?: TMapeamentoCoresGrafico;
@@ -110,8 +110,8 @@ const tipoGrafico = computed<TChartType>({
 function extrairRotulo(pItem: IValorGrafico | TDadoGrafico): string {
   if ('titulo' in pItem) {
     const valorOriginal = pItem.valorOriginal ?? pItem.titulo;
-    if (props.configuracaoAtiva?.chartFormatter) {
-      return props.configuracaoAtiva.chartFormatter(valorOriginal);
+    if (props.configuracaoAtiva?.formatador) {
+      return props.configuracaoAtiva.formatador(valorOriginal);
     }
     return formatarNumeroOuTexto(valorOriginal);
   }
@@ -153,26 +153,33 @@ const tipoGraficoApex = computed<TTipoGraficoApex>(() => {
 const totalValor = computed(() => props.dados.reduce((pTotal, pItem) => pTotal + (pItem as IValorGrafico).valor, 0));
 
 const labelCentro = computed(() => {
-  return props.configuracaoAtiva?.chartAggregator === 'sum'
+  return props.configuracaoAtiva?.agregador === 'sum'
     ? t('components.baseChart.totalAcumulado')
     : t('components.baseChart.registrosTotais');
 });
 
 const tituloAgrupamento = computed(() => {
-  const campo = props.configuracaoAtiva?.title.toLocaleLowerCase() ?? t('components.baseChart.categoria');
+  const campo = props.configuracaoAtiva?.titulo.toLocaleLowerCase() ?? t('components.baseChart.categoria');
   return t('components.baseChart.tituloAgrupamento', { campo });
 });
 
 const labelsGrafico = computed(() => props.dados.map((pItem) => extrairRotulo(pItem)));
 const valoresBrutos = computed(() => props.dados.map((pItem) => (pItem as IValorGrafico).valor));
-const coresGrafico = computed(() => gerarCores(props.dados.length));
+const coresGrafico = computed(() => {
+  const mapeamentoCores = {
+    ...props.mapeamentoCores,
+    ...props.configuracaoAtiva?.cores,
+  };
+
+  return gerarCores(props.dados, mapeamentoCores);
+});
 const chaveRenderizacao = computed(() => `${tipoGrafico.value}-${filtroSelecionado.value}`);
 
 const seriesGrafico = computed<number[] | { name: string; data: number[] }[]>(() => {
   if (ehTipoLinha.value) {
     return [
       {
-        name: props.configuracaoAtiva?.title ?? t('messages.value'),
+        name: props.configuracaoAtiva?.titulo ?? t('messages.value'),
         data: props.dados.map((pItem) => (pItem as IValorGrafico).valor),
       },
     ];
@@ -186,7 +193,7 @@ const seriesGrafico = computed<number[] | { name: string; data: number[] }[]>(()
   if (tipoGrafico.value === 'bar' || ehBarraHorizontal.value) {
     return [
       {
-        name: props.configuracaoAtiva?.title ?? t('messages.value'),
+        name: props.configuracaoAtiva?.titulo ?? t('messages.value'),
         data: props.dados.map((pItem) => (pItem as IValorGrafico).valor),
       },
     ];

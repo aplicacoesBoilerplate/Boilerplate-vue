@@ -155,7 +155,7 @@ import { useGenericFilterStore } from '@/stores/genericFilter.store';
 import { useGenericListStore } from '@/stores/genericList.store';
 
 // Types e Interfaces
-import { CABECALHOS_TABELA_USUARIO, criarUsuarioPadrao, type IUsuario } from '@/models/model/core/usuario.model';
+import { CABECALHOS_TABELA_USUARIO, CONFIGURACOES_GRAFICO_USUARIO, criarUsuarioPadrao, type IUsuario } from '@/models/model/core/usuario.model';
 import type { IGenericViewExpose } from '@/models/components/exposes/IGenericViewExpose';
 // Mapeamentos
 import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
@@ -188,6 +188,7 @@ const { t } = useI18n();
 // Constantes e Dados Base
 const CONTEXTO_LISTA_USUARIOS = 'lista-usuarios';
 const headers = CABECALHOS_TABELA_USUARIO;
+const configuracoesGrafico = CONFIGURACOES_GRAFICO_USUARIO;
 const headersExportacao = headers;
 const camposAgrupamento = computed(() => genericFilterStore.camposAgrupadoresDisponiveis);
 const {
@@ -333,13 +334,13 @@ const podeGerenciarRegistros = computed(() => possuiPermissaoGeral('gerenciarReg
 const podeVisualizarGraficos = computed(() => possuiPermissaoGeral('visualizarGraficos'));
 const usuarioAutenticadoId = computed(() => authStore.user?.id);
 const activeHeaderConfig = computed(() => {
-  return headers.find((pHeader) => pHeader.key === selectedChartFilter.value);
+  return configuracoesGrafico.find((pConfiguracao) => pConfiguracao.chave === selectedChartFilter.value);
 });
 
 const chartDataComputed = computed(() => {
   const items = (listStore.contexts[CONTEXTO_LISTA_USUARIOS]?.registros as IUsuario[]) || [];
   const key = selectedChartFilter.value;
-  const strategy = activeHeaderConfig.value?.chartAggregator || 'count';
+  const strategy = activeHeaderConfig.value?.agregador || 'count';
   return useChartHelpers(items, key, strategy);
 });
 </script>
