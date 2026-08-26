@@ -14,19 +14,21 @@
         name="activator" />
     </template>
 
-    <template #content>
+    <template #extension>
       <v-text-field
         v-model="termoBusca"
         :label="t('forms.seletorIconeMaterialDesign.dialog.buscarLabel')"
         :loading="carregando"
-        class="mb-4 flex-shrink-0"
+        class="mt-5 pa-2 flex-shrink-0"
         density="comfortable"
         variant="outlined"
         autocomplete="off"
         clearable
         hideDetails
       />
+    </template>
 
+    <template #content>
       <div
         class="d-flex flex-column flex-grow-1"
         style="min-height: 0">
