@@ -1,4 +1,5 @@
 // Models
+import type { IConfiguracaoGrafico } from "@/models/components/IConfiguracaoGrafico";
 import type { IConfiguracaoCampo, TEntradaMapeamentoCampos } from "@/models/components/IMapeamentoCampos";
 import type { IHeadersDataTable } from "@/models/components/lHeaderTable";
 import type { ICampoFiltro } from "@/models/filters/ICampoFiltro";
@@ -13,12 +14,14 @@ import { CTradutor } from '@/classes/Utils/CTradutor';
  * @property {string} rotulo - Texto canônico reutilizado como descrição do filtro e título da tabela.
  * @property {object} filtro - Configuração opcional destinada à projeção de filtros.
  * @property {object} tabela - Configuração opcional destinada à projeção de cabeçalhos.
+ * @property {object} grafico - Configuração opcional destinada à projeção de gráficos.
  */
 type TConfiguracaoCampoBase = {
   rotulo?: string;
   rotuloChave?: string;
   filtro?: object;
   tabela?: object;
+  grafico?: object;
 };
 
 function resolverRotulo(pConfiguracao: TConfiguracaoCampoBase): string {
@@ -111,5 +114,40 @@ export function criarCabecalhosTabela<
     });
 
     return [cabecalho];
+  });
+}
+
+/**
+ * @description Cria as configurações de gráficos a partir das entradas de um mapeamento canônico.
+ * Ignora configurações que não possuem a propriedade `grafico`.
+ *
+ * @template TCampo - União das chaves configuráveis do domínio.
+ * @template TConfiguracao - Configuração canônica individual ou união de configurações.
+ * @param pEntradas - Entradas tipadas do mapeamento canônico.
+ * @returns Configurações no formato esperado pelos componentes de gráfico.
+ */
+export function criarConfiguracoesGrafico<
+  TCampo extends string,
+  TConfiguracao extends TConfiguracaoCampoBase
+>(
+  pEntradas: TEntradaMapeamentoCampos<TCampo, TConfiguracao>[],
+): IConfiguracaoGrafico[] {
+  return pEntradas.flatMap(([pChave, pConfiguracao]) => {
+    if (!pConfiguracao.grafico) {
+      return [];
+    }
+
+    const configuracao = {
+      chave: pChave,
+      titulo: resolverRotulo(pConfiguracao),
+      ...pConfiguracao.grafico,
+    } as IConfiguracaoGrafico;
+
+    Object.defineProperty(configuracao, 'titulo', {
+      enumerable: true,
+      get: () => resolverRotulo(pConfiguracao),
+    });
+
+    return [configuracao];
   });
 }
