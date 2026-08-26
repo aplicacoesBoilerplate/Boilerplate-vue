@@ -564,6 +564,29 @@ test('centraliza ícone grande e mantém o título no rodapé do cartão', async
   expect(medidas.footerTop).toBeGreaterThan(medidas.cardMiddle);
 });
 
+test('seleciona ícone pela grade após pesquisar', async ({ page }) => {
+  await page.goto('/admin/rbac', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
+
+  const main = page.locator('.v-main');
+  await main.locator('button:has(.mdi-menu-open)').hover();
+  await main.locator('button:has(.mdi-plus)').click();
+
+  const formularioCargo = page.getByRole('dialog');
+  await formularioCargo.getByRole('textbox', { name: /Ícone|Icon/ }).click();
+
+  const seletor = page.getByRole('dialog').last();
+  const busca = seletor.getByRole('textbox', { name: /Buscar ícone|Search by name or alias/ });
+  await busca.fill('account');
+
+  const iconeFiltrado = seletor.locator('.grade-icones-material-design__card').first();
+  await expect(iconeFiltrado).toBeEnabled();
+  await iconeFiltrado.click();
+
+  await expect(page.getByRole('dialog')).toHaveCount(1);
+  await expect(formularioCargo.getByRole('textbox', { name: /Ícone|Icon/ })).toHaveValue(/mdi-account/);
+});
+
 test('traduz integralmente os fluxos de licença, filtros e abas RBAC para inglês', async ({ page }) => {
   const problemasConsole = monitorarProblemasConsole(page);
 
