@@ -4,16 +4,28 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth.store';
 import { useSnackbarStore } from '@/stores/Snackbar.store';
 
-import { RECURSO_PERMISSAO_GERAL_RBAC } from '@/models/model/core/rbac/rbac.api';
+import {
+  MAPEAMENTO_ROTAS_API_RBAC,
+  montarAcaoEndpointApiRbac,
+  RECURSO_PERMISSAO_API_RBAC,
+  RECURSO_PERMISSAO_GERAL_RBAC,
+} from '@/models/model/core/rbac/rbac.api';
 import { permissaoEstaLiberada } from '@/models/model/core/rbac/rbac.model';
-// Models
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
+// Models
+import type { TAcaoApiRbac } from '@/models/model/core/rbac/rbac.types';
 
 export type TAcaoPermissaoGeralRbac = 'exportarDados' | 'visualizarGraficos' | 'gerenciarRegistros';
+export type TRecursoPermissaoApiRbac = keyof typeof MAPEAMENTO_ROTAS_API_RBAC;
 
 export type TUsePermissoesRbacReturn = {
   possuiPermissaoGeral: (pAcao: TAcaoPermissaoGeralRbac) => boolean;
-  podeGerenciarRegistro: (pRegistro: { auditoria?: Pick<IAuditoriaRegistro, 'criadoPor'> }) => boolean;
+  possuiPermissaoApi: (pRecurso: TRecursoPermissaoApiRbac, pAcao: TAcaoApiRbac) => boolean;
+  podeGerenciarRegistro: (
+    pRecurso: TRecursoPermissaoApiRbac,
+    pAcao: Extract<TAcaoApiRbac, 'editar' | 'remover'>,
+    pRegistro: { auditoria?: Pick<IAuditoriaRegistro, 'criadoPor'> },
+  ) => boolean;
   notificarPermissaoNegada: (pMensagem?: string) => void;
   executarComPermissaoGeral: <TRetorno>(
     pAcao: TAcaoPermissaoGeralRbac,
@@ -40,7 +52,29 @@ export function usePermissoesRbac(): TUsePermissoesRbacReturn {
     return permissaoEstaLiberada(authStore.cargoAtual, RECURSO_PERMISSAO_GERAL_RBAC, pAcao);
   }
 
-  function podeGerenciarRegistro(pRegistro: { auditoria?: Pick<IAuditoriaRegistro, 'criadoPor'> }): boolean {
+  function possuiPermissaoApi(pRecurso: TRecursoPermissaoApiRbac, pAcao: TAcaoApiRbac): boolean {
+    const cargoAtual = authStore.cargoAtual;
+
+    if (!cargoAtual) {
+      return false;
+    }
+
+    const endpoints = MAPEAMENTO_ROTAS_API_RBAC[pRecurso]?.acoes[pAcao] ?? [];
+
+    return endpoints.length > 0 && endpoints.every((pEndpoint) =>
+      permissaoEstaLiberada(cargoAtual, RECURSO_PERMISSAO_API_RBAC, montarAcaoEndpointApiRbac(pEndpoint)),
+    );
+  }
+
+  function podeGerenciarRegistro(
+    pRecurso: TRecursoPermissaoApiRbac,
+    pAcao: Extract<TAcaoApiRbac, 'editar' | 'remover'>,
+    pRegistro: { auditoria?: Pick<IAuditoriaRegistro, 'criadoPor'> },
+  ): boolean {
+    if (!possuiPermissaoApi(pRecurso, pAcao)) {
+      return false;
+    }
+
     if (possuiPermissaoGeral('gerenciarRegistros')) {
       return true;
     }
@@ -70,6 +104,7 @@ export function usePermissoesRbac(): TUsePermissoesRbacReturn {
 
   return {
     possuiPermissaoGeral,
+    possuiPermissaoApi,
     podeGerenciarRegistro,
     notificarPermissaoNegada,
     executarComPermissaoGeral,

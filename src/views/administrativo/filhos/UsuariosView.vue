@@ -50,6 +50,7 @@
           <template #activator-novo-registro="{ acionarNovoRegistro, tooltipProps }">
             <v-btn
               v-bind="tooltipProps"
+              :disabled="!podeCriarUsuario"
               color="primary"
               variant="tonal"
               size="x-small"
@@ -99,7 +100,7 @@
                     />
 
                     <v-btn
-                      :disabled="!podeGerenciarRegistro(usuario)"
+                      :disabled="!podeGerenciarRegistro('Usuarios', 'editar', usuario)"
                       icon="mdi-pencil"
                       variant="text"
                       color="info"
@@ -154,7 +155,7 @@ import { useGenericFilterStore } from '@/stores/genericFilter.store';
 import { useGenericListStore } from '@/stores/genericList.store';
 
 // Types e Interfaces
-import { CABECALHOS_TABELA_USUARIO, criarUsuarioPadrao, type IUsuario } from '@/models/model/core/usuario.model';
+import { CABECALHOS_TABELA_USUARIO, CONFIGURACOES_GRAFICO_USUARIO, criarUsuarioPadrao, type IUsuario } from '@/models/model/core/usuario.model';
 import type { IGenericViewExpose } from '@/models/components/exposes/IGenericViewExpose';
 // Mapeamentos
 import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
@@ -181,12 +182,13 @@ const listStore = useGenericListStore();
 const genericFilterStore = useGenericFilterStore();
 const authStore = useAuthStore();
 const requisicaoService = useRequisicaoService();
-const { possuiPermissaoGeral, podeGerenciarRegistro, notificarPermissaoNegada } = usePermissoesRbac();
+const { possuiPermissaoApi, possuiPermissaoGeral, podeGerenciarRegistro, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
 
 // Constantes e Dados Base
 const CONTEXTO_LISTA_USUARIOS = 'lista-usuarios';
 const headers = CABECALHOS_TABELA_USUARIO;
+const configuracoesGrafico = CONFIGURACOES_GRAFICO_USUARIO;
 const headersExportacao = headers;
 const camposAgrupamento = computed(() => genericFilterStore.camposAgrupadoresDisponiveis);
 const {
@@ -226,7 +228,11 @@ function alternarGraficoLocal(): void {
 }
 
 function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: IUsuario }): void {
-  if (pPayload.item && !podeGerenciarRegistro(pPayload.item)) {
+  const possuiPermissao = pPayload.item
+    ? podeGerenciarRegistro('Usuarios', 'editar', pPayload.item)
+    : podeCriarUsuario.value;
+
+  if (!possuiPermissao) {
     notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
@@ -254,7 +260,11 @@ async function exportarUsuarios(pParametros?: Record<string, unknown>, pOptions?
 }
 
 async function salvarUsuario(): Promise<void> {
-  if (modoEdicaoUsuario.value && !podeGerenciarRegistro(modelFormUsuario.value)) {
+  const possuiPermissao = modoEdicaoUsuario.value
+    ? podeGerenciarRegistro('Usuarios', 'editar', modelFormUsuario.value)
+    : podeCriarUsuario.value;
+
+  if (!possuiPermissao) {
     notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
@@ -294,7 +304,7 @@ async function salvarUsuario(): Promise<void> {
 async function excluirUsuario(pUsuario: IUsuario): Promise<void> {
   if (!pUsuario.id) return;
 
-  if (!podeGerenciarRegistro(pUsuario)) {
+  if (!podeGerenciarRegistro('Usuarios', 'remover', pUsuario)) {
     notificarPermissaoNegada(t('common.messages.manageDenied'));
     return;
   }
@@ -323,21 +333,25 @@ async function excluirUsuario(pUsuario: IUsuario): Promise<void> {
 
 function podeRemoverUsuario(pUsuario: IUsuario): boolean {
   return Boolean(
-    podeGerenciarRegistro(pUsuario) && pUsuario.id && pUsuario.id !== 1 && pUsuario.id !== usuarioAutenticadoId.value,
+    podeGerenciarRegistro('Usuarios', 'remover', pUsuario)
+      && pUsuario.id
+      && pUsuario.id !== 1
+      && pUsuario.id !== usuarioAutenticadoId.value,
   );
 }
 
 // Computadas
+const podeCriarUsuario = computed(() => authStore.user?.papel === 'ADMIN' && possuiPermissaoApi('Usuarios', 'gravar'));
 const podeVisualizarGraficos = computed(() => possuiPermissaoGeral('visualizarGraficos'));
 const usuarioAutenticadoId = computed(() => authStore.user?.id);
 const activeHeaderConfig = computed(() => {
-  return headers.find((pHeader) => pHeader.key === selectedChartFilter.value);
+  return configuracoesGrafico.find((pConfiguracao) => pConfiguracao.chave === selectedChartFilter.value);
 });
 
 const chartDataComputed = computed(() => {
   const items = (listStore.contexts[CONTEXTO_LISTA_USUARIOS]?.registros as IUsuario[]) || [];
   const key = selectedChartFilter.value;
-  const strategy = activeHeaderConfig.value?.chartAggregator || 'count';
+  const strategy = activeHeaderConfig.value?.agregador || 'count';
   return useChartHelpers(items, key, strategy);
 });
 </script>

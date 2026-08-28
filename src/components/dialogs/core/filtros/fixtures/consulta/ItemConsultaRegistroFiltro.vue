@@ -17,7 +17,7 @@
     </template>
 
     <v-list-item-title class="text-body-2 font-weight-medium">
-      {{ descricaoRegistro }} - {{ valorRegistro }}
+      {{ textoRegistro }}
     </v-list-item-title>
   </v-list-item>
 </template>
@@ -53,4 +53,11 @@ const emits = defineEmits<TEmits>();
 // Computadas
 const descricaoRegistro = computed(() => CFormatters.formatarGenerico(String(props.registro[props.atributoDescricao] ?? '')));
 const valorRegistro = computed(() => CFormatters.formatarGenerico(String(props.registro[props.atributoValor] ?? '')));
+const textoRegistro = computed(() => {
+  if (props.atributoDescricao === props.atributoValor || descricaoRegistro.value === valorRegistro.value) {
+    return descricaoRegistro.value;
+  }
+
+  return `${descricaoRegistro.value} - ${valorRegistro.value}`;
+});
 </script>
