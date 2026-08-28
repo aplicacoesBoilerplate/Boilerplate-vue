@@ -173,7 +173,7 @@ function mapearRotasRedirecionamento(pRotas: readonly RouteRecordRaw[], pCaminho
     const path = resolverPathRota(pCaminhoPai, pRota.path);
     const rotasFilhas = mapearRotasRedirecionamento(pRota.children ?? [], path);
 
-    if (pRota.meta?.hidden || !pRota.name) {
+    if (pRota.meta?.hidden || !pRota.name || pRota.redirect) {
       return rotasFilhas;
     }
 
