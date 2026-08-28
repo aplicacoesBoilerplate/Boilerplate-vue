@@ -83,9 +83,13 @@ export function criarCargoRbacPadrao(pDados: Partial<ICargoRbac> = {}): ICargoRb
 }
 
 export type TCamposFiltroRbac = keyof Pick<ICargoRbac, 'nome' | 'descricao' | 'comportamentoPadrao' | 'ativo'>;
-type TMapeamentoRbac = TMapeamentoCampos<
-  TCamposFiltroRbac,
-  IConfiguracaoCampo<TCamposFiltroRbac, ICargoRbac>
+type TCamposMapeamentoRbac = keyof Omit<
+  ICargoRbac,
+  'id' | 'icone' | 'redirecionamentoInicial' | 'auditoria'
+> | 'usuarios' | 'acoes';
+export type TMapeamentoRbac = TMapeamentoCampos<
+  TCamposMapeamentoRbac,
+  IConfiguracaoCampo<TCamposMapeamentoRbac, ICargoRbac>
 >;
 
 const MAPEAMENTO_MODEL_RBAC = {
@@ -105,7 +109,7 @@ const MAPEAMENTO_MODEL_RBAC = {
       }
     },
     tabela: {
-      width: 200,
+      minWidth: 200,
       maxWidth: 300,
       sortable: true
     }
@@ -117,6 +121,7 @@ const MAPEAMENTO_MODEL_RBAC = {
       tipos: [ETipoFiltro.STRING]
     },
     tabela: {
+      minWidth: 200,
       width: 300,
       maxWidth: 600,
       sortable: true
@@ -130,10 +135,16 @@ const MAPEAMENTO_MODEL_RBAC = {
       opcoes: COMPORTAMENTOS_PADRAO_PERMISSAO,
     },
     tabela:  {
-      width: 150,
-      maxWidth: 200,
+      minWidth: 220,
+      maxWidth: 300,
       sortable: true,
     }
+  },
+  papel: {
+    rotuloChave: 'common.fields.user.role',
+    tabela: {
+      width: 120,
+    },
   },
   ativo: {
     rotuloChave: 'common.fields.rbac.active',
@@ -151,11 +162,35 @@ const MAPEAMENTO_MODEL_RBAC = {
       chartFormatter: CFormatters.formatarBooleano,
     }
   },
+  permissoes: {
+    rotuloChave: 'common.rbacTabs.permissions',
+    tabela: {
+      align: 'center',
+      sortable: false,
+      width: 110,
+    },
+  },
+  usuarios: {
+    rotuloChave: 'common.rbacTabs.users',
+    tabela: {
+      align: 'center',
+      sortable: false,
+      width: 100,
+    },
+  },
+  acoes: {
+    rotuloChave: 'dataTable.headersDefault.actions',
+    tabela: {
+      align: 'center',
+      sortable: false,
+      minWidth: 180,
+    },
+  },
 } satisfies TMapeamentoRbac;
 
 const ENTRADAS_MAPEAMENTO_RBAC = obterEntradasMapeamentoCampos<
-  TCamposFiltroRbac,
-  IConfiguracaoCampo<TCamposFiltroRbac, ICargoRbac>
+  TCamposMapeamentoRbac,
+  IConfiguracaoCampo<TCamposMapeamentoRbac, ICargoRbac>
 >(MAPEAMENTO_MODEL_RBAC);
 
 export const CAMPOS_FILTRO_RBAC = criarCamposFiltro(ENTRADAS_MAPEAMENTO_RBAC);

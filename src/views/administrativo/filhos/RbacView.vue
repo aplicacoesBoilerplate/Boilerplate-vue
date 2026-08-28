@@ -61,7 +61,11 @@
           </template>
 
           <template #[`item.papel`]="{ item: cargo }">
-            <v-chip size="small">{{ cargo.papel }}</v-chip>
+            <v-chip
+              color="primary"
+              size="small"
+            >{{ cargo.papel }}
+            </v-chip>
           </template>
 
           <template #[`item.comportamentoPadrao`]="{ item: cargo }">
@@ -91,6 +95,7 @@
 
           <template #[`item.acoes`]="{ item: cargo }">
             <div class="d-flex justify-end align-center">
+              <DialogAuditoriaRegistro :auditoria="cargo.auditoria" />
               <v-btn
                 icon="mdi-eye-outline"
                 color="primary"
@@ -98,7 +103,6 @@
                 variant="text"
                 @click.stop="visualizarCargo(cargo)"
               />
-              <DialogAuditoriaRegistro :auditoria="cargo.auditoria" />
               <v-btn
                 :disabled="!podeGerenciarRegistros"
                 icon="mdi-pencil"
@@ -134,7 +138,6 @@ import { useAuthStore } from '@/stores/auth.store';
 // Models
 import { CABECALHOS_TABELA_RBAC, criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/core/rbac/rbac.model';
 import type { IGenericViewExpose } from '@/models/components/exposes/IGenericViewExpose';
-import type { IHeadersDataTable } from '@/models/components/lHeaderTable';
 import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 import type { IUsuario, TPapel } from '@/models/model/core/usuario.model';
 
@@ -155,6 +158,7 @@ import GenericView from '@/components/layouts/generic/GenericView.vue';
 // Constantes
 const CONTEXTO_LISTA_CARGOS = 'lista-cargos-rbac';
 const cabecalhosExportacao = CABECALHOS_TABELA_RBAC;
+const cabecalhosTabela = CABECALHOS_TABELA_RBAC;
 
 // Stores
 const authStore = useAuthStore();
@@ -163,15 +167,6 @@ const authStore = useAuthStore();
 const requisicaoService = useRequisicaoService();
 const { possuiPermissaoGeral, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
-
-// Computadas
-const cabecalhosTabela = computed<IHeadersDataTable[]>(() => [
-  ...CABECALHOS_TABELA_RBAC,
-  { title: t('common.fields.user.role'), key: 'papel', width: 120 },
-  { title: t('common.rbacTabs.permissions'), key: 'permissoes', align: 'center', sortable: false, width: 110 },
-  { title: t('common.rbacTabs.users'), key: 'usuarios', align: 'center', sortable: false, width: 100 },
-  { title: t('dataTable.headersDefault.actions'), key: 'acoes', align: 'end', sortable: false, width: 180 },
-]);
 
 // Reativas
 const genericViewRef = ref<IGenericViewExpose | null>(null);
