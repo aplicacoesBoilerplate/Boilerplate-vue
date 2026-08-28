@@ -8,6 +8,7 @@
  * @property {string | number} [height] Determina a altura fixa aplicável ao cabeçalho desta coluna.
  * @property {string | number} [maxHeigth] Define a restrição de altura máxima para o cabeçalho desta coluna.
  * @property {string | number} [width] Define a largura base da coluna, afetando seu dimensionamento horizontal no componente.
+ * @property {string | number} [minWidth] Impõe uma largura mínima para a coluna, preservando espaço para o conteúdo prioritário.
  * @property {string | number} [maxWidth] Impõe um limite máximo de largura, muito útil para evitar expansões indesejadas com textos extensos.
  * @property {boolean} [sortable] Determina se a coluna suporta a ordenação dos dados através da interação com o cabeçalho.
  * @property {(item: any) => string} [value] Função opcional que processa o item inteiro para gerar um valor customizado a ser exibido e ordenado (frequentemente usado em vez do valor bruto lido via `key`).
@@ -19,6 +20,7 @@ export interface IHeadersDataTable {
   height?: string | number;
   maxHeigth?: string | number;
   width?: string | number;
+  minWidth?: string | number;
   maxWidth?: string | number;
   sortable?: boolean;
   value?: (item: any) => string;

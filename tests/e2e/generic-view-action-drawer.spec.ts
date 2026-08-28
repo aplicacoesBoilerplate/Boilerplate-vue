@@ -512,8 +512,9 @@ test('pesquisa usuário não vinculado e o vincula rapidamente ao cargo aberto',
 
   await page.goto('/admin/rbac', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: /Descrição|Description/ })).toHaveCSS('min-width', '200px');
 
-  const linhaCargo = page.locator('.v-list-item').filter({ hasText: 'Administrador' }).first();
+  const linhaCargo = page.locator('.v-main .v-data-table tbody tr').filter({ hasText: 'Administrador' }).first();
   await linhaCargo.locator('button:has(.mdi-pencil)').click();
 
   const dialogo = page.getByRole('dialog');
@@ -613,7 +614,7 @@ test('traduz integralmente os fluxos de licença, filtros e abas RBAC para ingl�
   await dialogoFiltro.locator('button:has(.mdi-close)').click();
 
   await page.goto('/admin/rbac');
-  const linhaCargo = page.locator('.v-list-item').filter({ hasText: 'Administrador' }).first();
+  const linhaCargo = page.locator('.v-main .v-data-table tbody tr').filter({ hasText: 'Administrador' }).first();
   await linhaCargo.locator('button:has(.mdi-pencil)').click();
   const dialogoCargo = page.getByRole('dialog');
   await expect(dialogoCargo.getByRole('tab', { name: 'Data' })).toBeVisible();

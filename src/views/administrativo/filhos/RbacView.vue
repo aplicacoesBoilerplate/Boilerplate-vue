@@ -1,7 +1,6 @@
 <template>
   <v-container
-    :class="mdAndDown ? 'w-100' : 'w-50'"
-    class="pb-0 overflow-hidden"
+    class="fill-height pb-0 overflow-hidden"
     fluid
   >
     <DialogFormCargoRbac
@@ -24,9 +23,11 @@
       ref="genericViewRef"
       :contexto="CONTEXTO_LISTA_CARGOS"
       :serviceFetch="buscarCargos"
-      :exibirExportacao="false"
+      :serviceExportacao="exportarCargos"
+      :colunasExportacao="cabecalhosExportacao"
       :textoVazio="t('components.rbacView.textoVazioCargos')"
       :textoFinal="t('components.rbacView.textoFinalCargos')"
+      nomeArquivoExportacao="cargos"
       @novoRegistro="gerenciarRegistro"
     >
       <template #activator-novo-registro="{ acionarNovoRegistro, tooltipProps }">
@@ -42,53 +43,85 @@
       </template>
 
       <template #default="{ items }">
-        <GenericInfiniteListItem
-          v-for="cargo in (items as ICargoRbac[])"
-          :key="cargo.id"
-          :item="cargo"
-          itemKey="id"
+        <BaseDataTable
+          :headersMarcados="cabecalhosTabela"
+          :registros="items as ICargoRbac[]"
+          customClass="rbac-data-table"
         >
-          <v-list-item
-            class="border rounded mb-1 pa-1"
-            lines="one"
-          >
-            <template #prepend>
-              <DetalhesCargo
-                :cargo="cargo"
-                :quantidadePermissoesLiberadas="calcularPermissoesLiberadas(cargo)"
-                :quantidadeUsuariosVinculados="contarUsuariosCargo(cargo.papel)"
-                @visualizar="visualizarCargo"
+          <template #[`item.nome`]="{ item: cargo }">
+            <div class="d-flex align-center ga-2">
+              <v-avatar
+                :color="cargo.ativo ? 'primary' : 'grey'"
+                size="28"
+              >
+                <v-icon :icon="cargo.icone" />
+              </v-avatar>
+              <span>{{ cargo.nome }}</span>
+            </div>
+          </template>
+
+          <template #[`item.papel`]="{ item: cargo }">
+            <v-chip
+              color="primary"
+              size="small"
+            >{{ cargo.papel }}
+            </v-chip>
+          </template>
+
+          <template #[`item.comportamentoPadrao`]="{ item: cargo }">
+            <v-chip
+              :color="cargo.comportamentoPadrao === 'liberar' ? 'success' : 'error'"
+              size="small"
+              variant="tonal"
+            >
+              {{ t(`forms.controlePermissoesCargo.comportamentoPadrao.${cargo.comportamentoPadrao}`) }}
+            </v-chip>
+          </template>
+
+          <template #[`item.ativo`]="{ item: cargo }">
+            <v-icon
+              :color="cargo.ativo ? 'success' : 'error'"
+              :icon="cargo.ativo ? 'mdi-check-circle' : 'mdi-close-circle'"
+            />
+          </template>
+
+          <template #[`item.permissoes`]="{ item: cargo }">
+            {{ calcularPermissoesLiberadas(cargo) }}
+          </template>
+
+          <template #[`item.usuarios`]="{ item: cargo }">
+            {{ contarUsuariosCargo(cargo.papel) }}
+          </template>
+
+          <template #[`item.acoes`]="{ item: cargo }">
+            <div class="d-flex justify-end align-center">
+              <DialogAuditoriaRegistro :auditoria="cargo.auditoria" />
+              <v-btn
+                icon="mdi-eye-outline"
+                color="primary"
+                size="small"
+                variant="text"
+                @click.stop="visualizarCargo(cargo)"
               />
-            </template>
-
-            <template #append>
-              <div class="d-flex align-center">
-                <DialogAuditoriaRegistro
-                  :auditoria="cargo.auditoria"
-                  class="mr-2"
-                />
-
-                <v-btn
-                  :disabled="!podeGerenciarRegistros"
-                  icon="mdi-pencil"
-                  variant="text"
-                  color="info"
-                  size="small"
-                  class="mr-2"
-                  @click.stop="gerenciarRegistro({ modoEdicao: true, item: cargo })"
-                />
-                <v-btn
-                  :disabled="!podeRemoverCargo(cargo)"
-                  icon="mdi-delete"
-                  variant="text"
-                  color="error"
-                  size="small"
-                  @click.stop="excluirCargo(cargo)"
-                />
-              </div>
-            </template>
-          </v-list-item>
-        </GenericInfiniteListItem>
+              <v-btn
+                :disabled="!podeGerenciarRegistros"
+                icon="mdi-pencil"
+                variant="text"
+                color="info"
+                size="small"
+                @click.stop="gerenciarRegistro({ modoEdicao: true, item: cargo })"
+              />
+              <v-btn
+                :disabled="!podeRemoverCargo(cargo)"
+                icon="mdi-delete"
+                variant="text"
+                color="error"
+                size="small"
+                @click.stop="excluirCargo(cargo)"
+              />
+            </div>
+          </template>
+        </BaseDataTable>
       </template>
     </GenericView>
   </v-container>
@@ -98,13 +131,12 @@
 // Ecossistema Vue
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useDisplay } from 'vuetify';
 
 // Stores
 import { useAuthStore } from '@/stores/auth.store';
 
 // Models
-import { criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/core/rbac/rbac.model';
+import { CABECALHOS_TABELA_RBAC, criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/core/rbac/rbac.model';
 import type { IGenericViewExpose } from '@/models/components/exposes/IGenericViewExpose';
 import type { IConsultaRegistros, IRespostaConsultaRegistros } from '@/models/consulta/IConsultaRegistros';
 import type { IUsuario, TPapel } from '@/models/model/core/usuario.model';
@@ -118,20 +150,20 @@ import { cargoRbacService } from '@/services/core/CCargoRbacService';
 import { usuarioService } from '@/services/core/CUsuarioService';
 
 // Componentes
-import DetalhesCargo from '@/components/core/rbac/DetalhesCargo.vue';
 import DialogFormCargoRbac from '@/components/dialogs/core/DialogFormCargoRbac.vue';
 import DialogAuditoriaRegistro from '@/components/dialogs/DialogAuditoriaRegistro.vue';
-import GenericInfiniteListItem from '@/components/layouts/generic/GenericInfiniteList/GenericInfiniteListItem.vue';
+import BaseDataTable from '@/components/layouts/base/BaseDataTable.vue';
 import GenericView from '@/components/layouts/generic/GenericView.vue';
 
 // Constantes
 const CONTEXTO_LISTA_CARGOS = 'lista-cargos-rbac';
+const cabecalhosExportacao = CABECALHOS_TABELA_RBAC;
+const cabecalhosTabela = CABECALHOS_TABELA_RBAC;
 
 // Stores
 const authStore = useAuthStore();
 
 // Composables
-const { mdAndDown } = useDisplay();
 const requisicaoService = useRequisicaoService();
 const { possuiPermissaoGeral, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
@@ -151,6 +183,14 @@ const papeisOriginaisUsuarios = ref(new Map<number, TPapel>());
 // Funções
 async function buscarCargos(pPayload: IConsultaRegistros<ICargoRbac>): Promise<IRespostaConsultaRegistros<ICargoRbac>> {
   return cargoRbacService.consultar(pPayload);
+}
+
+async function exportarCargos(
+  pPayload?: Partial<IConsultaRegistros<ICargoRbac>>,
+  pOptions?: { signal?: AbortSignal },
+): Promise<ICargoRbac[]> {
+  const resposta = await cargoRbacService.consultarTodosRegistros(pPayload, pOptions);
+  return resposta.registros;
 }
 
 async function gerenciarRegistro(pPayload: { modoEdicao: boolean; item?: ICargoRbac }): Promise<void> {
@@ -209,9 +249,10 @@ async function salvarCargo(): Promise<void> {
 
   const cargoNormalizado = criarCargoRbacPadrao(modelFormCargo.value);
   const cargoSalvo = await requisicaoService.executar({
-    metodo: modoEdicaoCargo.value && cargoNormalizado.id
-      ? (pCargo: ICargoRbac) => cargoRbacService.editar(pCargo)
-      : (pCargo: ICargoRbac) => cargoRbacService.cadastrar(pCargo),
+    metodo:
+      modoEdicaoCargo.value && cargoNormalizado.id
+        ? (pCargo: ICargoRbac) => cargoRbacService.editar(pCargo)
+        : (pCargo: ICargoRbac) => cargoRbacService.cadastrar(pCargo),
     parametros: cargoNormalizado,
     sucesso: {
       mensagem: modoEdicaoCargo.value ? 'Cargo atualizado com sucesso.' : 'Cargo criado com sucesso.',
