@@ -33,6 +33,7 @@
         v-model:cargo="cargo"
         v-model:usuarios="usuarios"
         v-model:valido="formValido"
+        v-model:alterado="formAlterado"
         v-model:abaAtual="aba"
         :cargosDisponiveis="cargosDisponiveis"
         :somenteLeitura="modoVisualizacao"
@@ -67,7 +68,7 @@
 
         <v-btn
           v-tooltip="t('tooltips.forms.save')"
-          :disabled="!formValido"
+          :disabled="!formValido || !formAlterado"
           :text="t('tooltips.forms.save')"
           :loading="salvando"
           color="success"
@@ -82,7 +83,7 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // Model
@@ -121,6 +122,7 @@ const usuarios = defineModel<IUsuario[]>('usuarios', { required: true });
 // Reativas - ref
 const refFormCargo = ref<InstanceType<typeof FormCargoRbac> | null>(null);
 const formValido = ref(false);
+const formAlterado = ref(false);
 const salvando = ref(false);
 const aba = ref<TAbas>('dados');
 
@@ -181,12 +183,28 @@ const icone = computed(() => {
 });
 
 // Observadores
-watch(exibirDialog, (pExibindo) => {
-  if (!pExibindo) {
-    cargo.value = criarCargoRbacPadrao();
-    formValido.value = false;
+watch(exibirDialog, async (pExibindo) => {
+  if (pExibindo) {
+    formValido.value = props.modoEdicao;
+    formAlterado.value = false;
+    await nextTick();
+    refFormCargo.value?.registrarModeloInicial();
+    return;
   }
+
+  cargo.value = criarCargoRbacPadrao();
+  formValido.value = false;
+  formAlterado.value = false;
 });
+
+watch(
+  () => props.modoEdicao,
+  (pModoEdicao) => {
+    if (exibirDialog.value && pModoEdicao) {
+      formValido.value = true;
+    }
+  },
+);
 
 defineExpose({
   exibicaoDialog,

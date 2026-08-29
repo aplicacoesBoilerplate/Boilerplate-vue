@@ -1,6 +1,8 @@
 <template>
   <BaseForm
     ref="baseFormRef"
+    v-model:isDirty="formAlterado"
+    :formModel="usuario"
     @onSubmit="emit('onSubmit')"
     @update:isValid="formIsValid = $event"
   >
@@ -90,10 +92,12 @@ import SelectRole from '@/components/forms/fixtures/SelectRole.vue';
 /**
  * @description Métodos expostos pelo formulário de usuário.
  * @property {() => Promise<void>} refreshForm - Restaura o estado original do formulário.
+ * @property {() => void} registrarModeloInicial - Registra o estado atual como referência para detectar alterações.
  * @property {() => void} submit - Dispara a validação e submit do formulário.
  */
 export interface IFormUsuarioExpose {
   refreshForm: () => Promise<void>;
+  registrarModeloInicial: () => void;
   submit: () => void;
 }
 
@@ -108,6 +112,7 @@ const { t } = useI18n();
 
 // Reativas - Model
 const formIsValid = defineModel<boolean>('valido', { default: false });
+const formAlterado = defineModel<boolean>('alterado', { default: false });
 const usuario = defineModel<IUsuario>('usuario', { required: true });
 
 // Reativas - Ref
@@ -123,9 +128,15 @@ async function refreshForm(): Promise<void> {
   });
 }
 
+function registrarModeloInicial(): void {
+  usuarioOriginal.value = deepClone(toRaw(usuario.value));
+  baseFormRef.value?.registrarModeloInicial();
+}
+
 // Expose
 defineExpose({
   refreshForm,
+  registrarModeloInicial,
   submit: () => baseFormRef.value?.submit(),
 } satisfies IFormUsuarioExpose);
 </script>

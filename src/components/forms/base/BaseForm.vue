@@ -13,12 +13,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, ref, toRaw, watch } from 'vue';
 
 import type { VForm } from 'vuetify/components';
 
+import { deepClone } from '@/utils/deepClone';
+
 export interface IBaseFormExpose<TModel = unknown> {
   refreshForm: (criarObjetoModel: (pData?: TModel) => TModel) => Promise<void>;
+  registrarModeloInicial: () => void;
   submit: () => void;
   isValid: () => boolean;
 }
@@ -31,6 +34,7 @@ const emits = defineEmits<TEmits>();
 
 const formModel = defineModel<unknown>('formModel', { default: undefined });
 const isFormValid = defineModel<boolean>('isValid', { default: false });
+const isFormDirty = defineModel<boolean>('isDirty', { default: false });
 const vuetifyFormValid = computed<boolean | null>({
   get: () => isFormValid.value,
   set: (pValor) => {
@@ -39,13 +43,25 @@ const vuetifyFormValid = computed<boolean | null>({
 });
 
 const formRef = ref<VForm | null>(null);
+const initialFormModel = ref<unknown>(undefined);
+const hasInitialFormModel = ref(false);
+
+function registrarModeloInicial(): void {
+  initialFormModel.value = deepClone(toRaw(formModel.value));
+  hasInitialFormModel.value = true;
+  isFormDirty.value = false;
+}
+
+function modeloFoiAlterado(): boolean {
+  return JSON.stringify(toRaw(formModel.value)) !== JSON.stringify(initialFormModel.value);
+}
 
 async function handleOnSubmit() {
-  const resultado = await formRef.value?.validate();
-  const valido = resultado?.valid ?? false;
-  const erros = resultado?.errors ?? [];
-  if (valido) emits('onSubmit');
-  else emits('onInvalid', erros);
+  const lResultado = await formRef.value?.validate();
+  const lValido = lResultado?.valid ?? false;
+  const lErros = lResultado?.errors ?? [];
+  if (lValido) emits('onSubmit');
+  else emits('onInvalid', lErros);
 }
 
 async function refreshForm(pCriarObjetoModel: (pData?: unknown) => unknown): Promise<void> {
@@ -54,10 +70,22 @@ async function refreshForm(pCriarObjetoModel: (pData?: unknown) => unknown): Pro
   }
   await nextTick();
   formRef.value?.resetValidation();
+  registrarModeloInicial();
 }
+
+watch(
+  formModel,
+  () => {
+    if (hasInitialFormModel.value) {
+      isFormDirty.value = modeloFoiAlterado();
+    }
+  },
+  { deep: true },
+);
 
 defineExpose({
   refreshForm,
+  registrarModeloInicial,
   submit: handleOnSubmit,
   isValid: () => isFormValid.value === true,
 } satisfies IBaseFormExpose);
