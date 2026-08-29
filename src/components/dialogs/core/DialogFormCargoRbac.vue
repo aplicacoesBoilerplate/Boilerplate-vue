@@ -182,10 +182,13 @@ const icone = computed(() => {
 
 // Observadores
 watch(exibirDialog, (pExibindo) => {
-  if (!pExibindo) {
-    cargo.value = criarCargoRbacPadrao();
-    formValido.value = false;
+  if (pExibindo) {
+    formValido.value = props.modoEdicao;
+    return;
   }
+
+  cargo.value = criarCargoRbacPadrao();
+  formValido.value = false;
 });
 
 defineExpose({
