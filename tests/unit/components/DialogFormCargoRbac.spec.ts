@@ -24,8 +24,9 @@ describe('DialogFormCargoRbac', () => {
     await wrapper.setProps({ exibirDialog: true });
     await nextTick();
 
-    const { formValido } = wrapper.vm.$.setupState as { formValido: boolean };
+    const { formAlterado, formValido } = wrapper.vm.$.setupState as { formAlterado: boolean; formValido: boolean };
 
+    expect(formAlterado).toBe(false);
     expect(formValido).toBe(true);
   });
 
