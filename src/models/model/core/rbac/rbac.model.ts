@@ -70,6 +70,17 @@ export const COMPORTAMENTOS_PADRAO_PERMISSAO: IOpcaoSelecao<TComportamentoPadrao
  * @returns Cargo RBAC criado.
  */
 export function criarCargoRbacPadrao(pDados: Partial<ICargoRbac> = {}): ICargoRbac {
+  const funcionalidades = pDados.funcionalidades ? [...pDados.funcionalidades] : [];
+  const gerenciavaRegistros = pDados.permissoes?.some(
+    (pPermissao) => pPermissao.recurso === 'geral'
+      && pPermissao.acao === 'gerenciarRegistros'
+      && pPermissao.liberado,
+  );
+
+  if (gerenciavaRegistros && !funcionalidades.some((pItem) => pItem.funcionalidade === 'gerenciarRegistrosOutros')) {
+    funcionalidades.push({ funcionalidade: 'gerenciarRegistrosOutros', liberado: true });
+  }
+
   return {
     id: pDados.id,
     papel: pDados.papel ?? '',
@@ -77,8 +88,10 @@ export function criarCargoRbacPadrao(pDados: Partial<ICargoRbac> = {}): ICargoRb
     icone: pDados.icone ?? 'mdi-shield-account-outline',
     descricao: pDados.descricao ?? '',
     comportamentoPadrao: pDados.comportamentoPadrao ?? 'bloquear',
-    permissoes: pDados.permissoes ? [...pDados.permissoes] : [],
-    funcionalidades: pDados.funcionalidades ? [...pDados.funcionalidades] : [],
+    permissoes: pDados.permissoes?.filter(
+      (pPermissao) => pPermissao.recurso !== 'geral' || pPermissao.acao !== 'gerenciarRegistros',
+    ) ?? [],
+    funcionalidades,
     redirecionamentoInicial: {
       path: pDados.redirecionamentoInicial?.path ?? '',
       name: pDados.redirecionamentoInicial?.name,

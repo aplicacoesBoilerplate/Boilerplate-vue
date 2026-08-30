@@ -1,4 +1,4 @@
-import { CABECALHOS_TABELA_RBAC } from '@/models/model/core/rbac/rbac.model';
+import { CABECALHOS_TABELA_RBAC, criarCargoRbacPadrao } from '@/models/model/core/rbac/rbac.model';
 
 import { describe, expect, it } from 'vitest';
 
@@ -13,5 +13,14 @@ describe('mapeamento de cargos RBAC', () => {
         expect.objectContaining({ key: 'acoes', align: 'center', sortable: false, minWidth: 180 }),
       ]),
     );
+  });
+
+  it('migra a permissão legada de gestão de registros para funcionalidade', () => {
+    const cargo = criarCargoRbacPadrao({
+      permissoes: [{ recurso: 'geral', acao: 'gerenciarRegistros', liberado: true }],
+    });
+
+    expect(cargo.permissoes).toEqual([]);
+    expect(cargo.funcionalidades).toContainEqual({ funcionalidade: 'gerenciarRegistrosOutros', liberado: true });
   });
 });
