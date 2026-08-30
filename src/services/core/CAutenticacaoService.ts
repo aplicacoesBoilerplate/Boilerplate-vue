@@ -1,7 +1,6 @@
 // Types e Interfaces
 import type {
   IRespostaLogin,
-  IRespostaUsuarioAutenticado,
   TAlterarSenha,
   TConfirmarSenha,
   TEmailAuth,
@@ -16,7 +15,6 @@ import type { IUsuarioSolicitacaoAcesso } from '@/models/model/core/usuario.soli
 
 // Services
 import { CBaseHttpService } from '@/services/base/CBaseHttpService';
-import { usuarioService } from '@/services/core/CUsuarioService';
 
 /**
  * Centraliza os contratos HTTP de autenticação.
@@ -36,9 +34,7 @@ export class CAutenticacaoService extends CBaseHttpService {
    * @returns Usuário correspondente à sessão atual.
    */
   public async buscarUsuarioAutenticado(): Promise<IUsuario> {
-    const resposta = await this.get<IRespostaUsuarioAutenticado>({ pathUrl: '/auth/me' });
-
-    return usuarioService.buscarPorId(resposta.idUsuario);
+    return this.get<IUsuario>({ pathUrl: '/auth/me' });
   }
 
   /**
