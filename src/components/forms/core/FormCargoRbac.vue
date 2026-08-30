@@ -121,6 +121,7 @@
       <v-window-item value="permissoes">
         <ControlePermissoesCargo
           v-model:permissoes="cargo.permissoes"
+          v-model:funcionalidades="cargo.funcionalidades"
           :comportamentoPadrao="cargo.comportamentoPadrao"
           :somenteLeitura="somenteLeitura"
         />

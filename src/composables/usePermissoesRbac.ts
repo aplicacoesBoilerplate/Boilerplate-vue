@@ -8,18 +8,17 @@ import {
   MAPEAMENTO_ROTAS_API_RBAC,
   montarAcaoEndpointApiRbac,
   RECURSO_PERMISSAO_API_RBAC,
-  RECURSO_PERMISSAO_GERAL_RBAC,
 } from '@/models/model/core/rbac/rbac.api';
-import { permissaoEstaLiberada } from '@/models/model/core/rbac/rbac.model';
+import { funcionalidadeEstaLiberada, permissaoEstaLiberada } from '@/models/model/core/rbac/rbac.model';
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 // Models
 import type { TAcaoApiRbac } from '@/models/model/core/rbac/rbac.types';
 
-export type TAcaoPermissaoGeralRbac = 'exportarDados' | 'visualizarGraficos' | 'gerenciarRegistros';
+export type TFuncionalidadeRbac = 'exportarDados' | 'visualizarGraficos' | 'gerenciarRegistrosOutros';
 export type TRecursoPermissaoApiRbac = keyof typeof MAPEAMENTO_ROTAS_API_RBAC;
 
 export type TUsePermissoesRbacReturn = {
-  possuiPermissaoGeral: (pAcao: TAcaoPermissaoGeralRbac) => boolean;
+  possuiFuncionalidade: (pFuncionalidade: TFuncionalidadeRbac) => boolean;
   possuiPermissaoApi: (pRecurso: TRecursoPermissaoApiRbac, pAcao: TAcaoApiRbac) => boolean;
   podeGerenciarRegistro: (
     pRecurso: TRecursoPermissaoApiRbac,
@@ -27,8 +26,8 @@ export type TUsePermissoesRbacReturn = {
     pRegistro: { auditoria?: Pick<IAuditoriaRegistro, 'criadoPor'> },
   ) => boolean;
   notificarPermissaoNegada: (pMensagem?: string) => void;
-  executarComPermissaoGeral: <TRetorno>(
-    pAcao: TAcaoPermissaoGeralRbac,
+  executarComFuncionalidade: <TRetorno>(
+    pAcao: TFuncionalidadeRbac,
     pCallback: () => TRetorno,
     pMensagem?: string,
   ) => TRetorno | undefined;
@@ -44,12 +43,12 @@ export function usePermissoesRbac(): TUsePermissoesRbacReturn {
   const snackbarStore = useSnackbarStore();
   const { t } = useI18n();
 
-  function possuiPermissaoGeral(pAcao: TAcaoPermissaoGeralRbac): boolean {
+  function possuiFuncionalidade(pFuncionalidade: TFuncionalidadeRbac): boolean {
     if (!authStore.cargoAtual) {
       return false;
     }
 
-    return permissaoEstaLiberada(authStore.cargoAtual, RECURSO_PERMISSAO_GERAL_RBAC, pAcao);
+    return funcionalidadeEstaLiberada(authStore.cargoAtual, pFuncionalidade);
   }
 
   function possuiPermissaoApi(pRecurso: TRecursoPermissaoApiRbac, pAcao: TAcaoApiRbac): boolean {
@@ -75,7 +74,7 @@ export function usePermissoesRbac(): TUsePermissoesRbacReturn {
       return false;
     }
 
-    if (possuiPermissaoGeral('gerenciarRegistros')) {
+    if (possuiFuncionalidade('gerenciarRegistrosOutros')) {
       return true;
     }
 
@@ -89,12 +88,12 @@ export function usePermissoesRbac(): TUsePermissoesRbacReturn {
     });
   }
 
-  function executarComPermissaoGeral<TRetorno>(
-    pAcao: TAcaoPermissaoGeralRbac,
+  function executarComFuncionalidade<TRetorno>(
+    pAcao: TFuncionalidadeRbac,
     pCallback: () => TRetorno,
     pMensagem?: string,
   ): TRetorno | undefined {
-    if (!possuiPermissaoGeral(pAcao)) {
+    if (!possuiFuncionalidade(pAcao)) {
       notificarPermissaoNegada(pMensagem);
       return undefined;
     }
@@ -103,10 +102,10 @@ export function usePermissoesRbac(): TUsePermissoesRbacReturn {
   }
 
   return {
-    possuiPermissaoGeral,
+    possuiFuncionalidade,
     possuiPermissaoApi,
     podeGerenciarRegistro,
     notificarPermissaoNegada,
-    executarComPermissaoGeral,
+    executarComFuncionalidade,
   };
 }

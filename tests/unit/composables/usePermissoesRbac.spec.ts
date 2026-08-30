@@ -46,7 +46,7 @@ describe('usePermissoesRbac', () => {
     expect(usePermissoesRbac().podeGerenciarRegistro('Usuarios', 'editar', { auditoria: { criadoPor: 1 } })).toBe(true);
   });
 
-  it('bloqueia o gerenciamento de registro de terceiro sem a permissão global', () => {
+  it('bloqueia o gerenciamento de registro de terceiro sem a funcionalidade', () => {
     const authStore = useAuthStore();
     authStore.user = criarUsuarioPadrao({ id: 1 });
     authStore.cargoAtual = criarCargoRbacPadrao({
@@ -56,24 +56,22 @@ describe('usePermissoesRbac', () => {
     expect(usePermissoesRbac().podeGerenciarRegistro('Usuarios', 'editar', { auditoria: { criadoPor: 2 } })).toBe(false);
   });
 
-  it('exige a permissão específica mesmo para gerenciar registros de terceiros', () => {
+  it('exige a permissão específica mesmo com a funcionalidade de gerenciar registros de terceiros', () => {
     const authStore = useAuthStore();
     authStore.user = criarUsuarioPadrao({ id: 1 });
     authStore.cargoAtual = criarCargoRbacPadrao({
-      permissoes: [{ recurso: 'geral', acao: 'gerenciarRegistros', liberado: true }],
+      funcionalidades: [{ funcionalidade: 'gerenciarRegistrosOutros', liberado: true }],
     });
 
     expect(usePermissoesRbac().podeGerenciarRegistro('Usuarios', 'editar', { auditoria: { criadoPor: 2 } })).toBe(false);
   });
 
-  it('permite gerenciar registros de terceiros com as permissões específica e global', () => {
+  it('permite gerenciar registros de terceiros com a permissão específica e a funcionalidade', () => {
     const authStore = useAuthStore();
     authStore.user = criarUsuarioPadrao({ id: 1 });
     authStore.cargoAtual = criarCargoRbacPadrao({
-      permissoes: [
-        ...PERMISSOES_EDICAO_USUARIO,
-        { recurso: 'geral', acao: 'gerenciarRegistros', liberado: true },
-      ],
+      permissoes: PERMISSOES_EDICAO_USUARIO,
+      funcionalidades: [{ funcionalidade: 'gerenciarRegistrosOutros', liberado: true }],
     });
 
     expect(usePermissoesRbac().podeGerenciarRegistro('Usuarios', 'editar', { auditoria: { criadoPor: 2 } })).toBe(true);

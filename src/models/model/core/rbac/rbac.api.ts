@@ -7,13 +7,12 @@ import type { IAcaoRecursoRbac, IEndpointApiRbac, IMapeamentoRotaApiRbac } from 
 export const ACOES_API_REDIRECIONAMENTO_INICIAL_RBAC = ['consultar'] as const;
 
 export const RECURSO_PERMISSAO_ROTAS_RBAC = 'rotas';
-export const RECURSO_PERMISSAO_GERAL_RBAC = 'geral';
 export const RECURSO_PERMISSAO_API_RBAC = 'api';
 
 /**
  * @description Mapeamento das ações que podem ser concedidas a um cargo.
  */
-export const PERMISSOES_GERAIS_RBAC: IAcaoRecursoRbac[] = [
+export const FUNCIONALIDADES_RBAC: IAcaoRecursoRbac[] = [
   {
     valor: 'exportarDados',
     descricao: 'Exportar dados',
@@ -25,8 +24,8 @@ export const PERMISSOES_GERAIS_RBAC: IAcaoRecursoRbac[] = [
     icone: 'mdi-chart-box-outline',
   },
   {
-    valor: 'gerenciarRegistros',
-    descricao: 'Gerenciar registros',
+    valor: 'gerenciarRegistrosOutros',
+    descricao: 'Gerencia Registros de Outros',
     icone: 'mdi-database-edit-outline',
   },
 ];

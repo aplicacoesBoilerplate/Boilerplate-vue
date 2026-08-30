@@ -182,7 +182,7 @@ const listStore = useGenericListStore();
 const genericFilterStore = useGenericFilterStore();
 const authStore = useAuthStore();
 const requisicaoService = useRequisicaoService();
-const { possuiPermissaoApi, possuiPermissaoGeral, podeGerenciarRegistro, notificarPermissaoNegada } = usePermissoesRbac();
+const { possuiPermissaoApi, possuiFuncionalidade, podeGerenciarRegistro, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
 
 // Constantes e Dados Base
@@ -342,7 +342,7 @@ function podeRemoverUsuario(pUsuario: IUsuario): boolean {
 
 // Computadas
 const podeCriarUsuario = computed(() => authStore.user?.papel === 'ADMIN' && possuiPermissaoApi('Usuarios', 'gravar'));
-const podeVisualizarGraficos = computed(() => possuiPermissaoGeral('visualizarGraficos'));
+const podeVisualizarGraficos = computed(() => possuiFuncionalidade('visualizarGraficos'));
 const usuarioAutenticadoId = computed(() => authStore.user?.id);
 const activeHeaderConfig = computed(() => {
   return configuracoesGrafico.find((pConfiguracao) => pConfiguracao.chave === selectedChartFilter.value);

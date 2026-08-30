@@ -106,10 +106,10 @@
 
     <div>
       <div class="text-subtitle-1 font-weight-bold">
-        {{ t('forms.controlePermissoesCargo.permissoesGerais.titulo') }}
+        {{ t('forms.controlePermissoesCargo.funcionalidades.titulo') }}
       </div>
       <div class="text-caption text-medium-emphasis">
-        {{ t('forms.controlePermissoesCargo.permissoesGerais.subtitulo') }}
+        {{ t('forms.controlePermissoesCargo.funcionalidades.subtitulo') }}
       </div>
     </div>
 
@@ -118,26 +118,26 @@
       density="compact"
     >
       <v-list-item
-        v-for="permissao in PERMISSOES_GERAIS_RBAC"
-        :key="permissao.valor"
+        v-for="funcionalidade in FUNCIONALIDADES_RBAC"
+        :key="funcionalidade.valor"
       >
         <template #prepend>
           <v-checkbox-btn
-            :modelValue="isPermissaoGeralSelecionada(permissao.valor)"
-            :color="padraoLiberado ? 'error' : 'success'"
             :disabled="somenteLeitura"
+            :modelValue="funcionalidadeLiberada(funcionalidade.valor)"
+            color="success"
             density="compact"
-            @update:modelValue="alternarPermissaoGeral(permissao.valor, Boolean($event))"
+            @update:modelValue="alternarFuncionalidade(funcionalidade.valor, Boolean($event))"
           />
         </template>
 
         <template #title>
           <div class="d-flex align-center ga-2">
             <v-icon
-              :icon="permissao.icone"
+              :icon="funcionalidade.icone"
               size="small"
             />
-            <span>{{ obterDescricaoPermissaoGeral(permissao.valor) }}</span>
+            <span>{{ funcionalidade.descricao }}</span>
           </div>
         </template>
       </v-list-item>
@@ -151,17 +151,18 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // Mapeamentos
-import { PERMISSOES_GERAIS_RBAC, RECURSO_PERMISSAO_GERAL_RBAC } from '@/models/model/core/rbac/rbac.api';
-import { ACOES_API_RBAC } from '@/models/model/core/rbac/rbac.types';
+import { FUNCIONALIDADES_RBAC } from '@/models/model/core/rbac/rbac.api';
+import {
+  ACOES_API_RBAC,
+  type IFuncionalidadeCargoRbac,
+  type IPermissaoCargoRbac,
+  type TAcaoApiRbac,
+  type TComportamentoPadraoPermissao,
+} from '@/models/model/core/rbac/rbac.types';
 // Types e Interfaces
 import type {
   IItemPermissaoRota,
 } from '@/composables/useControlePermissoesCargo';
-import type {
-  IPermissaoCargoRbac,
-  TAcaoApiRbac,
-  TComportamentoPadraoPermissao,
-} from '@/models/model/core/rbac/rbac.types';
 
 // Composables
 import { useControlePermissoesCargo } from '@/composables/useControlePermissoesCargo';
@@ -180,6 +181,7 @@ const props = withDefaults(defineProps<TProps>(), {
 
 // Reativas
 const permissoes = defineModel<IPermissaoCargoRbac[]>('permissoes', { required: true });
+const funcionalidades = defineModel<IFuncionalidadeCargoRbac[]>('funcionalidades', { required: true });
 
 // Composables
 const { t } = useI18n();
@@ -191,11 +193,8 @@ const {
   isAcaoApiDesabilitada,
   obterDescricaoAcaoApi,
   obterSiglaAcaoApi,
-  obterDescricaoPermissaoGeral,
-  definirPermissao,
-  atualizarPermissaoRota,
+   atualizarPermissaoRota,
   atualizarPermissaoAcaoRota,
-  permissaoLiberada,
 } = useControlePermissoesCargo(
   permissoes,
   computed(() => props.comportamentoPadrao),
@@ -225,14 +224,15 @@ function alternarPermissaoAcaoRota(pRota: IItemPermissaoRota, pAcao: TAcaoApiRba
   atualizarPermissaoAcaoRota(pRota, pAcao, !acaoApiLiberada(pRota, pAcao));
 }
 
-function isPermissaoGeralSelecionada(pValor: string): boolean {
-  return padraoLiberado.value
-    ? !permissaoLiberada(RECURSO_PERMISSAO_GERAL_RBAC, pValor)
-    : permissaoLiberada(RECURSO_PERMISSAO_GERAL_RBAC, pValor);
+function funcionalidadeLiberada(pFuncionalidade: string): boolean {
+  return funcionalidades.value.find((pItem) => pItem.funcionalidade === pFuncionalidade)?.liberado ?? false;
 }
 
-function alternarPermissaoGeral(pValor: string, pMarcado: boolean): void {
-  definirPermissao(RECURSO_PERMISSAO_GERAL_RBAC, pValor, padraoLiberado.value ? !pMarcado : pMarcado);
+function alternarFuncionalidade(pFuncionalidade: string, pLiberado: boolean): void {
+  const funcionalidadesAtualizadas = funcionalidades.value.filter(
+    (pItem) => pItem.funcionalidade !== pFuncionalidade,
+  );
+  funcionalidades.value = [...funcionalidadesAtualizadas, { funcionalidade: pFuncionalidade, liberado: pLiberado }];
 }
 </script>
 
