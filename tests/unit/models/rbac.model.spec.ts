@@ -1,4 +1,8 @@
-import { CABECALHOS_TABELA_RBAC, criarCargoRbacPadrao } from '@/models/model/core/rbac/rbac.model';
+import {
+  CABECALHOS_TABELA_RBAC,
+  criarCargoRbacPadrao,
+  funcionalidadeEstaLiberada,
+} from '@/models/model/core/rbac/rbac.model';
 
 import { describe, expect, it } from 'vitest';
 
@@ -22,5 +26,11 @@ describe('mapeamento de cargos RBAC', () => {
 
     expect(cargo.permissoes).toEqual([]);
     expect(cargo.funcionalidades).toContainEqual({ funcionalidade: 'gerenciarRegistrosOutros', liberado: true });
+  });
+
+  it('libera funcionalidades não configuradas quando o comportamento padrão é liberar', () => {
+    const cargo = criarCargoRbacPadrao({ comportamentoPadrao: 'liberar' });
+
+    expect(funcionalidadeEstaLiberada(cargo, 'gerenciarRegistrosOutros')).toBe(true);
   });
 });

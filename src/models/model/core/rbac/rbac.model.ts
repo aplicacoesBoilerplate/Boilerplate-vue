@@ -241,8 +241,9 @@ export function permissaoEstaLiberada(
 }
 
 export function funcionalidadeEstaLiberada(
-  pCargo: Pick<ICargoRbac, 'funcionalidades'>,
+  pCargo: Pick<ICargoRbac, 'comportamentoPadrao' | 'funcionalidades'>,
   pFuncionalidade: string,
 ): boolean {
-  return pCargo.funcionalidades.find((pItem) => pItem.funcionalidade === pFuncionalidade)?.liberado ?? false;
+  return pCargo.funcionalidades.find((pItem) => pItem.funcionalidade === pFuncionalidade)?.liberado
+    ?? pCargo.comportamentoPadrao === 'liberar';
 }
