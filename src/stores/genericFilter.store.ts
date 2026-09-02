@@ -9,6 +9,10 @@ import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 // Types e Interfaces
 import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
 import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
+import type { IPreferenciaUsuario } from '@/models/services/IPreferenciaUsuario';
+
+// Services
+import { preferenciaUsuarioService } from '@/services/CPreferenciaUsuarioService';
 
 import { CTradutor } from '@/classes/Utils/CTradutor';
 
@@ -27,9 +31,10 @@ interface IEstadoFiltrosContexto {
   pesquisaDrawerLeft: string;
 }
 
-const STORAGE_PREFIX = 'boilerplate.generic-filter.context.';
 const CONTEXTO_FILTRO_PADRAO = 'global';
 const CONTEXTO_TEMPORARIO_PREFIX = '__temporario__.';
+const CONTEXTO_PREFERENCIAS_FILTRO = 'filters';
+const TOKEN_STORAGE_KEY = 'token';
 
 /**
  * Store responsável por gerenciar os filtros aplicados na view atual.
@@ -48,6 +53,8 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   const camposDisponiveisTemporarios = ref<TCampoFiltroMapeado[] | null>(null);
   const contextoFiltroTemporario = ref<string | null>(null);
   const versaoAplicacaoFiltros = ref(0);
+  const carregandoRemoto = ref(false);
+  const erroRemoto = ref<unknown>(null);
 
   /** Controle de abertura/fechamento do Drawer de filtros. */
   const drawerFilterOpen = ref(false);
@@ -123,57 +130,69 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     };
   }
 
-  function obterStorageKey(pContexto: string): string {
-    return `${STORAGE_PREFIX}${pContexto}`;
-  }
-
   function contextoEhTemporario(pContexto: string): boolean {
     return pContexto.startsWith(CONTEXTO_TEMPORARIO_PREFIX);
   }
 
-  function carregarContextoPersistido(pContexto: string): IEstadoFiltrosContexto | null {
-    const estadoSerializado = localStorage.getItem(obterStorageKey(pContexto));
+  function usuarioPossuiToken(): boolean {
+    return Boolean(sessionStorage.getItem(TOKEN_STORAGE_KEY) || localStorage.getItem(TOKEN_STORAGE_KEY));
+  }
 
-    if (!estadoSerializado) {
-      return null;
-    }
-
+  function normalizarEstadoPersistido(pValorJson: string): IEstadoFiltrosContexto | null {
     try {
-      return JSON.parse(estadoSerializado) as IEstadoFiltrosContexto;
+      const estado = JSON.parse(pValorJson) as Partial<IEstadoFiltrosContexto>;
+
+      return {
+        filtrosAplicados: Array.isArray(estado.filtrosAplicados) ? estado.filtrosAplicados : [],
+        modeloFiltro:
+          estado.modeloFiltro && typeof estado.modeloFiltro === 'object' && !Array.isArray(estado.modeloFiltro)
+            ? estado.modeloFiltro
+            : {},
+        pesquisaDrawerLeft: typeof estado.pesquisaDrawerLeft === 'string' ? estado.pesquisaDrawerLeft : '',
+      };
     } catch {
-      localStorage.removeItem(obterStorageKey(pContexto));
       return null;
     }
   }
 
   function obterEstadoContexto(pContexto: string): IEstadoFiltrosContexto {
     if (!estadosPorContexto.value[pContexto]) {
-      estadosPorContexto.value[pContexto] = carregarContextoPersistido(pContexto) ?? criarEstadoVazio();
+      estadosPorContexto.value[pContexto] = criarEstadoVazio();
     }
 
     return estadosPorContexto.value[pContexto];
   }
 
-  function persistirContexto(pContexto: string): void {
-    if (contextoEhTemporario(pContexto)) {
-      return;
-    }
-
+  function montarPreferenciaContexto(pContexto: string): IPreferenciaUsuario | null {
     const estado = estadosPorContexto.value[pContexto];
 
-    if (!estado) {
+    if (!estado || contextoEhTemporario(pContexto)) {
+      return null;
+    }
+
+    return {
+      contexto: CONTEXTO_PREFERENCIAS_FILTRO,
+      chave: pContexto,
+      valorJson: JSON.stringify(toRaw(estado)),
+    };
+  }
+
+  async function persistirContexto(pContexto: string): Promise<void> {
+    const preferencia = montarPreferenciaContexto(pContexto);
+
+    if (!preferencia || !usuarioPossuiToken()) {
       return;
     }
 
-    localStorage.setItem(obterStorageKey(pContexto), JSON.stringify(toRaw(estado)));
+    try {
+      await preferenciaUsuarioService.salvarPreferenciaUsuarioAutenticado(preferencia);
+    } catch (pErro) {
+      erroRemoto.value = pErro;
+    }
   }
 
   function persistirContextoAtual(): void {
-    persistirContexto(contextoFiltroAtual.value);
-  }
-
-  function removerContextoPersistido(pContexto: string): void {
-    localStorage.removeItem(obterStorageKey(pContexto));
+    void persistirContexto(contextoFiltroAtual.value);
   }
 
   function obterChavesCamposFiltro(): Set<string> {
@@ -344,7 +363,6 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
   function clearAll(): void {
     filtersApplied.value = [];
     filterModel.value = {};
-    removerContextoPersistido(contextoFiltroAtual.value);
   }
 
   function clearAllContexts(): void {
@@ -353,11 +371,7 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     contextoFiltroTemporario.value = null;
     drawerFilterOpen.value = false;
 
-    const persistedKeys = Array.from({ length: localStorage.length }, (pUnused, pIndex) => {
-      void pUnused;
-      return localStorage.key(pIndex);
-    }).filter((pKey): pKey is string => typeof pKey === 'string' && pKey.startsWith(STORAGE_PREFIX));
-    persistedKeys.forEach((pKey) => localStorage.removeItem(pKey));
+    erroRemoto.value = null;
   }
 
   /**
@@ -392,6 +406,33 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
 
     contextoFiltroTemporario.value = null;
     camposDisponiveisTemporarios.value = null;
+  }
+
+  async function carregarFiltrosBackend(): Promise<void> {
+    if (!usuarioPossuiToken()) {
+      return;
+    }
+
+    carregandoRemoto.value = true;
+    erroRemoto.value = null;
+
+    try {
+      const resposta = await preferenciaUsuarioService.buscarPreferenciasUsuarioAutenticado();
+
+      resposta.preferencias
+        .filter((pPreferencia) => pPreferencia.contexto === CONTEXTO_PREFERENCIAS_FILTRO)
+        .forEach((pPreferencia) => {
+          const estado = normalizarEstadoPersistido(pPreferencia.valorJson);
+
+          if (estado) {
+            estadosPorContexto.value[pPreferencia.chave] = estado;
+          }
+        });
+    } catch (pErro) {
+      erroRemoto.value = pErro;
+    } finally {
+      carregandoRemoto.value = false;
+    }
   }
 
   // Computadas
@@ -432,6 +473,9 @@ export const useGenericFilterStore = defineStore('genericFilter', () => {
     editFilter,
     clearAll,
     clearAllContexts,
+    carregarFiltrosBackend,
+    carregandoRemoto,
+    erroRemoto,
     versaoAplicacaoFiltros,
   };
 });

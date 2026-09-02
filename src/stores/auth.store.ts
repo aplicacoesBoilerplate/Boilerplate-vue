@@ -180,6 +180,7 @@ export const useAuthStore = defineStore('auth', () => {
     await atualizarPermissoesUsuarioAutenticado(true);
 
     await preferencesStore.carregarPreferenciasBackend();
+    await genericFilterStore.carregarFiltrosBackend();
 
     return usuarioAutenticado;
   }
