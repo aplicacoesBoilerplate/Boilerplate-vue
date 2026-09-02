@@ -33,6 +33,11 @@ export interface IPermissaoCargoRbac {
   liberado: boolean;
 }
 
+export interface IFuncionalidadeCargoRbac {
+  funcionalidade: string;
+  liberado: boolean;
+}
+
 /**
  * @description Define um endpoint técnico usado por uma ação semântica do RBAC.
  * @property {TMetodoHttpPermissaoApi} metodo - Método HTTP do endpoint protegido.

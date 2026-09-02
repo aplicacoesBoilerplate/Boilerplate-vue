@@ -354,7 +354,7 @@ export function useControlePermissoesCargo(
    * @returns {string} Descrição traduzida.
    */
   function obterDescricaoPermissaoGeral(pPermissao: string): string {
-    return t(`forms.controlePermissoesCargo.permissoesGerais.itens.${pPermissao}`);
+    return t(`forms.controlePermissoesCargo.funcionalidades.itens.${pPermissao}`);
   }
 
   // Funções de Atualização Ativas

@@ -2,7 +2,12 @@
 import { type IConfiguracaoCampo, obterEntradasMapeamentoCampos, type TMapeamentoCampos } from '@/models/components/IMapeamentoCampos';
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
-import type { IPermissaoCargoRbac, IRedirecionamentoInicialRbac, TComportamentoPadraoPermissao } from './rbac.types';
+import type {
+  IFuncionalidadeCargoRbac,
+  IPermissaoCargoRbac,
+  IRedirecionamentoInicialRbac,
+  TComportamentoPadraoPermissao,
+} from './rbac.types';
 import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 import type { TPapel } from '@/models/model/core/usuario.model';
@@ -37,6 +42,7 @@ export interface ICargoRbac {
   descricao?: string;
   comportamentoPadrao: TComportamentoPadraoPermissao;
   permissoes: IPermissaoCargoRbac[];
+  funcionalidades: IFuncionalidadeCargoRbac[];
   redirecionamentoInicial: IRedirecionamentoInicialRbac;
   ativo: boolean;
   auditoria?: IAuditoriaRegistro;
@@ -64,6 +70,17 @@ export const COMPORTAMENTOS_PADRAO_PERMISSAO: IOpcaoSelecao<TComportamentoPadrao
  * @returns Cargo RBAC criado.
  */
 export function criarCargoRbacPadrao(pDados: Partial<ICargoRbac> = {}): ICargoRbac {
+  const funcionalidades = pDados.funcionalidades ? [...pDados.funcionalidades] : [];
+  const gerenciavaRegistros = pDados.permissoes?.some(
+    (pPermissao) => pPermissao.recurso === 'geral'
+      && pPermissao.acao === 'gerenciarRegistros'
+      && pPermissao.liberado,
+  );
+
+  if (gerenciavaRegistros && !funcionalidades.some((pItem) => pItem.funcionalidade === 'gerenciarRegistrosOutros')) {
+    funcionalidades.push({ funcionalidade: 'gerenciarRegistrosOutros', liberado: true });
+  }
+
   return {
     id: pDados.id,
     papel: pDados.papel ?? '',
@@ -71,7 +88,10 @@ export function criarCargoRbacPadrao(pDados: Partial<ICargoRbac> = {}): ICargoRb
     icone: pDados.icone ?? 'mdi-shield-account-outline',
     descricao: pDados.descricao ?? '',
     comportamentoPadrao: pDados.comportamentoPadrao ?? 'bloquear',
-    permissoes: pDados.permissoes ? [...pDados.permissoes] : [],
+    permissoes: pDados.permissoes?.filter(
+      (pPermissao) => pPermissao.recurso !== 'geral' || pPermissao.acao !== 'gerenciarRegistros',
+    ) ?? [],
+    funcionalidades,
     redirecionamentoInicial: {
       path: pDados.redirecionamentoInicial?.path ?? '',
       name: pDados.redirecionamentoInicial?.name,
@@ -85,7 +105,7 @@ export function criarCargoRbacPadrao(pDados: Partial<ICargoRbac> = {}): ICargoRb
 export type TCamposFiltroRbac = keyof Pick<ICargoRbac, 'nome' | 'descricao' | 'comportamentoPadrao' | 'ativo'>;
 type TCamposMapeamentoRbac = keyof Omit<
   ICargoRbac,
-  'id' | 'icone' | 'redirecionamentoInicial' | 'auditoria'
+  'id' | 'icone' | 'funcionalidades' | 'redirecionamentoInicial' | 'auditoria'
 > | 'usuarios' | 'acoes';
 export type TMapeamentoRbac = TMapeamentoCampos<
   TCamposMapeamentoRbac,
@@ -218,4 +238,12 @@ export function permissaoEstaLiberada(
   );
 
   return permissao?.liberado ?? pCargo.comportamentoPadrao === 'liberar';
+}
+
+export function funcionalidadeEstaLiberada(
+  pCargo: Pick<ICargoRbac, 'comportamentoPadrao' | 'funcionalidades'>,
+  pFuncionalidade: string,
+): boolean {
+  return pCargo.funcionalidades.find((pItem) => pItem.funcionalidade === pFuncionalidade)?.liberado
+    ?? pCargo.comportamentoPadrao === 'liberar';
 }

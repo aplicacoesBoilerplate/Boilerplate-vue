@@ -304,13 +304,13 @@
         "bloquear": "Bloquea por defecto",
         "liberar": "Permite por defecto"
       },
-      "permissoesGerais": {
-        "titulo": "Permisos generales",
-        "subtitulo": "Acciones transversales que pueden ser usadas por varios recursos.",
+      "funcionalidades": {
+        "titulo": "Funcionalidades",
+        "subtitulo": "Recursos disponibles para los usuarios de este rol.",
         "itens": {
           "exportarDados": "Exportar datos",
           "visualizarGraficos": "Ver gráficos",
-          "gerenciarRegistros": "Gestionar registros"
+          "gerenciarRegistrosOutros": "Gestionar Registros de Otros"
         }
       }
     },

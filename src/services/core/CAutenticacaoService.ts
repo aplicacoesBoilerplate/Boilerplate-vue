@@ -1,7 +1,7 @@
 // Types e Interfaces
+import { criarCargoRbacPadrao, type ICargoRbac } from '@/models/model/core/rbac/rbac.model';
 import type {
   IRespostaLogin,
-  IRespostaUsuarioAutenticado,
   TAlterarSenha,
   TConfirmarSenha,
   TEmailAuth,
@@ -10,13 +10,11 @@ import type {
   TRecuperacaoSenha,
   TRedefinicaoRecuperacaoSenha,
 } from '@/models/model/core/autenticacao.model';
-import type { ICargoRbac } from '@/models/model/core/rbac/rbac.model';
 import type { IUsuario } from '@/models/model/core/usuario.model';
 import type { IUsuarioSolicitacaoAcesso } from '@/models/model/core/usuario.solicitacao.model';
 
 // Services
 import { CBaseHttpService } from '@/services/base/CBaseHttpService';
-import { usuarioService } from '@/services/core/CUsuarioService';
 
 /**
  * Centraliza os contratos HTTP de autenticação.
@@ -36,9 +34,7 @@ export class CAutenticacaoService extends CBaseHttpService {
    * @returns Usuário correspondente à sessão atual.
    */
   public async buscarUsuarioAutenticado(): Promise<IUsuario> {
-    const resposta = await this.get<IRespostaUsuarioAutenticado>({ pathUrl: '/auth/me' });
-
-    return usuarioService.buscarPorId(resposta.idUsuario);
+    return this.get<IUsuario>({ pathUrl: '/auth/me' });
   }
 
   /**
@@ -46,7 +42,9 @@ export class CAutenticacaoService extends CBaseHttpService {
    * @returns Cargo e permissões do usuário autenticado.
    */
   public async buscarCargoUsuarioAutenticado(): Promise<ICargoRbac> {
-    return this.get<ICargoRbac>({ pathUrl: '/auth/me/cargo' });
+    const cargo = await this.get<ICargoRbac>({ pathUrl: '/auth/me/cargo' });
+
+    return criarCargoRbacPadrao(cargo);
   }
 
   /**
