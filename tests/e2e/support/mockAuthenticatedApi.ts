@@ -28,6 +28,7 @@ const cargo = {
   descricao: 'Acesso do teste E2E',
   comportamentoPadrao: 'liberar',
   permissoes: [],
+  funcionalidades: [],
   redirecionamentoInicial: { path: '/', filtros: [] },
   ativo: true,
 };
@@ -37,20 +38,13 @@ export async function mockAuthenticatedApi(pPage: Page): Promise<void> {
 
   await pPage.addInitScript(() => sessionStorage.setItem('token', 'e2e-token'));
 
-  await pPage.route('**/actuator/health-check/public', async (pRoute) => {
-    await pRoute.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ status: 'UP', components: {} }),
-    });
-  });
-
   await pPage.route('**/api/v1/**', async (pRoute) => {
     const path = new URL(pRoute.request().url()).pathname;
     const method = pRoute.request().method();
     let payload: unknown = {};
 
-    if (path.endsWith('/auth/me')) payload = { idUsuario: 1 };
+    if (path.endsWith('/actuator/health-check/public')) payload = { status: 'UP', components: {} };
+    else if (path.endsWith('/auth/me')) payload = usuario;
     else if (path.endsWith('/auth/me/cargo')) payload = cargo;
     else if (path.endsWith('/usuarios/1')) payload = usuario;
     else if (path.endsWith('/usuarios') && method === 'POST') {

@@ -28,6 +28,7 @@
         ref="refFormUser"
         v-model:usuario="usuario"
         v-model:valido="isFormValid"
+        v-model:alterado="formAlterado"
         @onSubmit="salvarUsuario"
       />
     </template>
@@ -46,7 +47,7 @@
 
       <v-btn
         v-tooltip="t('tooltips.forms.save')"
-        :disabled="!isFormValid"
+        :disabled="!isFormValid || !formAlterado"
         :text="t('tooltips.forms.save')"
         :loading="salvando"
         color="success"
@@ -60,7 +61,7 @@
 
 <script setup lang="ts">
 // Ecossistema Vue
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // Models
@@ -91,6 +92,7 @@ const usuario = defineModel<IUsuario>('usuario', { required: false, default: {} 
 // Reativas - ref
 const refFormUser = ref<InstanceType<typeof FormUsuario> | null>(null);
 const isFormValid = ref(false);
+const formAlterado = ref(false);
 const salvando = ref(false);
 
 // Funções
@@ -138,12 +140,19 @@ const titulo = computed(() =>
 const icon = computed(() => (props.modoEdicao ? 'mdi-account-edit' : 'mdi-account-plus'));
 
 // Observadores
-watch(exibirDialog, (pExibindo) => {
-  if (!pExibindo) {
-    salvando.value = false;
-    usuario.value = criarUsuarioPadrao();
-    isFormValid.value = false;
+watch(exibirDialog, async (pExibindo) => {
+  if (pExibindo) {
+    isFormValid.value = props.modoEdicao;
+    formAlterado.value = false;
+    await nextTick();
+    refFormUser.value?.registrarModeloInicial();
+    return;
   }
+
+  salvando.value = false;
+  usuario.value = criarUsuarioPadrao();
+  isFormValid.value = false;
+  formAlterado.value = false;
 });
 
 // Expose

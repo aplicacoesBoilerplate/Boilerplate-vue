@@ -329,13 +329,13 @@
         "bloquear": "Bloqueia por padrão",
         "liberar": "Libera por padrão"
       },
-      "permissoesGerais": {
-        "titulo": "Permissões gerais",
-        "subtitulo": "Ações transversais que podem ser usadas por vários recursos.",
+      "funcionalidades": {
+        "titulo": "Funcionalidades",
+        "subtitulo": "Recursos disponíveis para os usuários deste cargo.",
         "itens": {
           "exportarDados": "Exportar dados",
           "visualizarGraficos": "Visualizar gráficos",
-          "gerenciarRegistros": "Gerenciar registros"
+          "gerenciarRegistrosOutros": "Gerencia Registros de Outros"
         }
       }
     },

@@ -1,3 +1,5 @@
+import { nextTick } from 'vue';
+
 import DialogFormUsuario from '@/components/dialogs/core/DialogFormUsuario.vue';
 
 import { shallowMount } from '@vue/test-utils';
@@ -9,6 +11,24 @@ vi.mock('vue-i18n', async (pImportOriginal) => ({
 }));
 
 describe('DialogFormUsuario', () => {
+  it('mantém o salvamento desabilitado até que um usuário existente seja alterado', async () => {
+    const wrapper = shallowMount(DialogFormUsuario, {
+      props: {
+        exibirDialog: false,
+        modoEdicao: true,
+        usuario: {},
+      },
+    });
+
+    await wrapper.setProps({ exibirDialog: true });
+    await nextTick();
+
+    const { formAlterado, isFormValid } = wrapper.vm.$.setupState as { formAlterado: boolean; isFormValid: boolean };
+
+    expect(formAlterado).toBe(false);
+    expect(isFormValid).toBe(true);
+  });
+
   it('clears loading when the dialog closes after a save', async () => {
     const wrapper = shallowMount(DialogFormUsuario, {
       props: {

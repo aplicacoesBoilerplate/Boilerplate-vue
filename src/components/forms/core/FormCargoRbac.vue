@@ -1,6 +1,8 @@
 <template>
   <BaseForm
     ref="baseFormRef"
+    v-model:isDirty="formAlterado"
+    :formModel="cargo"
     @onSubmit="emits('onSubmit')"
     @update:isValid="formIsValid = $event"
   >
@@ -119,6 +121,7 @@
       <v-window-item value="permissoes">
         <ControlePermissoesCargo
           v-model:permissoes="cargo.permissoes"
+          v-model:funcionalidades="cargo.funcionalidades"
           :comportamentoPadrao="cargo.comportamentoPadrao"
           :somenteLeitura="somenteLeitura"
         />
@@ -170,10 +173,12 @@ import { CNormalizadores } from '@/classes/Utils/CNormalizadores';
 /**
  * @description Métodos expostos pelo formulário de cargo RBAC.
  * @property {() => Promise<void>} refreshForm - Restaura o estado original do formulário.
+ * @property {() => void} registrarModeloInicial - Registra o estado atual como referência para detectar alterações.
  * @property {() => void} submit - Dispara a validação e submit do formulário.
  */
 export interface IFormCargoRbacExpose {
   refreshForm: () => Promise<void>;
+  registrarModeloInicial: () => void;
   submit: () => void;
 }
 
@@ -200,6 +205,7 @@ const { t } = useI18n();
 
 // Reativas - Model
 const formIsValid = defineModel<boolean>('valido', { default: false });
+const formAlterado = defineModel<boolean>('alterado', { default: false });
 const cargo = defineModel<ICargoRbac>('cargo', { required: true });
 const usuarios = defineModel<IUsuario[]>('usuarios', { required: true });
 const abaAtual = defineModel<string>('abaAtual', { required: true, default: 'dados' });
@@ -266,6 +272,11 @@ async function refreshForm(): Promise<void> {
   });
 }
 
+function registrarModeloInicial(): void {
+  cargoOriginal.value = deepClone(toRaw(cargo.value));
+  baseFormRef.value?.registrarModeloInicial();
+}
+
 // Computadas
 const redirecionamentoInicialCargo = computed<IRedirecionamentoInicialRbac>({
   get: () => cargo.value.redirecionamentoInicial ?? criarCargoRbacPadrao(cargo.value).redirecionamentoInicial,
@@ -303,6 +314,7 @@ watch(
 // Expose
 defineExpose({
   refreshForm,
+  registrarModeloInicial,
   submit: () => baseFormRef.value?.submit(),
 } satisfies IFormCargoRbacExpose);
 </script>

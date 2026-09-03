@@ -329,13 +329,13 @@
         "bloquear": "Blocks by default",
         "liberar": "Allows by default"
       },
-      "permissoesGerais": {
-        "titulo": "General permissions",
-        "subtitulo": "Cross-cutting actions that can be used by multiple resources.",
+      "funcionalidades": {
+        "titulo": "Features",
+        "subtitulo": "Resources available to users with this role.",
         "itens": {
           "exportarDados": "Export data",
           "visualizarGraficos": "View charts",
-          "gerenciarRegistros": "Manage records"
+          "gerenciarRegistrosOutros": "Manage Other Users' Records"
         }
       }
     },

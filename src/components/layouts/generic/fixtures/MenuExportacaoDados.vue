@@ -87,7 +87,7 @@ const props = withDefaults(defineProps<TProps>(), {
 });
 
 const { exportando, exportarDados } = useExportacaoDados();
-const { possuiPermissaoGeral, notificarPermissaoNegada } = usePermissoesRbac();
+const { possuiFuncionalidade, notificarPermissaoNegada } = usePermissoesRbac();
 const { t } = useI18n();
 
 const manterDrawerAberto = inject<((pValor: boolean) => void) | undefined>('drawerKeepOpen', undefined);
@@ -97,7 +97,7 @@ const formatoCarregando = ref<TFormatoExportacaoDados | null>(null);
 let exportController: AbortController | null = null;
 
 const manterAberto = computed(() => exibirMenu.value);
-const podeExportar = computed(() => possuiPermissaoGeral('exportarDados'));
+const podeExportar = computed(() => possuiFuncionalidade('exportarDados'));
 const opcoesExportacao = computed<
   { formato: TFormatoExportacaoDados; titulo: string; descricao: string; icone: string }[]
 >(() => [

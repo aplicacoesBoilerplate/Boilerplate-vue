@@ -275,7 +275,10 @@ test('mantém contraste AA nos títulos primários do tema escuro', async ({ pag
   await page.goto('/admin/rbac');
   await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
 
-  const taxaContraste = await page.locator('.v-list-item-title.text-primary').first().evaluate((pElemento) => {
+  const tituloPrimario = page.getByRole('columnheader', { name: /Nome|Name/ });
+  await expect(tituloPrimario).toBeVisible();
+
+  const taxaContraste = await tituloPrimario.evaluate((pElemento) => {
     function converterCor(pValor: string): [number, number, number, number] {
       const corSrgb = pValor.match(
         /color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\)/,
@@ -431,7 +434,7 @@ test('usa scrim translúcido claro no overlay do tema light', async ({ page }) =
   await page.locator('header button:has(.mdi-weather-sunny)').click();
   await expect(page.locator('.v-application')).toHaveClass(/v-theme--light/);
 
-  await page.route('**/actuator/health-check/public', async (pRota) => {
+  await page.route('**/api/v1/actuator/health-check/public', async (pRota) => {
     await new Promise((pResolve) => setTimeout(pResolve, 2_000));
     await pRota.fulfill({
       status: 200,
@@ -512,8 +515,9 @@ test('pesquisa usuário não vinculado e o vincula rapidamente ao cargo aberto',
 
   await page.goto('/admin/rbac', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: /Descrição|Description/ })).toHaveCSS('min-width', '200px');
 
-  const linhaCargo = page.locator('.v-list-item').filter({ hasText: 'Administrador' }).first();
+  const linhaCargo = page.locator('.v-main .v-data-table tbody tr').filter({ hasText: 'Administrador' }).first();
   await linhaCargo.locator('button:has(.mdi-pencil)').click();
 
   const dialogo = page.getByRole('dialog');
@@ -564,6 +568,29 @@ test('centraliza ícone grande e mantém o título no rodapé do cartão', async
   expect(medidas.footerTop).toBeGreaterThan(medidas.cardMiddle);
 });
 
+test('seleciona ícone pela grade após pesquisar', async ({ page }) => {
+  await page.goto('/admin/rbac', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
+
+  const main = page.locator('.v-main');
+  await main.locator('button:has(.mdi-menu-open)').hover();
+  await main.locator('button:has(.mdi-plus)').click();
+
+  const formularioCargo = page.getByRole('dialog');
+  await formularioCargo.getByRole('textbox', { name: /Ícone|Icon/ }).click();
+
+  const seletor = page.getByRole('dialog').last();
+  const busca = seletor.getByRole('textbox', { name: /Buscar ícone|Search by name or alias/ });
+  await busca.fill('account');
+
+  const iconeFiltrado = seletor.locator('.grade-icones-material-design__card').first();
+  await expect(iconeFiltrado).toBeEnabled();
+  await iconeFiltrado.click();
+
+  await expect(page.getByRole('dialog')).toHaveCount(1);
+  await expect(formularioCargo.getByRole('textbox', { name: /Ícone|Icon/ })).toHaveValue(/mdi-account/);
+});
+
 test('traduz integralmente os fluxos de licença, filtros e abas RBAC para inglês', async ({ page }) => {
   const problemasConsole = monitorarProblemasConsole(page);
 
@@ -590,7 +617,7 @@ test('traduz integralmente os fluxos de licença, filtros e abas RBAC para ingl�
   await dialogoFiltro.locator('button:has(.mdi-close)').click();
 
   await page.goto('/admin/rbac');
-  const linhaCargo = page.locator('.v-list-item').filter({ hasText: 'Administrador' }).first();
+  const linhaCargo = page.locator('.v-main .v-data-table tbody tr').filter({ hasText: 'Administrador' }).first();
   await linhaCargo.locator('button:has(.mdi-pencil)').click();
   const dialogoCargo = page.getByRole('dialog');
   await expect(dialogoCargo.getByRole('tab', { name: 'Data' })).toBeVisible();
