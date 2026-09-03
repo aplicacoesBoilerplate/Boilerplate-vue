@@ -1,4 +1,5 @@
 // Types e Interfaces
+import type { IFiltroPreDefinido } from '../filters/ICampoFiltro';
 import type { TCampoFiltroMapeado } from '../filters/MapeamentoFiltros';
 
 /**
@@ -12,6 +13,7 @@ import type { TCampoFiltroMapeado } from '../filters/MapeamentoFiltros';
  * @property {boolean} requiresAuth - Se a rota requer autenticação.
  * @property {IRouteMeta[]} children - Rotas filhas para agrupamento na navegação.
  * @property {TCampoFiltroMapeado[]} filterResource - Campos disponíveis para filtro nesta rota.
+ * @property {IFiltroPreDefinido[]} predefinedFilters - Filtros sugeridos para o recurso desta rota.
  * @property {string} filterContext - Contexto usado para isolar filtros aplicados por recurso.
  */
 export interface IRouteMeta {
@@ -24,5 +26,6 @@ export interface IRouteMeta {
   requiresAuth?: boolean;
   children?: IRouteMeta[];
   filterResource?: TCampoFiltroMapeado[];
+  predefinedFilters?: IFiltroPreDefinido[];
   filterContext?: string;
 }

@@ -4,6 +4,26 @@ import type { EOperadoresFiltro } from './enums/EOperadoresFiltro';
 import type { ETipoFiltro } from './enums/ETipoFiltro';
 
 /**
+ * @description Configuração de um filtro sugerido pelo recurso atual.
+ * @property {string} chave - Identificador único da sugestão.
+ * @property {string} campo - Campo que receberá o filtro.
+ * @property {EOperadoresFiltro} condicao - Operador aplicado ao campo.
+ * @property {string} icone - Ícone exibido na sugestão.
+ * @property {'aplicar' | 'preparar'} modo - Define se o filtro é aplicado diretamente ou preparado para edição.
+ * @property {string} rotuloChave - Chave de tradução do rótulo exibido.
+ * @property {unknown} valor - Valor inicial opcional do filtro.
+ */
+export interface IFiltroPreDefinido {
+  chave: string;
+  campo: string;
+  condicao: EOperadoresFiltro;
+  icone: string;
+  modo: 'aplicar' | 'preparar';
+  rotuloChave: string;
+  valor?: unknown;
+}
+
+/**
  * @description Todo e qualquer objeto que possa ser representado como opção de um componente AutocompleteSelecionarOpcao.vue.
  * @template T É o tipo válido para os valores das opções.
  * 

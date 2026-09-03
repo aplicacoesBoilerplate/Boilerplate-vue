@@ -1,5 +1,7 @@
 // Enums
 import { ERecursosFiltro } from '@/models/filters/enums/ERecursosFiltro';
+import { FILTROS_PRE_DEFINIDOS_RBAC } from '@/models/model/core/rbac/rbac.model';
+import { FILTROS_PRE_DEFINIDOS_USUARIO } from '@/models/model/core/usuario.model';
 import type { RouteRecordRaw } from 'vue-router';
 
 // Classes
@@ -80,6 +82,7 @@ export const routes: Array<RouteRecordRaw> = [
           hotkey: 'cmd+shift+u',
           filterContext: ERecursosFiltro.USUARIOS,
           filterResource: CMapeamentosFiltro.getMapeamento(ERecursosFiltro.USUARIOS),
+          predefinedFilters: FILTROS_PRE_DEFINIDOS_USUARIO,
         },
       },
       {
@@ -92,6 +95,7 @@ export const routes: Array<RouteRecordRaw> = [
           hotkey: 'cmd+alt+r',
           filterContext: ERecursosFiltro.RBAC,
           filterResource: CMapeamentosFiltro.getMapeamento(ERecursosFiltro.RBAC),
+          predefinedFilters: FILTROS_PRE_DEFINIDOS_RBAC,
         },
       },
       {

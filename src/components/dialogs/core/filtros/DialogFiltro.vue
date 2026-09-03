@@ -101,7 +101,7 @@
               variant="tonal"
               @click="aplicarFiltroPreDefinido(filtro)"
             >
-              {{ filtro.rotulo }}
+              {{ t(filtro.rotuloChave) }}
             </v-chip>
           </v-chip-group>
 
@@ -179,7 +179,7 @@ import { useDisplay } from 'vuetify';
 import { useGenericFilterStore } from '@/stores/genericFilter.store';
 
 // Types e Interfaces
-import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
+import type { IFiltroPreDefinido } from '@/models/filters/ICampoFiltro';
 import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
 import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
@@ -194,6 +194,7 @@ import DrawerFiltroRight from './fixtures/drawers/DrawerFiltroRight.vue';
 /**
  * @property {object[]} registros - Registros para consulta auxiliar.
  * @property {TCampoFiltroMapeado[]} camposDisponiveis - Campos disponíveis para filtro.
+ * @property {IFiltroPreDefinido[]} filtrosPreDefinidos - Filtros sugeridos pelo recurso atual.
  * @property {string} contextoLocal - Contexto local do filtro.
  * @property {TFiltroConsultaSerializado[]} filtrosIniciais - Filtros serializáveis iniciais do contexto local.
  * @property {boolean} modoLocal - Modo local do filtro, usado quando não se deseja utilizar a store, como no helper para o rbac.
@@ -201,6 +202,7 @@ import DrawerFiltroRight from './fixtures/drawers/DrawerFiltroRight.vue';
 type TProps = {
   registros?: object[];
   camposDisponiveis: TCampoFiltroMapeado[];
+  filtrosPreDefinidos?: IFiltroPreDefinido[];
   contextoLocal?: string;
   filtrosIniciais?: TFiltroConsultaSerializado[];
   modoLocal?: boolean;
@@ -208,6 +210,7 @@ type TProps = {
 const props = withDefaults(defineProps<TProps>(), {
   contextoLocal: 'dialog-filtro-local',
   filtrosIniciais: () => [],
+  filtrosPreDefinidos: () => [],
   modoLocal: false,
   registros: () => [],
 });
@@ -216,16 +219,6 @@ type TEmits = {
   onAplicarFiltros: [filtros: TFiltroConsultaSerializado[]];
 };
 const emits = defineEmits<TEmits>();
-
-type TFiltroPreDefinido = {
-  chave: string;
-  campo: string;
-  condicao: EOperadoresFiltro;
-  icone: string;
-  modo: 'aplicar' | 'preparar';
-  rotulo: string;
-  valor?: unknown;
-};
 
 // Stores
 const genericFilterStore = useGenericFilterStore();
@@ -265,7 +258,7 @@ function aplicarFiltros(): void {
   exibirFiltros.value = false;
 }
 
-function aplicarFiltroPreDefinido(pFiltro: TFiltroPreDefinido): void {
+function aplicarFiltroPreDefinido(pFiltro: IFiltroPreDefinido): void {
   const filtro: TFiltroConsultaSerializado = {
     campo: pFiltro.campo,
     condicao: pFiltro.condicao,
@@ -296,35 +289,6 @@ const deveExibirConsultaRegistros = computed(() => {
 const alturaBotaoAcao = computed(() => (smAndDown.value ? 32 : undefined));
 const larguraMinimaBotaoAcao = computed(() => (smAndDown.value ? 0 : undefined));
 const tamanhoBotaoAcao = computed(() => (smAndDown.value ? 'small' : 'default'));
-const filtrosPreDefinidos = computed<TFiltroPreDefinido[]>(() => {
-  const campos = new Set(props.camposDisponiveis.map((pCampo) => pCampo.valor));
-  const filtros: TFiltroPreDefinido[] = [];
-
-  if (campos.has('ativo')) {
-    filtros.push({
-      chave: 'ativos',
-      campo: 'ativo',
-      condicao: EOperadoresFiltro.VERDADEIRO,
-      icone: 'mdi-check-circle-outline',
-      modo: 'aplicar',
-      rotulo: t('components.dialogFiltro.filtrosPreDefinidos.ativos'),
-    });
-  }
-
-  if (campos.has('papel')) {
-    filtros.push({
-      chave: 'por-cargo',
-      campo: 'papel',
-      condicao: EOperadoresFiltro.SELECAO,
-      icone: 'mdi-account-tag-outline',
-      modo: 'preparar',
-      rotulo: t('components.dialogFiltro.filtrosPreDefinidos.porCargo'),
-    });
-  }
-
-  return filtros;
-});
-
 // Observadores
 watch(
   () => genericFilterStore.appliedCount,

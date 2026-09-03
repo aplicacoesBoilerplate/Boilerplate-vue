@@ -26,6 +26,7 @@
           <DialogFiltro
             v-model:exibirFiltros="exibirFiltros"
             :camposDisponiveis="genericFilterStore.camposDisponiveis"
+            :filtrosPreDefinidos="filtrosPreDefinidos"
           />
 
           <v-divider
@@ -70,6 +71,7 @@ import { useGenericFilterStore } from '@/stores/genericFilter.store';
 
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 // Types e Interfaces
+import type { IFiltroPreDefinido } from '@/models/filters/ICampoFiltro';
 import type { TParametrosBusca } from '@/models/filters/TParametrosBusca';
 import type { VInput } from 'vuetify/components';
 
@@ -133,6 +135,9 @@ function onSubmit() {
 // Computadas
 const possuiFiltros = computed(() => {
   return !!route.meta?.filterResource;
+});
+const filtrosPreDefinidos = computed<IFiltroPreDefinido[]>(() => {
+  return route.meta.predefinedFilters ?? [];
 });
 </script>
 

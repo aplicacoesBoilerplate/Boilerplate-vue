@@ -3,7 +3,7 @@ import { type IConfiguracaoCampo, obterEntradasMapeamentoCampos, type TMapeament
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 import type { IPermissaoCargoRbac, IRedirecionamentoInicialRbac, TComportamentoPadraoPermissao } from './rbac.types';
-import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { IFiltroPreDefinido, IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 import type { TPapel } from '@/models/model/core/usuario.model';
 
@@ -160,6 +160,16 @@ const ENTRADAS_MAPEAMENTO_RBAC = obterEntradasMapeamentoCampos<
 
 export const CAMPOS_FILTRO_RBAC = criarCamposFiltro(ENTRADAS_MAPEAMENTO_RBAC);
 export const CABECALHOS_TABELA_RBAC = criarCabecalhosTabela(ENTRADAS_MAPEAMENTO_RBAC);
+export const FILTROS_PRE_DEFINIDOS_RBAC = [
+  {
+    chave: 'ativos',
+    campo: 'ativo',
+    condicao: EOperadoresFiltro.VERDADEIRO,
+    icone: 'mdi-check-circle-outline',
+    modo: 'aplicar',
+    rotuloChave: 'components.dialogFiltro.filtrosPreDefinidos.ativos',
+  },
+] satisfies IFiltroPreDefinido[];
 
 /**
  * @description Verifica se uma permissão específica está liberada para um cargo.
