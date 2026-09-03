@@ -73,9 +73,34 @@
       "loading": "Cargando registros..."
     },
     "fields": {
-      "user": { "id": "Código", "name": "Nombre", "email": "Correo electrónico", "avatar": "Avatar", "phone": "Teléfono", "notify": "Notificar", "active": "Activo", "role": "Cargo" },
-      "rbac": { "name": "Nombre", "description": "Descripción", "defaultBehavior": "Comportamiento predeterminado", "active": "Activo" },
-      "error": { "id": "Código", "message": "Mensaje", "file": "Archivo", "class": "Clase", "method": "Método", "line": "Línea", "status": "Estado de la solicitud", "userId": "Código del usuario", "userReference": "Referencia del usuario", "time": "Hora del error" }
+      "user": {
+        "id": "Código",
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "avatar": "Avatar",
+        "phone": "Teléfono",
+        "notify": "Notificar",
+        "active": "Activo",
+        "role": "Cargo"
+      },
+      "rbac": {
+        "name": "Nombre",
+        "description": "Descripción",
+        "defaultBehavior": "Comportamiento predeterminado",
+        "active": "Activo"
+      },
+      "error": {
+        "id": "Código",
+        "message": "Mensaje",
+        "file": "Archivo",
+        "class": "Clase",
+        "method": "Método",
+        "line": "Línea",
+        "status": "Estado de la solicitud",
+        "userId": "Código del usuario",
+        "userReference": "Referencia del usuario",
+        "time": "Hora del error"
+      }
     },
     "empty": { "users": "No se encontraron usuarios.", "roles": "No se encontraron cargos." },
     "roles": { "admin": "Administrador", "user": "Usuario" },
@@ -446,6 +471,10 @@
       "consultaRegistrosAriaLabel": "Consulta auxiliar de registros",
       "limparFiltros": "Limpar filtros",
       "aplicar": "Aplicar",
+      "filtrosPreDefinidos": {
+        "ativos": "Registros activos",
+        "porCargo": "Usuarios por rol"
+      },
       "operadores": {
         "igual": "Igual",
         "diferente": "Diferente",

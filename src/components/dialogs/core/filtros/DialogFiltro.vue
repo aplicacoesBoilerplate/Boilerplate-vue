@@ -89,6 +89,22 @@
 
         <v-main :class="['dialog-filtro-main ma-2', { 'dialog-filtro-main--consulta-aberta': deveExibirConsultaRegistros }]"
         >
+          <v-chip-group
+            v-if="filtrosPreDefinidos.length"
+            class="pa-2"
+          >
+            <v-chip
+              v-for="filtro in filtrosPreDefinidos"
+              :key="filtro.chave"
+              :prependIcon="filtro.icone"
+              color="primary"
+              variant="tonal"
+              @click="aplicarFiltroPreDefinido(filtro)"
+            >
+              {{ t(filtro.rotuloChave) }}
+            </v-chip>
+          </v-chip-group>
+
           <div class="dialog-filtro-main__formulario">
             <FormFiltros
               v-model:exibirConsultaRegistros="exibirConsultaRegistros"
@@ -163,6 +179,7 @@ import { useDisplay } from 'vuetify';
 import { useGenericFilterStore } from '@/stores/genericFilter.store';
 
 // Types e Interfaces
+import type { IFiltroPreDefinido } from '@/models/filters/ICampoFiltro';
 import type { TFiltroConsultaSerializado } from '@/models/filters/IFiltrosConsulta';
 import type { TCampoFiltroMapeado } from '@/models/filters/MapeamentoFiltros';
 
@@ -177,6 +194,7 @@ import DrawerFiltroRight from './fixtures/drawers/DrawerFiltroRight.vue';
 /**
  * @property {object[]} registros - Registros para consulta auxiliar.
  * @property {TCampoFiltroMapeado[]} camposDisponiveis - Campos disponíveis para filtro.
+ * @property {IFiltroPreDefinido[]} filtrosPreDefinidos - Filtros sugeridos pelo recurso atual.
  * @property {string} contextoLocal - Contexto local do filtro.
  * @property {TFiltroConsultaSerializado[]} filtrosIniciais - Filtros serializáveis iniciais do contexto local.
  * @property {boolean} modoLocal - Modo local do filtro, usado quando não se deseja utilizar a store, como no helper para o rbac.
@@ -184,6 +202,7 @@ import DrawerFiltroRight from './fixtures/drawers/DrawerFiltroRight.vue';
 type TProps = {
   registros?: object[];
   camposDisponiveis: TCampoFiltroMapeado[];
+  filtrosPreDefinidos?: IFiltroPreDefinido[];
   contextoLocal?: string;
   filtrosIniciais?: TFiltroConsultaSerializado[];
   modoLocal?: boolean;
@@ -191,6 +210,7 @@ type TProps = {
 const props = withDefaults(defineProps<TProps>(), {
   contextoLocal: 'dialog-filtro-local',
   filtrosIniciais: () => [],
+  filtrosPreDefinidos: () => [],
   modoLocal: false,
   registros: () => [],
 });
@@ -238,6 +258,27 @@ function aplicarFiltros(): void {
   exibirFiltros.value = false;
 }
 
+function aplicarFiltroPreDefinido(pFiltro: IFiltroPreDefinido): void {
+  const filtro: TFiltroConsultaSerializado = {
+    campo: pFiltro.campo,
+    condicao: pFiltro.condicao,
+    valor: pFiltro.valor,
+    valoresSelecionados: [],
+  };
+
+  if (pFiltro.modo === 'preparar') {
+    genericFilterStore.filterModel = filtro;
+    exibirConsultaRegistros.value = true;
+    return;
+  }
+
+  genericFilterStore.filtersApplied = [
+    ...genericFilterStore.filtersApplied.filter((pAplicado) => pAplicado.campo !== filtro.campo),
+    filtro,
+  ];
+  aplicarFiltros();
+}
+
 // Computadas
 const campoSelecionadoAtual = computed(() => genericFilterStore.campoSelecionado);
 
@@ -248,7 +289,6 @@ const deveExibirConsultaRegistros = computed(() => {
 const alturaBotaoAcao = computed(() => (smAndDown.value ? 32 : undefined));
 const larguraMinimaBotaoAcao = computed(() => (smAndDown.value ? 0 : undefined));
 const tamanhoBotaoAcao = computed(() => (smAndDown.value ? 'small' : 'default'));
-
 // Observadores
 watch(
   () => genericFilterStore.appliedCount,

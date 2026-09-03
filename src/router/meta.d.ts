@@ -7,5 +7,5 @@ import type { IRouteMeta } from '@/models/model/IRouteMeta';
 export {};
 
 declare module 'vue-router' {
-  interface IModuleRouteMeta extends IRouteMeta {}
+  interface RouteMeta extends Omit<IRouteMeta, 'path' | 'name' | 'children'> {}
 }

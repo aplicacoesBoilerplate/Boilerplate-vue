@@ -3,7 +3,7 @@ import { type IConfiguracaoCampo, obterEntradasMapeamentoCampos, type TMapeament
 import { EOperadoresFiltro } from '@/models/filters/enums/EOperadoresFiltro';
 import { ETipoFiltro } from '@/models/filters/enums/ETipoFiltro';
 import type { ICargoRbac } from './rbac/rbac.model';
-import type { IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
+import type { IFiltroPreDefinido, IOpcaoSelecao } from '@/models/filters/ICampoFiltro';
 import type { IAuditoriaRegistro } from '@/models/model/common/IAuditoriaRegistro';
 
 // Utils
@@ -255,3 +255,21 @@ const ENTRADAS_MAPEAMENTO_USUARIO = obterEntradasMapeamentoCampos<
 export const CAMPOS_FILTRO_USUARIO = criarCamposFiltro(ENTRADAS_MAPEAMENTO_USUARIO);
 export const CABECALHOS_TABELA_USUARIO = criarCabecalhosTabela(ENTRADAS_MAPEAMENTO_USUARIO);
 export const CONFIGURACOES_GRAFICO_USUARIO = criarConfiguracoesGrafico(ENTRADAS_MAPEAMENTO_USUARIO);
+export const FILTROS_PRE_DEFINIDOS_USUARIO = [
+  {
+    chave: 'ativos',
+    campo: 'ativo',
+    condicao: EOperadoresFiltro.VERDADEIRO,
+    icone: 'mdi-check-circle-outline',
+    modo: 'aplicar',
+    rotuloChave: 'components.dialogFiltro.filtrosPreDefinidos.ativos',
+  },
+  {
+    chave: 'por-cargo',
+    campo: 'papel',
+    condicao: EOperadoresFiltro.SELECAO,
+    icone: 'mdi-account-tag-outline',
+    modo: 'preparar',
+    rotuloChave: 'components.dialogFiltro.filtrosPreDefinidos.porCargo',
+  },
+] satisfies IFiltroPreDefinido[];

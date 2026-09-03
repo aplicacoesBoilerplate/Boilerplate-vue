@@ -73,9 +73,34 @@
       "loading": "Loading records..."
     },
     "fields": {
-      "user": { "id": "Code", "name": "Name", "email": "E-mail", "avatar": "Avatar", "phone": "Phone", "notify": "Notify", "active": "Active", "role": "Role" },
-      "rbac": { "name": "Name", "description": "Description", "defaultBehavior": "Default behavior", "active": "Active" },
-      "error": { "id": "Code", "message": "Message", "file": "File", "class": "Class", "method": "Method", "line": "Line", "status": "Request status", "userId": "User code", "userReference": "User reference", "time": "Error time" }
+      "user": {
+        "id": "Code",
+        "name": "Name",
+        "email": "E-mail",
+        "avatar": "Avatar",
+        "phone": "Phone",
+        "notify": "Notify",
+        "active": "Active",
+        "role": "Role"
+      },
+      "rbac": {
+        "name": "Name",
+        "description": "Description",
+        "defaultBehavior": "Default behavior",
+        "active": "Active"
+      },
+      "error": {
+        "id": "Code",
+        "message": "Message",
+        "file": "File",
+        "class": "Class",
+        "method": "Method",
+        "line": "Line",
+        "status": "Request status",
+        "userId": "User code",
+        "userReference": "User reference",
+        "time": "Error time"
+      }
     },
     "empty": { "users": "No users found.", "roles": "No roles found." },
     "roles": { "admin": "Administrator", "user": "User" },
@@ -446,6 +471,10 @@
       "consultaRegistrosAriaLabel": "Record helper query",
       "limparFiltros": "Clear filters",
       "aplicar": "Apply",
+      "filtrosPreDefinidos": {
+        "ativos": "Active records",
+        "porCargo": "Users by role"
+      },
       "operadores": {
         "igual": "Equals",
         "diferente": "Not Equals",

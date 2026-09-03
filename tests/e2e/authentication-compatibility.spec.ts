@@ -16,7 +16,7 @@ function monitorarConsole(pPage: Page): string[] {
 }
 
 async function esperarAplicacaoPublica(pPage: Page): Promise<void> {
-  await pPage.route('**/actuator/health-check/public', async (pRoute) => {
+  await pPage.route('**/api/v1/actuator/health-check/public', async (pRoute) => {
     await pRoute.fulfill({
       status: 200,
       contentType: 'application/json',

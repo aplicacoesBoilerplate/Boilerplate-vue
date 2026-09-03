@@ -275,7 +275,10 @@ test('mantém contraste AA nos títulos primários do tema escuro', async ({ pag
   await page.goto('/admin/rbac');
   await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
 
-  const taxaContraste = await page.locator('.v-list-item-title.text-primary').first().evaluate((pElemento) => {
+  const tituloPrimario = page.getByRole('columnheader', { name: /Nome|Name/ });
+  await expect(tituloPrimario).toBeVisible();
+
+  const taxaContraste = await tituloPrimario.evaluate((pElemento) => {
     function converterCor(pValor: string): [number, number, number, number] {
       const corSrgb = pValor.match(
         /color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\)/,
@@ -431,7 +434,7 @@ test('usa scrim translúcido claro no overlay do tema light', async ({ page }) =
   await page.locator('header button:has(.mdi-weather-sunny)').click();
   await expect(page.locator('.v-application')).toHaveClass(/v-theme--light/);
 
-  await page.route('**/actuator/health-check/public', async (pRota) => {
+  await page.route('**/api/v1/actuator/health-check/public', async (pRota) => {
     await new Promise((pResolve) => setTimeout(pResolve, 2_000));
     await pRota.fulfill({
       status: 200,
