@@ -34,6 +34,7 @@ const cargo = {
 
 export async function mockAuthenticatedApi(pPage: Page): Promise<void> {
   let preferencias: Array<{ contexto: string; chave: string; valorJson: string }> = [];
+  let cargos = [cargo];
 
   await pPage.addInitScript(() => sessionStorage.setItem('token', 'e2e-token'));
 
@@ -50,7 +51,7 @@ export async function mockAuthenticatedApi(pPage: Page): Promise<void> {
     const method = pRoute.request().method();
     let payload: unknown = {};
 
-    if (path.endsWith('/auth/me')) payload = { idUsuario: 1 };
+    if (path.endsWith('/auth/me')) payload = usuario;
     else if (path.endsWith('/auth/me/cargo')) payload = cargo;
     else if (path.endsWith('/usuarios/1')) payload = usuario;
     else if (path.endsWith('/usuarios') && method === 'POST') {
@@ -61,9 +62,11 @@ export async function mockAuthenticatedApi(pPage: Page): Promise<void> {
       payload = { registros: [usuario, usuarioDisponivel], proximaEntrada: null, possuiMais: false };
     } else if (path.endsWith('/rbac/cargos') && method === 'POST') {
       const request = pRoute.request().postDataJSON() as typeof cargo;
-      payload = { ...cargo, ...request, id: 2 };
+      const cargoCriado = { ...cargo, ...request, id: cargos.length + 1 };
+      cargos = [...cargos, cargoCriado];
+      payload = cargoCriado;
     } else if (path.endsWith('/rbac/cargos/consulta')) {
-      payload = { registros: [cargo], proximaEntrada: null, possuiMais: false };
+      payload = { registros: cargos, proximaEntrada: null, possuiMais: false };
     } else if (path.endsWith('/preferencias/me/item') && method === 'PUT') {
       const preferencia = pRoute.request().postDataJSON() as (typeof preferencias)[number];
       preferencias = [
