@@ -279,7 +279,11 @@ test('mantém contraste AA nos títulos primários do tema escuro', async ({ pag
   await page.goto('/admin/rbac');
   await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
 
-  const taxaContraste = await page.locator('.v-list-item-title.text-primary').first().evaluate((pElemento) => {
+  const linhaCargo = page.locator('.v-main .v-data-table tbody tr').filter({ hasText: 'Administrador' }).first();
+  const tituloCargo = linhaCargo.getByText('Administrador', { exact: true });
+  await expect(tituloCargo).toBeVisible();
+
+  const taxaContraste = await tituloCargo.evaluate((pElemento) => {
     function converterCor(pValor: string): [number, number, number, number] {
       const corSrgb = pValor.match(
         /color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\)/,
@@ -539,7 +543,7 @@ test('abre os filtros locais da rota inicial do cargo', async ({ page }) => {
   await page.goto('/admin/rbac', { waitUntil: 'commit' });
   await expect(page.getByText(/Todos os cargos foram carregados|All roles have been loaded/)).toBeVisible();
 
-  const linhaCargo = page.locator('.v-list-item').filter({ hasText: 'Administrador' }).first();
+  const linhaCargo = page.locator('.v-main .v-data-table tbody tr').filter({ hasText: 'Administrador' }).first();
   await linhaCargo.locator('button:has(.mdi-pencil)').click();
 
   const dialogoCargo = page.getByRole('dialog');

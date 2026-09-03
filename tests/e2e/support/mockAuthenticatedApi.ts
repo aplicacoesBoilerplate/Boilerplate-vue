@@ -51,7 +51,7 @@ export async function mockAuthenticatedApi(pPage: Page): Promise<void> {
     const method = pRoute.request().method();
     let payload: unknown = {};
 
-    if (path.endsWith('/auth/me')) payload = { idUsuario: 1 };
+    if (path.endsWith('/auth/me')) payload = usuario;
     else if (path.endsWith('/auth/me/cargo')) payload = cargo;
     else if (path.endsWith('/usuarios/1')) payload = usuario;
     else if (path.endsWith('/usuarios') && method === 'POST') {
